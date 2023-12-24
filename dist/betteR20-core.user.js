@@ -2,7 +2,7 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.181.2
+// @version      1.35.183.1
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -252,18 +252,18 @@ function baseUtil () {
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- v.172.b changes:</code><br><strong>Add Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ update Random Side randomizer (to give seemingly more random results)<br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br><strong>Better token Actions & Automation</strong><br>⦁ new automatic token action buttons: Rolls, Stats and Animation<br>⦁ rolls lets you select available actions with custom roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots and items are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>The system is still in an unfinished state, so use with caution!<br><code>-- v.181.1 changes:</code><br><strong>Compatibility updates</strong><br>⦁ update beta to latest release version<br>⦁ newUI loads properly, but b20 shows a warning message<br>⦁ try to fix polygon drawing in old UI<br><code>-- v.181.2 changes:</code><br>⦁ polygon draw/reveal fix update (please test)</p>
+					<p>This version contains following changes<br><code>-- Beta features overview:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br><strong>Better token Actions & Automation</strong><br>⦁ new automatic token action buttons: Rolls, Stats and Animation<br>⦁ rolls lets you select available actions with custom roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots and items are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>The system is still in an unfinished state, so use with caution!<br><strong>Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ a better Random Side randomizer (gives seemingly more random results)<br><code>-- v.183.1 changes:</code><br>⦁ edit token images directly from roll20 Token Editor<br>⦁ update Token Editor html (added Open Character button)<br></p>
 				</div>
 			`);
-			if (d20plus.ut.cmpVersions("1.35.6.48", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
+			if (d20plus.ut.cmpVersions("1.35.7.48", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
 			<div class="userscript-b20intro">
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
-					The testing was completed
-					<p style="font-size: 11px;line-height: 15px;color: rgb(32, 194, 14);">You can now switch back to release version</p>
+					New release detected
+					<p style="font-size: 11px;line-height: 15px;color: rgb(32, 194, 14);">Try switching back to release version</p>
 				</h1>
-				<p>It appears the current public version of betteR20 is newer then the version of this beta's origin.
-				It most probably means that the testing is over and the new features were successfully released.<br><br>
-				You can switch back to released script version in TamperMonkey. 
+				<p>The current public version of betteR20 is newer then the version of this beta's origin.
+				It sometimes means that the testing is over and the new features were successfully released.<br><br>
+				You can switch back to released script version in TamperMonkey or keep using this version. 
 				Check the <code>#testing</code> channel in Discord from time to time, if you want to participate in the future tests.</p>
 			</div>
 			`);
@@ -2559,7 +2559,7 @@ function baseConfig () {
 		if (showHints) hintStyle.html(d20plus.css.clickableConditionHints);
 		else hintStyle.html("");
 		const amOn = d20plus.cfg.getOrDefault("chat", "showTokenMenu") !== "none";
-		const amStyle = d20plus.ut.dynamicStyles("tracker");
+		const amStyle = d20plus.ut.dynamicStyles("actions");
 		if (amOn) amStyle.html(d20plus.css.actionMenu);
 		else amStyle.html("");
 		// properly align layer toolbar
@@ -9100,6 +9100,14 @@ function initHTMLTokenEditor () {
 						<h2>Dynamic Lighting</h2>
 					</a>
 				</li>
+				<!-- BEGIN MOD -->
+				<li class='nav-tabs--beta'>
+					<span class="label label-info">bR20</span>
+					<a class='go_to_image_editor' data-tab='image' href='javascript:void(0);'>
+						<h2>Edit Image</h2>
+					</a>
+				</li>
+				<!-- END MOD -->
 			</ul>
 			<div class='tab-content'>
 				<div class='basic tab-pane tokeneditor__details'>
@@ -9200,6 +9208,10 @@ function initHTMLTokenEditor () {
 							<div class='tokeneditor__row'>
 								<button class='btn btn-primary update_default_token'>Update Default Token</button>
 								<a class='showtip pictos' title='Copy a snapshot of this token’s image and settings as the default token for this character.'>?</a>
+							</div>
+							<div class='tokeneditor__row'>
+								<button class='btn btn-primary go_to_character'>Open Character Sheet</button>
+								<a class='showtip pictos' title='Open the character sheet linked to this token (alt + double click on token).'>?</a>
 							</div>
 							<$ } $>
 							<!-- Tint Color -->
@@ -9726,7 +9738,7 @@ function initHTMLTokenEditor () {
 				<!-- Dynamic Lighting -- Legacy lighting is under Advanced within this. -->
 				<div class='prototype tab-pane'>
 					<div class='alert alert-info' role='alert'>
-						<p><a href="https://help.roll20.net/hc/en-us/articles/360051754954-Token-Settings" target='' _blank''>Easily convert your legacy settings with the Convert Lighting tool </a></p>
+						<p><a href="https://help.roll20.net/hc/articles/360051754954-Token-Settings" target='' _blank''>Easily convert your legacy settings with the Convert Lighting tool </a></p>
 					</div>
 					<div class='token_vision'>
 						<p class='token_vision_title'>Token Vision</p>
@@ -10162,6 +10174,30 @@ function initHTMLTokenEditor () {
 							</div>
 						</div>
 					</div>
+				</div>
+				<div class='image tab-pane'>
+					<div class='modal-tokeneditor-header'>
+						<h3 class='d-inline'>Edit Token Image</h3>
+					</div>
+					<div class="modal-tokeneditor-body">
+						<div class='tokeneditor__row'>
+							<button class='btn btn-primary go_to_image_editor'>Load Image Editor</button>
+							<a class='showtip pictos' title='Load editor for image or multiple images stored in this token.'>?</a>
+						</div>
+					</div>
+					<style type="text/css">
+						.modal-tokeneditor-body .ui-dialog-titlebar {
+							display: none
+						}
+
+						.modal-tokeneditor-body .ui-dialog-buttonset {
+							display: none
+						}
+
+						.modal-tokeneditor-body h4 {
+							display: block
+						}
+					</style>
 				</div>
 			</div>
 		</div>
@@ -12404,7 +12440,24 @@ function d20plusEngine () {
 		}).on("click", ".pagedetails_navigation .nav-tabs--beta", () => {
 			d20plus.engine._populatePageCustomOptions();
 		}).on("click keyup", ".weather input, .weather .slider", () => {
-			d20plus.engine._updateCustomOptions();
+			d20plus.engine._updatePageCustomOptions();
+		}).on("click", ".go_to_image_editor", (evt) => {
+			const {currentTarget: target} = evt;
+			const $modal = $(target).closest(`[data-tokenid]`);
+			if (!$modal.find(".btn.go_to_image_editor").length) return;
+			const tokenId = $modal.data("tokenid");
+			const $tokenEdit = d20plus.menu.editToken(tokenId);
+			$modal.find(".modal-tokeneditor-body")
+				.empty()
+				.append($tokenEdit.parent("div").css({
+					display: "block",
+					position: "initial",
+					width: "auto",
+					"box-shadow": "none",
+				}).attr("style", (i, css) => css.replace("initial", "initial !important")));
+			$modal.parent("div")
+				.find(".ui-dialog-buttonset .btn-primary")
+				.on("mousedown", $tokenEdit.dialog("option", "buttons").save.click);
 		});
 	};
 
@@ -12494,17 +12547,17 @@ function d20plusEngine () {
 					$overlay.remove();
 				}
 				$saveBtn.before(templateApply);
-				$(`.btn-apply`).on("click", d20plus.engine.applySettings);
+				$(`.btn-apply`).on("click", d20plus.engine.applyPageSettings);
 			}
 			// process options within open dialog
 			if ($dialog[0]) {
 				const $pageTitle = $dialog.find(`.ui-dialog-title:visible`);
-				d20plus.engine._preserveCustomOptions(page);
-				d20plus.engine._populateCustomOptions(page, $dialog.find(`.dialog .tab-content`));
+				d20plus.engine._preservePageCustomOptions(page);
+				d20plus.engine._populatePageCustomOptions(page, $dialog.find(`.dialog .tab-content`));
 				if ($pageTitle[0] && !$(".ui-dialog-pagename:visible")[0]) {
 					$pageTitle.after(`<span class="ui-dialog-pagename">${page.get("name")}</span>`);
 					$saveBtn.off("click");
-					$saveBtn.on("click", d20plus.engine.applySettings);
+					$saveBtn.on("click", d20plus.engine.applyPageSettings);
 					// closed editors behave strangely, so replace Close with Cancel
 					$dialog.find(`.ui-dialog-titlebar-close:visible`).on("mousedown", () => {
 						$dialog.find(`.ui-dialog-buttonpane .btn:not(.btn-apply):not(.btn-primary)`).click();
@@ -12523,7 +12576,7 @@ function d20plusEngine () {
 		}
 	}
 
-	d20plus.engine.applySettings = (evt) => {
+	d20plus.engine.applyPageSettings = (evt) => {
 		evt.stopPropagation();
 		evt.preventDefault();
 		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
@@ -12536,8 +12589,8 @@ function d20plusEngine () {
 		const activeTabScroll = $dialog.find(`.ui-dialog-content`).scrollTop();
 		const $settings = $dialog.find(`.dialog .tab-content`);
 
-		d20plus.engine._saveCustomOptions(page);
-		d20plus.engine._saveNativeOptions(page, $settings);
+		d20plus.engine._savePageCustomOptions(page);
+		d20plus.engine._savePageNativeOptions(page, $settings);
 
 		page.save();
 
@@ -12548,7 +12601,7 @@ function d20plusEngine () {
 			// page.save resets current dialog, so we need to restore status quo
 			$(`.nav-tabs:visible [data-tab=${activeTab}]`).click();
 			$(`.ui-dialog-content:visible`).scrollTop(activeTabScroll);
-			d20plus.engine._populateCustomOptions();
+			d20plus.engine._populatePageCustomOptions();
 		}
 	}
 
@@ -12588,7 +12641,7 @@ function d20plusEngine () {
 		lightglobalillum: {class: ".lightglobalillum"},
 	};
 
-	d20plus.engine._saveNativeOptions = (page, dialog) => {
+	d20plus.engine._savePageNativeOptions = (page, dialog) => {
 		if (!page || !page.get) return;
 		const getSlider = (el) => {
 			if (el.style.left?.search("%") > 0) return el.style.left.slice(0, -1) / 100;
@@ -12613,23 +12666,23 @@ function d20plusEngine () {
 		});
 	}
 
-	d20plus.engine._preserveCustomOptions = (page) => {
+	d20plus.engine._preservePageCustomOptions = (page) => {
 		if (!page || !page.get) return;
-		d20plus.engine._customOptions = d20plus.engine._customOptions || {};
-		d20plus.engine._customOptions[page.id] = { _defaults: {} };
+		d20plus.engine._customPageOptions = d20plus.engine._customPageOptions || {};
+		d20plus.engine._customPageOptions[page.id] = { _defaults: {} };
 		[
 			"weather",
 		].forEach(category => Object.entries(d20plus[category].props).forEach(([name, deflt]) => {
-			d20plus.engine._customOptions[page.id][name] = page.get(`bR20cfg_${name}`) || deflt;
-			d20plus.engine._customOptions[page.id]._defaults[name] = deflt;
+			d20plus.engine._customPageOptions[page.id][name] = page.get(`bR20cfg_${name}`) || deflt;
+			d20plus.engine._customPageOptions[page.id]._defaults[name] = deflt;
 		}));
 	}
 
 	d20plus.engine._populatePageCustomOptions = (page, dialog) => {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
-		if (!d20plus.engine._customOptions[page.id]) return;
-		Object.entries(d20plus.engine._customOptions[page.id]).forEach(([name, val]) => {
+		if (!d20plus.engine._customPageOptions[page.id]) return;
+		Object.entries(d20plus.engine._customPageOptions[page.id]).forEach(([name, val]) => {
 			dialog.find(`[name="${name}"]`).each((i, e) => {
 				const $e = $(e);
 				if ($e.is(":checkbox")) {
@@ -12643,24 +12696,24 @@ function d20plusEngine () {
 			});
 		});
 		// ensure all Select elements will update options on change
-		$(".weather select").each((a, b) => { b.onchange = () => d20plus.engine._updateCustomOptions() });
+		$(".weather select").each((a, b) => { b.onchange = () => d20plus.engine._updatePageCustomOptions() });
 	}
 
-	d20plus.engine._updateCustomOptions = (page, dialog) => {
+	d20plus.engine._updatePageCustomOptions = (page, dialog) => {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
-		if (!d20plus.engine._customOptions[page.id]) return;
-		Object.entries(d20plus.engine._customOptions[page.id]).forEach(([name, val]) => {
+		if (!d20plus.engine._customPageOptions[page.id]) return;
+		Object.entries(d20plus.engine._customPageOptions[page.id]).forEach(([name, val]) => {
 			dialog.find(`[name="${name}"]`).each((i, e) => {
 				const $e = $(e);
 				const val = $e.is(":checkbox") ? !!$e.prop("checked") : $e.val();
-				d20plus.engine._customOptions[page.id][name] = val;
+				d20plus.engine._customPageOptions[page.id][name] = val;
 			});
 		});
 	}
 
-	d20plus.engine._saveCustomOptions = (page) => {
-		const values = d20plus.engine._customOptions[page.id];
+	d20plus.engine._savePageCustomOptions = (page) => {
+		const values = d20plus.engine._customPageOptions[page.id];
 		Object.entries(values).forEach(([name, val]) => {
 			if (name === "_defaults") return;
 			if (val && val !== values._defaults[name]) {
@@ -13753,7 +13806,7 @@ function baseMenu () {
 							d20plus.engine.backwardOneLayer(n);
 							i();
 						} else if ("edittokenimages" === e) {
-							editToken();
+							d20plus.menu.editToken();
 							i();
 						} else if ("copy-tokenid" === e) {
 							const sel = d20.engine.selected();
@@ -14000,15 +14053,37 @@ function baseMenu () {
 			return imgsrc;
 		}
 
-		function editToken () {
-			const selection = d20.engine.selected().filter(t => t.type === "image");
+		function tokenEditorTexts (selection) {
+			const name = selection.length > 1 ? "You are editing multiple tokens" : selection[0].model?.attributes?.name || "Unnamed token";
+			const description = selection.length > 1 ? `
+				If you press "Save", the changes will be applied to each of the selected tokens, making them multi-sided if you have multiple images on the list below
+			` : selection[0].model.attributes.sides ? `
+				You are currently editing images for multi-sided token. Add or remove as many sides as you want. If only one image remains, the token will become a single-sided one
+			` : `
+				Currently this token is represented by a single image. Add more images to convert it to multi-sided token
+			`;
+			const tokenList = selection.length <= 1 ? "" : selection.reduce((r, t) => `${r}
+				<div class="tokenbox selected" data-tokenid="${t.model.id}" data-tokenimg="${t.model.attributes.imgsrc}">
+					<div class="inner">
+						<img src="${t.model.attributes.imgsrc}">
+						<div class="name">${t.model.attributes.name}</div>
+					</div>
+				</div>
+			`, "");
+			return {name, description, tokenList};
+		}
+
+		d20plus.menu.editToken = (tokenId) => {
+			const selection = tokenId
+				? d20.engine.canvas._objects.filter(t => t.model.id === tokenId)
+				: d20.engine.selected().filter(t => t.type === "image");
 			if (!selection.length) return;
 			const images = [];
 			const added = [];
 			const $dialog = $(d20plus.html.tokenImageEditor);
 			const $list = $dialog.find(".tokenimagelist tbody");
 			const $tokenList = $dialog.find(".tokenlist");
-			const sizes = [["tiny", "0.5"], ["small", "1.0"], ["medium", "1"], ["large", "2"], ["huge", "3"], ["gargantuan", "4"], ["colossal", "5"], ["custom", "0"]];
+			const sizes = [["tiny - half square", "0.5"], ["small - 1x1", "1.0"], ["medium - 1x1", "1"], ["large - 2x2", "2"], ["huge - 3x3", "3"], ["gargantuan - 4x4", "4"], ["colossal - 5x5", "5"], ["custom", "0"]];
 			const findStandardSize = (w, h) => {
 				return (w === h && sizes.find(s => s[1] === `${w / 70}`)?.last()) || "0";
 			}
@@ -14055,22 +14130,7 @@ function baseMenu () {
 			if ($list.variedSizes) {
 				images.forEach(i => { if (i.size === undefined) i.size = findStandardSize(i.w, i.h); });
 			}
-			const name = selection.length > 1 ? "You are editing multiple tokens" : selection[0].model?.attributes?.name || "Unnamed token";
-			const description = selection.length > 1 ? `
-				If you press "Save", the changes will be applied to each of the selected tokens, making them multi-sided if you have multiple images on the list below
-			` : selection[0].model.attributes.sides ? `
-				You are currently editing images for multi-sided token. Add or remove as many sides as you want. If only one image remains, the token will become a single-sided one
-			` : `
-				Currently this token is represented by a single image. Add more images to convert it to multi-sided token
-			`;
-			const tokenList = selection.length <= 1 ? "" : selection.reduce((r, t) => `${r}
-				<div class="tokenbox selected" data-tokenid="${t.model.id}" data-tokenimg="${t.model.attributes.imgsrc}">
-					<div class="inner">
-						<img src="${t.model.attributes.imgsrc}">
-						<div class="name">${t.model.attributes.name}</div>
-					</div>
-				</div>
-			`, "");
+			const htmls = tokenEditorTexts(selection);
 			const resetTokens = () => {
 				$tokenList.find(".selected").each((k, t) => {
 					const $token = $(t);
@@ -14118,10 +14178,10 @@ function baseMenu () {
 				width: 450,
 				open: () => {
 					buildList();
-					$tokenList.html(tokenList);
+					$tokenList.html(htmls.tokenList);
 					$dialog.parent().css("maxHeight", "80vh").css("top", "10vh");
-					$dialog.find(".edittitle").text(name);
-					$dialog.find(".editlabel").text(description);
+					$dialog.find(".edittitle").text(htmls.name);
+					$dialog.find(".editlabel").text(htmls.description);
 					$list.droppable({
 						greedy: true,
 						tolerance: "pointer",
@@ -14263,50 +14323,57 @@ function baseMenu () {
 					$dialog.dialog("destroy").remove();
 				},
 				buttons: {
-					"Save changes": () => {
-						const save = {};
-						if (images.length > 1) {
-							save.sides = images.map(i => {
-								const skipped = i.skip ? tagSkip : "";
-								const size = i.size ? tagSize + (i.size === "0" ? `${i.w}x${i.h}` : i.size) : "";
-								return escape(i.url + skipped + size);
-							}).join("|");
-						} else {
-							save.sides = "";
-						}
-						if ($list.someImageSelected) {
-							const selected = images.find(i => i.selected);
-							if (selected) {
-								save.imgsrc = selected.url;
-								save.currentSide = selected.id;
-								if (selected.size === "0") {
-									save.width = Number(selected.w);
-									save.height = Number(selected.h);
-								} else if (selected.size) {
-									save.width = selected.size * 70;
-									save.height = selected.size * 70;
+					save: {
+						text: "Save changes",
+						click: () => {
+							const save = {};
+							if (images.length > 1) {
+								save.sides = images.map(i => {
+									const skipped = i.skip ? tagSkip : "";
+									const size = i.size ? tagSize + (i.size === "0" ? `${i.w}x${i.h}` : i.size) : "";
+									return escape(i.url + skipped + size);
+								}).join("|");
+							} else {
+								save.sides = "";
+							}
+							if ($list.someImageSelected) {
+								const selected = images.find(i => i.selected);
+								if (selected) {
+									save.imgsrc = selected.url;
+									save.currentSide = selected.id;
+									if (selected.size === "0") {
+										save.width = Number(selected.w);
+										save.height = Number(selected.h);
+									} else if (selected.size) {
+										save.width = selected.size * 70;
+										save.height = selected.size * 70;
+									}
 								}
 							}
-						}
-						if (selection.length > 1) {
-							d20.engine.unselect();
-						}
-						selection.forEach(t => {
-							if (selection.length === 1
-								|| $tokenList.find(`[data-tokenid=${t.model.id}]`).hasClass("selected")) {
-								t.model.save(save);
+							if (selection.length > 1) {
+								d20.engine.unselect();
 							}
-						});
-						$dialog.off();
-						$dialog.dialog("destroy").remove();
-						d20.textchat.$textarea.focus();
+							selection.forEach(t => {
+								if (selection.length === 1
+									|| $tokenList.find(`[data-tokenid=${t.model.id}]`).hasClass("selected")) {
+									t.model.save(save);
+								}
+							});
+							$dialog.off();
+							$dialog.dialog("destroy").remove();
+							d20.textchat.$textarea.focus();
+						},
 					},
-					"Cancel": () => {
-						$dialog.off();
-						$dialog.dialog("destroy").remove();
+					cancel: {
+						text: "Cancel",
+						click: () => {
+							$dialog.off();
+							$dialog.dialog("destroy").remove();
+						},
 					},
 				},
 			});
+			return $dialog;
 		}
 
 		d20.token_editor.showContextMenu = r;
