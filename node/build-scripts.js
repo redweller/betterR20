@@ -2,7 +2,7 @@ const fs = require("fs");
 const beautify_html = require("js-beautify").html;
 const lzstring = require("./lz-string");
 
-const SCRIPT_VERSION = "1.35.7.48";
+const SCRIPT_VERSION = "1.35.7.49";
 const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/";
 
 const SCRIPT_BETA = "1.35.183.1";
@@ -235,6 +235,7 @@ const SCRIPTS = {
 			"base-tool-module",
 			"base-tool-unlock",
 			"base-tool-animator",
+			"base-tool-dlimport",
 			"base-art",
 			"base-art-browse",
 			"overwrites/base",
@@ -282,6 +283,7 @@ const SCRIPTS = {
 			"base-tool-unlock",
 			"base-tool-animator",
 			"base-tool-table",
+			"base-tool-dlimport",
 			"base-art",
 			"base-art-browse",
 			"overwrites/base",
