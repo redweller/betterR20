@@ -163,7 +163,24 @@ function baseBARollTemplates () {
 	}
 
 	const buildDescriptionTemplate = (v) => {
-		void 0;
+		const tmplModel = [
+			{tag: `name`,	val: v.title},
+			{tag: `source`,	val: [
+				{val: v.charName},
+				{val: v.subTitle},
+			]},
+			{tag: `description`, val: v.description, css: `display:block; overflow-y:auto; max-height:250px`},
+		].map(getTemplateVar).filter(s => !!s).join("}} {{");
+		return `&{template:traits} {{${tmplModel}}}`;
+	}
+
+	const getDescriptionTemplate = (token, id, type) => {
+		const char = d20plus.ba.getSingleChar(token);
+		const cat = char[type] || [];
+		const obj = cat[id];
+		if (!obj) return;
+		if (type === "spells") d20.textchat.doChatInput(`&{template:traits} {{name=${obj.spellname}}} {{source=${obj.spellschool || ""}}} {{description=${obj.spelldescription}}}`);
+		else if (type === "attacks") d20.textchat.doChatInput(`&{template:traits} {{name=${obj.atkname}}} {{source=${obj.spellschool || ""}}} {{description=${obj.atkdamagetype || ""}}}`);
 	}
 	/* eslint-enable object-property-newline */
 
@@ -223,16 +240,7 @@ function baseBARollTemplates () {
 		return `${base}${sign}${mods}`;
 	}
 
-	const getDescriptionTemplate = (token, id, type) => {
-		const char = d20plus.ba.getSingleChar(token);
-		const cat = char[type] || [];
-		const obj = cat[id];
-		if (!obj) return;
-		if (type === "spells") d20.textchat.doChatInput(`&{template:traits} {{name=${obj.spellname}}} {{source=${obj.spellschool || ""}}} {{description=${obj.spelldescription}}}`);
-		else if (type === "attacks") d20.textchat.doChatInput(`&{template:traits} {{name=${obj.atkname}}} {{source=${obj.spellschool || ""}}} {{description=${obj.atkdamagetype || ""}}}`);
-	}
-
-	const getAbilityTemplate = (spec, attr, dc) => {
+	const getAbilityVals = (spec, attr, dc) => {
 		const char = d20plus.ba.getSingleChar();
 		if (!dc) [attr, dc] = (attr).split("|");
 
@@ -332,7 +340,7 @@ function baseBARollTemplates () {
 		return d20plus.ba.templateModel("ability", tmplVars);
 	};
 
-	const getAttackTemplate = (id, flags) => {
+	const getAttackVals = (id, flags) => {
 		const char = d20plus.ba.getSingleChar();
 		const atk = char?.attacks[id];
 		const ammo = atk.ammo;
@@ -362,6 +370,8 @@ function baseBARollTemplates () {
 			subTitle: [atk._getVar("range")?.replace(/\[\w\]/g, "").replaceAll("]", "&#93;"), i18n(atk.attack_type?.toLowerCase(), "")]
 				.reduce((t, v) => v && (!t || `${t}, ${v}`.length < 27) ? `${t}${v && t ? ", " : ""}${v}` : t, ""),
 			charName: char.name.tk,
+			description: atk.description,
+
 			dmg2on: atk._getVar("hasdamage2"),
 			dmg1tag:	atk._getVar("damagetype")?.includes("Healing") ? "heal" : "dmg",
 			dmg2tag:	atk._getVar("damagetype2")?.includes("Healing") ? "heal" : "dmg",
@@ -380,7 +390,7 @@ function baseBARollTemplates () {
 		return tmplVals;
 	}
 
-	const getSpellTemplate = (id, flags) => {
+	const getSpellVals = (id, flags) => {
 		const expendCfg = d20plus.cfg.getOrDefault("chat", "autoExpend");
 		const char = d20plus.ba.getSingleChar();
 		const [lvl, upcast] = String(flags).split("|");
@@ -437,6 +447,7 @@ function baseBARollTemplates () {
 			crit2roll:	spell.spelldamage2,
 			atk1: buildRollModel(atkRoll),
 			atkMod:	buildDisplayMod(atkRoll),
+			description: spell.spelldescription,
 
 			dc: spell.spell_ability !== "spell"
 				? buildDisplayMod({mods: [[8], [char.stats.spell_dc_mod], [char.stats[`${spellAbility}_mod`]], [char.stats.pb]]})
@@ -480,7 +491,7 @@ function baseBARollTemplates () {
 			if (vals._save) {
 				d20plus.ba.currentToken = target._model;
 				d20plus.ba.singleSelected = target._model;
-				outputTemplate(getAbilityTemplate("save", vals._save, vals.dc));
+				outputTemplate(getAbilityVals("save", vals._save, vals.dc));
 			}
 
 			vals.targetId = target._model.id;
@@ -519,9 +530,9 @@ function baseBARollTemplates () {
 
 	d20plus.ba.makeRoll = (action, spec, flags) => {
 		const getTmplVals = {
-			roll: getAbilityTemplate,
-			attack: getAttackTemplate,
-			cast: getSpellTemplate,
+			roll: getAbilityVals,
+			attack: getAttackVals,
+			cast: getSpellVals,
 		}[action];
 
 		const tmplVals = getTmplVals && getTmplVals(spec, flags);
@@ -529,6 +540,18 @@ function baseBARollTemplates () {
 		else if (flags === "concentration") d20plus.ba.getConcentrationDC(tmplVals);
 		else if (tmplVals._targeted) d20plus.ba.getTarget(tmplVals);
 		else outputTemplate(tmplVals);
+	}
+
+	d20plus.ba.makeInfo = (action, spec, flags) => {
+		const getTmplVals = {
+			spell: getSpellVals,
+			attack: getAttackVals,
+		}[action];
+
+		const tmplVals = getTmplVals && getTmplVals(spec, flags);
+		if (!tmplVals) return d20plus.ba.rollError();
+		tmplVals._modelType = "description";
+		outputTemplate(tmplVals);
 	}
 }
 

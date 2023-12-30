@@ -521,8 +521,8 @@ function baseBetterActions () {
 	const getActions = (action, token, spec, flags) => {
 		if (action === "animation") {
 			d20plus.anim.animator.startAnimation(token, spec);
-		} else if (action === "description") {
-			getDescriptionTemplate(token, spec, "attacks");
+		} else if (["spelldescription", "attackdescription"].includes(action)) {
+			d20plus.ba.makeInfo(action === "spelldescription" ? "spell" : "attack", spec);
 		} else {
 			d20plus.ba.makeRoll(action, spec, flags);
 		}

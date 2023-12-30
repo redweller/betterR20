@@ -1699,6 +1699,10 @@ function baseCss () {
 		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li > span {
 			display: inline-block;
 		}
+		/* Widen traits template for spell descriptions (not necessary) */
+		.sheet-rolltemplate-traits {
+			width:90%;
+		}
 	`;
 
 	d20plus.css.deserifyDarkmode = `
