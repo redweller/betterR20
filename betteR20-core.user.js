@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.7.49
+// @version      1.35.7.50
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -775,9 +775,10 @@ function baseUtil () {
 		} else {
 			d20plus.ut.showHardDickMessage(scriptName);
 		}
-		d20plus.isOptedInNewUI && !isStreamer && d20plus.ut.sendHackerChat(`
-			betteR20 does not support the new UI preview at this moment!
-			Using it will make some betteR20 functionality unavailable.
+		d20plus.betaFeaturesEnabled && !isStreamer && d20plus.ut.sendHackerChat(`
+			betteR20 does not support the beta UI preview at this moment!
+			Using it will make some betteR20 or roll20 functionality unavailable.
+			If you experience problems with Page Settings, disable roll20 Beta Features.
 		`);
 		$boringProgress
 			.before(`<span><span>&gt;</span>all systems operational</span>`)
@@ -8887,7 +8888,7 @@ function baseToolDLImport () {
 
 	d20plus.tool.tools.push({
 		toolId: "DLIMPORT",
-		name: "UNiversal DL Importer",
+		name: "Universal DL Importer",
 		desc: "Import map data from DungeonDraft and Dungeon Alchemist",
 		html: ``,
 		dialogFn: () => {},
@@ -13854,8 +13855,8 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.swapTemplates = () => {
-		const oldToolbar = document.getElementById("floatingtoolbar");
-		d20plus.isOptedInNewUI = !oldToolbar;
+		const $betaSwitch = $("#new-toolbar-toggle");
+		d20plus.betaFeaturesEnabled = $betaSwitch.prop("checked");
 
 		document.dispatchEvent(new Event(`b20initTemplates`));
 		d20plus.ut.log("Swapping templates...");
@@ -13930,7 +13931,8 @@ function d20plusEngine () {
 			}).addTouch();
 		}
 
-		if (!d20plus.isOptedInNewUI) {
+		if (!d20plus.betaFeaturesEnabled) { // Jan 2024 beta features include the new Page Toolbar
+			// this should be executed only for the old Page Toolbar
 			overwriteDraggables();
 			$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
 
@@ -13948,7 +13950,7 @@ function d20plusEngine () {
 				debouncedOverwrite();
 			}
 		} else {
-			$(`#page-toolbar`).hide();
+			$(`#page-toolbar`).hide(); // hide the old Page Toolbar that pops with b20 styling
 		}
 
 		$(`body`).on("mouseup", "li.dl", (evt) => {
@@ -14955,7 +14957,7 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.fixPolygonTool = () => {
-		if (d20plus.isOptedInNewUI) return;
+		if (!d20plus.newUIDisabled) return; // as of January 2024 newUI is always ON, so the below block is not needed
 		$("#editor-wrapper").on("pointerdown", x => { d20plus.engine.leftClicked = x.which === 1 });
 		$("#editor-wrapper").on("pointerup", x => { d20plus.engine.leftClicked = false });
 		d20plus.ut.injectCode(d20.engine, "finishCurrentPolygon", (finishDrawing, params) => {
@@ -27054,7 +27056,7 @@ function baseBARollTemplates () {
 
 	const switchTargeting = (mode) => {
 		const on = mode === "on";
-		d20.engine.mode	= on ? "targeting" : "select";
+		d20plus.mod.setMode(on ? "targeting" : "select");
 		d20.engine.canvas.hoverCursor = on ? "crosshair" : "move";
 		d20plus.ba.$dom.r20targetingNote[on ? "show" : "hide"]();
 		$("#babylonCanvas")[on ? "addClass" : "removeClass"]("targeting");
