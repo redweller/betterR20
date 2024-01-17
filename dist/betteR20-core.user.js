@@ -2,7 +2,7 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.183.1
+// @version      1.35.184.2
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -227,9 +227,10 @@ function baseUtil () {
 		} else {
 			d20plus.ut.showHardDickMessage(scriptName);
 		}
-		d20plus.isOptedInNewUI && !isStreamer && d20plus.ut.sendHackerChat(`
-			betteR20 does not support the new UI preview at this moment!
-			Using it will make some betteR20 functionality unavailable.
+		d20plus.betaFeaturesEnabled && !isStreamer && d20plus.ut.sendHackerChat(`
+			betteR20 does not support the beta UI preview at this moment!
+			Using it will make some betteR20 or roll20 functionality unavailable.
+			If you experience problems with Page Settings, disable roll20 Beta Features.
 		`);
 		$boringProgress
 			.before(`<span><span>&gt;</span>all systems operational</span>`)
@@ -252,10 +253,10 @@ function baseUtil () {
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- Beta features overview:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br><strong>Better token Actions & Automation</strong><br>⦁ new automatic token action buttons: Rolls, Stats and Animation<br>⦁ rolls lets you select available actions with custom roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots and items are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>The system is still in an unfinished state, so use with caution!<br><strong>Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ a better Random Side randomizer (gives seemingly more random results)<br><code>-- v.183.1 changes:</code><br>⦁ edit token images directly from roll20 Token Editor<br>⦁ update Token Editor html (added Open Character button)<br></p>
+					<p>This version contains following changes<br><code>-- Beta features overview:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br><strong>Better token Actions & Automation</strong><br>⦁ new automatic token action buttons: Rolls, Stats and Animation<br>⦁ rolls lets you select available actions with custom roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots and items are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>The system is still in an unfinished state, so use with caution!<br><strong>Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ a better Random Side randomizer (gives seemingly more random results)<br><code>-- v.184.1 changes:</code><br>⦁ edit token images directly from roll20 Token Editor<br>⦁ update Token Editor html (added Open Character button)<br><code>-- v.184.2 changes:</code><br>⦁ fix sending descriptions to chat via "book" icon<br>⦁ fix Better Actions targeting with the NewUI<br>⦁ fix Page Toolbar malfunctioning with the NewUI<br></p>
 				</div>
 			`);
-			if (d20plus.ut.cmpVersions("1.35.7.48", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
+			if (d20plus.ut.cmpVersions("1.35.7.51", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
 			<div class="userscript-b20intro">
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					New release detected
@@ -12322,8 +12323,8 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.swapTemplates = () => {
-		const oldToolbar = document.getElementById("floatingtoolbar");
-		d20plus.isOptedInNewUI = !oldToolbar;
+		const $betaSwitch = $("#new-toolbar-toggle");
+		d20plus.betaFeaturesEnabled = $betaSwitch.prop("checked");
 
 		d20plus.ut.log("Swapping templates...");
 		$("#tmpl_charactereditor").html($(d20plus.html.characterEditor).html());
@@ -12396,7 +12397,8 @@ function d20plusEngine () {
 			}).addTouch();
 		}
 
-		if (!d20plus.isOptedInNewUI) {
+		if (!d20plus.betaFeaturesEnabled) { // Jan 2024 beta features include the new Page Toolbar
+			// this should be executed only for the old Page Toolbar
 			overwriteDraggables();
 			$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
 
@@ -12414,7 +12416,7 @@ function d20plusEngine () {
 				debouncedOverwrite();
 			}
 		} else {
-			$(`#page-toolbar`).hide();
+			$(`#page-toolbar`).hide(); // hide the old Page Toolbar that pops with b20 styling
 		}
 
 		$(`body`).on("mouseup", "li.dl", (evt) => {
@@ -13191,7 +13193,7 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.fixPolygonTool = () => {
-		if (d20plus.isOptedInNewUI) return;
+		if (!d20plus.newUIDisabled) return; // as of January 2024 newUI is always ON, so the below block is not needed
 		$("#editor-wrapper").on("pointerdown", x => { d20plus.engine.leftClicked = x.which === 1 });
 		$("#editor-wrapper").on("pointerup", x => { d20plus.engine.leftClicked = false });
 		d20plus.ut.injectCode(d20.engine, "finishCurrentPolygon", (finishDrawing, params) => {
@@ -23224,7 +23226,24 @@ function baseBARollTemplates () {
 	}
 
 	const buildDescriptionTemplate = (v) => {
-		void 0;
+		const tmplModel = [
+			{tag: `name`,	val: v.title},
+			{tag: `source`,	val: [
+				{val: v.charName},
+				{val: v.subTitle},
+			]},
+			{tag: `description`, val: v.description, css: `display:block; overflow-y:auto; max-height:250px`},
+		].map(getTemplateVar).filter(s => !!s).join("}} {{");
+		return `&{template:traits} {{${tmplModel}}}`;
+	}
+
+	const getDescriptionTemplate = (token, id, type) => {
+		const char = d20plus.ba.getSingleChar(token);
+		const cat = char[type] || [];
+		const obj = cat[id];
+		if (!obj) return;
+		if (type === "spells") d20.textchat.doChatInput(`&{template:traits} {{name=${obj.spellname}}} {{source=${obj.spellschool || ""}}} {{description=${obj.spelldescription}}}`);
+		else if (type === "attacks") d20.textchat.doChatInput(`&{template:traits} {{name=${obj.atkname}}} {{source=${obj.spellschool || ""}}} {{description=${obj.atkdamagetype || ""}}}`);
 	}
 	/* eslint-enable object-property-newline */
 
@@ -23284,16 +23303,7 @@ function baseBARollTemplates () {
 		return `${base}${sign}${mods}`;
 	}
 
-	const getDescriptionTemplate = (token, id, type) => {
-		const char = d20plus.ba.getSingleChar(token);
-		const cat = char[type] || [];
-		const obj = cat[id];
-		if (!obj) return;
-		if (type === "spells") d20.textchat.doChatInput(`&{template:traits} {{name=${obj.spellname}}} {{source=${obj.spellschool || ""}}} {{description=${obj.spelldescription}}}`);
-		else if (type === "attacks") d20.textchat.doChatInput(`&{template:traits} {{name=${obj.atkname}}} {{source=${obj.spellschool || ""}}} {{description=${obj.atkdamagetype || ""}}}`);
-	}
-
-	const getAbilityTemplate = (spec, attr, dc) => {
+	const getAbilityVals = (spec, attr, dc) => {
 		const char = d20plus.ba.getSingleChar();
 		if (!dc) [attr, dc] = (attr).split("|");
 
@@ -23393,7 +23403,7 @@ function baseBARollTemplates () {
 		return d20plus.ba.templateModel("ability", tmplVars);
 	};
 
-	const getAttackTemplate = (id, flags) => {
+	const getAttackVals = (id, flags) => {
 		const char = d20plus.ba.getSingleChar();
 		const atk = char?.attacks[id];
 		const ammo = atk.ammo;
@@ -23423,6 +23433,8 @@ function baseBARollTemplates () {
 			subTitle: [atk._getVar("range")?.replace(/\[\w\]/g, "").replaceAll("]", "&#93;"), i18n(atk.attack_type?.toLowerCase(), "")]
 				.reduce((t, v) => v && (!t || `${t}, ${v}`.length < 27) ? `${t}${v && t ? ", " : ""}${v}` : t, ""),
 			charName: char.name.tk,
+			description: atk.description,
+
 			dmg2on: atk._getVar("hasdamage2"),
 			dmg1tag:	atk._getVar("damagetype")?.includes("Healing") ? "heal" : "dmg",
 			dmg2tag:	atk._getVar("damagetype2")?.includes("Healing") ? "heal" : "dmg",
@@ -23441,7 +23453,7 @@ function baseBARollTemplates () {
 		return tmplVals;
 	}
 
-	const getSpellTemplate = (id, flags) => {
+	const getSpellVals = (id, flags) => {
 		const expendCfg = d20plus.cfg.getOrDefault("chat", "autoExpend");
 		const char = d20plus.ba.getSingleChar();
 		const [lvl, upcast] = String(flags).split("|");
@@ -23498,6 +23510,7 @@ function baseBARollTemplates () {
 			crit2roll:	spell.spelldamage2,
 			atk1: buildRollModel(atkRoll),
 			atkMod:	buildDisplayMod(atkRoll),
+			description: spell.spelldescription,
 
 			dc: spell.spell_ability !== "spell"
 				? buildDisplayMod({mods: [[8], [char.stats.spell_dc_mod], [char.stats[`${spellAbility}_mod`]], [char.stats.pb]]})
@@ -23512,7 +23525,7 @@ function baseBARollTemplates () {
 
 	const switchTargeting = (mode) => {
 		const on = mode === "on";
-		d20.engine.mode	= on ? "targeting" : "select";
+		d20plus.mod.setMode(on ? "targeting" : "select");
 		d20.engine.canvas.hoverCursor = on ? "crosshair" : "move";
 		d20plus.ba.$dom.r20targetingNote[on ? "show" : "hide"]();
 		$("#babylonCanvas")[on ? "addClass" : "removeClass"]("targeting");
@@ -23541,7 +23554,7 @@ function baseBARollTemplates () {
 			if (vals._save) {
 				d20plus.ba.currentToken = target._model;
 				d20plus.ba.singleSelected = target._model;
-				outputTemplate(getAbilityTemplate("save", vals._save, vals.dc));
+				outputTemplate(getAbilityVals("save", vals._save, vals.dc));
 			}
 
 			vals.targetId = target._model.id;
@@ -23580,9 +23593,9 @@ function baseBARollTemplates () {
 
 	d20plus.ba.makeRoll = (action, spec, flags) => {
 		const getTmplVals = {
-			roll: getAbilityTemplate,
-			attack: getAttackTemplate,
-			cast: getSpellTemplate,
+			roll: getAbilityVals,
+			attack: getAttackVals,
+			cast: getSpellVals,
 		}[action];
 
 		const tmplVals = getTmplVals && getTmplVals(spec, flags);
@@ -23590,6 +23603,18 @@ function baseBARollTemplates () {
 		else if (flags === "concentration") d20plus.ba.getConcentrationDC(tmplVals);
 		else if (tmplVals._targeted) d20plus.ba.getTarget(tmplVals);
 		else outputTemplate(tmplVals);
+	}
+
+	d20plus.ba.makeInfo = (action, spec, flags) => {
+		const getTmplVals = {
+			spell: getSpellVals,
+			attack: getAttackVals,
+		}[action];
+
+		const tmplVals = getTmplVals && getTmplVals(spec, flags);
+		if (!tmplVals) return d20plus.ba.rollError();
+		tmplVals._modelType = "description";
+		outputTemplate(tmplVals);
 	}
 }
 
@@ -24119,8 +24144,8 @@ function baseBetterActions () {
 	const getActions = (action, token, spec, flags) => {
 		if (action === "animation") {
 			d20plus.anim.animator.startAnimation(token, spec);
-		} else if (action === "description") {
-			getDescriptionTemplate(token, spec, "attacks");
+		} else if (["spelldescription", "attackdescription"].includes(action)) {
+			d20plus.ba.makeInfo(action === "spelldescription" ? "spell" : "attack", spec);
 		} else {
 			d20plus.ba.makeRoll(action, spec, flags);
 		}
