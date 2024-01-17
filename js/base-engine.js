@@ -244,7 +244,7 @@ function d20plusEngine () {
 		}).on("click", ".pagedetails_navigation .nav-tabs--beta", () => {
 			d20plus.engine._populatePageCustomOptions();
 		}).on("click keyup", ".weather input, .weather .slider", () => {
-			d20plus.engine._updateCustomOptions();
+			d20plus.engine._updatePageCustomOptions();
 		});
 	};
 
@@ -334,17 +334,17 @@ function d20plusEngine () {
 					$overlay.remove();
 				}
 				$saveBtn.before(templateApply);
-				$(`.btn-apply`).on("click", d20plus.engine.applySettings);
+				$(`.btn-apply`).on("click", d20plus.engine.applyPageSettings);
 			}
 			// process options within open dialog
 			if ($dialog[0]) {
 				const $pageTitle = $dialog.find(`.ui-dialog-title:visible`);
-				d20plus.engine._preserveCustomOptions(page);
-				d20plus.engine._populateCustomOptions(page, $dialog.find(`.dialog .tab-content`));
+				d20plus.engine._preservePageCustomOptions(page);
+				d20plus.engine._populatePageCustomOptions(page, $dialog.find(`.dialog .tab-content`));
 				if ($pageTitle[0] && !$(".ui-dialog-pagename:visible")[0]) {
 					$pageTitle.after(`<span class="ui-dialog-pagename">${page.get("name")}</span>`);
 					$saveBtn.off("click");
-					$saveBtn.on("click", d20plus.engine.applySettings);
+					$saveBtn.on("click", d20plus.engine.applyPageSettings);
 					// closed editors behave strangely, so replace Close with Cancel
 					$dialog.find(`.ui-dialog-titlebar-close:visible`).on("mousedown", () => {
 						$dialog.find(`.ui-dialog-buttonpane .btn:not(.btn-apply):not(.btn-primary)`).click();
@@ -363,7 +363,7 @@ function d20plusEngine () {
 		}
 	}
 
-	d20plus.engine.applySettings = (evt) => {
+	d20plus.engine.applyPageSettings = (evt) => {
 		evt.stopPropagation();
 		evt.preventDefault();
 		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
@@ -376,8 +376,8 @@ function d20plusEngine () {
 		const activeTabScroll = $dialog.find(`.ui-dialog-content`).scrollTop();
 		const $settings = $dialog.find(`.dialog .tab-content`);
 
-		d20plus.engine._saveCustomOptions(page);
-		d20plus.engine._saveNativeOptions(page, $settings);
+		d20plus.engine._savePageCustomOptions(page);
+		d20plus.engine._savePageNativeOptions(page, $settings);
 
 		page.save();
 
@@ -388,7 +388,7 @@ function d20plusEngine () {
 			// page.save resets current dialog, so we need to restore status quo
 			$(`.nav-tabs:visible [data-tab=${activeTab}]`).click();
 			$(`.ui-dialog-content:visible`).scrollTop(activeTabScroll);
-			d20plus.engine._populateCustomOptions();
+			d20plus.engine._populatePageCustomOptions();
 		}
 	}
 
@@ -428,7 +428,7 @@ function d20plusEngine () {
 		lightglobalillum: {class: ".lightglobalillum"},
 	};
 
-	d20plus.engine._saveNativeOptions = (page, dialog) => {
+	d20plus.engine._savePageNativeOptions = (page, dialog) => {
 		if (!page || !page.get) return;
 		const getSlider = (el) => {
 			if (el.style.left?.search("%") > 0) return el.style.left.slice(0, -1) / 100;
@@ -453,23 +453,23 @@ function d20plusEngine () {
 		});
 	}
 
-	d20plus.engine._preserveCustomOptions = (page) => {
+	d20plus.engine._preservePageCustomOptions = (page) => {
 		if (!page || !page.get) return;
-		d20plus.engine._customOptions = d20plus.engine._customOptions || {};
-		d20plus.engine._customOptions[page.id] = { _defaults: {} };
+		d20plus.engine._customPageOptions = d20plus.engine._customPageOptions || {};
+		d20plus.engine._customPageOptions[page.id] = { _defaults: {} };
 		[
 			"weather",
 		].forEach(category => Object.entries(d20plus[category].props).forEach(([name, deflt]) => {
-			d20plus.engine._customOptions[page.id][name] = page.get(`bR20cfg_${name}`) || deflt;
-			d20plus.engine._customOptions[page.id]._defaults[name] = deflt;
+			d20plus.engine._customPageOptions[page.id][name] = page.get(`bR20cfg_${name}`) || deflt;
+			d20plus.engine._customPageOptions[page.id]._defaults[name] = deflt;
 		}));
 	}
 
 	d20plus.engine._populatePageCustomOptions = (page, dialog) => {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
-		if (!d20plus.engine._customOptions[page.id]) return;
-		Object.entries(d20plus.engine._customOptions[page.id]).forEach(([name, val]) => {
+		if (!d20plus.engine._customPageOptions[page.id]) return;
+		Object.entries(d20plus.engine._customPageOptions[page.id]).forEach(([name, val]) => {
 			dialog.find(`[name="${name}"]`).each((i, e) => {
 				const $e = $(e);
 				if ($e.is(":checkbox")) {
@@ -483,24 +483,24 @@ function d20plusEngine () {
 			});
 		});
 		// ensure all Select elements will update options on change
-		$(".weather select").each((a, b) => { b.onchange = () => d20plus.engine._updateCustomOptions() });
+		$(".weather select").each((a, b) => { b.onchange = () => d20plus.engine._updatePageCustomOptions() });
 	}
 
-	d20plus.engine._updateCustomOptions = (page, dialog) => {
+	d20plus.engine._updatePageCustomOptions = (page, dialog) => {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
-		if (!d20plus.engine._customOptions[page.id]) return;
-		Object.entries(d20plus.engine._customOptions[page.id]).forEach(([name, val]) => {
+		if (!d20plus.engine._customPageOptions[page.id]) return;
+		Object.entries(d20plus.engine._customPageOptions[page.id]).forEach(([name, val]) => {
 			dialog.find(`[name="${name}"]`).each((i, e) => {
 				const $e = $(e);
 				const val = $e.is(":checkbox") ? !!$e.prop("checked") : $e.val();
-				d20plus.engine._customOptions[page.id][name] = val;
+				d20plus.engine._customPageOptions[page.id][name] = val;
 			});
 		});
 	}
 
-	d20plus.engine._saveCustomOptions = (page) => {
-		const values = d20plus.engine._customOptions[page.id];
+	d20plus.engine._savePageCustomOptions = (page) => {
+		const values = d20plus.engine._customPageOptions[page.id];
 		Object.entries(values).forEach(([name, val]) => {
 			if (name === "_defaults") return;
 			if (val && val !== values._defaults[name]) {
