@@ -125,8 +125,8 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.swapTemplates = () => {
-		const oldToolbar = document.getElementById("floatingtoolbar");
-		d20plus.isOptedInNewUI = !oldToolbar;
+		const $betaSwitch = $("#new-toolbar-toggle");
+		d20plus.betaFeaturesEnabled = $betaSwitch.prop("checked");
 
 		d20plus.ut.log("Swapping templates...");
 		$("#tmpl_charactereditor").html($(d20plus.html.characterEditor).html());
@@ -199,7 +199,8 @@ function d20plusEngine () {
 			}).addTouch();
 		}
 
-		if (!d20plus.isOptedInNewUI) {
+		if (!d20plus.betaFeaturesEnabled) { // Jan 2024 beta features include the new Page Toolbar
+			// this should be executed only for the old Page Toolbar
 			overwriteDraggables();
 			$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
 
@@ -217,7 +218,7 @@ function d20plusEngine () {
 				debouncedOverwrite();
 			}
 		} else {
-			$(`#page-toolbar`).hide();
+			$(`#page-toolbar`).hide(); // hide the old Page Toolbar that pops with b20 styling
 		}
 
 		$(`body`).on("mouseup", "li.dl", (evt) => {
@@ -693,43 +694,39 @@ function d20plusEngine () {
 		/* eslint-disable */
 
 		// BEGIN ROLL20 CODE
-		window.Markdown.parse = function(e) {
-			{
-				var t = e
-					, n = []
-					, i = [];
-				-1 != t.indexOf("\r\n") ? "\r\n" : -1 != t.indexOf("\n") ? "\n" : ""
-			}
-			return t = t.replace(/{{{([\s\S]*?)}}}/g, function(e) {
-				return n.push(e.substring(3, e.length - 3)),
-					"{{{}}}"
+		window.Markdown.parse = function(x) {
+			var g = x, l, t = [], m = [], v = g.indexOf(`\r\n`) != -1 ? `\r\n` : g.indexOf(`\n`) != -1 ? `\n` : "";
+			return g = g.replace(/{{{([\s\S]*?)}}}/g, function(h) {
+				return t.push(h.substring(3, h.length - 3)),
+				"{{{}}}"
 			}),
-				t = t.replace(new RegExp("<pre>([\\s\\S]*?)</pre>","gi"), function(e) {
-					return i.push(e.substring(5, e.length - 6)),
-						"<pre></pre>"
-				}),
-				// BEGIN MOD
-				t = t.replace(/~~(.*?)~~/g, OUT_STRIKE),
-				// END MOD
-				t = t.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
-				t = t.replace(/\*(.*?)\*/g, "<em>$1</em>"),
-				t = t.replace(/``(.*?)``/g, "<code>$1</code>"),
-				t = t.replace(/\[([^\]]+)\]\(([^)]+(\.png|\.gif|\.jpg|\.jpeg))\)/g, '<a href="$2"><img src="$2" alt="$1" /></a>'),
-				t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>'),
-				t = t.replace(new RegExp("<pre></pre>","g"), function() {
-					return "<pre>" + i.shift() + "</pre>"
-				}),
-				t = t.replace(/{{{}}}/g, function() {
-					return n.shift()
-				})
-		};
+			g = g.replace(new RegExp("<pre>([\\s\\S]*?)</pre>","gi"), function(h) {
+				return m.push(h.substring(5, h.length - 6)),
+				"<pre></pre>"
+			}),
+			// BEGIN MOD
+			g = g.replace(/~~(.*?)~~/g, OUT_STRIKE),
+			// END MOD
+			g = g.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
+			g = g.replace(/\*(.*?)\*/g, "<em>$1</em>"),
+			g = g.replace(/``(.*?)``/g, "<code>$1</code>"),
+			g = g.replace(/\[([^\]]+)\]\(([^)]+(\.png|\.gif|\.jpg|\.jpeg))\)/g, '<a href="$2"><img src="$2" alt="$1" /></a>'),
+			g = g.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>'),
+			g = g.replace(new RegExp("<pre></pre>","g"), function(h) {
+				return "<pre>" + m.shift() + "</pre>"
+			}),
+			g = g.replace(/{{{}}}/g, function(h) {
+				return t.shift()
+			}),
+			g
+		},
 		// END ROLL20 CODE
 
 		/* eslint-enable */
 
 		// after a short delay, replace any old content in the chat
 		setTimeout(() => {
-			$(`.message`).each(function () {
+			$(`.message.general`).each(function () {
 				$(this).html($(this).html().replace(/~~(.*?)~~/g, OUT_STRIKE))
 			})
 		}, 2500);
@@ -846,7 +843,7 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.fixPolygonTool = () => {
-		if (d20plus.isOptedInNewUI) return;
+		if (!d20plus.newUIDisabled) return; // as of January 2024 newUI is always ON, so the below block is not needed
 		$("#editor-wrapper").on("pointerdown", x => { d20plus.engine.leftClicked = x.which === 1 });
 		$("#editor-wrapper").on("pointerup", x => { d20plus.engine.leftClicked = false });
 		d20plus.ut.injectCode(d20.engine, "finishCurrentPolygon", (finishDrawing, params) => {
