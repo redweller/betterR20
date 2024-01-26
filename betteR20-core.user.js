@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.7.50
+// @version      1.35.8.51
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -102,17 +102,18 @@ function baseLanguage () {
 		cfg_option_quick_init_sort: [`Add Quick Initiative Sort Button`],
 		cfg_option_grid_snap: [`Grid Snap`],
 		cfg_option_scaled_names: [`Scaled Names and Status Icons`],
-		cfg_option_show_fl: [`Include the Floors layer (reload to apply changes)`],
-		cfg_option_show_bg: [`Include the Background layer (reload to apply changes)`],
-		cfg_option_show_fg: [`Include the Foreground layer (reload to apply changes)`],
-		cfg_option_show_rf: [`Include the Roofs layer (reload to apply changes)`],
+		cfg_option_show_fl: [`-- Include the Floors layer (reload to apply changes)`],
+		cfg_option_show_bg: [`-- Include the Background layer (reload to apply changes)`],
+		cfg_option_show_fg: [`-- Include the Foreground layer (reload to apply changes)`],
+		cfg_option_show_rf: [`-- Include the Roofs layer (reload to apply changes)`],
 		cfg_option_show_light: [`Include (force) light sources button (reload to apply changes)`],
 		cfg_option_show_weather: [`Include the Weather layer and settings (reload to apply changes)`],
 		cfg_option_import_interval: [`Rest Time between Each Map (msec)`],
 		cfg_option_emoji: [`Add Emoji Replacement to Chat`],
 		cfg_option_art_previews: [`Show Custom Art Previews`],
 		cfg_option_toolbar_opac: [`Horizontal Toolbar Opacity`],
-		cfg_option_layer_panel: [`Add Quick Layer Buttons panel`],
+		cfg_option_layer_panel: [`Add Extra Layer Buttons panel`],
+		cfg_option_layer_toggle: [`Show toggles to hide Extra Layers`],
 		cfg_option_layer_panel_position: [`-- Select left or right side to display this panel`],
 		cfg_option_streamer_tags: [`Streamer-Friendly Chat Tags`],
 		cfg_option_hide_r20search: [`Hide Default Journal Search Bar`],
@@ -355,17 +356,18 @@ function baseLanguage () {
 		cfg_option_quick_init_sort: [`Добавить кнопку быстрой сортировки Инициативы`],
 		cfg_option_grid_snap: [`Шаг "прилипания" к сетке`],
 		cfg_option_scaled_names: [`Масштабируемые имена и иконки статусов`],
-		cfg_option_show_fl: [`Включить слой Полов (нужен перезапуск)`],
-		cfg_option_show_bg: [`Включить слой Задний план (нужен перезапуск)`],
-		cfg_option_show_fg: [`Включить слой Передний план (нужен перезапуск)`],
-		cfg_option_show_rf: [`Включить слой Крыши (нужен перезапуск)`],
+		cfg_option_show_fl: [`-- Включить слой Полов (нужен перезапуск)`],
+		cfg_option_show_bg: [`-- Включить слой Задний план (нужен перезапуск)`],
+		cfg_option_show_fg: [`-- Включить слой Передний план (нужен перезапуск)`],
+		cfg_option_show_rf: [`-- Включить слой Крыши (нужен перезапуск)`],
 		cfg_option_show_light: [`Включить кнопку для источников света (нужен перезапуск)`],
 		cfg_option_show_weather: [`Включить слой и настройки Погоды (нужен перезапуск)`],
 		cfg_option_import_interval: [`Время ожидания перед каждой картой (при импорте)`],
 		cfg_option_emoji: [`Добавить в чат замену эмотиконов`],
 		cfg_option_art_previews: [`Использовать предпросмотр для библиотеки изображений`],
 		cfg_option_toolbar_opac: [`Прозрачность горизонтальной панели инструментов`],
-		cfg_option_layer_panel: [`Добавить панель Быстрого выбора слоя`],
+		cfg_option_layer_panel: [`Добавить панель Дополнительных слоёв`],
+		cfg_option_layer_toggle: [`Показывать переключатель чтобы скрыть новые слои`],
 		cfg_option_layer_panel_position: [`-- Слева или справа отображать эту панель`],
 		cfg_option_streamer_tags: [`Обезличенные названия в чате (для стримеров)`],
 		cfg_option_hide_r20search: [`Спрятать дефолтную панель поиска в Журнале`],
@@ -2483,18 +2485,15 @@ function baseConfig () {
 			"__values": ["0.25", "0.5", "1"],
 			"_player": true,
 		},
-		"quickLayerButtons": {
+		"extraLayerButtons": {
 			"name": __("cfg_option_layer_panel"),
 			"default": true,
 			"_type": "boolean",
 		},
-		"quickLayerButtonsPosition": {
-			"name": __("cfg_option_layer_panel_position"),
-			"default": 1,
-			"_type": "_slider",
-			"__sliderMin": 0,
-			"__sliderMax": 1,
-			"__sliderStep": 1,
+		"allowHideExtraLayers": {
+			"name": __("cfg_option_layer_toggle"),
+			"default": true,
+			"_type": "boolean",
 		},
 		"showFloors": {
 			"name": __("cfg_option_show_fl"),
@@ -2522,16 +2521,16 @@ function baseConfig () {
 		},
 		"showWeather": {
 			"name": __("cfg_option_show_weather"),
-			"default": true,
+			"default": false,
 			"_type": "boolean",
 			"_player": false,
-		}, // RB20 EXCLUDE START
+		},
 		"scaleNamesStatuses": {
 			"name": __("cfg_option_scaled_names"),
 			"default": false,
 			"_type": "boolean",
 			"_player": true,
-		},
+		}, // RB20 EXCLUDE START
 		"enableNeatMenus": {
 			"name": __("cfg_option_neat_menus"),
 			"default": true,
@@ -2562,18 +2561,6 @@ function baseConfig () {
 			"__sliderMin": 1,
 			"__sliderMax": 100,
 			"__sliderStep": 1,
-		},
-		"hideDarkModeSwitch": {
-			"name": __("cfg_option_hide_dmswitch"),
-			"default": false,
-			"_type": "boolean",
-			"_player": true,
-		},
-		"hideHelpButton": {
-			"name": __("cfg_option_hide_help"),
-			"default": false,
-			"_type": "boolean",
-			"_player": true,
 		}, // RB20 EXCLUDE START
 		"selectJournalSearchType": {
 			"name": __("cfg_option_select_jrnsearch"),
@@ -2593,11 +2580,6 @@ function baseConfig () {
 				"betteR20",
 			],
 		}, // RB20 EXCLUDE END
-		"quickInitButtons": {
-			"name": __("cfg_option_quick_init_sort"),
-			"default": true,
-			"_type": "boolean",
-		},
 		"quickInitButtonsClear": {
 			"name": __("cfg_option_quick_init_clear"),
 			"default": true,
@@ -3309,34 +3291,25 @@ function baseConfig () {
 			d20plus.ut.dynamicStyles("vttesHide").html(`
 				.actions_menu.d20contextmenu > ul > li[style] {display:none;}
 			`);
-		}
-		// more readable secondary bar (if it's too cluttered)
-		if (d20plus.cfg.getOrDefault("canvas", "showRoofs")
-			|| d20plus.cfg.getOrDefault("canvas", "showFloors")) {
-			d20plus.ut.dynamicStyles("secBarGuide").html(`
-				#floatinglayerbar li.choosegmlayer {border-top-width: 2px; border-top-style: solid;}
-				#floatinglayerbar li.choosemap, 
-				#floatinglayerbar li.chooseroofs, 
-				#floatinglayerbar li.choosefloors {
-					background-image: linear-gradient( 90deg, #8c8c8c5c 100%, #fff0 100%);
-				}
-			`);
 		} // RB20 EXCLUDE END
+
 		const showHints = d20plus.cfg.getOrDefault("chat", "showDNDHints");
 		const hintStyle = d20plus.ut.dynamicStyles("hints");
 		if (showHints) hintStyle.html(d20plus.css.clickableConditionHints);
 		else hintStyle.html("");
+
 		const amOn = d20plus.cfg.getOrDefault("chat", "showTokenMenu") !== "none";
 		const amStyle = d20plus.ut.dynamicStyles("actions");
 		if (amOn) amStyle.html(d20plus.css.actionMenu);
 		else amStyle.html("");
-		// properly align layer toolbar
-		const $wrpDmModeSw = $(`.dark-mode-switch`);
-		const $wrpBtnsMain = $(`#floatingtoolbar`);
-		const $ulBtns = $(`#floatinglayerbar`);
-		const darkModeShift = $wrpDmModeSw.css("display") === "none" || $wrpDmModeSw.css("visibility") === "hidden" ? 0 : 54;
-		$ulBtns.css({top: $wrpBtnsMain.height() + darkModeShift + 40});
-		$wrpDmModeSw.css({top: $wrpBtnsMain.height() + 40});
+
+		const extraLayers = d20plus.cfg.getOrDefault("canvas", "extraLayerButtons");
+		const extraLayersToggle = d20plus.cfg.getOrDefault("canvas", "allowHideExtraLayers");
+		const layerBarStyle = d20plus.ut.dynamicStyles("extralrs");
+		const layerToggleStyle = d20plus.ut.dynamicStyles("togglelrs");
+		if (extraLayers) layerBarStyle.html(d20plus.css.layerToolbar);
+		if (extraLayersToggle) layerToggleStyle.html("");
+		else layerToggleStyle.html(d20plus.css.hideExtraLayersToggle);
 	}
 
 	d20plus.cfg.baseHandleConfigChange = () => {
@@ -3352,14 +3325,7 @@ function baseConfig () {
 			$(`#secondary-toolbar`).css({opacity: v * 0.01});
 		}
 
-		$(`#floatinglayerbar`).toggle(d20plus.cfg.getOrDefault("canvas", "quickLayerButtons"));
-		$(`#floatinglayerbar`).toggleClass("right", !!d20plus.cfg.getOrDefault("canvas", "quickLayerButtonsPosition"));
-
-		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
 		$(`#init-quick-reset`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtonsClear"));
-
-		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
-		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
 		$(`#langpanel`).toggle(d20plus.cfg.getOrDefault("chat", "languages"));
 
 		$(`#journal > .content.searchbox`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") === "Roll20");
@@ -12210,7 +12176,7 @@ function initHTMLroll20actionsMenu () {
 					<$ } $>
 
 					<!-- BEGIN MOD -->
-					<$ if(this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
+					<$ if(this.view && this.get && d20.Campaign.activePage().get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
 						<li class='head hasSub' data-menuname='view'>
 							Assign view &raquo;
 							<ul class='submenu' data-menuname='view'>
@@ -13334,6 +13300,52 @@ function initHTMLbaseMisc () {
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.layerExtrasButton = `
+		<div class="toolbar-button-outer b20" style="color: var(--vtt-toolbar-active-selection-color);" id="extra-layer-button">
+			<div class="toolbar-button-mid">
+				<div class="toolbar-button-inner" tabindex="0">
+					<div style="" class="icon-slot icon-circle">
+						<span style="font-size: 1.5em;font-family: Pictos;" class="grimoire__roll20-icon">|</span>
+					</div>
+					<div class="submenu-caret"></div>
+				</div>
+				<span class="label" style="">EXTRA</span>
+			</div>
+			<div class="toolbar-tooltip-outer" style="filter: initial; --0c2fd930: 6px;">
+				<div class="toolbar-tooltip-caret"></div>
+				<div  class="toolbar-tooltip-inner">
+					<span class="toolbar-tooltip-label text-sm-medium">Extra editable layers</span>
+					<span class="toolbar-shortcut-label">[b20]</span>
+				</div>
+			</div>
+			<span class="decoration" style="color: inherit;"></span>
+		</div>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	d20plus.html.layerSecondaryPanel = (l) => `
+		<div class="toolbar-button-outer b20" style="color: var(--vtt-toolbar-active-selection-color);" id="${l.name.toLowerCase()}-layer-button">
+			<div class="toolbar-button-mid">
+				<div class="toolbar-button-inner" data-layer="${l.id}" tabindex="0">
+					<div style="" class="icon-slot icon-circle">
+						<span style="font-size: 1.5em;font-family: Pictos;" class="grimoire__roll20-icon">${l.icon}</span>
+					</div>
+				</div>
+				<span class="layer-toggle">E</span>
+				<span class="label" style="">${l.name}</span>
+			</div>
+			<div class="toolbar-tooltip-outer" style="filter: initial; top: 6px;">
+				<div class="toolbar-tooltip-caret"></div>
+				<div  class="toolbar-tooltip-inner">
+					<span class="toolbar-tooltip-label text-sm-medium">${l.tooltip}</span>
+					<span class="toolbar-shortcut-label">[b20]</span>
+				</div>
+			</div>
+		</div>
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLbaseMisc);
@@ -13348,7 +13360,7 @@ function initHTMLpageViews () {
 			<div class="pagedetails">
 				<div class="alert alert-info" role="alert">
 					<p>Views are just another way to manage groups of items on your map
-					. Each View can include different items - tokens (except PCs), paths & images, regardless of their layer.
+					. Each View can include different items - tokens, paths & images, regardless of their layer.
 					</p><p>Assign desired items to Views via the Context menu
 					. Then you can easily hide or show those items using controls at the bottom of "Editing layer" dropdown
 					. This may be useful to store and quickly switch between different states of your location - day/night, rooftops/interiors etc.
@@ -13772,58 +13784,6 @@ function d20plusEngine () {
 		}
 
 		if (window.is_gm) {
-			// add lighting layer tool
-			if (!$(`#editinglayer .choosewalls`).length) {
-				$(`#editinglayer .choosegmlayer`).after(`
-					<li class="choosewalls">
-						<span class="pictostwo">r</span> 
-						${__("ui_bar_barriers")}
-					</li>
-				`);
-			}
-
-			// add DL objects tool
-			if (!$(`#placelight`).length) {
-				const $placeControl = $(`<li id="placeObject">
-					<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-					<use href="#place-object-icon"></use>
-					</svg>
-					<div class="submenu"><ul>
-						<li id="placelight" tip="Place Light">
-							<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-							<use href="#torch-icon"></use>
-							</svg>
-							Place Light
-						</li>
-						<li id="placeWindow">
-							<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-							<use href="#window-icon"></use>
-							</svg>
-							Place Window
-						</li>
-						<li id="placeDoor">
-							<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-							<use href="#door-icon"></use>
-							</svg>
-							Place Door
-						</li>
-					</ul></div>
-				</li>`);
-				$placeControl.find(`#placelight`).on("click", () => {
-					d20plus.setMode("placelight");
-					$placeControl.addClass("activebutton");
-				});
-				$placeControl.find(`#placeWindow`).on("click", () => {
-					d20plus.setMode("placeWindow");
-					$placeControl.addClass("activebutton");
-				});
-				$placeControl.find(`#placeDoor`).on("click", () => {
-					d20plus.setMode("placeDoor");
-					$placeControl.addClass("activebutton");
-				});
-				$(`#measure`).after($placeControl);
-			}
-
 			$("#page-toolbar").on("mousedown", ".js__settings-page", function () {
 				let e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
 				e.view._template = $.jqotec("#tmpl_pagesettings");
@@ -14695,11 +14655,11 @@ function d20plusEngine () {
 				}
 			}, 35);
 		})
-	};// RB20 EXCLUDE START
+	};
 
 	d20plus.engine.layersIsMarkedAsHidden = (layer) => {
 		const page = d20.Campaign.activePage();
-		if (page && page.get && page.get(`bR20cfg_hidden`)) return page.get(`bR20cfg_hidden`).search(layer) > -1;
+		return page?.get(`bR20cfg_hidden`)?.search(layer) > -1;
 	}
 
 	d20plus.engine.layersVisibilityCheck = () => {
@@ -14710,15 +14670,10 @@ function d20plusEngine () {
 			}) || d20plus.engine.layersIsMarkedAsHidden(layer);
 			d20plus.engine.layerVisibilityOff(layer, isHidden, true);
 		});
-		if (!$(`#floatinglayerbar`).hasClass("objects")
-			&& window.currentEditingLayer === "objects") $(`#floatinglayerbar`).addClass("objects");
 	}
 
-	d20plus.engine.layersToggle = (event) => {
-		event.stopPropagation();
-		const target = event.target;
+	d20plus.engine.layersToggle = (layer) => {
 		const page = d20.Campaign.activePage();
-		const layer = target.parentElement.className.replace(/.*choose(\w+?)\b.*/, "$1");
 		if (!page.get(`bR20cfg_hidden`)) page.set(`bR20cfg_hidden`, "");
 		if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
 			d20plus.engine.layerVisibilityOff(layer, false);
@@ -14728,14 +14683,11 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.layerVisibilityOff = (layer, off, force) => {
-		const menuButton = $(`#editinglayer .choose${layer}`);
-		const secondaryButton = $(`#floatinglayerbar li.choose${layer}`);
 		const page = d20.Campaign.activePage();
 		if (off) {
 			if (d20plus.engine.objectsHideUnhide("layer", layer, "layeroff", false) || force) {
-				if (window.currentEditingLayer === layer) $(`#editinglayer li.chooseobjects`).click();
-				menuButton.addClass("stashed");
-				secondaryButton.addClass("off");
+				if (window.currentEditingLayer === layer) d20plus.ui.switchToR20Layer();
+				d20plus.ui.layerVisibilityIcon(layer, false);
 				if (!d20plus.engine.layersIsMarkedAsHidden(layer)) {
 					page.set(`bR20cfg_hidden`, `${page.get(`bR20cfg_hidden`)} ${layer}`);
 					page.save();
@@ -14743,8 +14695,7 @@ function d20plusEngine () {
 			}
 		} else {
 			d20plus.engine.objectsHideUnhide("layer", layer, "layeroff", true);
-			menuButton.removeClass("stashed");
-			secondaryButton.removeClass("off");
+			d20plus.ui.layerVisibilityIcon(layer, true);
 			if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
 				page.set(`bR20cfg_hidden`, page.get(`bR20cfg_hidden`).replace(` ${layer}`, ""));
 				page.save();
@@ -14857,79 +14808,10 @@ function d20plusEngine () {
 				}
 			}
 		}))
-	};// RB20 EXCLUDE END
+	};
 
 	d20plus.engine.addLayers = () => {
 		d20plus.ut.log("Adding layers");
-
-		d20plus.mod.editingLayerOnclick();
-		if (window.is_gm) {
-			// Override icons a bit
-			$(`#floatingtoolbar .chooseobjects .pictos`).html("U");
-			$(`#editinglayer .submenu .choosegmlayer`).html(`
-				<span class="pictos">E</span>
-				${__("ui_bar_gm")}
-			`);
-
-			$(`#floatingtoolbar .choosemap`).html(`
-				<span class="pictos" style="padding: 0 3px 0 3px;">G</span> 
-				${__("ui_bar_map")}
-			`);
-
-			// Add layers to layer dropdown
-			if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
-				$(`#floatingtoolbar .choosemap`).after(`
-					<li class="choosebackground">
-						<span class="pictos">a</span>
-						${__("ui_bar_bg")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
-					</li>
-				`);
-				$(".choosebackground > .layer_toggle").on("click", d20plus.engine.layersToggle);
-			}
-
-			if (d20plus.cfg.getOrDefault("canvas", "showFloors")) {
-				$(`#floatingtoolbar .choosemap`).after(`
-					<li class="choosefloors">
-						<span class="pictos">I</span>
-						${__("ui_bar_fl")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
-					</li>
-				`);
-				$(".choosefloors > .layer_toggle").on("click", d20plus.engine.layersToggle);
-			}
-
-			if (d20plus.cfg.getOrDefault("canvas", "showRoofs")) {
-				$(`#floatingtoolbar .chooseobjects`).after(`
-					<li class="chooseroofs">
-						<span class="pictos">H</span>
-						${__("ui_bar_rf")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
-					</li>
-				`);
-				$(".chooseroofs > .layer_toggle").on("click", d20plus.engine.layersToggle);
-			}
-
-			if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
-				$(`#floatingtoolbar .choosegmlayer`).before(`
-					<li class="chooseforeground">
-						<span class="pictos">B</span>
-						${__("ui_bar_fg")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
-					</li>
-				`);
-				$(".chooseforeground > .layer_toggle").on("click", d20plus.engine.layersToggle);
-			}
-
-			if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
-				$(`#floatingtoolbar .choosewalls`).after(`
-					<li class="chooseweather">
-						<span class="pictos">C</span>
-						${__("ui_bar_we")}
-					</li>
-				`);
-			}
-		}
 
 		d20.engine.canvas._renderAll = _.bind(d20plus.mod.renderAll, d20.engine.canvas);
 		d20.engine.canvas.sortTokens = _.bind(d20plus.mod.sortTokens, d20.engine.canvas);
@@ -16293,11 +16175,11 @@ function baseMenu () {
 		"side_random": { ln: __("menu_multi_rnd"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 		"side_choose": { ln: __("menu_multi_select"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
 		"edittokenimages": { ln: __("menu_multi_edit"), condition: "this.view && this.get && this.get(\"sides\") !== \"\" && this.get(\"cardid\") === \"\"" },
-		"assignview0": { ln: d20plus.menu._neatActionsView("0"), active: "this && this.get(\"bR20_view0\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable')" },
-		"assignview1": { ln: d20plus.menu._neatActionsView("1"), active: "this && this.get(\"bR20_view1\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views1Enable')" },
-		"assignview2": { ln: d20plus.menu._neatActionsView("2"), active: "this && this.get(\"bR20_view2\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views2Enable')" },
-		"assignview3": { ln: d20plus.menu._neatActionsView("3"), active: "this && this.get(\"bR20_view3\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views3Enable')" },
-		"assignview4": { ln: d20plus.menu._neatActionsView("4"), active: "this && this.get(\"bR20_view4\")", condition: "this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views4Enable')" },
+		"assignview0": { ln: d20plus.menu._neatActionsView("0"), active: "this && this.get(\"bR20_view0\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')" },
+		"assignview1": { ln: d20plus.menu._neatActionsView("1"), active: "this && this.get(\"bR20_view1\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views1Enable')" },
+		"assignview2": { ln: d20plus.menu._neatActionsView("2"), active: "this && this.get(\"bR20_view2\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views2Enable')" },
+		"assignview3": { ln: d20plus.menu._neatActionsView("3"), active: "this && this.get(\"bR20_view3\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views3Enable')" },
+		"assignview4": { ln: d20plus.menu._neatActionsView("4"), active: "this && this.get(\"bR20_view4\")", condition: "this.view && this.get && d20.Campaign.activePage().get('bR20cfg_viewsEnable') && d20.Campaign.activePage().get('bR20cfg_views4Enable')" },
 	};
 
 	d20plus.menu._neatStructure = {
@@ -17141,9 +17023,9 @@ function baseViews () {
 	};
 
 	d20plus.views._initMenuActions = () => {
-		$(`body`).on("click", ".chooseViews > li", function () {
+		$(`body`).on("click", ".drawer-views > .toolbar-button-outer", function () {
 			const page = d20.Campaign.activePage();
-			const items = $(".chooseViews > li")
+			const items = $(".drawer-views > .toolbar-button-outer")
 			const id = items.index(this);
 			const startgroupindex = (() => { for (let i = id; i >= 0; i--) { if (!page.get(`bR20cfg_views${i}Exclusive`)) return i; } })();
 			const endgroupindex = (() => { for (let i = id + 1; i <= 5; i++) { if (!page.get(`bR20cfg_views${i}Exclusive`)) return i - 1; } })();
@@ -17175,27 +17057,41 @@ function baseViews () {
 	}
 
 	d20plus.views._initLayerMenu = () => {
-		d20plus.views.layerMenu = $(`<ul class="chooseViews"></ul>`).appendTo($("#editinglayer .submenu"));
+		d20plus.views.layerMenu = $(`<div></div>`)
+			.appendTo($(".drawer-outer.b20"));
 	}
 
 	d20plus.views.populateMenu = () => {
 		const page = d20.Campaign.activePage();
 		if (!page) return;
 		if (!page.get("bR20cfg_viewsEnable")) return d20plus.views.layerMenu.html("");
-		let menuhtml = "";
+		let menuhtml = `<div class="drawer-views">`;
 		for (let id = 0; id <= 4; id++) {
 			if (id && !page.get(`bR20cfg_views${id}Enable`)) continue;
 			const viewname = page.get(`bR20cfg_views${id}Name`) || (id ? `View ${id}` : `Default view`);
 			const viewicon = page.get(`bR20cfg_views${id}Icon`) || "P";
 			const exclCheck = (id) => { return page.get(`bR20cfg_views${id}Exclusive`) };
-			const viewexcl = exclCheck(id) ? (exclCheck(id + 1) ? "mst" : "lst") : (exclCheck(id + 1) ? "fst" : "");
-			const viewactive = page.get(`bR20cfg_views${id}Off`) ? "off" : "";
-			menuhtml += `<li class="${[viewexcl, viewactive].join(" ")}">
-				<span class="view_toggle"><span class="pictos">E</span></span>
-				<span class="pictos">${viewicon}</span>
-				${viewname}
-			</li>`;
+			const viewexcl = exclCheck(id) ? (exclCheck(id + 1) ? "middle" : "last") : (exclCheck(id + 1) ? "first" : "");
+			const viewactive = page.get(`bR20cfg_views${id}Off`) ? "" : "active";
+			menuhtml += `<div id="view-${id}-button" class="toolbar-button-outer ${[viewexcl, viewactive].join(" ")}" style="color: var(--vtt-toolbar-active-selection-color);">
+			<div class="toolbar-button-mid">
+				<div class="view-button-inner" data-viewId="${id}" tabindex="0">
+					<div class="view-icon-slot">
+						<span style="font-size: 1.5em;font-family: Pictos;" class="grimoire__roll20-icon">${viewicon}</span>
+					</div>
+				</div>
+				<span class="label">${viewname}</span>
+			</div>
+			<div class="toolbar-tooltip-outer" style="filter: initial; top: 6px;">
+				<div class="toolbar-tooltip-caret"></div>
+				<div class="toolbar-tooltip-inner">
+					<span class="toolbar-tooltip-label text-sm-medium">Toggle ${viewname}</span>
+					<span class="toolbar-shortcut-label">[b20]</span>
+				</div>
+			</div>
+		</div>`;
 		}
+		menuhtml += `</div>`;
 		d20plus.views.layerMenu.html(menuhtml);
 	}
 
@@ -17244,14 +17140,14 @@ function baseViews () {
 
 	d20plus.views.changeViewState = (id, state) => {
 		const page = d20.Campaign.activePage();
-		const menuItem = $(".chooseViews > li").get(id);
+		const menuItem = $(".drawer-views > .toolbar-button-outer").get(id);
 		if (state) {
-			$(menuItem).removeClass("off");
+			$(menuItem).addClass("active");
 			page.set(`bR20cfg_views${id}Off`, false);
 			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `view${id}off`, true);
 			d20plus.engine.portalsHideUnhide(`bR20_view${id}`, `view${id}off`, true);
 		} else {
-			$(menuItem).addClass("off");
+			$(menuItem).removeClass("active");
 			page.set(`bR20cfg_views${id}Off`, true);
 			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `view${id}off`, false);
 			d20plus.engine.portalsHideUnhide(`bR20_view${id}`, `view${id}off`, false);
@@ -18150,36 +18046,6 @@ function baseCss () {
 			s: "#secondary-toolbar:hover",
 			r: "opacity: 1 !important;",
 		},
-		// addon layer bar
-		{
-			s: "#floatinglayerbar ul",
-			r: "margin: 0; padding: 0;",
-		},
-		{
-			s: "#floatinglayerbar li:hover, #floatinglayerbar li.activebutton",
-			r: "color: #333; background-color: #54C3E8; cursor: pointer;",
-		},
-		{
-			s: "#floatinglayerbar li",
-			r: "padding: 3px; margin: 0; border-bottom: 1px solid #999; display: block; text-align: center; line-height: 22px; font-size: 22px; color: #999; position: relative;",
-		},
-		{
-			s: "#floatinglayerbar.map li.choosemap, #floatinglayerbar.objects li.chooseobjects, #floatinglayerbar.gmlayer li.choosegmlayer, #floatinglayerbar.walls li.choosewalls, #floatinglayerbar.weather li.chooseweather, #floatinglayerbar.foreground li.chooseforeground, #floatinglayerbar.roofs li.chooseroofs, #floatinglayerbar.floors li.choosefloors, #floatinglayerbar.background li.choosebackground",
-			r: "background-color: #54C3E8; color: #333;",
-		},
-		// move layer bar to right
-		{
-			s: "#floatinglayerbar",
-			r: "pointer-events: all;",
-		},
-		{
-			s: "#floatinglayerbar.right",
-			r: "right: 30px; left: unset!important;",
-		},
-		{
-			s: "#floatinglayerbar",
-			r: "left: 20px;",
-		},
 		// Config & dark mode fixes
 		{
 			s: ".config-name",
@@ -18213,76 +18079,6 @@ function baseCss () {
 		{
 			s: ".ui-dialog-content::-webkit-scrollbar-thumb",
 			r: "background-color: rgba(100, 100, 100, 0.5);",
-		},
-		// extra layer buttons
-		{
-			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.floors div.submenu li.choosefloors, #editinglayer.roofs div.submenu li.chooseroofs, #editinglayer.background div.submenu li.choosebackground",
-			r: "background-color: #54C3E8; color: #333;",
-		},
-		{
-			s: "#editinglayer.objects .currentselection::after",
-			r: "content: \"U\";",
-		},
-		{
-			s: "#editinglayer.map .currentselection::after",
-			r: "content: \"G\";",
-		},
-		{
-			s: "#editinglayer.weather .currentselection:after",
-			r: "content: \"C\";",
-		},
-		{
-			s: "#editinglayer.foreground .currentselection:after",
-			r: "content: \"B\";",
-		},
-		{
-			s: "#editinglayer.floors .currentselection:after",
-			r: "content: \"I\";",
-		},
-		{
-			s: "#editinglayer.roofs .currentselection:after",
-			r: "content: \"H\";",
-		},
-		{
-			s: "#editinglayer.background .currentselection:after",
-			r: "content: \"a\";",
-		},
-		{
-			s: "#editinglayer.gmlayer .currentselection:after",
-			r: "content: \"E\";",
-		},
-		{
-			s: "#editinglayer.gmlayer > span.currentselection",
-			r: "display:unset;",
-		},
-		{
-			s: "#editinglayer.gmlayer #editing_layer_icon",
-			r: "display:none;",
-		},
-		// layer visibility toggles
-		{
-			s: "#editinglayer .pictos.layer_toggle",
-			r: "float: right; cursor: alias; pointer-events: all;",
-		},
-		{
-			s: "#editinglayer li.stashed",
-			r: "pointer-events: none;",
-		},
-		{
-			s: "#editinglayer li.stashed .pictos.layer_toggle",
-			r: "position: relative; left: -19px; margin-right: -20px; margin-left: 0px;",
-		},
-		{
-			s: "#editinglayer li.stashed .pictos.layer_toggle::after",
-			r: "content: \"d\"; position: relative; left: -16px; color: rgba(200,50,50,0.7);",
-		},
-		{
-			s: "#playerzone #floatinglayerbar li.off > span::after",
-			r: "content: \"d\"; color: rgba(200, 100, 100, 0.7); margin-left: -20px;",
-		},
-		{
-			s: "#playerzone #floatinglayerbar li.off",
-			r: "color: rgba(153, 153, 153, 0.5); pointer-events: none;",
 		},
 		// adjust the "Talking to Yourself" box
 		{
@@ -19426,6 +19222,277 @@ function baseCss () {
 		}
 	`;
 
+	d20plus.css.layerToolbar = `
+		.b20.drawer-outer, .b20 .drawer-views {
+			display: flex;
+			flex-shrink: 1;
+			flex-direction: column;
+			align-items: center;
+			position: absolute;
+			background: var(--vtt-toolbar-drawer-bg);
+			backdrop-filter: blur(5px);
+			min-height: 44px;
+			padding: 6px 2px;
+			padding-top: 6px;
+			padding-bottom: 6px;
+			border-radius: 8px;
+			bottom: 20px;
+			left: 60px;
+			padding-bottom: 3px;
+			padding-top: 6px;
+			z-index: 10499;
+			box-shadow: var(--vtt-toolbar-drawer-box-shadow);
+		}
+		.b20.toolbar-button-outer, .b20 .drawer-views .toolbar-button-outer {
+			position: relative;
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+			align-items: center;
+		}
+		.drawer-outer #extra-layer-button {
+			display: none;
+		}
+		.b20 .toolbar-button-mid {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		.b20 .toolbar-button-inner, .b20 .view-button-inner {
+			display: flex;
+			flex-direction: column;
+			align-content: space-between;
+			justify-content: center;
+			align-items: center;
+			position: relative;
+			width: 44px;
+			height: 40px;
+		}
+		.b20 .icon-slot {
+			color: var(--vtt-toolbar-icon-color);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 36px;
+			height: 36px;
+			border-radius: 12px;
+		}
+		.b20 .icon-circle {
+			background: var(--vtt-layer-btn-bg);
+			border-radius: 20px;
+		}
+		.b20 .icon-selected, .b20 .drawer-views .view-button-inner {
+			border: 1px solid;
+			border-radius: 12px;
+			border-color: var(--vtt-toolbar-border-color);
+			color: var(--72282855);
+		}
+		.b20 .b20-selected .icon-slot {
+			background-color: #446810;
+		}
+		.b20 .submenu-caret {
+			position: absolute;
+			background-image: linear-gradient(to top left, var(--vtt-submenu-caret-color) 50%, transparent 0);
+			background-size: 100% 100%;
+			background-repeat: no-repeat;
+			background-position: left,right;
+			width: 4px;
+			height: 4px;
+			bottom: 2px;
+			right: 4px;
+		}
+		.b20 span.grimoire__roll20-icon {
+			font-family: Roll20Icons;
+			font-size: var(--72a4ca39);
+			user-select: none;
+		  }
+		.b20 .label {
+			display: flex;
+			justify-content: center;
+			font-family: var(--font-family-proxima-nova);
+			color: var(--vtt-layer-label-color);
+			padding: 1.95px 5.85px 0px;
+			letter-spacing: .03rem;
+			font-size: 66%;
+			max-width: 0px;
+		}
+		.b20.toolbar-button-outer:hover .toolbar-button-inner {
+			border-radius: 12px;
+			filter: drop-shadow(0px 0px 4px rgba(122, 150, 60, 0.3)) drop-shadow(0px 0px 2px rgba(121, 174, 27, 0.1)) drop-shadow(1px 1px 4px rgba(135, 193, 64, 0.6));
+		}
+		.b20 .toolbar-tooltip-outer {
+			position: absolute;
+			left: 59px;
+			z-index:10500;
+			display: none;
+			flex-direction: row;
+			justify-content: center;
+			align-items: center;
+			height: 34px;
+			top: var(--0c2fd930);
+		}
+		.b20.toolbar-button-outer:hover .toolbar-tooltip-outer,
+		.b20 .drawer-views .toolbar-button-outer:hover .toolbar-tooltip-outer {
+			display: flex;
+		}
+		.b20 .toolbar-tooltip-caret {
+			background: var(--vtt-tooltip-bg);
+			transform: rotate(-45deg);
+			width: 8px;
+			height: 8px;
+		}
+		.b20 .toolbar-tooltip-inner {
+			background: var(--vtt-tooltip-bg);
+			position: absolute;
+			display: flex;
+			flex-grow: 1;
+			flex-direction: row;
+			justify-content: center;
+			align-items: center;
+			border-radius: 8px;
+			padding: 0px 8px 0px 8px;
+			gap: 8px;
+			left: 4px;
+		}
+		.b20 .toolbar-tooltip-label {
+			display: flex;
+			align-items: center;
+			color: var(--vtt-tooltip-color);
+			background: var(--vtt-tooltip-bg);
+			width: max-content;
+			height: 34px;
+		}
+		.b20 .toolbar-shortcut-label {
+			display: flex;
+			align-items: center;
+			color: var(--vtt-label-color);
+			background: var(--vtt-tooltip-bg);
+			width: max-content;
+			height: 34px;
+			font-weight: bold;
+		}
+		#layers-label {
+			margin-bottom: 4px;
+			font-size: 9px;
+		}
+		#master-toolbar .toolbar-button-mid .label {
+			font-size: 8px;
+			margin: -3px 0px 4px 0px;
+		}
+		/* Layer visibility toggles */
+		.b20 .layer-toggle {
+			font-family: Pictos;
+			position: relative;
+			margin: 0px 0px -16px 0px;
+			top: -14px;
+			left: 10px;
+			background-color: var(--vtt-layer-btn-bg);
+			border-radius: 8px;
+			width: 16px;
+			height: 16px;
+			text-align: center;
+			line-height: 16px;
+			cursor: alias;
+			opacity: 0.7;
+		}
+		.toolbar-button-inner.layer-off {
+			pointer-events: none;
+			filter: opacity(0.5) brightness(1.2);
+		}
+		.toolbar-button-inner.layer-off::after {
+			content: "d";
+			width: 16px;
+			height: 16px;
+			font-family: Pictos;
+			margin-top:-16px;
+			position: relative;
+			left: 11px;
+			top: 1px;
+			font-size: 15px;
+			color: rgb(177, 0, 0);
+		}
+		html.dark .toolbar-button-inner.layer-off::after {
+			top: 3px;
+		}
+		/* View toggles */
+		.b20.drawer-outer .drawer-views {
+			left: 50px;
+			bottom: 0px;
+		}
+		.b20 .drawer-views .toolbar-button-mid {
+			height: 36px;
+			border-radius: 20px;
+			padding: 0px;
+			margin: 2px 4px;
+		}
+		.b20 .drawer-views .view-button-inner {
+			margin-bottom: -10px;
+			border-radius: 20px;
+			border: 1px solid transparent;
+			border-bottom: none;
+			border-top: none;
+			width: 34px;
+		}
+		.b20 .drawer-views .last .view-button-inner {
+			border-top-left-radius: 0px;
+			border-top-right-radius: 0px;
+			border-top: none;
+		}
+		.b20 .drawer-views .first .view-button-inner {
+			border-bottom-left-radius: 0px;
+			border-bottom-right-radius: 0px;
+		}
+		.b20 .drawer-views .middle .view-button-inner {
+			border-radius: 0px;
+			border-top: 0px;
+		}
+		.b20 .drawer-views .view-icon-slot {
+			width: 36px;
+			height: 38px;
+			line-height: 18px;
+			border-radius: 20px;
+			padding: 8px;
+			box-sizing: border-box;
+		}
+		.b20 .drawer-views .label {
+			top: 0px;
+			position: relative;
+			font-size: 7px;
+			max-width: 36px;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overflow: visible;
+			overflow-x: clip;
+			padding: 0px;
+			display: block;
+		}
+		.b20 .drawer-views:hover .view-button-inner {
+			border: 1px solid var(--vtt-toolbar-border-color);
+			border-bottom: none;
+			border-top: none;
+		}
+		.b20 .drawer-views .active .view-icon-slot {
+			background: var(--vtt-layer-btn-bg);
+		}
+		.b20 .drawer-views .toolbar-button-outer:hover .view-button-inner {
+			filter: drop-shadow(0px 0px 4px rgba(70, 190, 173, 0.3)) drop-shadow(0px 0px 5px rgba(27, 174, 133, 0.1)) drop-shadow(1px 1px 5px rgba(64, 193, 169, 0.6));
+		}
+		.b20 .drawer-views .active .view-icon-slot::after {
+			font-family: Pictos;
+			content: "E";
+			position: relative;
+			opacity: 0.7;
+			top: -31px;
+			left: 15px;
+		}
+	`;
+
+	d20plus.css.hideExtraLayersToggle = `
+		.b20 .layer-toggle {
+			display: none;
+		}
+	`;
+
 	d20plus.css.deserifyDarkmode = `
 		.sheet-darkmode #tab-content {
 			font-family: unset;
@@ -19505,9 +19572,9 @@ function baseUi () {
 
 		$("#button-edit-config").on(window.mousedowntype, d20plus.cfg.openConfigEditor);
 		d20plus.tool.addTools();
-	};
+	};// RB20 EXCLUDE START
 
-	d20plus.ui.addQuickUiGm = () => {
+	/* d20plus.ui.addQuickUiGmLegacy = () => {
 		const $wrpBtnsMain = $(`#floatingtoolbar`);
 
 		// add quick layer selection panel
@@ -19588,7 +19655,161 @@ function baseUi () {
 				}
 			})
 		}
+	}; */ // RB20 EXCLUDE END
+
+	d20plus.ui.r20Buttons = [
+		{DOMid: "tokens-layer-button", id: "objects", color: "--vtt-toolbar-token-layer-btn-bg"},
+		{DOMid: "gm-layer-button", id: "gmlayer", color: "--vtt-toolbar-gm-layer-btn-bg"},
+		{DOMid: "lighting-layer-button", id: "walls", color: "--vtt-toolbar-lighting-layer-btn-bg"},
+		{DOMid: "map-layer-button", id: "map", color: "--vtt-toolbar-map-layer-btn-bg"},
+	];
+
+	d20plus.ui.b20Buttons = [
+		{name: "FG", tooltip: "Foreground Layer", icon: "B", id: "foreground", cfg: "showForeground"},
+		{name: "ROOF", tooltip: "Roof Layer", icon: "H", id: "roofs", cfg: "showRoofs"},
+		{name: "BG", tooltip: "Background Layer", icon: "a", id: "background", cfg: "showBackground"},
+		{name: "FLOOR", tooltip: "Floor Layer", icon: "I", id: "floors", cfg: "showFloors"},
+		{name: "COVER", tooltip: "Weather Exclusions", icon: "C", id: "weather", cfg: "showWeather"},
+	];
+
+	const switchToB20Layer = (evt) => {
+		const $selected = $(evt.currentTarget);
+		const $icon = $selected.find(".icon-slot");
+		const icon = $icon.find("span").text();
+		const $roll20LayersButton = $("#layers-menu-button").find(".grimoire__roll20-icon");
+
+		currentEditingLayer = $selected.data("layer");
+		d20.Campaign.activePage().onLayerChange();
+		d20plus.ui.b20LayersActive = true;
+
+		d20plus.ui.secondaryPanel.buttons.removeClass("b20-selected");
+		d20plus.ui.secondaryPanel.iconSlots.removeClass("icon-selected");
+
+		$selected.addClass("b20-selected");
+		$icon.addClass("icon-selected icon-circle");
+		d20plus.ui.$r20Buttons.removeClass("icon-selected").attr("style", "");
+		d20plus.ui.extraButton.icon.text(icon);
+		$roll20LayersButton.css({"font-family": "Pictos", "font-size": "1.5em"});
+		$roll20LayersButton.text(icon);
 	};
+
+	const switchLayersToolbar = (evt) => {
+		if (evt.delegateTarget.id === "extra-layer-button") {
+			d20plus.ui.$secondaryPanel
+				.css({left: "60px"})
+				.toggle();
+			if (d20plus.ui.$secondaryPanel.css("display") === "none"
+				&& d20plus.ui.b20LayersActive) {
+				d20plus.ui.extraButton.button.addClass("b20-selected");
+				d20plus.ui.extraButton.iconSlot.addClass("icon-selected");
+			} else {
+				d20plus.ui.extraButton.button.removeClass("b20-selected");
+				// d20plus.ui.extraButton.iconSlot.removeClass("icon-selected");
+			}
+		} else {
+			const roll20ToolbarVisible = $("#tokens-layer-button").parent().is(":visible");
+			d20plus.ui.$secondaryPanel
+				.css({left: "110px"})
+				.toggle(roll20ToolbarVisible);
+		}
+	};
+
+	d20plus.ui.switchToR20Layer = (evt) => {
+		d20plus.ui.secondaryPanel.buttons.removeClass("b20-selected");
+		d20plus.ui.secondaryPanel.iconSlots.removeClass("icon-selected").addClass("icon-circle");
+		d20plus.ui.extraButton.button.removeClass("b20-selected");
+		d20plus.ui.extraButton.icon.text("|");
+		d20plus.ui.b20LayersActive = false;
+
+		// the following check with setTimeout is required to properly process native r20 buttons.
+		// Without it the previously active layer won't be activated again
+		const $triggeredBy = $(evt?.target || "#tokens-layer-button .icon-slot");
+		const $pressed = $triggeredBy.closest(".toolbar-button-outer");
+		const $pressedIcon = $triggeredBy.closest(".icon-slot");
+		const $pressedButton = $triggeredBy.closest(".toolbar-button-inner");
+		const isFirstButton = $pressed.attr("id") === d20plus.ui.r20Buttons[0].id;
+		const $roll20LayersButton = $("#layers-menu-button").find(".grimoire__roll20-icon");
+		const secondaryPanelHidden = d20plus.ui.$secondaryPanel.css("display") === "none";
+
+		if (secondaryPanelHidden) d20plus.ui.extraButton.iconSlot.addClass("icon-circle").removeClass("icon-selected");
+		$roll20LayersButton.css({"font-family": "Roll20Icons", "font-size": "1.3em"});
+
+		// should manually apply layer instead
+		setTimeout(() => {
+			if ($pressedIcon.attr("style")) return;
+			const layer = d20plus.ui.r20Buttons.find(b => b.DOMid === $pressed.attr("id"));
+			if (!layer?.color) return;
+			$pressedIcon
+				.addClass("icon-selected")
+				.attr("style", `background-color: var(${layer.color});`);
+			currentEditingLayer = layer.id;
+			d20.Campaign.activePage().onLayerChange();
+		}, 100);
+	};
+
+	d20plus.ui.addQuickUiGm = () => {
+		if (!d20plus.cfg.getOrDefault("canvas", "extraLayerButtons")) return;
+		const buttonsHmtl = d20plus.ui.b20Buttons.reduce((html, l) => {
+			l.enabled = d20plus.cfg.getOrDefault("canvas", l.cfg);
+			return `${html}${(l.enabled ? d20plus.html.layerSecondaryPanel(l) : "")}`;
+		}, "");
+		if (!d20plus.ui.b20Buttons.some(b => b.enabled)) return;
+
+		d20plus.ui.$extraButton = $(d20plus.html.layerExtrasButton);
+		d20plus.ui.$secondaryPanel = $(`
+			<div class="drawer-outer b20" style="left: 111px;display:none">
+			${buttonsHmtl}</div>
+		`);
+
+		d20plus.ui.extraButton = {
+			icon: d20plus.ui.$extraButton.find(".icon-slot span"),
+			iconSlot: d20plus.ui.$extraButton.find(".icon-slot"),
+			button: d20plus.ui.$extraButton.find(".toolbar-button-inner"),
+		};
+
+		d20plus.ui.secondaryPanel = {
+			iconSlots: d20plus.ui.$secondaryPanel.find(".icon-slot"),
+			buttons: d20plus.ui.$secondaryPanel.find(".toolbar-button-inner"),
+		};
+
+		d20plus.ui.$r20Buttons = $("#tokens-layer-button")
+			.parent()
+			.find(".toolbar-button-outer:not(.b20) .icon-slot");
+
+		$("body").append(d20plus.ui.$secondaryPanel);
+		$("#map-layer-button").after(d20plus.ui.$extraButton);
+
+		d20plus.ui.$extraButton.on("mouseenter", ".toolbar-button-inner", (evt) => {
+			$(evt.currentTarget).find(".icon-slot").addClass("icon-selected").removeClass("icon-circle");
+		}).on("mouseleave", ".toolbar-button-inner", (evt) => {
+			if (d20plus.ui.b20LayersActive || d20plus.ui.$secondaryPanel.css("display") !== "none") return;
+			$(evt.currentTarget).find(".icon-slot").removeClass("icon-selected").addClass("icon-circle");
+		}).on(clicktype, ".toolbar-button-inner", switchLayersToolbar);
+
+		d20plus.ui.$secondaryPanel.on("mouseenter", ".toolbar-button-inner", (evt) => {
+			$(evt.currentTarget).find(".icon-slot").addClass("icon-selected").removeClass("icon-circle");
+		}).on("mouseleave", ".toolbar-button-inner", (evt) => {
+			if ($(evt.currentTarget).hasClass("b20-selected")) return;
+			$(evt.currentTarget).find(".icon-slot").removeClass("icon-selected").addClass("icon-circle");
+		}).on(clicktype, ".layer-toggle", (evt) => {
+			evt.stopPropagation();
+			const $layerIcon = $(evt.currentTarget).prev(".toolbar-button-inner");
+			const state = d20plus.engine.layersToggle($layerIcon.data("layer"));
+		}).on(clicktype, ".toolbar-button-inner", switchToB20Layer);
+
+		$(document.body)
+			.on("mouseup", d20plus.ui.r20Buttons.reduce((css, b) => {
+				return `${css}${css ? ", " : ""}#${b.DOMid}  .icon-slot`;
+			}, ""), d20plus.ui.switchToR20Layer)
+			.on(clicktype, "#layers-menu-button .toolbar-button-inner", switchLayersToolbar);
+
+		$("#playerzone").css({"z-index": 10100}); // otherwise it has the same z-index as native buttons
+	};
+
+	d20plus.ui.layerVisibilityIcon = (layer, state) => {
+		const $layerIcon = d20plus.ui.$secondaryPanel.find(`[data-layer=${layer}]`);
+		$layerIcon.toggleClass("layer-off", !state);
+	}
 
 	/**
 	 * Prompt the user to choose from a list of checkboxes. By default, one checkbox can be selected, but a "count"
@@ -20478,33 +20699,6 @@ function d20plusMod () {
 		),
 		v.restore()
 	},
-	// END ROLL20 CODE
-
-	// BEGIN ROLL20 CODE
-	d20plus.mod.editingLayerOnclick = () => {
-		$("#editinglayer").off(clicktype).on(clicktype, "li", function() {
-			var e = $(this);
-			$("#editinglayer").removeClass(window.currentEditingLayer);
-			$("#drawingtools .choosepath").show();
-			"polygon" !== d20.engine.mode && $("#drawingtools").hasClass("polygon") && $("#drawingtools").removeClass("polygon").addClass("path");
-
-			// BEGIN MOD
-			if (e.hasClass("chooseweather")) {
-				window.currentEditingLayer = "weather";
-				$("#drawingtools .choosepath").hide();
-				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon")
-			} else {
-				e.hasClass("choosebackground") ? window.currentEditingLayer = "background" : e.hasClass("chooseroofs") ? window.currentEditingLayer = "roofs" : e.hasClass("choosefloors") ? window.currentEditingLayer = "floors" : e.hasClass("chooseforeground") ? window.currentEditingLayer = "foreground" : e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
-					$("#drawingtools .choosepath").hide(),
-				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon"));
-			}
-			// END MOD
-			$("#editinglayer").addClass(window.currentEditingLayer);
-			// BEGIN MOD
-			d20.Campaign.activePage().onLayerChange();
-			// END MOD
-		});
-	};
 	// END ROLL20 CODE
 
 	// prevent prototype methods from breaking some poorly-written property loops
@@ -25084,7 +25278,7 @@ function baseChat () {
 			},
 			"dmgTokenBar": {
 				"name": "Token bar to apply HP changes to",
-				"default": "3",
+				"default": "1",
 				"_type": "_enum",
 				"__values": ["1", "2", "3"],
 				"_player": true,
