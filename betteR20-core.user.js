@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.8.51
+// @version      1.35.8.52
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -27738,15 +27738,16 @@ const D20plus = function (version) {
 
 		(function waitForEnhancementSuite () {
 			let hasRunInit = false;
-			if (window.d20 || window.enhancementSuiteEnabled) {
+			if (window.d20 || window.enhancementSuiteEnabled || window.currentPlayer?.d20) {
 				d20plus.ut.log("Bootstrapping...");
 
 				// r20es will expose the d20 variable if we wait
 				// this should always trigger after window.onload has fired, but track init state just in case
 				(function waitForD20 () {
 					if ($("#textchat").get(0) && !$(".boring-chat").get(0)) d20plus.ut.showInitMessage();
-					if (typeof window.d20 !== "undefined" && !$("#loading-overlay").is(":visible") && !hasRunInit) {
+					if ((typeof window.d20 !== "undefined" && !$("#loading-overlay").is(":visible") && !hasRunInit) || window.currentPlayer?.d20) {
 						hasRunInit = true;
+						if (!window.d20) window.d20 = window.currentPlayer.d20;
 						d20plus.Init();
 					} else {
 						setTimeout(waitForD20, 50);
