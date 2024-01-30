@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.8.52
+// @version      1.35.8.53
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -2456,6 +2456,11 @@ function baseConfig () {
 			"default": false,
 			"_type": "boolean",
 		},
+		"compactMarkersMenu": {
+			"name": "Compact token markers menu",
+			"default": true,
+			"_type": "boolean",
+		},
 		"showTokenMenu": {
 			"name": "Add Quick Token Actions",
 			"default": "char",
@@ -2650,14 +2655,13 @@ function baseConfig () {
 
 	d20plus.cfg.pLoadConfig = async () => {
 		d20plus.ut.log("Reading Config");
-		let configHandout = d20plus.cfg.getConfigHandout();
 
-		if (!configHandout) {
+		if (!await d20plus.cfg.checkConfigHandout()) {
 			d20plus.ut.log("No config found! Initialising new config...");
 			await d20plus.cfg.pMakeDefaultConfig();
 		}
 
-		configHandout = d20plus.cfg.getConfigHandout();
+		const configHandout = d20plus.cfg.getConfigHandout();
 		if (configHandout) {
 			configHandout.view.render();
 			return new Promise(resolve => {
@@ -2728,9 +2732,21 @@ function baseConfig () {
 		});
 	};
 
-	d20plus.cfg.getConfigHandout = () => {
-		d20plus.ut.getJournalFolderObj(); // ensure journal init
+	d20plus.cfg.checkConfigHandout = async () => {
+		d20plus.ut.getJournalFolderObj();	// ensure journal init
+		d20.Campaign.handouts.fetch();		// it's not async so it will become effective after b20 creates another handout
+		const configHandouts = await d20.Campaign.handouts.models
+			.pSerialAwaitFilter(handout => {
+				return handout.attributes.name === CONFIG_HANDOUT;
+			});
+		configHandouts.forEach((handout, i) => {
+			i > 0 && handout.destroy();		// clean the leftover handouts
+		})
+		return configHandouts.length;
+	}
 
+	d20plus.cfg.getConfigHandout = () => {
+		d20plus.ut.log("Getting config handout: ", Array.isArray(d20.Campaign.handouts.models));
 		return d20.Campaign.handouts.models.find(function (handout) {
 			return handout.attributes.name === CONFIG_HANDOUT;
 		});
@@ -3297,6 +3313,11 @@ function baseConfig () {
 		const hintStyle = d20plus.ut.dynamicStyles("hints");
 		if (showHints) hintStyle.html(d20plus.css.clickableConditionHints);
 		else hintStyle.html("");
+
+		const compactMarkers = d20plus.cfg.getOrDefault("token", "compactMarkersMenu");
+		const markerMenuStyle = d20plus.ut.dynamicStyles("markerMenu");
+		if (compactMarkers) markerMenuStyle.html(d20plus.css.betterTokenMarkersMenu);
+		else markerMenuStyle.html("");
 
 		const amOn = d20plus.cfg.getOrDefault("chat", "showTokenMenu") !== "none";
 		const amStyle = d20plus.ut.dynamicStyles("actions");
@@ -19493,6 +19514,39 @@ function baseCss () {
 		}
 	`;
 
+	d20plus.css.betterTokenMarkersMenu = `
+		#radial-menu .markermenu.open {
+			width: 301px;
+			height: auto;
+			line-height: 0px;
+			border-radius: 25px;
+			padding: 15px;
+			overflow: visible;
+			margin-left: 20px;
+		}
+		#radial-menu .markermenu.open::before {
+			content: " ";
+			background: inherit;
+			width: 50px;
+			height: 50px;
+			display: block;
+			position: absolute;
+			left: -24px;
+			top: 33px;
+			border-radius: 25px;
+			z-index: -1;
+		}
+		#radial-menu .markermenu .statusicon {
+			margin: 1px;
+			width: 28px;
+			height: 28px;
+			box-sizing: border-box;
+			border: 4px solid transparent;
+			padding: 0px;
+			background-position: center;
+		}
+	`;
+
 	d20plus.css.deserifyDarkmode = `
 		.sheet-darkmode #tab-content {
 			font-family: unset;
@@ -27745,7 +27799,7 @@ const D20plus = function (version) {
 				// this should always trigger after window.onload has fired, but track init state just in case
 				(function waitForD20 () {
 					if ($("#textchat").get(0) && !$(".boring-chat").get(0)) d20plus.ut.showInitMessage();
-					if ((typeof window.d20 !== "undefined" && !$("#loading-overlay").is(":visible") && !hasRunInit) || window.currentPlayer?.d20) {
+					if ((typeof window.d20 !== "undefined" || window.currentPlayer?.d20) && !$("#loading-overlay").is(":visible") && !hasRunInit) {
 						hasRunInit = true;
 						if (!window.d20) window.d20 = window.currentPlayer.d20;
 						d20plus.Init();
