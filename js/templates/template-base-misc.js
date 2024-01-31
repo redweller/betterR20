@@ -437,6 +437,52 @@ function initHTMLbaseMisc () {
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
+
+	document.addEventListener("b20initTemplates", function initHTML () {
+		d20plus.html.layerExtrasButton = `
+		<div class="toolbar-button-outer b20" style="color: var(--vtt-toolbar-active-selection-color);" id="extra-layer-button">
+			<div class="toolbar-button-mid">
+				<div class="toolbar-button-inner" tabindex="0">
+					<div style="" class="icon-slot icon-circle">
+						<span style="font-size: 1.5em;font-family: Pictos;" class="grimoire__roll20-icon">|</span>
+					</div>
+					<div class="submenu-caret"></div>
+				</div>
+				<span class="label" style="">EXTRA</span>
+			</div>
+			<div class="toolbar-tooltip-outer" style="filter: initial; --0c2fd930: 6px;">
+				<div class="toolbar-tooltip-caret"></div>
+				<div  class="toolbar-tooltip-inner">
+					<span class="toolbar-tooltip-label text-sm-medium">Extra editable layers</span>
+					<span class="toolbar-shortcut-label">[b20]</span>
+				</div>
+			</div>
+			<span class="decoration" style="color: inherit;"></span>
+		</div>
+		`;
+		document.removeEventListener("b20initTemplates", initHTML, false);
+	});
+
+	d20plus.html.layerSecondaryPanel = (l) => `
+		<div class="toolbar-button-outer b20" style="color: var(--vtt-toolbar-active-selection-color);" id="${l.name.toLowerCase()}-layer-button">
+			<div class="toolbar-button-mid">
+				<div class="toolbar-button-inner" data-layer="${l.id}" tabindex="0">
+					<div style="" class="icon-slot icon-circle">
+						<span style="font-size: 1.5em;font-family: Pictos;" class="grimoire__roll20-icon">${l.icon}</span>
+					</div>
+				</div>
+				<span class="layer-toggle">E</span>
+				<span class="label" style="">${l.name}</span>
+			</div>
+			<div class="toolbar-tooltip-outer" style="filter: initial; top: 6px;">
+				<div class="toolbar-tooltip-caret"></div>
+				<div  class="toolbar-tooltip-inner">
+					<span class="toolbar-tooltip-label text-sm-medium">${l.tooltip}</span>
+					<span class="toolbar-shortcut-label">[b20]</span>
+				</div>
+			</div>
+		</div>
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLbaseMisc);

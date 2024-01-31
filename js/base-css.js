@@ -429,36 +429,6 @@ function baseCss () {
 			s: "#secondary-toolbar:hover",
 			r: "opacity: 1 !important;",
 		},
-		// addon layer bar
-		{
-			s: "#floatinglayerbar ul",
-			r: "margin: 0; padding: 0;",
-		},
-		{
-			s: "#floatinglayerbar li:hover, #floatinglayerbar li.activebutton",
-			r: "color: #333; background-color: #54C3E8; cursor: pointer;",
-		},
-		{
-			s: "#floatinglayerbar li",
-			r: "padding: 3px; margin: 0; border-bottom: 1px solid #999; display: block; text-align: center; line-height: 22px; font-size: 22px; color: #999; position: relative;",
-		},
-		{
-			s: "#floatinglayerbar.map li.choosemap, #floatinglayerbar.objects li.chooseobjects, #floatinglayerbar.gmlayer li.choosegmlayer, #floatinglayerbar.walls li.choosewalls, #floatinglayerbar.weather li.chooseweather, #floatinglayerbar.foreground li.chooseforeground, #floatinglayerbar.roofs li.chooseroofs, #floatinglayerbar.floors li.choosefloors, #floatinglayerbar.background li.choosebackground",
-			r: "background-color: #54C3E8; color: #333;",
-		},
-		// move layer bar to right
-		{
-			s: "#floatinglayerbar",
-			r: "pointer-events: all;",
-		},
-		{
-			s: "#floatinglayerbar.right",
-			r: "right: 30px; left: unset!important;",
-		},
-		{
-			s: "#floatinglayerbar",
-			r: "left: 20px;",
-		},
 		// Config & dark mode fixes
 		{
 			s: ".config-name",
@@ -492,76 +462,6 @@ function baseCss () {
 		{
 			s: ".ui-dialog-content::-webkit-scrollbar-thumb",
 			r: "background-color: rgba(100, 100, 100, 0.5);",
-		},
-		// extra layer buttons
-		{
-			s: "#editinglayer.weather div.submenu li.chooseweather, #editinglayer.foreground div.submenu li.chooseforeground, #editinglayer.floors div.submenu li.choosefloors, #editinglayer.roofs div.submenu li.chooseroofs, #editinglayer.background div.submenu li.choosebackground",
-			r: "background-color: #54C3E8; color: #333;",
-		},
-		{
-			s: "#editinglayer.objects .currentselection::after",
-			r: "content: \"U\";",
-		},
-		{
-			s: "#editinglayer.map .currentselection::after",
-			r: "content: \"G\";",
-		},
-		{
-			s: "#editinglayer.weather .currentselection:after",
-			r: "content: \"C\";",
-		},
-		{
-			s: "#editinglayer.foreground .currentselection:after",
-			r: "content: \"B\";",
-		},
-		{
-			s: "#editinglayer.floors .currentselection:after",
-			r: "content: \"I\";",
-		},
-		{
-			s: "#editinglayer.roofs .currentselection:after",
-			r: "content: \"H\";",
-		},
-		{
-			s: "#editinglayer.background .currentselection:after",
-			r: "content: \"a\";",
-		},
-		{
-			s: "#editinglayer.gmlayer .currentselection:after",
-			r: "content: \"E\";",
-		},
-		{
-			s: "#editinglayer.gmlayer > span.currentselection",
-			r: "display:unset;",
-		},
-		{
-			s: "#editinglayer.gmlayer #editing_layer_icon",
-			r: "display:none;",
-		},
-		// layer visibility toggles
-		{
-			s: "#editinglayer .pictos.layer_toggle",
-			r: "float: right; cursor: alias; pointer-events: all;",
-		},
-		{
-			s: "#editinglayer li.stashed",
-			r: "pointer-events: none;",
-		},
-		{
-			s: "#editinglayer li.stashed .pictos.layer_toggle",
-			r: "position: relative; left: -19px; margin-right: -20px; margin-left: 0px;",
-		},
-		{
-			s: "#editinglayer li.stashed .pictos.layer_toggle::after",
-			r: "content: \"d\"; position: relative; left: -16px; color: rgba(200,50,50,0.7);",
-		},
-		{
-			s: "#playerzone #floatinglayerbar li.off > span::after",
-			r: "content: \"d\"; color: rgba(200, 100, 100, 0.7); margin-left: -20px;",
-		},
-		{
-			s: "#playerzone #floatinglayerbar li.off",
-			r: "color: rgba(153, 153, 153, 0.5); pointer-events: none;",
 		},
 		// adjust the "Talking to Yourself" box
 		{
@@ -1702,6 +1602,310 @@ function baseCss () {
 		/* Widen traits template for spell descriptions (not necessary) */
 		.sheet-rolltemplate-traits {
 			width:90%;
+		}
+	`;
+
+	d20plus.css.layerToolbar = `
+		.b20.drawer-outer, .b20 .drawer-views {
+			display: flex;
+			flex-shrink: 1;
+			flex-direction: column;
+			align-items: center;
+			position: absolute;
+			background: var(--vtt-toolbar-drawer-bg);
+			backdrop-filter: blur(5px);
+			min-height: 44px;
+			padding: 6px 2px;
+			padding-top: 6px;
+			padding-bottom: 6px;
+			border-radius: 8px;
+			bottom: 20px;
+			left: 60px;
+			padding-bottom: 3px;
+			padding-top: 6px;
+			z-index: 10499;
+			box-shadow: var(--vtt-toolbar-drawer-box-shadow);
+		}
+		.b20.toolbar-button-outer, .b20 .drawer-views .toolbar-button-outer {
+			position: relative;
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+			align-items: center;
+		}
+		.drawer-outer #extra-layer-button {
+			display: none;
+		}
+		.b20 .toolbar-button-mid {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		.b20 .toolbar-button-inner, .b20 .view-button-inner {
+			display: flex;
+			flex-direction: column;
+			align-content: space-between;
+			justify-content: center;
+			align-items: center;
+			position: relative;
+			width: 44px;
+			height: 40px;
+		}
+		.b20 .icon-slot {
+			color: var(--vtt-toolbar-icon-color);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 36px;
+			height: 36px;
+			border-radius: 12px;
+		}
+		.b20 .icon-circle {
+			background: var(--vtt-layer-btn-bg);
+			border-radius: 20px;
+		}
+		.b20 .icon-selected, .b20 .drawer-views .view-button-inner {
+			border: 1px solid;
+			border-radius: 12px;
+			border-color: var(--vtt-toolbar-border-color);
+			color: var(--72282855);
+		}
+		.b20 .b20-selected .icon-slot {
+			background-color: #446810;
+		}
+		.b20 .submenu-caret {
+			position: absolute;
+			background-image: linear-gradient(to top left, var(--vtt-submenu-caret-color) 50%, transparent 0);
+			background-size: 100% 100%;
+			background-repeat: no-repeat;
+			background-position: left,right;
+			width: 4px;
+			height: 4px;
+			bottom: 2px;
+			right: 4px;
+		}
+		.b20 span.grimoire__roll20-icon {
+			font-family: Roll20Icons;
+			font-size: var(--72a4ca39);
+			user-select: none;
+		  }
+		.b20 .label {
+			display: flex;
+			justify-content: center;
+			font-family: var(--font-family-proxima-nova);
+			color: var(--vtt-layer-label-color);
+			padding: 1.95px 5.85px 0px;
+			letter-spacing: .03rem;
+			font-size: 66%;
+			max-width: 0px;
+		}
+		.b20.toolbar-button-outer:hover .toolbar-button-inner {
+			border-radius: 12px;
+			filter: drop-shadow(0px 0px 4px rgba(122, 150, 60, 0.3)) drop-shadow(0px 0px 2px rgba(121, 174, 27, 0.1)) drop-shadow(1px 1px 4px rgba(135, 193, 64, 0.6));
+		}
+		.b20 .toolbar-tooltip-outer {
+			position: absolute;
+			left: 59px;
+			z-index:10500;
+			display: none;
+			flex-direction: row;
+			justify-content: center;
+			align-items: center;
+			height: 34px;
+			top: var(--0c2fd930);
+		}
+		.b20.toolbar-button-outer:hover .toolbar-tooltip-outer,
+		.b20 .drawer-views .toolbar-button-outer:hover .toolbar-tooltip-outer {
+			display: flex;
+		}
+		.b20 .toolbar-tooltip-caret {
+			background: var(--vtt-tooltip-bg);
+			transform: rotate(-45deg);
+			width: 8px;
+			height: 8px;
+		}
+		.b20 .toolbar-tooltip-inner {
+			background: var(--vtt-tooltip-bg);
+			position: absolute;
+			display: flex;
+			flex-grow: 1;
+			flex-direction: row;
+			justify-content: center;
+			align-items: center;
+			border-radius: 8px;
+			padding: 0px 8px 0px 8px;
+			gap: 8px;
+			left: 4px;
+		}
+		.b20 .toolbar-tooltip-label {
+			display: flex;
+			align-items: center;
+			color: var(--vtt-tooltip-color);
+			background: var(--vtt-tooltip-bg);
+			width: max-content;
+			height: 34px;
+		}
+		.b20 .toolbar-shortcut-label {
+			display: flex;
+			align-items: center;
+			color: var(--vtt-label-color);
+			background: var(--vtt-tooltip-bg);
+			width: max-content;
+			height: 34px;
+			font-weight: bold;
+		}
+		#layers-label {
+			margin-bottom: 4px;
+			font-size: 9px;
+		}
+		#master-toolbar .toolbar-button-mid .label {
+			font-size: 8px;
+			margin: -3px 0px 4px 0px;
+		}
+		/* Layer visibility toggles */
+		.b20 .layer-toggle {
+			font-family: Pictos;
+			position: relative;
+			margin: 0px 0px -16px 0px;
+			top: -14px;
+			left: 10px;
+			background-color: var(--vtt-layer-btn-bg);
+			border-radius: 8px;
+			width: 16px;
+			height: 16px;
+			text-align: center;
+			line-height: 16px;
+			cursor: alias;
+			opacity: 0.7;
+		}
+		.toolbar-button-inner.layer-off {
+			pointer-events: none;
+			filter: opacity(0.5) brightness(1.2);
+		}
+		.toolbar-button-inner.layer-off::after {
+			content: "d";
+			width: 16px;
+			height: 16px;
+			font-family: Pictos;
+			margin-top:-16px;
+			position: relative;
+			left: 11px;
+			top: 1px;
+			font-size: 15px;
+			color: rgb(177, 0, 0);
+		}
+		html.dark .toolbar-button-inner.layer-off::after {
+			top: 3px;
+		}
+		/* View toggles */
+		.b20.drawer-outer .drawer-views {
+			left: 50px;
+			bottom: 0px;
+		}
+		.b20 .drawer-views .toolbar-button-mid {
+			height: 36px;
+			border-radius: 20px;
+			padding: 0px;
+			margin: 2px 4px;
+		}
+		.b20 .drawer-views .view-button-inner {
+			margin-bottom: -10px;
+			border-radius: 20px;
+			border: 1px solid transparent;
+			border-bottom: none;
+			border-top: none;
+			width: 34px;
+		}
+		.b20 .drawer-views .last .view-button-inner {
+			border-top-left-radius: 0px;
+			border-top-right-radius: 0px;
+			border-top: none;
+		}
+		.b20 .drawer-views .first .view-button-inner {
+			border-bottom-left-radius: 0px;
+			border-bottom-right-radius: 0px;
+		}
+		.b20 .drawer-views .middle .view-button-inner {
+			border-radius: 0px;
+			border-top: 0px;
+		}
+		.b20 .drawer-views .view-icon-slot {
+			width: 36px;
+			height: 38px;
+			line-height: 18px;
+			border-radius: 20px;
+			padding: 8px;
+			box-sizing: border-box;
+		}
+		.b20 .drawer-views .label {
+			top: 0px;
+			position: relative;
+			font-size: 7px;
+			max-width: 36px;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overflow: visible;
+			overflow-x: clip;
+			padding: 0px;
+			display: block;
+		}
+		.b20 .drawer-views:hover .view-button-inner {
+			border: 1px solid var(--vtt-toolbar-border-color);
+			border-bottom: none;
+			border-top: none;
+		}
+		.b20 .drawer-views .active .view-icon-slot {
+			background: var(--vtt-layer-btn-bg);
+		}
+		.b20 .drawer-views .toolbar-button-outer:hover .view-button-inner {
+			filter: drop-shadow(0px 0px 4px rgba(70, 190, 173, 0.3)) drop-shadow(0px 0px 5px rgba(27, 174, 133, 0.1)) drop-shadow(1px 1px 5px rgba(64, 193, 169, 0.6));
+		}
+		.b20 .drawer-views .active .view-icon-slot::after {
+			font-family: Pictos;
+			content: "E";
+			position: relative;
+			opacity: 0.7;
+			top: -31px;
+			left: 15px;
+		}
+	`;
+
+	d20plus.css.hideExtraLayersToggle = `
+		.b20 .layer-toggle {
+			display: none;
+		}
+	`;
+
+	d20plus.css.betterTokenMarkersMenu = `
+		#radial-menu .markermenu.open {
+			width: 301px;
+			height: auto;
+			line-height: 0px;
+			border-radius: 25px;
+			padding: 15px;
+			overflow: visible;
+			margin-left: 20px;
+		}
+		#radial-menu .markermenu.open::before {
+			content: " ";
+			background: inherit;
+			width: 50px;
+			height: 50px;
+			display: block;
+			position: absolute;
+			left: -24px;
+			top: 33px;
+			border-radius: 25px;
+			z-index: -1;
+		}
+		#radial-menu .markermenu .statusicon {
+			margin: 1px;
+			width: 28px;
+			height: 28px;
+			box-sizing: border-box;
+			border: 4px solid transparent;
+			padding: 0px;
+			background-position: center;
 		}
 	`;
 

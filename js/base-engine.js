@@ -47,58 +47,6 @@ function d20plusEngine () {
 		}
 
 		if (window.is_gm) {
-			// add lighting layer tool
-			if (!$(`#editinglayer .choosewalls`).length) {
-				$(`#editinglayer .choosegmlayer`).after(`
-					<li class="choosewalls">
-						<span class="pictostwo">r</span> 
-						${__("ui_bar_barriers")}
-					</li>
-				`);
-			}
-
-			// add DL objects tool
-			if (!$(`#placelight`).length) {
-				const $placeControl = $(`<li id="placeObject">
-					<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-					<use href="#place-object-icon"></use>
-					</svg>
-					<div class="submenu"><ul>
-						<li id="placelight" tip="Place Light">
-							<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-							<use href="#torch-icon"></use>
-							</svg>
-							Place Light
-						</li>
-						<li id="placeWindow">
-							<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-							<use href="#window-icon"></use>
-							</svg>
-							Place Window
-						</li>
-						<li id="placeDoor">
-							<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-							<use href="#door-icon"></use>
-							</svg>
-							Place Door
-						</li>
-					</ul></div>
-				</li>`);
-				$placeControl.find(`#placelight`).on("click", () => {
-					d20plus.setMode("placelight");
-					$placeControl.addClass("activebutton");
-				});
-				$placeControl.find(`#placeWindow`).on("click", () => {
-					d20plus.setMode("placeWindow");
-					$placeControl.addClass("activebutton");
-				});
-				$placeControl.find(`#placeDoor`).on("click", () => {
-					d20plus.setMode("placeDoor");
-					$placeControl.addClass("activebutton");
-				});
-				$(`#measure`).after($placeControl);
-			}
-
 			$("#page-toolbar").on("mousedown", ".js__settings-page", function () {
 				let e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
 				e.view._template = $.jqotec("#tmpl_pagesettings");
@@ -130,8 +78,8 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.swapTemplates = () => {
-		const oldToolbar = document.getElementById("floatingtoolbar");
-		d20plus.isOptedInNewUI = !oldToolbar;
+		const $betaSwitch = $("#new-toolbar-toggle");
+		d20plus.betaFeaturesEnabled = $betaSwitch.prop("checked");
 
 		document.dispatchEvent(new Event(`b20initTemplates`));
 		d20plus.ut.log("Swapping templates...");
@@ -206,7 +154,8 @@ function d20plusEngine () {
 			}).addTouch();
 		}
 
-		if (!d20plus.isOptedInNewUI) {
+		if (!d20plus.betaFeaturesEnabled) { // Jan 2024 beta features include the new Page Toolbar
+			// this should be executed only for the old Page Toolbar
 			overwriteDraggables();
 			$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
 
@@ -224,7 +173,7 @@ function d20plusEngine () {
 				debouncedOverwrite();
 			}
 		} else {
-			$(`#page-toolbar`).hide();
+			$(`#page-toolbar`).hide(); // hide the old Page Toolbar that pops with b20 styling
 		}
 
 		$(`body`).on("mouseup", "li.dl", (evt) => {
@@ -969,11 +918,11 @@ function d20plusEngine () {
 				}
 			}, 35);
 		})
-	};// RB20 EXCLUDE START
+	};
 
 	d20plus.engine.layersIsMarkedAsHidden = (layer) => {
 		const page = d20.Campaign.activePage();
-		if (page && page.get && page.get(`bR20cfg_hidden`)) return page.get(`bR20cfg_hidden`).search(layer) > -1;
+		return page?.get(`bR20cfg_hidden`)?.search(layer) > -1;
 	}
 
 	d20plus.engine.layersVisibilityCheck = () => {
@@ -984,15 +933,10 @@ function d20plusEngine () {
 			}) || d20plus.engine.layersIsMarkedAsHidden(layer);
 			d20plus.engine.layerVisibilityOff(layer, isHidden, true);
 		});
-		if (!$(`#floatinglayerbar`).hasClass("objects")
-			&& window.currentEditingLayer === "objects") $(`#floatinglayerbar`).addClass("objects");
 	}
 
-	d20plus.engine.layersToggle = (event) => {
-		event.stopPropagation();
-		const target = event.target;
+	d20plus.engine.layersToggle = (layer) => {
 		const page = d20.Campaign.activePage();
-		const layer = target.parentElement.className.replace(/.*choose(\w+?)\b.*/, "$1");
 		if (!page.get(`bR20cfg_hidden`)) page.set(`bR20cfg_hidden`, "");
 		if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
 			d20plus.engine.layerVisibilityOff(layer, false);
@@ -1002,14 +946,11 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.layerVisibilityOff = (layer, off, force) => {
-		const menuButton = $(`#editinglayer .choose${layer}`);
-		const secondaryButton = $(`#floatinglayerbar li.choose${layer}`);
 		const page = d20.Campaign.activePage();
 		if (off) {
 			if (d20plus.engine.objectsHideUnhide("layer", layer, "layeroff", false) || force) {
-				if (window.currentEditingLayer === layer) $(`#editinglayer li.chooseobjects`).click();
-				menuButton.addClass("stashed");
-				secondaryButton.addClass("off");
+				if (window.currentEditingLayer === layer) d20plus.ui.switchToR20Layer();
+				d20plus.ui.layerVisibilityIcon(layer, false);
 				if (!d20plus.engine.layersIsMarkedAsHidden(layer)) {
 					page.set(`bR20cfg_hidden`, `${page.get(`bR20cfg_hidden`)} ${layer}`);
 					page.save();
@@ -1017,8 +958,7 @@ function d20plusEngine () {
 			}
 		} else {
 			d20plus.engine.objectsHideUnhide("layer", layer, "layeroff", true);
-			menuButton.removeClass("stashed");
-			secondaryButton.removeClass("off");
+			d20plus.ui.layerVisibilityIcon(layer, true);
 			if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
 				page.set(`bR20cfg_hidden`, page.get(`bR20cfg_hidden`).replace(` ${layer}`, ""));
 				page.save();
@@ -1131,79 +1071,10 @@ function d20plusEngine () {
 				}
 			}
 		}))
-	};// RB20 EXCLUDE END
+	};
 
 	d20plus.engine.addLayers = () => {
 		d20plus.ut.log("Adding layers");
-
-		d20plus.mod.editingLayerOnclick();
-		if (window.is_gm) {
-			// Override icons a bit
-			$(`#floatingtoolbar .chooseobjects .pictos`).html("U");
-			$(`#editinglayer .submenu .choosegmlayer`).html(`
-				<span class="pictos">E</span>
-				${__("ui_bar_gm")}
-			`);
-
-			$(`#floatingtoolbar .choosemap`).html(`
-				<span class="pictos" style="padding: 0 3px 0 3px;">G</span> 
-				${__("ui_bar_map")}
-			`);
-
-			// Add layers to layer dropdown
-			if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
-				$(`#floatingtoolbar .choosemap`).after(`
-					<li class="choosebackground">
-						<span class="pictos">a</span>
-						${__("ui_bar_bg")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
-					</li>
-				`);
-				$(".choosebackground > .layer_toggle").on("click", d20plus.engine.layersToggle);
-			}
-
-			if (d20plus.cfg.getOrDefault("canvas", "showFloors")) {
-				$(`#floatingtoolbar .choosemap`).after(`
-					<li class="choosefloors">
-						<span class="pictos">I</span>
-						${__("ui_bar_fl")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
-					</li>
-				`);
-				$(".choosefloors > .layer_toggle").on("click", d20plus.engine.layersToggle);
-			}
-
-			if (d20plus.cfg.getOrDefault("canvas", "showRoofs")) {
-				$(`#floatingtoolbar .chooseobjects`).after(`
-					<li class="chooseroofs">
-						<span class="pictos">H</span>
-						${__("ui_bar_rf")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
-					</li>
-				`);
-				$(".chooseroofs > .layer_toggle").on("click", d20plus.engine.layersToggle);
-			}
-
-			if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
-				$(`#floatingtoolbar .choosegmlayer`).before(`
-					<li class="chooseforeground">
-						<span class="pictos">B</span>
-						${__("ui_bar_fg")}
-						<span class="pictos layer_toggle" title="${__("ui_bar_toggle_layer_title")}">E</span>
-					</li>
-				`);
-				$(".chooseforeground > .layer_toggle").on("click", d20plus.engine.layersToggle);
-			}
-
-			if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
-				$(`#floatingtoolbar .choosewalls`).after(`
-					<li class="chooseweather">
-						<span class="pictos">C</span>
-						${__("ui_bar_we")}
-					</li>
-				`);
-			}
-		}
 
 		d20.engine.canvas._renderAll = _.bind(d20plus.mod.renderAll, d20.engine.canvas);
 		d20.engine.canvas.sortTokens = _.bind(d20plus.mod.sortTokens, d20.engine.canvas);
@@ -1231,7 +1102,7 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.fixPolygonTool = () => {
-		if (d20plus.isOptedInNewUI) return;
+		if (!d20plus.newUIDisabled) return; // as of January 2024 newUI is always ON, so the below block is not needed
 		$("#editor-wrapper").on("pointerdown", x => { d20plus.engine.leftClicked = x.which === 1 });
 		$("#editor-wrapper").on("pointerup", x => { d20plus.engine.leftClicked = false });
 		d20plus.ut.injectCode(d20.engine, "finishCurrentPolygon", (finishDrawing, params) => {

@@ -674,33 +674,6 @@ function d20plusMod () {
 	},
 	// END ROLL20 CODE
 
-	// BEGIN ROLL20 CODE
-	d20plus.mod.editingLayerOnclick = () => {
-		$("#editinglayer").off(clicktype).on(clicktype, "li", function() {
-			var e = $(this);
-			$("#editinglayer").removeClass(window.currentEditingLayer);
-			$("#drawingtools .choosepath").show();
-			"polygon" !== d20.engine.mode && $("#drawingtools").hasClass("polygon") && $("#drawingtools").removeClass("polygon").addClass("path");
-
-			// BEGIN MOD
-			if (e.hasClass("chooseweather")) {
-				window.currentEditingLayer = "weather";
-				$("#drawingtools .choosepath").hide();
-				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon")
-			} else {
-				e.hasClass("choosebackground") ? window.currentEditingLayer = "background" : e.hasClass("chooseroofs") ? window.currentEditingLayer = "roofs" : e.hasClass("choosefloors") ? window.currentEditingLayer = "floors" : e.hasClass("chooseforeground") ? window.currentEditingLayer = "foreground" : e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
-					$("#drawingtools .choosepath").hide(),
-				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon"));
-			}
-			// END MOD
-			$("#editinglayer").addClass(window.currentEditingLayer);
-			// BEGIN MOD
-			d20.Campaign.activePage().onLayerChange();
-			// END MOD
-		});
-	};
-	// END ROLL20 CODE
-
 	// prevent prototype methods from breaking some poorly-written property loops
 	d20plus.mod.fixHexMethods = () => {
 		try {

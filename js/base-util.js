@@ -172,9 +172,10 @@ function baseUtil () {
 		} else {
 			d20plus.ut.showHardDickMessage(scriptName);
 		}
-		d20plus.isOptedInNewUI && !isStreamer && d20plus.ut.sendHackerChat(`
-			betteR20 does not support the new UI preview at this moment!
-			Using it will make some betteR20 functionality unavailable.
+		d20plus.betaFeaturesEnabled && !isStreamer && d20plus.ut.sendHackerChat(`
+			betteR20 does not support the beta UI preview at this moment!
+			Using it will make some betteR20 or roll20 functionality unavailable.
+			If you experience problems with Page Settings, disable roll20 Beta Features.
 		`);
 		$boringProgress
 			.before(`<span><span>&gt;</span>all systems operational</span>`)

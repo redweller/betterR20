@@ -462,7 +462,7 @@ function baseBARollTemplates () {
 
 	const switchTargeting = (mode) => {
 		const on = mode === "on";
-		d20.engine.mode	= on ? "targeting" : "select";
+		d20plus.mod.setMode(on ? "targeting" : "select");
 		d20.engine.canvas.hoverCursor = on ? "crosshair" : "move";
 		d20plus.ba.$dom.r20targetingNote[on ? "show" : "hide"]();
 		$("#babylonCanvas")[on ? "addClass" : "removeClass"]("targeting");

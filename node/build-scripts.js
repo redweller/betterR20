@@ -2,10 +2,10 @@ const fs = require("fs");
 const beautify_html = require("js-beautify").html;
 const lzstring = require("./lz-string");
 
-const SCRIPT_VERSION = "1.35.7.49";
+const SCRIPT_VERSION = "1.35.8.53";
 const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/";
 
-const SCRIPT_BETA = "1.35.183.1";
+const SCRIPT_BETA = "1.35.184.3";
 const SCRIPT_BETA_REPO = "https://github.com/redweller/betterR20/raw/beta/";
 const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
 -- Beta features overview:
@@ -27,9 +27,16 @@ The system is still in an unfinished state, so use with caution!
 <strong>Edit Token Images dialog</strong>
 ⦁ manage token images at any moment via context menu
 ⦁ a better Random Side randomizer (gives seemingly more random results)
--- v.183.1 changes:
+-- v.184.1 changes:
 ⦁ edit token images directly from roll20 Token Editor
 ⦁ update Token Editor html (added Open Character button)
+-- v.184.2 changes:
+⦁ fix sending descriptions to chat via "book" icon
+⦁ fix Better Actions targeting with the NewUI
+⦁ fix Page Toolbar malfunctioning with the NewUI
+-- v.184.3 changes:
+⦁ add new Extra Layers toolbar as part of r20 newUI
+⦁ add show/hide layers toggles to b20 layers
 `;
 
 const matchString = `

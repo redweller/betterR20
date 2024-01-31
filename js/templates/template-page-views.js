@@ -7,7 +7,7 @@ function initHTMLpageViews () {
 			<div class="pagedetails">
 				<div class="alert alert-info" role="alert">
 					<p>Views are just another way to manage groups of items on your map
-					. Each View can include different items - tokens (except PCs), paths & images, regardless of their layer.
+					. Each View can include different items - tokens, paths & images, regardless of their layer.
 					</p><p>Assign desired items to Views via the Context menu
 					. Then you can easily hide or show those items using controls at the bottom of "Editing layer" dropdown
 					. This may be useful to store and quickly switch between different states of your location - day/night, rooftops/interiors etc.

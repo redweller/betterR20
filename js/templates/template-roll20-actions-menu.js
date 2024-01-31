@@ -132,7 +132,7 @@ function initHTMLroll20actionsMenu () {
 					<$ } $>
 
 					<!-- BEGIN MOD -->
-					<$ if(this.view && this.get && !d20plus.engine.tokenRepresentsPc(this) && d20.Campaign.activePage().get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
+					<$ if(this.view && this.get && d20.Campaign.activePage().get && d20.Campaign.activePage().get('bR20cfg_viewsEnable')) { $>
 						<li class='head hasSub' data-menuname='view'>
 							Assign view &raquo;
 							<ul class='submenu' data-menuname='view'>

@@ -67,9 +67,9 @@ function baseUi () {
 
 		$("#button-edit-config").on(window.mousedowntype, d20plus.cfg.openConfigEditor);
 		d20plus.tool.addTools();
-	};
+	};// RB20 EXCLUDE START
 
-	d20plus.ui.addQuickUiGm = () => {
+	/* d20plus.ui.addQuickUiGmLegacy = () => {
 		const $wrpBtnsMain = $(`#floatingtoolbar`);
 
 		// add quick layer selection panel
@@ -150,7 +150,161 @@ function baseUi () {
 				}
 			})
 		}
+	}; */ // RB20 EXCLUDE END
+
+	d20plus.ui.r20Buttons = [
+		{DOMid: "tokens-layer-button", id: "objects", color: "--vtt-toolbar-token-layer-btn-bg"},
+		{DOMid: "gm-layer-button", id: "gmlayer", color: "--vtt-toolbar-gm-layer-btn-bg"},
+		{DOMid: "lighting-layer-button", id: "walls", color: "--vtt-toolbar-lighting-layer-btn-bg"},
+		{DOMid: "map-layer-button", id: "map", color: "--vtt-toolbar-map-layer-btn-bg"},
+	];
+
+	d20plus.ui.b20Buttons = [
+		{name: "FG", tooltip: "Foreground Layer", icon: "B", id: "foreground", cfg: "showForeground"},
+		{name: "ROOF", tooltip: "Roof Layer", icon: "H", id: "roofs", cfg: "showRoofs"},
+		{name: "BG", tooltip: "Background Layer", icon: "a", id: "background", cfg: "showBackground"},
+		{name: "FLOOR", tooltip: "Floor Layer", icon: "I", id: "floors", cfg: "showFloors"},
+		{name: "COVER", tooltip: "Weather Exclusions", icon: "C", id: "weather", cfg: "showWeather"},
+	];
+
+	const switchToB20Layer = (evt) => {
+		const $selected = $(evt.currentTarget);
+		const $icon = $selected.find(".icon-slot");
+		const icon = $icon.find("span").text();
+		const $roll20LayersButton = $("#layers-menu-button").find(".grimoire__roll20-icon");
+
+		currentEditingLayer = $selected.data("layer");
+		d20.Campaign.activePage().onLayerChange();
+		d20plus.ui.b20LayersActive = true;
+
+		d20plus.ui.secondaryPanel.buttons.removeClass("b20-selected");
+		d20plus.ui.secondaryPanel.iconSlots.removeClass("icon-selected");
+
+		$selected.addClass("b20-selected");
+		$icon.addClass("icon-selected icon-circle");
+		d20plus.ui.$r20Buttons.removeClass("icon-selected").attr("style", "");
+		d20plus.ui.extraButton.icon.text(icon);
+		$roll20LayersButton.css({"font-family": "Pictos", "font-size": "1.5em"});
+		$roll20LayersButton.text(icon);
 	};
+
+	const switchLayersToolbar = (evt) => {
+		if (evt.delegateTarget.id === "extra-layer-button") {
+			d20plus.ui.$secondaryPanel
+				.css({left: "60px"})
+				.toggle();
+			if (d20plus.ui.$secondaryPanel.css("display") === "none"
+				&& d20plus.ui.b20LayersActive) {
+				d20plus.ui.extraButton.button.addClass("b20-selected");
+				d20plus.ui.extraButton.iconSlot.addClass("icon-selected");
+			} else {
+				d20plus.ui.extraButton.button.removeClass("b20-selected");
+				// d20plus.ui.extraButton.iconSlot.removeClass("icon-selected");
+			}
+		} else {
+			const roll20ToolbarVisible = $("#tokens-layer-button").parent().is(":visible");
+			d20plus.ui.$secondaryPanel
+				.css({left: "110px"})
+				.toggle(roll20ToolbarVisible);
+		}
+	};
+
+	d20plus.ui.switchToR20Layer = (evt) => {
+		d20plus.ui.secondaryPanel.buttons.removeClass("b20-selected");
+		d20plus.ui.secondaryPanel.iconSlots.removeClass("icon-selected").addClass("icon-circle");
+		d20plus.ui.extraButton.button.removeClass("b20-selected");
+		d20plus.ui.extraButton.icon.text("|");
+		d20plus.ui.b20LayersActive = false;
+
+		// the following check with setTimeout is required to properly process native r20 buttons.
+		// Without it the previously active layer won't be activated again
+		const $triggeredBy = $(evt?.target || "#tokens-layer-button .icon-slot");
+		const $pressed = $triggeredBy.closest(".toolbar-button-outer");
+		const $pressedIcon = $triggeredBy.closest(".icon-slot");
+		const $pressedButton = $triggeredBy.closest(".toolbar-button-inner");
+		const isFirstButton = $pressed.attr("id") === d20plus.ui.r20Buttons[0].id;
+		const $roll20LayersButton = $("#layers-menu-button").find(".grimoire__roll20-icon");
+		const secondaryPanelHidden = d20plus.ui.$secondaryPanel.css("display") === "none";
+
+		if (secondaryPanelHidden) d20plus.ui.extraButton.iconSlot.addClass("icon-circle").removeClass("icon-selected");
+		$roll20LayersButton.css({"font-family": "Roll20Icons", "font-size": "1.3em"});
+
+		// should manually apply layer instead
+		setTimeout(() => {
+			if ($pressedIcon.attr("style")) return;
+			const layer = d20plus.ui.r20Buttons.find(b => b.DOMid === $pressed.attr("id"));
+			if (!layer?.color) return;
+			$pressedIcon
+				.addClass("icon-selected")
+				.attr("style", `background-color: var(${layer.color});`);
+			currentEditingLayer = layer.id;
+			d20.Campaign.activePage().onLayerChange();
+		}, 100);
+	};
+
+	d20plus.ui.addQuickUiGm = () => {
+		if (!d20plus.cfg.getOrDefault("canvas", "extraLayerButtons")) return;
+		const buttonsHmtl = d20plus.ui.b20Buttons.reduce((html, l) => {
+			l.enabled = d20plus.cfg.getOrDefault("canvas", l.cfg);
+			return `${html}${(l.enabled ? d20plus.html.layerSecondaryPanel(l) : "")}`;
+		}, "");
+		if (!d20plus.ui.b20Buttons.some(b => b.enabled)) return;
+
+		d20plus.ui.$extraButton = $(d20plus.html.layerExtrasButton);
+		d20plus.ui.$secondaryPanel = $(`
+			<div class="drawer-outer b20" style="left: 111px;display:none">
+			${buttonsHmtl}</div>
+		`);
+
+		d20plus.ui.extraButton = {
+			icon: d20plus.ui.$extraButton.find(".icon-slot span"),
+			iconSlot: d20plus.ui.$extraButton.find(".icon-slot"),
+			button: d20plus.ui.$extraButton.find(".toolbar-button-inner"),
+		};
+
+		d20plus.ui.secondaryPanel = {
+			iconSlots: d20plus.ui.$secondaryPanel.find(".icon-slot"),
+			buttons: d20plus.ui.$secondaryPanel.find(".toolbar-button-inner"),
+		};
+
+		d20plus.ui.$r20Buttons = $("#tokens-layer-button")
+			.parent()
+			.find(".toolbar-button-outer:not(.b20) .icon-slot");
+
+		$("body").append(d20plus.ui.$secondaryPanel);
+		$("#map-layer-button").after(d20plus.ui.$extraButton);
+
+		d20plus.ui.$extraButton.on("mouseenter", ".toolbar-button-inner", (evt) => {
+			$(evt.currentTarget).find(".icon-slot").addClass("icon-selected").removeClass("icon-circle");
+		}).on("mouseleave", ".toolbar-button-inner", (evt) => {
+			if (d20plus.ui.b20LayersActive || d20plus.ui.$secondaryPanel.css("display") !== "none") return;
+			$(evt.currentTarget).find(".icon-slot").removeClass("icon-selected").addClass("icon-circle");
+		}).on(clicktype, ".toolbar-button-inner", switchLayersToolbar);
+
+		d20plus.ui.$secondaryPanel.on("mouseenter", ".toolbar-button-inner", (evt) => {
+			$(evt.currentTarget).find(".icon-slot").addClass("icon-selected").removeClass("icon-circle");
+		}).on("mouseleave", ".toolbar-button-inner", (evt) => {
+			if ($(evt.currentTarget).hasClass("b20-selected")) return;
+			$(evt.currentTarget).find(".icon-slot").removeClass("icon-selected").addClass("icon-circle");
+		}).on(clicktype, ".layer-toggle", (evt) => {
+			evt.stopPropagation();
+			const $layerIcon = $(evt.currentTarget).prev(".toolbar-button-inner");
+			const state = d20plus.engine.layersToggle($layerIcon.data("layer"));
+		}).on(clicktype, ".toolbar-button-inner", switchToB20Layer);
+
+		$(document.body)
+			.on("mouseup", d20plus.ui.r20Buttons.reduce((css, b) => {
+				return `${css}${css ? ", " : ""}#${b.DOMid}  .icon-slot`;
+			}, ""), d20plus.ui.switchToR20Layer)
+			.on(clicktype, "#layers-menu-button .toolbar-button-inner", switchLayersToolbar);
+
+		$("#playerzone").css({"z-index": 10100}); // otherwise it has the same z-index as native buttons
+	};
+
+	d20plus.ui.layerVisibilityIcon = (layer, state) => {
+		const $layerIcon = d20plus.ui.$secondaryPanel.find(`[data-layer=${layer}]`);
+		$layerIcon.toggleClass("layer-off", !state);
+	}
 
 	/**
 	 * Prompt the user to choose from a list of checkboxes. By default, one checkbox can be selected, but a "count"

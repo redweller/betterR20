@@ -19,9 +19,9 @@ function baseViews () {
 	};
 
 	d20plus.views._initMenuActions = () => {
-		$(`body`).on("click", ".chooseViews > li", function () {
+		$(`body`).on("click", ".drawer-views > .toolbar-button-outer", function () {
 			const page = d20.Campaign.activePage();
-			const items = $(".chooseViews > li")
+			const items = $(".drawer-views > .toolbar-button-outer")
 			const id = items.index(this);
 			const startgroupindex = (() => { for (let i = id; i >= 0; i--) { if (!page.get(`bR20cfg_views${i}Exclusive`)) return i; } })();
 			const endgroupindex = (() => { for (let i = id + 1; i <= 5; i++) { if (!page.get(`bR20cfg_views${i}Exclusive`)) return i - 1; } })();
@@ -53,27 +53,41 @@ function baseViews () {
 	}
 
 	d20plus.views._initLayerMenu = () => {
-		d20plus.views.layerMenu = $(`<ul class="chooseViews"></ul>`).appendTo($("#editinglayer .submenu"));
+		d20plus.views.layerMenu = $(`<div></div>`)
+			.appendTo($(".drawer-outer.b20"));
 	}
 
 	d20plus.views.populateMenu = () => {
 		const page = d20.Campaign.activePage();
 		if (!page) return;
 		if (!page.get("bR20cfg_viewsEnable")) return d20plus.views.layerMenu.html("");
-		let menuhtml = "";
+		let menuhtml = `<div class="drawer-views">`;
 		for (let id = 0; id <= 4; id++) {
 			if (id && !page.get(`bR20cfg_views${id}Enable`)) continue;
 			const viewname = page.get(`bR20cfg_views${id}Name`) || (id ? `View ${id}` : `Default view`);
 			const viewicon = page.get(`bR20cfg_views${id}Icon`) || "P";
 			const exclCheck = (id) => { return page.get(`bR20cfg_views${id}Exclusive`) };
-			const viewexcl = exclCheck(id) ? (exclCheck(id + 1) ? "mst" : "lst") : (exclCheck(id + 1) ? "fst" : "");
-			const viewactive = page.get(`bR20cfg_views${id}Off`) ? "off" : "";
-			menuhtml += `<li class="${[viewexcl, viewactive].join(" ")}">
-				<span class="view_toggle"><span class="pictos">E</span></span>
-				<span class="pictos">${viewicon}</span>
-				${viewname}
-			</li>`;
+			const viewexcl = exclCheck(id) ? (exclCheck(id + 1) ? "middle" : "last") : (exclCheck(id + 1) ? "first" : "");
+			const viewactive = page.get(`bR20cfg_views${id}Off`) ? "" : "active";
+			menuhtml += `<div id="view-${id}-button" class="toolbar-button-outer ${[viewexcl, viewactive].join(" ")}" style="color: var(--vtt-toolbar-active-selection-color);">
+			<div class="toolbar-button-mid">
+				<div class="view-button-inner" data-viewId="${id}" tabindex="0">
+					<div class="view-icon-slot">
+						<span style="font-size: 1.5em;font-family: Pictos;" class="grimoire__roll20-icon">${viewicon}</span>
+					</div>
+				</div>
+				<span class="label">${viewname}</span>
+			</div>
+			<div class="toolbar-tooltip-outer" style="filter: initial; top: 6px;">
+				<div class="toolbar-tooltip-caret"></div>
+				<div class="toolbar-tooltip-inner">
+					<span class="toolbar-tooltip-label text-sm-medium">Toggle ${viewname}</span>
+					<span class="toolbar-shortcut-label">[b20]</span>
+				</div>
+			</div>
+		</div>`;
 		}
+		menuhtml += `</div>`;
 		d20plus.views.layerMenu.html(menuhtml);
 	}
 
@@ -122,14 +136,14 @@ function baseViews () {
 
 	d20plus.views.changeViewState = (id, state) => {
 		const page = d20.Campaign.activePage();
-		const menuItem = $(".chooseViews > li").get(id);
+		const menuItem = $(".drawer-views > .toolbar-button-outer").get(id);
 		if (state) {
-			$(menuItem).removeClass("off");
+			$(menuItem).addClass("active");
 			page.set(`bR20cfg_views${id}Off`, false);
 			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `view${id}off`, true);
 			d20plus.engine.portalsHideUnhide(`bR20_view${id}`, `view${id}off`, true);
 		} else {
-			$(menuItem).addClass("off");
+			$(menuItem).removeClass("active");
 			page.set(`bR20cfg_views${id}Off`, true);
 			d20plus.engine.objectsHideUnhide(`bR20_view${id}`, true, `view${id}off`, false);
 			d20plus.engine.portalsHideUnhide(`bR20_view${id}`, `view${id}off`, false);

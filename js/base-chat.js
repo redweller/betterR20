@@ -610,7 +610,7 @@ function baseChat () {
 			},
 			"dmgTokenBar": {
 				"name": "Token bar to apply HP changes to",
-				"default": "3",
+				"default": "1",
 				"_type": "_enum",
 				"__values": ["1", "2", "3"],
 				"_player": true,

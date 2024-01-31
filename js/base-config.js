@@ -10,6 +10,11 @@ function baseConfig () {
 			"default": false,
 			"_type": "boolean",
 		},
+		"compactMarkersMenu": {
+			"name": "Compact token markers menu",
+			"default": true,
+			"_type": "boolean",
+		},
 		"showTokenMenu": {
 			"name": "Add Quick Token Actions",
 			"default": "char",
@@ -39,18 +44,15 @@ function baseConfig () {
 			"__values": ["0.25", "0.5", "1"],
 			"_player": true,
 		},
-		"quickLayerButtons": {
+		"extraLayerButtons": {
 			"name": __("cfg_option_layer_panel"),
 			"default": true,
 			"_type": "boolean",
 		},
-		"quickLayerButtonsPosition": {
-			"name": __("cfg_option_layer_panel_position"),
-			"default": 1,
-			"_type": "_slider",
-			"__sliderMin": 0,
-			"__sliderMax": 1,
-			"__sliderStep": 1,
+		"allowHideExtraLayers": {
+			"name": __("cfg_option_layer_toggle"),
+			"default": true,
+			"_type": "boolean",
 		},
 		"showFloors": {
 			"name": __("cfg_option_show_fl"),
@@ -78,16 +80,16 @@ function baseConfig () {
 		},
 		"showWeather": {
 			"name": __("cfg_option_show_weather"),
-			"default": true,
+			"default": false,
 			"_type": "boolean",
 			"_player": false,
-		}, // RB20 EXCLUDE START
+		},
 		"scaleNamesStatuses": {
 			"name": __("cfg_option_scaled_names"),
 			"default": false,
 			"_type": "boolean",
 			"_player": true,
-		},
+		}, // RB20 EXCLUDE START
 		"enableNeatMenus": {
 			"name": __("cfg_option_neat_menus"),
 			"default": true,
@@ -118,18 +120,6 @@ function baseConfig () {
 			"__sliderMin": 1,
 			"__sliderMax": 100,
 			"__sliderStep": 1,
-		},
-		"hideDarkModeSwitch": {
-			"name": __("cfg_option_hide_dmswitch"),
-			"default": false,
-			"_type": "boolean",
-			"_player": true,
-		},
-		"hideHelpButton": {
-			"name": __("cfg_option_hide_help"),
-			"default": false,
-			"_type": "boolean",
-			"_player": true,
 		}, // RB20 EXCLUDE START
 		"selectJournalSearchType": {
 			"name": __("cfg_option_select_jrnsearch"),
@@ -149,11 +139,6 @@ function baseConfig () {
 				"betteR20",
 			],
 		}, // RB20 EXCLUDE END
-		"quickInitButtons": {
-			"name": __("cfg_option_quick_init_sort"),
-			"default": true,
-			"_type": "boolean",
-		},
 		"quickInitButtonsClear": {
 			"name": __("cfg_option_quick_init_clear"),
 			"default": true,
@@ -224,14 +209,13 @@ function baseConfig () {
 
 	d20plus.cfg.pLoadConfig = async () => {
 		d20plus.ut.log("Reading Config");
-		let configHandout = d20plus.cfg.getConfigHandout();
 
-		if (!configHandout) {
+		if (!await d20plus.cfg.checkConfigHandout()) {
 			d20plus.ut.log("No config found! Initialising new config...");
 			await d20plus.cfg.pMakeDefaultConfig();
 		}
 
-		configHandout = d20plus.cfg.getConfigHandout();
+		const configHandout = d20plus.cfg.getConfigHandout();
 		if (configHandout) {
 			configHandout.view.render();
 			return new Promise(resolve => {
@@ -302,9 +286,21 @@ function baseConfig () {
 		});
 	};
 
-	d20plus.cfg.getConfigHandout = () => {
-		d20plus.ut.getJournalFolderObj(); // ensure journal init
+	d20plus.cfg.checkConfigHandout = async () => {
+		d20plus.ut.getJournalFolderObj();	// ensure journal init
+		d20.Campaign.handouts.fetch();		// it's not async so it will become effective after b20 creates another handout
+		const configHandouts = await d20.Campaign.handouts.models
+			.pSerialAwaitFilter(handout => {
+				return handout.attributes.name === CONFIG_HANDOUT;
+			});
+		configHandouts.forEach((handout, i) => {
+			i > 0 && handout.destroy();		// clean the leftover handouts
+		})
+		return configHandouts.length;
+	}
 
+	d20plus.cfg.getConfigHandout = () => {
+		d20plus.ut.log("Getting config handout: ", Array.isArray(d20.Campaign.handouts.models));
 		return d20.Campaign.handouts.models.find(function (handout) {
 			return handout.attributes.name === CONFIG_HANDOUT;
 		});
@@ -865,34 +861,30 @@ function baseConfig () {
 			d20plus.ut.dynamicStyles("vttesHide").html(`
 				.actions_menu.d20contextmenu > ul > li[style] {display:none;}
 			`);
-		}
-		// more readable secondary bar (if it's too cluttered)
-		if (d20plus.cfg.getOrDefault("canvas", "showRoofs")
-			|| d20plus.cfg.getOrDefault("canvas", "showFloors")) {
-			d20plus.ut.dynamicStyles("secBarGuide").html(`
-				#floatinglayerbar li.choosegmlayer {border-top-width: 2px; border-top-style: solid;}
-				#floatinglayerbar li.choosemap, 
-				#floatinglayerbar li.chooseroofs, 
-				#floatinglayerbar li.choosefloors {
-					background-image: linear-gradient( 90deg, #8c8c8c5c 100%, #fff0 100%);
-				}
-			`);
 		} // RB20 EXCLUDE END
+
 		const showHints = d20plus.cfg.getOrDefault("chat", "showDNDHints");
 		const hintStyle = d20plus.ut.dynamicStyles("hints");
 		if (showHints) hintStyle.html(d20plus.css.clickableConditionHints);
 		else hintStyle.html("");
+
+		const compactMarkers = d20plus.cfg.getOrDefault("token", "compactMarkersMenu");
+		const markerMenuStyle = d20plus.ut.dynamicStyles("markerMenu");
+		if (compactMarkers) markerMenuStyle.html(d20plus.css.betterTokenMarkersMenu);
+		else markerMenuStyle.html("");
+
 		const amOn = d20plus.cfg.getOrDefault("chat", "showTokenMenu") !== "none";
 		const amStyle = d20plus.ut.dynamicStyles("actions");
 		if (amOn) amStyle.html(d20plus.css.actionMenu);
 		else amStyle.html("");
-		// properly align layer toolbar
-		const $wrpDmModeSw = $(`.dark-mode-switch`);
-		const $wrpBtnsMain = $(`#floatingtoolbar`);
-		const $ulBtns = $(`#floatinglayerbar`);
-		const darkModeShift = $wrpDmModeSw.css("display") === "none" || $wrpDmModeSw.css("visibility") === "hidden" ? 0 : 54;
-		$ulBtns.css({top: $wrpBtnsMain.height() + darkModeShift + 40});
-		$wrpDmModeSw.css({top: $wrpBtnsMain.height() + 40});
+
+		const extraLayers = d20plus.cfg.getOrDefault("canvas", "extraLayerButtons");
+		const extraLayersToggle = d20plus.cfg.getOrDefault("canvas", "allowHideExtraLayers");
+		const layerBarStyle = d20plus.ut.dynamicStyles("extralrs");
+		const layerToggleStyle = d20plus.ut.dynamicStyles("togglelrs");
+		if (extraLayers) layerBarStyle.html(d20plus.css.layerToolbar);
+		if (extraLayersToggle) layerToggleStyle.html("");
+		else layerToggleStyle.html(d20plus.css.hideExtraLayersToggle);
 	}
 
 	d20plus.cfg.baseHandleConfigChange = () => {
@@ -908,14 +900,7 @@ function baseConfig () {
 			$(`#secondary-toolbar`).css({opacity: v * 0.01});
 		}
 
-		$(`#floatinglayerbar`).toggle(d20plus.cfg.getOrDefault("canvas", "quickLayerButtons"));
-		$(`#floatinglayerbar`).toggleClass("right", !!d20plus.cfg.getOrDefault("canvas", "quickLayerButtonsPosition"));
-
-		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
 		$(`#init-quick-reset`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtonsClear"));
-
-		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
-		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
 		$(`#langpanel`).toggle(d20plus.cfg.getOrDefault("chat", "languages"));
 
 		$(`#journal > .content.searchbox`).toggle(d20plus.cfg.getOrDefault("interface", "selectJournalSearchType") === "Roll20");
