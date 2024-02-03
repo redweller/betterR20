@@ -2,7 +2,7 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.184.3
+// @version      1.35.184.4
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -182,10 +182,10 @@ function baseUtil () {
 		if (shownHardDickWarning) return;
 		shownHardDickWarning = true;
 
-		d20plus.ut.sendHackerChat(`
+		/* d20plus.ut.sendHackerChat(`
 			${scriptName} needs VTT Enhancement Suite! Please install it from <a href="${vttesUrl}">here</a>.
 			<br>
-		`, true);
+		`, true); */
 	};
 
 	d20plus.ut.chatTag = () => {
@@ -194,9 +194,10 @@ function baseUtil () {
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const classname = !legacyStyle ? "userscript-b20intro" : "userscript-hackerintro";
 		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
+		const vttesVersion = window.r20es?.hooks?.welcomeScreen?.config?.previousVersion;
 		const data = [
 			d20plus.scriptName,
-			window.r20es?.hooks?.welcomeScreen?.config?.previousVersion,
+			(vttesVersion && `v${vttesVersion}`) || "not",
 			d20plus.ut.WIKI_URL,
 		];
 		const welcomeTemplate = (b20v, vttv, faq) => `
@@ -205,7 +206,7 @@ function baseUtil () {
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					betteR20 
 					<span style=" font-size: 13px ; font-weight: normal">by 5etools</span>
-					<p style="font-size: 11px;line-height: 15px;font-family: monospace;color: rgb(32, 194, 14);">VTTES v${vttv} detected<br>${b20v} loaded</p>
+					<p style="font-size: 11px;line-height: 15px;font-family: monospace;color: rgb(32, 194, 14);">${`VTTES ${vttv} detected<br>${b20v} loaded`}</p>
 				</h1>
 				<p>Need help? Visit our <a href="${faq}/index.php/BetteR20_FAQ"><strong>wiki</strong></a> or join our <a href="https://discord.gg/nGvRCDs"><strong>Discord</strong></a>.</p>
 				<span title="You'd think this would be obvious.">
@@ -253,10 +254,10 @@ function baseUtil () {
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- Beta features overview:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br><strong>Better token Actions & Automation</strong><br>⦁ new automatic token action buttons: Rolls, Stats and Animation<br>⦁ rolls lets you select available actions with custom roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots and items are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>The system is still in an unfinished state, so use with caution!<br><strong>Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ a better Random Side randomizer (gives seemingly more random results)<br><code>-- v.184.1 changes:</code><br>⦁ edit token images directly from roll20 Token Editor<br>⦁ update Token Editor html (added Open Character button)<br><code>-- v.184.2 changes:</code><br>⦁ fix sending descriptions to chat via "book" icon<br>⦁ fix Better Actions targeting with the NewUI<br>⦁ fix Page Toolbar malfunctioning with the NewUI<br><code>-- v.184.3 changes:</code><br>⦁ add new Extra Layers toolbar as part of r20 newUI<br>⦁ add show/hide layers toggles to b20 layers<br></p>
+					<p>This version contains following changes<br><code>-- Beta features overview:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br><strong>Better token Actions & Automation</strong><br>⦁ new automatic token action buttons: Rolls, Stats and Animation<br>⦁ rolls lets you select available actions with custom roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots and items are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>The system is still in an unfinished state, so use with caution!<br><strong>Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ a better Random Side randomizer (gives seemingly more random results)<br><code>-- v.184.1 changes:</code><br>⦁ edit token images directly from roll20 Token Editor<br>⦁ update Token Editor html (added Open Character button)<br><code>-- v.184.2 changes:</code><br>⦁ fix sending descriptions to chat via "book" icon<br>⦁ fix Better Actions targeting with the NewUI<br>⦁ fix Page Toolbar malfunctioning with the NewUI<br><code>-- v.184.3 changes:</code><br>⦁ add new Extra Layers toolbar as part of r20 newUI<br>⦁ add show/hide layers toggles to b20 layers<br><code>-- v.184.4 changes:</code><br>⦁ trying to remove VTTES dependency<br>⦁ add setting to restyle token markers menu (without VTTES)<br></p>
 				</div>
 			`);
-			if (d20plus.ut.cmpVersions("1.35.8.51", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
+			if (d20plus.ut.cmpVersions("1.35.8.53", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
 			<div class="userscript-b20intro">
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					New release detected
@@ -349,9 +350,10 @@ function baseUtil () {
 	d20plus.ut.parseVersionInfo = (raw) => {
 		const info = JSON.parse(decodeURI(atob(raw)));
 		const time = d20plus.ut.timeAgo(info.date);
-		const phdm = info.phdm ? "<br>Detected DarkMode script" : "";
-		const dnd20 = info.dnd20 ? "<br>Detected Beyond20 extension" : "";
-		let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}${dnd20}<br>Info updated ${time}`;
+		const phdm = info.phdm ? `<br>Detected DarkMode script` : "";
+		const vttes = info.vtte ? `<br>Detected VTTES v${info.vtte}` : "";
+		const dnd20 = info.dnd20 ? `<br>Detected Beyond20 extension` : "";
+		let html = `Detected betteR20-${info.b20n} v${info.b20v}${vttes}${phdm}${dnd20}<br>Info updated ${time}`;
 		if (d20plus.ut.cmpVersions(info.b20v, d20plus.version) < 0) html += `<br>Player's betteR20 may be outdated`;
 		if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's VTTES may be outdated`;
 		return html;
@@ -1760,6 +1762,11 @@ function baseConfig () {
 			"default": false,
 			"_type": "boolean",
 		},
+		"compactMarkersMenu": {
+			"name": "Compact token markers menu",
+			"default": true,
+			"_type": "boolean",
+		},
 		"showTokenMenu": {
 			"name": "Add Quick Token Actions",
 			"default": "char",
@@ -1925,14 +1932,13 @@ function baseConfig () {
 
 	d20plus.cfg.pLoadConfig = async () => {
 		d20plus.ut.log("Reading Config");
-		let configHandout = d20plus.cfg.getConfigHandout();
 
-		if (!configHandout) {
+		if (!await d20plus.cfg.checkConfigHandout()) {
 			d20plus.ut.log("No config found! Initialising new config...");
 			await d20plus.cfg.pMakeDefaultConfig();
 		}
 
-		configHandout = d20plus.cfg.getConfigHandout();
+		const configHandout = d20plus.cfg.getConfigHandout();
 		if (configHandout) {
 			configHandout.view.render();
 			return new Promise(resolve => {
@@ -2003,9 +2009,21 @@ function baseConfig () {
 		});
 	};
 
-	d20plus.cfg.getConfigHandout = () => {
-		d20plus.ut.getJournalFolderObj(); // ensure journal init
+	d20plus.cfg.checkConfigHandout = async () => {
+		d20plus.ut.getJournalFolderObj();	// ensure journal init
+		d20.Campaign.handouts.fetch();		// it's not async so it will become effective after b20 creates another handout
+		const configHandouts = await d20.Campaign.handouts.models
+			.pSerialAwaitFilter(handout => {
+				return handout.attributes.name === CONFIG_HANDOUT;
+			});
+		configHandouts.forEach((handout, i) => {
+			i > 0 && handout.destroy();		// clean the leftover handouts
+		})
+		return configHandouts.length;
+	}
 
+	d20plus.cfg.getConfigHandout = () => {
+		d20plus.ut.log("Getting config handout: ", Array.isArray(d20.Campaign.handouts.models));
 		return d20.Campaign.handouts.models.find(function (handout) {
 			return handout.attributes.name === CONFIG_HANDOUT;
 		});
@@ -2556,6 +2574,12 @@ function baseConfig () {
 		const hintStyle = d20plus.ut.dynamicStyles("hints");
 		if (showHints) hintStyle.html(d20plus.css.clickableConditionHints);
 		else hintStyle.html("");
+
+		const compactMarkers = d20plus.cfg.getOrDefault("token", "compactMarkersMenu");
+		const markerMenuStyle = d20plus.ut.dynamicStyles("markerMenu");
+		const vttesRadiant = window.r20es?.hooks?.alternativeRadialMenu?.config.enabled;
+		if (compactMarkers && !vttesRadiant) markerMenuStyle.html(d20plus.css.betterTokenMarkersMenu);
+		else markerMenuStyle.html("");
 
 		const amOn = d20plus.cfg.getOrDefault("chat", "showTokenMenu") !== "none";
 		const amStyle = d20plus.ut.dynamicStyles("actions");
@@ -17366,6 +17390,40 @@ function baseCss () {
 		}
 	`;
 
+	d20plus.css.betterTokenMarkersMenu = `
+		#radial-menu .markermenu.open {
+			width: 301px;
+			height: auto;
+			line-height: 0px;
+			border-radius: 25px;
+			padding: 15px;
+			overflow: auto;
+			margin-left: 20px;
+			max-height: 254px;
+		}
+		#radial-menu .markermenu.open::before {
+			content: " ";
+			background: inherit;
+			width: 50px;
+			height: 50px;
+			display: block;
+			position: absolute;
+			left: -24px;
+			top: 33px;
+			border-radius: 25px;
+			z-index: -1;
+		}
+		#radial-menu .markermenu .statusicon {
+			margin: 1px;
+			width: 28px;
+			height: 28px;
+			box-sizing: border-box;
+			border: 4px solid transparent;
+			padding: 0px;
+			background-position: center;
+		}
+	`;
+
 	d20plus.css.deserifyDarkmode = `
 		.sheet-darkmode #tab-content {
 			font-family: unset;
@@ -25212,15 +25270,16 @@ const D20plus = function (version) {
 
 		(function waitForEnhancementSuite () {
 			let hasRunInit = false;
-			if (window.d20 || window.enhancementSuiteEnabled) {
+			if (window.d20 || window.enhancementSuiteEnabled || window.currentPlayer?.d20) {
 				d20plus.ut.log("Bootstrapping...");
 
 				// r20es will expose the d20 variable if we wait
 				// this should always trigger after window.onload has fired, but track init state just in case
 				(function waitForD20 () {
 					if ($("#textchat").get(0) && !$(".boring-chat").get(0)) d20plus.ut.showInitMessage();
-					if (typeof window.d20 !== "undefined" && !$("#loading-overlay").is(":visible") && !hasRunInit) {
+					if ((typeof window.d20 !== "undefined" || window.currentPlayer?.d20) && !$("#loading-overlay").is(":visible") && !hasRunInit) {
 						hasRunInit = true;
+						if (!window.d20) window.d20 = window.currentPlayer.d20;
 						d20plus.Init();
 					} else {
 						setTimeout(waitForD20, 50);
