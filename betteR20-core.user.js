@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.8.53
+// @version      1.35.8.54
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -261,15 +261,21 @@ function baseLanguage () {
 		stat_init: [`INITIATIVE`],
 		ba_title_rolls: [`Rolls`],
 		ba_title_stats: [`Stats`],
-		ba_title_animations: [`Animations`],
+		ba_group_general: [`General`],
 		ba_group_abilities: [`Abilities`],
 		ba_group_skills: [`Skills`],
 		ba_group_attacks: [`Attacks`],
 		ba_group_spells: [`Spells`],
+		ba_group_animations: [`Animations`],
 		ba_roll_initiative: [`Initiative`],
 		ba_roll_concentration: [`Concentration`],
 		ba_roll_deathsave: [`Death save`],
 		ba_roll_hitdice: [`Hit dice`],
+		ba_roll_save: [`Save`],
+		ba_roll_check: [`Check`],
+		ba_spells_cantrips: [`Cantrips`],
+		ba_spells_lvl: [`Level`],
+		ba_nothing_selected: [`You don't seem to have controllable tokens on this map. Please select something to begin`],
 		lang_common: [`Common`],
 		lang_dwarvish: [`Dwarvish`],
 		lang_elvish: [`Elvish`],
@@ -332,9 +338,11 @@ function baseLanguage () {
 		msg_b20_chat_help: [`<li>Full list of chat commands<br>type or press $0<br>or visit <a target='blank' href='$1'>roll20 wiki</a></li>`],
 		msg_b20_chat_help_title: [`<strong>List of chat commands:</strong><br>betteR20 commands marked with &#42;`],
 		msg_b20_vtte_init: [`VTTE detected and $0 successfully loaded.<br>`],
-		msg_b20_version_stream: [`<br>A newer version of $0 is available.<br><br>`],
-		msg_b20_version: [`<br>A newer version of $0 is available.<br>Get $1 <a href="$2">5etools</a> OR <a href="$3">core</a>.<br><br>`],
-		msg_welcome_versions: [`VTTES v$1 detected<br>$0 loaded`],
+		msg_b20_version_update_stream: [`<br>A newer version of $0 is available.<br><br>`],
+		msg_b20_version_update: [`<br>A newer version of $0 is available.<br>Get $1 <a href="$2">5etools</a> OR <a href="$3">core</a>.<br><br>`],
+		msg_b20_r20beta_warning: [`betteR20 does not support the beta UI preview at this moment! Using it MAY OR MAY NOT make some betteR20 or roll20 functionality unavailable. If you experience problems, try disabling roll20 Beta Features.`],
+		msg_welcome_not: [`not`],
+		msg_welcome_versions: [`VTTES $1 detected<br>$0 loaded`],
 		msg_welcome_faq: [`Need help? Visit our <a href="$0/index.php/BetteR20_FAQ"><strong>wiki</strong></a> or join our`],
 		msg_welcome_sarcasm: [`You'd think this would be obvious.`],
 		msg_welcome_p1: [`Please DO NOT post about this script or any related content in official channels, including the Roll20 forums.`],
@@ -511,15 +519,21 @@ function baseLanguage () {
 		stat_init: [`ИНИЦИАТИВА`],
 		ba_title_rolls: [`Броски`],
 		ba_title_stats: [`Инфо`],
-		ba_title_animations: [`Анимации`],
-		ba_group_abilities: [`Способности`],
+		ba_group_general: [`Общее`],
+		ba_group_abilities: [`Характеристики}`],
 		ba_group_skills: [`Умения`],
 		ba_group_attacks: [`Атаки`],
 		ba_group_spells: [`Заклинания`],
+		ba_group_animations: [`Анимации`],
 		ba_roll_initiative: [`Инициатива`],
 		ba_roll_concentration: [`Концентрация`],
 		ba_roll_deathsave: [`Спас от смерти`],
 		ba_roll_hitdice: [`Кость хитов`],
+		ba_roll_save: [`Спасбросок`],
+		ba_roll_check: [`Проверка`],
+		ba_spells_cantrips: [`Заговоры`],
+		ba_spells_lvl: [`Круг`],
+		ba_nothing_selected: [`На этой карте не найдено токенов, которые вы могли бы контролировать. Пожалуйста, выберите что-нибудь`],
 		lang_common: [`Общий`],
 		lang_dwarvish: [`Дварфийский`],
 		lang_elvish: [`Эльфийский`],
@@ -582,9 +596,11 @@ function baseLanguage () {
 		msg_b20_chat_help: [`<li>Полный список команд чата:<br>-нажмите $0<br>-или посетите <a target='blank' href='$1'>roll20 wiki</a></li>`],
 		msg_b20_chat_help_title: [`<strong>Список команд чата:</strong><br>Команды от betteR20 отмечены &#42;`],
 		msg_b20_vtte_init: [`VTTE обнаружен и $0 успешно загрузился.<br>`],
-		msg_b20_version_stream: [`<br>$0 обновился, доступна новая версия.<br><br>`],
-		msg_b20_version: [`<br>$0 обновился, доступна новая версия. Загрузите $1 в варианте <a href="$2">5etools</a> ИЛИ <a href="$3">core</a>.<br><br>`],
-		msg_welcome_versions: [`VTTES v$1 найден<br>$0 загружен`],
+		msg_b20_version_update_stream: [`<br>$0 обновился, доступна новая версия.<br><br>`],
+		msg_b20_version_update: [`<br>$0 обновился, доступна новая версия. Загрузите $1 в варианте <a href="$2">5etools</a> ИЛИ <a href="$3">core</a>.<br><br>`],
+		msg_b20_r20beta_warning: [`betteR20 пока не поддерживает betaUI preview от roll20! Включение betaUI МОЖЕТ (или нет) сделать часть функционала betteR20 недоступным. Если вы столкнулись с проблемой, попробуйте отключить betaUI preview в настройках roll20.`],
+		msg_welcome_not: [`не`],
+		msg_welcome_versions: [`VTTES $1 найден<br>$0 загружен`],
 		msg_welcome_faq: [`Нужна помощь? Посетите <a href="$0/index.php/BetteR20_FAQ"><strong>вики</strong></a> или зайдите в`],
 		msg_welcome_sarcasm: [`Вроде, это должно быть очевидно`],
 		msg_welcome_p1: [`Пожалуйста, НЕ НАДО постить про этот скрипт или относящийся к нему контент в официальных каналах, включая форумы Roll20.`],
@@ -714,9 +730,9 @@ function baseUtil () {
 							if (!isStreamer) {
 								const rawToolsInstallUrl = "https://github.com/redweller/betterR20/raw/run/betteR20-5etools.user.js";
 								const rawCoreInstallUrl = "https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js";
-								d20plus.ut.sendHackerChat(__("msg_b20_version", [scriptName, avail, rawToolsInstallUrl, rawCoreInstallUrl]));
+								d20plus.ut.sendHackerChat(__("msg_b20_version_update", [scriptName, avail, rawToolsInstallUrl, rawCoreInstallUrl]), true);
 							} else {
-								d20plus.ut.sendHackerChat(__("msg_b20_version_stream", [scriptName]));
+								d20plus.ut.sendHackerChat(__("msg_b20_version_update_stream", [scriptName]));
 							}
 						}, 1000);
 					}
@@ -732,10 +748,10 @@ function baseUtil () {
 		if (shownHardDickWarning) return;
 		shownHardDickWarning = true;
 
-		d20plus.ut.sendHackerChat(`
+		/* d20plus.ut.sendHackerChat(`
 			${scriptName} needs VTT Enhancement Suite! Please install it from <a href="${vttesUrl}">here</a>.
 			<br>
-		`, true);
+		`, true); */
 	};
 
 	d20plus.ut.chatTag = () => {
@@ -744,9 +760,10 @@ function baseUtil () {
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const classname = !legacyStyle ? "userscript-b20intro" : "userscript-hackerintro";
 		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
+		const vttesVersion = window.r20es?.hooks?.welcomeScreen?.config?.previousVersion;
 		const data = [
 			d20plus.scriptName,
-			window.r20es?.hooks?.welcomeScreen?.config?.previousVersion,
+			(vttesVersion && `v${vttesVersion}`) || __("msg_welcome_not"),
 			d20plus.ut.WIKI_URL,
 		];
 		const welcomeTemplate = (b20v, vttv, faq) => `
@@ -777,11 +794,7 @@ function baseUtil () {
 		} else {
 			d20plus.ut.showHardDickMessage(scriptName);
 		}
-		d20plus.betaFeaturesEnabled && !isStreamer && d20plus.ut.sendHackerChat(`
-			betteR20 does not support the beta UI preview at this moment!
-			Using it will make some betteR20 or roll20 functionality unavailable.
-			If you experience problems with Page Settings, disable roll20 Beta Features.
-		`);
+		d20plus.betaFeaturesEnabled && !isStreamer && d20plus.ut.sendHackerChat(__("msg_b20_r20beta_warning"), true);
 		$boringProgress
 			.before(`<span><span>&gt;</span>all systems operational</span>`)
 			.html("");// RB20 EXCLUDE START
@@ -887,9 +900,10 @@ function baseUtil () {
 	d20plus.ut.parseVersionInfo = (raw) => {
 		const info = JSON.parse(decodeURI(atob(raw)));
 		const time = d20plus.ut.timeAgo(info.date);
-		const phdm = info.phdm ? "<br>Detected DarkMode script" : "";
-		const dnd20 = info.dnd20 ? "<br>Detected Beyond20 extension" : "";
-		let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}${dnd20}<br>Info updated ${time}`;
+		const phdm = info.phdm ? `<br>Detected DarkMode script` : "";
+		const vttes = info.vtte ? `<br>Detected VTTES v${info.vtte}` : "";
+		const dnd20 = info.dnd20 ? `<br>Detected Beyond20 extension` : "";
+		let html = `Detected betteR20-${info.b20n} v${info.b20v}${vttes}${phdm}${dnd20}<br>Info updated ${time}`;
 		if (d20plus.ut.cmpVersions(info.b20v, d20plus.version) < 0) html += `<br>Player's betteR20 may be outdated`;
 		if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's VTTES may be outdated`;
 		return html;
@@ -1027,9 +1041,12 @@ function baseUtil () {
 		}
 	} // RB20 EXCLUDE END
 
-	d20plus.ut.fetchCharAttribs = async (char) => {
+	d20plus.ut.fetchCharAttribs = async (char, keepSync) => {
 		const attribs = char?.attribs;
 		if (!attribs) return false;
+		if (keepSync && !attribs.backboneFirebase) {
+			attribs.backboneFirebase = new BackboneFirebase(attribs)
+		}
 		if (attribs.length) {
 			return char;
 		}
@@ -3316,10 +3333,11 @@ function baseConfig () {
 
 		const compactMarkers = d20plus.cfg.getOrDefault("token", "compactMarkersMenu");
 		const markerMenuStyle = d20plus.ut.dynamicStyles("markerMenu");
-		if (compactMarkers) markerMenuStyle.html(d20plus.css.betterTokenMarkersMenu);
+		const vttesRadiant = window.r20es?.hooks?.alternativeRadialMenu?.config.enabled;
+		if (compactMarkers && !vttesRadiant) markerMenuStyle.html(d20plus.css.betterTokenMarkersMenu);
 		else markerMenuStyle.html("");
 
-		const amOn = d20plus.cfg.getOrDefault("chat", "showTokenMenu") !== "none";
+		const amOn = d20plus.cfg.getOrDefault("token", "showTokenMenu") !== "none";
 		const amStyle = d20plus.ut.dynamicStyles("actions");
 		if (amOn) amStyle.html(d20plus.css.actionMenu);
 		else amStyle.html("");
@@ -13292,32 +13310,97 @@ function initHTMLbaseMisc () {
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.bActionsButtons = `
-		<ul style="display: inline-block;" class="b20-token-menu">
-			<li style="color:unset!important;">
-				<span style="position:relative;display: inline-block;">
-					<button class="btn" data-type="rolls">${__("ba_title_rolls")}</button>
-					<div class="b20-rolls d20contextmenu">
-						<ul></ul>
+		d20plus.html.bActionsMenu = `
+		<div id="ba-panel">
+			<button aria-disabled="false" type="button" style="left: 62px;" class="el-button large page-button">
+				<span><span style="font-family: Pictos;font-size: 21px;">U</span></span>
+			</button>
+			<div class="ba-menu" style="display:none">
+				<div class="ba-title">
+				<span class="ba-token" data-action="findtoken"><img src="https://img.icons8.com/ios-glyphs/30/multicultural-people.png"></span>
+					<span class="ba-name">Selected</span>
+					<!--span style="font-size:15px; font-weight: bold;line-height: 16px;width:110px">${window.char?.name.ch || window.char?.name.tk}</span-->
+					<span class="ba-title-actions">
+						<button data-action="collapse" title="Collapse/expand"></button>
+						<button data-action="close" title="Close this menu">*</button>
+						<!--<button data-action="speakas" title="Speak as character">w</button>
+						<button data-action="opensheet" title="Open character sheet">U</button>
+						<button data-action="openchar" title="Open character settings">x</button><br>-->
+					</span>
+				</div>
+				<ul class="ba-tabs nav nav-tabs">
+					<li class="nav-tabs active" data-tab="general"><a>
+						<img src="https://img.icons8.com/ios-glyphs/30/pulse.png">
+						<span>${__("ba_group_general")}</span></a>
+					</li>
+					<li class="nav-tabs" data-tab="stats" style="display:none;"><a>
+						<img src="https://img.icons8.com/external-kmg-design-glyph-kmg-design/32/external-muscle-gym-kmg-design-glyph-kmg-design.png">
+						<span>${__("ba_group_abilities")}</span></a>
+					</li>
+					<li class="nav-tabs" data-tab="skills" style="display:none;"><a>
+						<img src="https://img.icons8.com/external-icongeek26-glyph-icongeek26/64/external-Lute-music-icongeek26-glyph-icongeek26.png">
+						<span>${__("ba_group_skills")}</span></a>
+					</li>
+					<li class="nav-tabs" data-tab="attacks" style="display:none;"><a>
+						<img src="https://img.icons8.com/external-prettycons-solid-prettycons/60/external-swords-games-prettycons-solid-prettycons.png">
+						<span>${__("ba_group_attacks")}</span></a>
+					</li>
+					<li class="nav-tabs" data-tab="spells" style="display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/fantasy.png">
+						<span>${__("ba_group_spells")}</span></a>
+					</li>
+					<li class="nav-tabs" data-tab="animations" style="float:right;display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/service.png">
+						<span>${__("ba_group_animations")}</span></a>
+					</li>
+				</ul>
+				<div class="ba-main">
+					<div class="ba-list content-left">
+						<ul class="active" data-list="general"></ul>
+						<ul data-list="stats"></ul>
+						<ul data-list="skills"></ul>
+						<ul data-list="attacks"></ul>
+						<ul data-list="spells"></ul>
+						<ul data-list="animations"></ul>
 					</div>
-				</span>
-				<span style="position:relative;">
-					<button class="btn" data-type="stats">${__("ba_title_stats")}</button>
-					<div class="b20-stats d20contextmenu">
-						<ul></ul>
+					<div class="ba-info content-right">
+						<ul class="active" data-pane="general"><li>${__("ba_nothing_selected")}</li></ul>
+						<ul data-pane="stats"><li> </li></ul>
+						<ul data-pane="skills"><li> </li></ul>
+						<ul data-pane="attacks"><li> </li></ul>
+						<ul data-pane="spells"><li> </li></ul>
+						<ul data-pane="animations">
+							<li>Animations are set in the betteR20 tools menu</li>
+						</ul>
 					</div>
-				</span>
-				<span style="position:relative; display: none">
-					<button class="btn" data-type="effects">Effects</button>
-				</span>
-				<span style="position:relative;">
-					<button class="btn" data-type="animate">Animate</button>
-					<div class="b20-animations d20contextmenu">
-						<ul></ul>
-					</div>
-				</span>
-			</li>
-		</ul>
+				</div>
+				<!-- <ul class="b20-token-menu">
+					<li style="color:unset!important;">
+						<span style="position:relative;display: inline-block;">
+							<button class="btn" data-type="rolls">${__("ba_title_rolls")}</button>
+							<div class="b20-rolls d20contextmenu">
+								<ul></ul>
+							</div>
+						</span>
+						<span style="position:relative;">
+							<button class="btn" data-type="stats">${__("ba_title_stats")}</button>
+							<div class="b20-stats d20contextmenu">
+								<ul></ul>
+							</div>
+						</span>
+						<span style="position:relative; display: none">
+							<button class="btn" data-type="effects">Effects</button>
+						</span>
+						<span style="position:relative;">
+							<button class="btn" data-type="animate">Animate</button>
+							<div class="b20-animations d20contextmenu">
+								<ul></ul>
+							</div>
+						</span>
+					</li>
+				</ul> -->
+			</div>
+		</div>
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});
@@ -18332,16 +18415,8 @@ function baseCss () {
 		},
 		// Styles for betterActions dialog
 		{
-			s: ".better-sheet .tab-content",
-			r: "height: calc(100% - 55px);",
-		},
-		{
-			s: ".better-sheet .tab-pane",
-			r: "display:none;height: 100%;",
-		},
-		{
-			s: ".better-sheet .tab-content > div",
-			r: "width:50%;display: inline-block;height: 100%;overflow: auto;",
+			s: "#ba-panel",
+			r: "display: none;",
 		},
 		// Styles for altered messages
 		{
@@ -19049,197 +19124,344 @@ function baseCss () {
 	`;
 
 	d20plus.css.actionMenu = `
-		#secondary-toolbar {
-			height: 40px;
-			line-height: 40px;
-		}
-		#secondary-toolbar .btn {
-			margin-right: 1px;
-		}
-		#secondary-toolbar .tokenactions:not([style*="display: none"]) {
-			display: inline-block !important;
-		}
-		#secondary-toolbar .b20-token-menu {
-			vertical-align: top;
-			position: relative;
-			top: -5px;
-		}
-		#secondary-toolbar .b20-token-menu > li {
-			overflow: visible;
-			font-size: 0px;
-		}
-		#secondary-toolbar .b20-token-menu span .d20contextmenu {
-			display: none;
-			left: 0px;
-		}
-		#secondary-toolbar .b20-token-menu span:hover .d20contextmenu {
-			display: block;
-		}
-		.b20-token-menu li.head.hasSub > span::after {
-			content: " »";
-		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu > ul,
-		#secondary-toolbar .b20-token-menu .d20contextmenu ul li ul.submenu {
-			top: 0px;
-			left: 100px;
-			width: 100px;
-			height: unset;
-			border: 2px solid black;
-			margin: 0;
-		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu ul li > ul.submenu {
-			display: none;
-		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu ul li:hover > ul.submenu {
-			display: inline-block;
-			overflow: visible;
-		}
-		#secondary-toolbar .b20-token-menu ul > li {
-			display: block;
-			overflow: visible;
-			padding: 2px 3px 2px 3px;
-			font-size: 13px;
-			line-height: 18px;
-			height: 18px;
-			text-align: left;
-			color: inherit;
-		}
-		#secondary-toolbar .b20-token-menu ul > li.hasSub:hover {
-			line-height: 28px;
-			height: 29px;
-		}
-		#secondary-toolbar .b20-token-menu ul > li.hasSub.selector:hover {
-			height: unset;
-			padding-bottom: 0px;
-			line-height: 18px;
-		}
-		#secondary-toolbar .b20-token-menu ul li.selector:hover > ul.submenu {
-			position: relative;
-			left: -3px;
-			border: none;
-			border-radius: unset;
-			display: block;
-		}
-		#secondary-toolbar .b20-token-menu ul li.selector > ul.submenu > li {
-			display: inline-block;
-			width: 70px;
-			border-left: unset;
-			box-sizing: border-box;
-			border-radius: unset;
-			height: 25px;
-			text-align: center;
-			margin: 0px;
-			line-height: 25px;
-			border-bottom: unset;
-		}
-		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu {
-			display: inline-flex;
-			flex-wrap: wrap;
-		}
-		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu li {
-			flex-basis: 32%;
-			height: 28px;
-			flex-grow: 1;
-			margin-top: 2px;
-		}
-		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu li:first-child {
-			flex-basis: 75px;
-		}
-		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu li:first-child::first-letter {
-			font-size: 24px;
-		}
-		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu li:last-child {
-			flex-basis: 25px;
-			flex-grow: 0;
-		}
-		.spellaction.unprepared > span {
-			color: #929292;
-		}
-		#secondary-toolbar .b20-token-menu .spellaction > ul > li {
-			font-weight: bolder;
-			font-size: 18px;
-		}
-		#secondary-toolbar .b20-token-menu ul li.selector > ul.submenu > li:first-child {
-			width: 30px;
-			font-weight: normal;
-		}
-		#secondary-toolbar .b20-token-menu li.selector.variable > ul > li:last-child {
-			width: 22px;
-			vertical-align: top;
-			border-right: none;
-			font-size: 16px;
-		}
-		#secondary-toolbar .b20-token-menu ul li.selector.variable > ul > li {
-			width: 44px;
-		}
-		#secondary-toolbar .b20-token-menu .spellaction.variable > ul > li > .submenu {
-			left: 23px;
-		}
-		.dark .b20-token-menu ul li.hasSub:hover {
-			background: var(--dark-primary-highlight);
-		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu label input[type="checkbox"] {
-			vertical-align: top;
-		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li > span > i {
-			font-style: normal;
-			width: 30px;
-			display: inline-block;
-			font-size: 8px;
-			font-weight: normal;
-		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li:not(.hasSub),
-		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li > span {
-			max-width: 100px;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
-		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu.b20-stats > ul,
-		#secondary-toolbar .b20-token-menu .d20contextmenu.b20-stats ul > li {
-			max-width: unset;
-			width: 210px;
-			font-size: 12px;
-			line-height: 14px;
-			cursor: default;
-			height: unset;
-			min-height: 15px;
-			white-space: unset;
-		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu.b20-stats ul > li {
-			width: 203px;
-		}
-		#secondary-toolbar .b20-token-menu .b20-stats strong {
-			font-weight: bolder;
-		}
-		#secondary-toolbar .d20contextmenu li > label {
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
-		#secondary-toolbar .mods > li:not(.last-in-group) {
-			border-bottom: none;
-		}
-		#secondary-toolbar .b20-stats button {
-			font-family:pictos;
-			background: var(--dark-primary);
-			line-height: 1;
-			border-radius: 5px;
-			margin-left: -2px;
-			vertical-align: super;
-		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu.b20-stats ul > li > span {
-			width: unset;
-			max-width: unset;
-			padding-left: 5px;
-			white-space: unset;
-			line-height: 12px;
-		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li > span {
-			display: inline-block;
-		}
 		/* Widen traits template for spell descriptions (not necessary) */
 		.sheet-rolltemplate-traits {
 			width:90%;
+		}
+
+		/* Adjust token actions position */
+		#secondary-toolbar.legacy-menu.toolbar-collapse-adjust {
+			left: 118px;
+		}
+		#secondary-toolbar.legacy-menu.toolbar-collapse-adjust.master-toolbar-collapsed {
+			left: 62px;
+		}
+
+		#ba-panel {
+			display: block;
+		}
+
+		/* Better actions button */
+		#ba-panel button.large.page-button {
+			position: absolute;
+			height: 40px;
+			width: 40px;
+			top: 20px;
+			border-radius: 8px;
+			padding: 0 !important;
+			background-color: var(--colors-light-060);
+			border-style: solid;
+			border-width: 1px;
+			border-color: var(--grayscale-light-l60);
+			backdrop-filter: blur(15px);
+		}
+		.dark #ba-panel button.large.page-button {
+			background-color: var(--colors-dark-050);
+			border-color: --grayscale-light-l-30;
+		}
+		#ba-panel button.large.page-button:hover {
+			border-width: 3px;
+		}
+
+		/* Better actions menu dialog (general) */
+		#ba-panel .ba-menu {
+			position: absolute;
+			left: 62px;
+			top: 72px;
+			width: 350px;
+			background-color: var(--vtt-surface);
+			border-radius: 8px;
+			box-shadow: var(--vtt-submenu-box-shadow);
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			padding: 4px;
+			font-family: var(--font-family-proxima-nova);
+			font-style: normal;
+			font-weight: 300;
+			font-size: 13px;
+			color: var(--vtt-grayscale-base);
+			transition: width 1s ease, opacity 1s ease;
+			opacity: 0.7;
+		}
+		#ba-panel:hover .ba-menu {
+			opacity: unset;
+		}
+		#ba-panel .ba-token {
+			background: var(--vtt-surface);
+			width: 45px;
+			display: inline-block;
+			height: 45px;
+			border-radius: 23px;
+			position: relative;
+			top: -10px;
+			left: -13px;
+			border: 1px solid var(--vtt-grayscale-base);
+		}
+		#ba-panel .ba-token img {
+			width: 45px;
+		}
+		.ba-title {
+			width: 100%;
+			height: 35px;
+		}
+		.ba-title .ba-name {
+			height: 100%;
+			display: inline-block;
+			vertical-align: middle;
+			font-weight: bold;
+		}
+		.ba-title-actions {
+			display: block;
+			float: right;
+			cursor: pointer;
+		}
+		.ba-title-actions button {
+			font-family: Pictos;
+			font-size: 15px;
+			padding: 3px;
+		}
+		.ba-menu .ba-main {
+			font-family: "Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;;
+			font-size: 13px;
+			font-weight: normal;
+		}
+
+		/* Better actions tabs */
+		#ba-panel .nav {
+			margin-bottom: 10px;
+			width: 100%;
+			padding-left: 34px;
+ 			box-sizing: border-box;
+			transition: padding-left 1s ease;
+		}
+		.ba-menu .nav-tabs > li > a {
+			padding: 9px;
+			height: 17px;
+			text-decoration: none;
+		}
+		#ba-panel .ba-tabs > .nav-tabs a:hover {
+			cursor: pointer;
+			background: rgba(155,155,155,0.5);
+		}
+		.dark .ba-menu .nav-tabs a img {
+			filter: contrast(0) brightness(2);
+		}
+		.ba-menu .nav-tabs a img {
+			width: 15px;
+ 			margin: -5px;
+		}
+		.ba-menu .nav:not(:hover) .nav-tabs.active a span, .ba-menu .nav-tabs li:hover a span {
+			max-width: 55px;
+			padding-left: 6px;
+			text-overflow: ellipsis;
+		}
+		.ba-menu .nav-tabs a span {
+			display: inline-block;
+			padding-left: 0px;
+			margin-right: -3px;
+			max-width: 0px;
+			color: var(--vtt-grayscale-base);
+			overflow: hidden;
+			transition: max-width 1s ease, padding-left 1s ease;
+		}
+
+		.ba-list.content-left, .ba-main .content-right {
+			display: inline-block;
+			overflow-x: hidden;
+			overflow-y: auto;
+			height: 216px;
+			margin-bottom: 6px;
+			padding: 0px 5px;
+			box-sizing: border-box;
+			scrollbar-width: thin;
+			scrollbar-color: transparent transparent;
+			scrollbar-gutter: stable;
+		}
+		.ba-list.content-left:hover, .ba-main .content-right:hover {
+			scrollbar-color: rgba(155,155,155,0.5) transparent;
+		}
+		.ba-main .content-left {
+			width: 40%;
+		}
+		.ba-main .content-right {
+			width: 60%;
+			float:right;
+		}
+		.ba-info > ul, .ba-list > ul {
+			list-style: none;
+			margin: 0px;
+		}
+		.ba-info > ul > li {
+			border-bottom: 1px solid rgba(155,155,155,0.5);
+			padding-bottom: 5px;
+		}
+		.ba-info > ul > li > span {
+			display: inline-block;
+			padding-right: 4px;
+			font-weight: lighter;
+			color: var(--vtt-grayscale-base);
+		}
+		.ba-info > ul > li > span strong {
+			font-weight: normal;
+			color: rgb(140,140,140);
+			white-space: nowrap;
+		}
+
+		/* Collapsed state */
+		#ba-panel .ba-menu.collapsed {
+			width: 170px;
+		  }
+		.ba-menu.collapsed .ba-name {
+			max-width: 75px;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		  }
+		#ba-panel .ba-menu.collapsed .nav {
+			padding-left: 0px;
+			margin-top: 5px;
+		  }
+		.ba-menu.collapsed .nav-tabs > li > a {
+			width: 3px;
+			height: 15px;
+			padding-top: 6px;
+		  }
+		  .ba-menu.collapsed .nav:not(:hover) .nav-tabs.active a span, .ba-menu.collapsed .nav-tabs li:hover a span {
+			display: none;
+			margin-right: -9px;
+		  }
+		  #ba-panel .ba-menu.collapsed .ba-list.content-left {
+			width: 164px;
+		  }
+		  #ba-panel .ba-menu.collapsed .ba-info.content-right {
+			display: none;
+		  }
+		  .ba-menu.collapsed .ba-title-actions [data-action="collapse"]::after {
+			content: "\`";
+			transform: none;
+		  }
+		  .ba-title-actions [data-action="collapse"]::after {
+			content: "4";
+			transform: rotate(180deg);
+			display: inline-block;
+		  }
+
+		.ba-list > ul > li {
+			border-bottom: 1px solid rgba(155,155,155,0.5);
+			padding: 5px 0px 5px 5px;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overflow-x: hidden;
+		}
+		.ba-list ul > li[data-action]:hover {
+			background-color: rgba(155,155,155,0.5);
+			cursor: pointer;
+		}
+		.ba-list > ul > li:hover > .submenu {
+			display: flex;
+			margin: 0px 5px 0px -5px;
+		}
+		.ba-list .submenu {
+			display: none;
+		}
+		.ba-list .submenu > li {
+			list-style: none;
+			display: block;
+			text-align: center;
+			padding: 3px;
+			box-sizing: content-box;
+			margin-bottom: -3px;
+			margin-top: 2px;
+			flex-grow: 1;
+			border-left: 1px solid rgba(155,155,155,0.5);
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.ba-list .submenu > li:first-child {
+			border-left: none;
+		}
+		.ba-list ul[data-list="spells"] > li > span {
+			text-align: right;
+			width: 100%;
+			display: inline-block;
+			padding-right: 14px;
+			box-sizing: border-box;
+			font-weight: bold;
+		}
+		.ba-list ul[data-list="spells"] > .hasSub > .submenu {
+			display: block;
+			margin: 0px;
+		}
+		.ba-list ul[data-list="spells"] > .hasSub > .submenu > li {
+			width: 100%;
+			display: block;
+			text-align: left;
+			margin: 3px 0px 3px -5px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			border-left: none;
+		}
+		.ba-list ul[data-list="spells"] i {
+			font-style: normal;
+			display: inline-block;
+			font-size: 8px;
+			font-weight: normal;
+			float: left;
+		}
+		.ba-list ul[data-list="spells"] .selector:hover .submenu {
+			display: flex;
+			margin-left: 0px; 
+		}
+		.ba-list ul[data-list="spells"] .submenu .parameters > .submenu {
+			display: none;
+		}
+		.ba-list ul[data-list="spells"] .submenu .parameters:hover > .submenu {
+			display: block;
+			position: absolute;
+			z-index: 10;
+			top: 75px;
+			left: 130px;
+			background: var(--vtt-surface);
+			height: 240px;
+			border-left: 1px dashed rgba(155,155,155,0.5);
+		}
+		.ba-list [data-list], .ba-info [data-pane] {
+			display: none;
+		}
+		.ba-list .active[data-list], .ba-info [data-pane] {
+			display: none;
+		}
+		.ba-list .active[data-list], .ba-info .active[data-pane] {
+			display: block;
+		}
+		.ba-list .mods {
+			position: sticky;
+			top: 0px;
+			background: var(--vtt-surface);
+			padding-top: 1px;
+		}
+		.ba-list li.mods label {
+			display: inline-block;
+			margin-bottom: 3px;
+		}
+		.ba-list li.mods label span {
+			cursor: pointer;
+			padding: 0px 3px;
+			margin-right: 3px;
+			border: 1px solid transparent;
+			border-radius: 4px;
+		}
+		.ba-list li.mods label span:hover {
+			background: rgba(155,155,155,0.5);
+		}
+		.ba-list li.mods input:checked + span {
+			background-color: var(--primary-dark);
+			color: var(--grayscale-dark-base);
+			border: 1px solid var(--primary-dark-l20);
+		}
+		.ba-list li.mods label input {
+			display: none;
 		}
 	`;
 
@@ -19521,8 +19743,9 @@ function baseCss () {
 			line-height: 0px;
 			border-radius: 25px;
 			padding: 15px;
-			overflow: visible;
+			overflow: auto;
 			margin-left: 20px;
+			max-height: 254px;
 		}
 		#radial-menu .markermenu.open::before {
 			content: " ";
@@ -26030,6 +26253,8 @@ SCRIPT_EXTENSIONS.push(baseChat);
 function baseBetterActions () {
 	d20plus.ba = d20plus.ba || {};
 
+	const peopleIcon = "https://img.icons8.com/ios-glyphs/30/multicultural-people.png";
+	const tabs = ["general", "stats", "skills", "attacks", "spells", "animations"];
 	const abilities = ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"];
 	let skills = "acrobatics,animal_handling,arcana,athletics,deception,history,insight,intimidation,investigation,medicine,nature,perception,performance,persuasion,religion,sleight_of_hand,stealth,survival";
 
@@ -26229,6 +26454,7 @@ function baseBetterActions () {
 			type: "head",
 			items: subtree,
 		});
+		return subtree;
 	}
 
 	const buildAbilities = () => {
@@ -26238,23 +26464,24 @@ function baseBetterActions () {
 				type: "selector",
 				items: [{
 					name: "Roll plain check",
-					icon: "🗹",
+					icon: __("ba_roll_check"),
 					action: "roll",
 					spec: "ability",
 					flags: ab,
 				}, {
 					name: "Save",
+					icon: __("ba_roll_save"),
 					action: "roll",
 					spec: "save",
 					flags: ab,
 				}],
 			}
 		});
-		buildGroup(__("ba_group_abilities"), subtree);
+		return buildGroup(__("ba_group_abilities"), subtree);
 	}
 
 	const buildSkills = () => {
-		buildGroup(__("ba_group_skills"), skills.map(sk => {
+		return buildGroup(__("ba_group_skills"), skills.map(sk => {
 			return {
 				name: i18n(sk.replaceAll("-", "_"), sk.toSentenceCase().replaceAll("_", " ")),
 				action: "roll",
@@ -26338,7 +26565,7 @@ function baseBetterActions () {
 			});
 			items.length && subtree.push({
 				resource: buildSpellSlots(char, lvl),
-				name: !i ? "Cantrips" : `Level ${lvl}`,
+				name: !i ? __("ba_spells_cantrips") : `${__("ba_spells_lvl")} ${lvl}`,
 				type: "head",
 				items,
 			});
@@ -26348,12 +26575,12 @@ function baseBetterActions () {
 				type: "head",
 			})
 		}
-		buildGroup(__("ba_group_spells"), subtree);
+		return buildGroup(__("ba_group_spells"), subtree);
 	}
 
 	const buildAttacks = () => {
 		const char = d20plus.ba.getSingleChar();
-		buildGroup(__("ba_group_attacks"), Object.entries(char.attacks || {}).filter(([id, at]) => {
+		return buildGroup(__("ba_group_attacks"), Object.entries(char.attacks || {}).filter(([id, at]) => {
 			return !at.spellid;
 		}).map(([id, at]) => {
 			const rangeField = char.isNpc ? at.attack_range : at.atkrange;
@@ -26413,6 +26640,7 @@ function baseBetterActions () {
 			{name: __("ba_roll_deathsave"), action: "roll", spec: "roll", flags: "death save|10"},
 			{name: __("ba_roll_hitdice"), action: "roll", spec: "roll", flags: "hit dice"},
 		]);
+		return d20plus.ba.tree.rolls.filter(roll => roll.action === "roll");
 	}
 
 	const buildTag = (title, txt, close) => {
@@ -26423,7 +26651,22 @@ function baseBetterActions () {
 		} else return "";
 	}
 
-	const buildHtml = (tree) => {
+	const buildModsHtml = (tab) => {
+		const mods = [
+			{label: "ADV", id: "advantage"},
+			{label: "DIS", id: "disadvantage"},
+			{label: "GM", id: "togm"},
+		];
+		return `<li class="mods ${tab}">${mods.reduce((res, mod) => {
+			const token = d20plus.ba.tokens.get(d20plus.ba.current.singleChar?.id);
+			const checked = token?.mods[tab][mod.id] ? ` checked="on"` : "";
+			return `${res}<label class="${mod.id}">
+				<input type="checkbox"${checked}><span>${mod.label}</span>
+			</label>`;
+		}, "")}</li>`;
+	}
+
+	const buildHtml = (tree, mod) => {
 		tree = tree || d20plus.ba.tree.rolls;
 		return tree.reduce((html, it) => {
 			if (it.items) {
@@ -26437,31 +26680,6 @@ function baseBetterActions () {
 						${buildHtml(it.items)}
 					</ul>
 				</li>`;
-			} else if (it.type === "mods") {
-				const willBe = `${html}
-				<li class="head hasSub">
-					<span><span style="font-family:Pictos">y</span> Mods</span>
-					<ul class="mods submenu">
-						<li><label><input type="checkbox"> Token name</label></li>
-						<li><label><input type="checkbox"> Char name</label></li>
-						<li class="last-in-group"><label><input type="checkbox"> Hide name</label></li>
-						<li><label class="mod advantage"><input type="checkbox"> Advantage</label></li>
-						<li class="last-in-group"><label class="mod disadvantage"><input type="checkbox"> Disadvantage</label></li>
-						<li><label><input type="checkbox"> To GM</label></li>
-						<li class="last-in-group"><label><input type="checkbox"> To self</label></li>
-						<li class="last-in-group"><label><input type="checkbox"> Auro-roll damage</label></li>
-						<li><label><input type="checkbox"> Hide mods</label></li>
-					</ul>
-				</li>`;
-				return `${html}
-				<li class="head hasSub">
-					<span><span style="font-family:Pictos">y</span> Mods</span>
-					<ul class="mods submenu">
-						<li><label class="mod advantage"><input type="checkbox"> Advantage</label></li>
-						<li class="last-in-group"><label class="mod disadvantage"><input type="checkbox"> Disadvantage</label></li>
-						<li><label class="mod togm"><input type="checkbox" ${d20plus.ba.singleSelected?.attributes?.layer === "gmlayer" ? "checked" : ""}> To GM</label></li>
-					</ul>
-				</li>`;
 			} else {
 				const dataAttribs = `data-action="${it.action}" data-spec="${it.spec}"${it.flags ? ` data-flags="${it.flags}"` : ""}`;
 				return `${html}<li ${dataAttribs}${it.icon || it.name?.length > 15 ? ` title="${it.name || ""}"` : ""}>
@@ -26469,7 +26687,7 @@ function baseBetterActions () {
 					${it.icon || it.name}${it.resource ? `</span>` : ""}
 				</li>`;
 			}
-		}, "");
+		}, mod ? buildModsHtml(mod) : "");
 	}
 
 	const buildStatsHtml = () => {
@@ -26521,16 +26739,32 @@ function baseBetterActions () {
 		].join(" ") : "";
 
 		return `
-			<li><span style="font-size:15px; font-weight: bold;line-height: 16px;width:110px">${char.name.ch || char.name.tk}</span>
-				<span style="float: right">
-					<button data-action="speakas" title="Speak as character">w</button>
-					<button data-action="opensheet" title="Open character sheet">U</button>
-					<button data-action="openchar" title="Open character settings">x</button><br>
-				</span>
-				<span>${char.isNpc ? char.npcStats.type : `${char.stats.race_display}, ${classDetails}`}</span>
-			</li><li>${baseStats}</li><li>${baseAbilities}</li>${spellStats}${currency}
+			<li><span>${char.isNpc ? char.npcStats.type : `${char.stats.race_display}, ${classDetails}`}</span></li>
+			<li>${baseStats}</li><li>${baseAbilities}</li>${spellStats}${currency}
 			${npcDetails ? `<li>${npcDetails}</li>` : ""}
 		`;
+	}
+
+	const buildBasicRollsHtml = () => {
+		const stats = d20plus.ba.singleSelected ? buildStatsHtml() : `
+			<li style="width: 220px;">Group selected:</li>
+			${d20plus.ba.tTokens?.reduce((list, t) => `${list}<li>${t.attributes.name}</li>`, "")}
+		`;
+		["general", "stats", "skills"].forEach((tab, i) => {
+			d20plus.ba.$dom.tabs[tab].toggle(true);
+		});
+		d20plus.ba.$dom.infos.all.filter(":not([data-pane=animations])").html(stats);
+		d20plus.ba.$dom.lists.general.html(buildHtml(addCommonRolls(), "general"));
+		d20plus.ba.$dom.lists.stats.html(buildHtml(buildAbilities(), "stats"));
+		d20plus.ba.$dom.lists.skills.html(buildHtml(buildSkills(), "skills"));
+	}
+
+	const buildAdvRollsHtml = () => {
+		["attacks", "spells"].forEach(tab => {
+			const list = tab === "spells" ? buildSpells() : buildAttacks();
+			list.length && d20plus.ba.$dom.tabs[tab].toggle(true);
+			d20plus.ba.$dom.lists[tab].html(buildHtml(list, tab));
+		})
 	}
 
 	const buildSheet = () => {
@@ -26557,10 +26791,19 @@ function baseBetterActions () {
 		}
 	};
 
+	const findToken = async () => {
+		const token = d20plus.ba.current.singleChar;
+		if (!token) return;
+		const objects = d20.engine.canvas.getObjects();
+		const object = objects.find(t => t._model?.id === token.id);
+		d20.engine.centerOnPoint(token.attributes.left, token.attributes.top);
+		d20.engine.select(object);
+	}
+
 	const amExecute = async (action, spec, flags) => {
 		const selected = action === "animation"
-			? d20.engine.selected().filter(it => it.type === "image")
-			: d20.engine.selected().filter(it => it._model?.character);
+			? d20plus.ba.current.charTokens
+			: d20plus.ba.current.imgTokens;
 		const isMultiple = selected.length > 1;
 		const singleAction = !["animation"].includes(action)
 			&& !["ability", "save", "skill", "initiative", "roll"].includes(spec);
@@ -26588,7 +26831,10 @@ function baseBetterActions () {
 	const amDo = (action) => {
 		const amCharId = d20plus.ba.getSingleChar()?.id;
 		if (action === "opensheet") d20plus.ba.tTokens[0].character.view.showDialog();
-		else if (action === "openchar") d20plus.ba.showDialog();
+		else if (action === "openchar") void 0;
+		else if (action === "findtoken") findToken();
+		else if (action === "close") d20plus.ba.$dom.menu.toggle(false);
+		else if (action === "collapse") d20plus.ba.$dom.menu.toggleClass("collapsed");
 		else if (action === "speakas") {
 			const $speagingas = $("#speakingas");
 			const [type, speakAsId] = $speagingas.val().split("|");
@@ -26599,43 +26845,42 @@ function baseBetterActions () {
 
 	const amShow = async () => {
 		if (d20plus.ba.executing) return;
-		d20plus.ba.tree = {rolls: [{type: "mods"}], stats: [], anims: []};
-		d20plus.ba.$dom.buttons.anim.toggle(false);
-		d20plus.ba.$dom.buttons.roll.toggle(false);
-		d20plus.ba.$dom.buttons.stat.toggle(false);
+		d20plus.ba.tree = {rolls: [], stats: [], anims: []};
+		tabs.forEach((tab, i) => {
+			d20plus.ba.$dom.tabs[tab].toggle(false);
+		});
+		d20plus.ba.$dom.title.img.attr("src", peopleIcon);
+		d20plus.ba.$dom.title.img.removeAttr("title");
+		d20plus.ba.$dom.title.img.css({filter: "contrast(0.1)", cursor: "unset"});
 		if (d20plus.ba.hasChars) {
-			if (!d20plus.ba.singleSelected) prepareAllChars();
-			else await d20plus.ba.fetchChar();
-			buildAbilities();
-			buildSkills();
+			buildBasicRollsHtml();
 			if (d20plus.ba.singleSelected) {
-				buildAttacks();
-				buildSpells();
-				buildActions();
-				buildSheet();
-				d20plus.ba.$dom.statsList.html(buildStatsHtml());
-				d20plus.ba.$dom.buttons.stat.toggle(true);
+				const char = d20plus.ba.getSingleChar();
+				buildAdvRollsHtml();
+				d20plus.ba.$dom.title.name.text(char?.name?.tk || char?.name?.ch || "Token");
+				d20plus.ba.$dom.title.img.attr("src", d20plus.ba.singleSelected.attributes.imgsrc);
+				d20plus.ba.$dom.title.img.attr("title", char?.name?.tk || char?.name?.ch);
+				d20plus.ba.$dom.title.img.css({filter: "unset", cursor: "pointer"});
+			} else {
+				d20plus.ba.$dom.title.name.text("Group");
 			}
-			addCommonRolls();
-			d20plus.ba.$dom.rollsList.html(buildHtml());
-			d20plus.ba.$dom.buttons.roll.toggle(true);
 		}
 		if (d20plus.ba.hasAnimatable) {
 			buildAnimations();
-			d20plus.ba.$dom.animationsList.html(buildHtml(d20plus.ba.tree.anims));
-			if (d20plus.ba.tree.anims.length) d20plus.ba.$dom.buttons.anim.toggle(true);
+			d20plus.ba.$dom.lists.animations.html(buildHtml(d20plus.ba.tree.anims));
+			if (d20plus.ba.tree.anims.length) d20plus.ba.$dom.tabs.animations.toggle(true);
 		}
-		d20plus.ba.$dom.buttons.toggle(true);
-		if (d20plus.ba.$dom.r20toolbar.css("display") === "none") {
-			d20plus.ba.$dom.r20toolbar.toggle(true);
-			d20plus.ba.$dom.r20tokenActions.css("display", "none");
-		} else {
-			d20plus.ba.$dom.r20tokenActions.css("display", "inline-block");
-		}
+		d20plus.ba.$dom.menu.find(".ba-tabs li.active:visible").length
+			|| d20plus.ba.$dom.menu.find(".ba-tabs li:visible").get(0)?.click();
 	}
 
-	const amHide = () => {
-		d20plus.ba.$dom.buttons.toggle(false);
+	d20plus.ba.menu = {
+		refresh: () => {
+			amShow();
+		},
+		fetchCharLegacy: (...params) => {
+			prepareChar(...params);
+		},
 	}
 
 	d20plus.ba.rollError = () => {
@@ -26732,14 +26977,16 @@ function baseBetterActions () {
 	d20plus.ba.fetchChar = async (token) => {
 		const tokenRef = token || d20plus.ba.tTokens[0];
 		const charRef = tokenRef?.character;
+		const char = d20plus.ba.characters.get(charRef.id);
 		const isUp2Date = d20plus.ba.chars[charRef.id]?.lastGroup === d20plus.ba.thisGroup;
 		if (!charRef || isUp2Date) return;
 
 		const name = {ch: charRef?.attributes.name, tk: tokenRef?.attributes.name};
 		const hp = {val: tokenRef.attributes.bar1_value, max: tokenRef.attributes.bar1_max};
-		await d20plus.ut.fetchCharAttribs(charRef);
+		await d20plus.ut.fetchCharAttribs(charRef, true);
 
 		d20plus.ba.chars[charRef.id] = {id: charRef.id, lastTokenId: tokenRef.id, name, hp};
+
 		return prepareChar(d20plus.ba.chars[charRef.id], charRef);
 	}
 
@@ -26749,44 +26996,77 @@ function baseBetterActions () {
 		return id && d20plus.ba.chars[id];
 	}
 
-	d20plus.ba.showDialog = () => {
-		d20plus.ba.$dom.sheet.dialog("open");
-	}
-
 	d20plus.ba.initBetterActions = () => {
+		const $createMenu = $(d20plus.html.bActionsMenu);
 		d20plus.ba.chars = {};
+		d20plus.ba.initCharacters();
 		skills = i18n("skills-list", skills).split(",");
 
 		d20plus.ba.$dom = {
-			buttons: $(d20plus.html.bActionsButtons),
-			sheet: $(d20plus.ba.dialogHtml).dialog({
-				title: `<span class="char-name"></span>`,
-				autoOpen: false,
-				width: 500,
-				height: 450,
-			}),
+			menu: $createMenu.find(".ba-menu"),
+			tabs: {all: $createMenu.find(`[data-tab]`)},
+			lists: {all: $createMenu.find(`[data-list]`)},
+			infos: {all: $createMenu.find(`[data-pane]`)},
+			title: {name: $createMenu.find(`.ba-name`), img: $createMenu.find(`.ba-token img`)},
 		};
 
-		d20plus.ba.$dom.buttons.roll = d20plus.ba.$dom.buttons.find(`[data-type=rolls]`);
-		d20plus.ba.$dom.buttons.stat = d20plus.ba.$dom.buttons.find(`[data-type=stats]`);
-		d20plus.ba.$dom.buttons.anim = d20plus.ba.$dom.buttons.find(`[data-type=animate]`);
-		d20plus.ba.$dom.rollsList = d20plus.ba.$dom.buttons.find(`.b20-rolls > ul`);
-		d20plus.ba.$dom.statsList = d20plus.ba.$dom.buttons.find(`.b20-stats > ul`);
-		d20plus.ba.$dom.animationsList = d20plus.ba.$dom.buttons.find(`.b20-animations > ul`);
-
-		d20plus.ba.$dom.sheet.info = d20plus.ba.$dom.sheet.find(`.content-right.info`);
-		d20plus.ba.$dom.sheet.general = d20plus.ba.$dom.sheet.find(`.items .general`);
-		d20plus.ba.$dom.sheet.name = d20plus.ba.$dom.sheet.parent().find(`.char-name`);
+		tabs.forEach((data, i) => {
+			d20plus.ba.$dom.tabs[data] = d20plus.ba.$dom.menu.find(`[data-tab=${data}]`);
+			d20plus.ba.$dom.lists[data] = d20plus.ba.$dom.menu.find(`[data-list=${data}]`);
+			d20plus.ba.$dom.infos[data] = d20plus.ba.$dom.menu.find(`[data-pane=${data}]`);
+		});
 
 		d20plus.ba.$dom.r20targetingNote = $("#targetinginstructions");
 		d20plus.ba.$dom.r20toolbar = $("#secondary-toolbar");
-		d20plus.ba.$dom.r20toolbar.prepend(d20plus.ba.$dom.buttons);
 		d20plus.ba.$dom.r20tokenActions = d20plus.ba.$dom.r20toolbar.find(".mode.tokenactions");
+		$("body").append($createMenu);
+
+		if (getAmConfig()) {
+			const controlledChar = d20.Campaign
+				.activePage().thegraphics.models
+				.find(t => !!t.character && t.character.currentPlayerControls());
+			if (controlledChar) {
+				d20plus.ba.current = {
+					charTokens: [controlledChar],
+					imgTokens: [controlledChar],
+					id: d20plus.ut.generateRowId(),
+					singleChar: controlledChar,
+					hasChars: true,
+					hasImages: is_gm
+						&& d20plus.ba.enabledAnimation
+						&& Object.keys(d20plus.anim.animatorTool?._anims || {}).length,
+				};
+				(async () => {
+					d20plus.ba.thisGroup = "asdasd";
+					d20plus.ba.singleSelected = controlledChar;
+					await d20plus.ba.fetchChar(controlledChar);
+					d20plus.ba.getReady(controlledChar);
+					amShow();
+				})();
+			}
+		}
 
 		$("body").on("shape_selected", "#editor", evt => {
-			const enabled = getAmConfig();
+			if (!getAmConfig()) return;
 			const selected = d20.engine.selected();
-			if (!enabled) return;
+			d20plus.ba.current = {
+				charTokens: selected
+					.filter(it => it._model?.character)
+					.map(it => it._model),
+				imgTokens: selected
+					.filter(it => it.type === "image"),
+				id: d20plus.ut.generateRowId(),
+			};
+			d20plus.ba.current.singleChar = d20plus.ba.current.charTokens.length > 1
+				? false
+				: d20plus.ba.current.charTokens[0] || false;
+			d20plus.ba.current.hasChars = d20plus.ba.enabledCharMenu
+				&& d20plus.ba.current.charTokens.length > 0;
+			d20plus.ba.current.hasImages = is_gm
+				&& d20plus.ba.enabledAnimation
+				&& d20plus.ba.current.imgTokens.length > 0
+				&& Object.keys(d20plus.anim.animatorTool?._anims || {}).length;
+
 			d20plus.ba.tTokens = selected
 				.filter(it => it._model?.character)
 				.map(it => it._model);
@@ -26802,43 +27082,308 @@ function baseBetterActions () {
 				&& d20plus.ba.enabledAnimation
 				&& d20plus.ba.tAnims.length > 0
 				&& Object.keys(d20plus.anim.animatorTool?._anims || {}).length;
-			if (d20plus.ba.hasChars || d20plus.ba.hasAnimatable) amShow();
-			else amHide();
-		}).on("nothing_selected", "#editor", evt => {
-			amHide();
+
+			if (d20plus.ba.hasChars) {
+				d20plus.ba.current.charTokens.forEach(async t => {
+					await d20plus.ba.fetchChar(t);
+					d20plus.ba.getReady(t);
+				});
+				if (!d20plus.ba.current.singleChar) amShow();
+			} else if (d20plus.ba.hasAnimatable) {
+				amShow();
+			}
 		});
 
-		d20plus.ba.$dom.buttons.on("click", "[data-action], [data-spec]", evt => {
-			const $clicked = $(evt.target);
+		$createMenu.on("click", "[data-action], [data-spec]", evt => {
+			const $clicked = $(evt.currentTarget);
 			const action = $clicked.data("action");
 			const spec = $clicked.data("spec");
 			const flags = $clicked.data("flags");
 			if (spec && action) amExecute(action, spec, flags);
 			// else if (action && mod) amSet(mod);
 			else if (!spec && action) amDo(action);
+		}).on("click", "[data-tab]", evt => {
+			const $clicked = $(evt.currentTarget);
+			const tab = $clicked.data("tab");
+			d20plus.ba.$dom.tabs.all.removeClass("active");
+			d20plus.ba.$dom.lists.all.removeClass("active");
+			d20plus.ba.$dom.infos.all.removeClass("active");
+			$clicked.addClass("active");
+			d20plus.ba.$dom.lists[tab].addClass("active");
+			d20plus.ba.$dom.infos[tab].addClass("active");
+		}).on("click", ".mods label span", evt => {
+			const type = $(evt.target).closest("label").attr("class");
+			const tab = $(evt.target).closest("[data-list]").data("list");
+			if (d20plus.ba.current.singleChar) {
+				const token = d20plus.ba.tokens.get(d20plus.ba.current.singleChar?.id);
+				token.mods[tab][type] = !$(evt.target).prev().prop("checked");
+			}
+		}).on("click", ".page-button.large", evt => {
+			d20plus.ba.$dom.menu.toggle();
 		});
 	}
-
-	d20plus.ba.dialogHtml = `
-	<div class="better-sheet">
-		<ul class="nav nav-tabs">
-			<li class="nav-tabs"><a data-tab="general">General</a></li>
-			<li class="nav-tabs"><a data-tab="attacks">Attacks</a></li>
-			<li class="nav-tabs"><a data-tab="attacks">Spells</a></li>
-			<li class="nav-tabs"><a data-tab="inventory">Inventory</a></li>
-		</ul>
-		<div class="tab-content">
-			<div class="content-left items">
-				<div class="tab-pane general" style="display:block">General</div>
-				<div class="tab-pane attacks">Attacks</div>
-			</div><div class="content-right info">Stats</div>
-		</div>
-	</div>
-	`;
 }
 
 SCRIPT_EXTENSIONS.push(baseBetterActions);
 
+
+function baseBACharacters () {
+	d20plus.ba = d20plus.ba || {};
+
+	d20plus.ba.characters = [];
+	d20plus.ba.tokens = [];
+
+	d20plus.ba.characters.Connector = function (ref) {
+		const prepareRawStats = (lvls, attrib, id, val) => {
+			if (!Array.isArray(lvls)) lvls = [lvls];
+			const max = attrib.attributes.max;
+			let obj = this.sheet.data;
+			lvls.forEach(lvl => {
+				obj[lvl] = obj[lvl] || {};
+				obj = obj[lvl];
+			});
+			obj._ref = obj._ref || {};
+			obj._ref[id] = attrib;
+			obj[id] = val || attrib.attributes.current;
+			if (max !== undefined && max !== "") obj[`${id}_max`] = max;
+			if (lvls.length > 1) obj._id = lvls.last();
+		}
+
+		const prepareResources = () => {
+			const resources = {};
+			["other", "class"].forEach(r => {
+				const tag = this.sheet.data.stats[`${r}_resource_name`];
+				const num = this.sheet.data.stats[`${r}_resource`];
+				const ref = this.sheet.data.stats._ref[`${r}_resource`];
+				if (num !== undefined && tag) {
+					resources[tag] = num;
+					resources[tag]._ref = ref;
+				}
+			});
+			Object.entries(this.sheet.data.resources || {}).forEach(([id, r]) => {
+				["left", "right"].forEach(n => {
+					const tag = r[`resource_${n}_name`];
+					const num = r[`resource_${n}`];
+					if (num !== undefined && tag) {
+						resources[tag] = num;
+						resources[tag]._ref = this.sheet.data.resources[id]?._ref;
+					}
+				});
+			})
+			this.sheet.data.resources = resources;
+		}
+
+		const fetchAttribs = () => {
+			this.isNpc = false;
+			this.name = {
+				tk: this.refLastToken.attributes.name,
+				ch: this._ref.attributes.name,
+			};
+			this._ref.attribs?.models.forEach(prop => {
+				const [tag, type, id, ...attrPath] = prop.attributes.name.split("_");
+				const attr = attrPath.join("_");
+				const current = prop.attributes.current;
+				if (type === undefined) {
+					if (tag === "npc" && current === "1") this.isNpc = true;
+					else prepareRawStats("stats", prop, tag);
+				} else if (tag === "npc" && attr === "") {
+					if (type === "name") this.name.npc = prop.attributes.current;
+					prepareRawStats("npcStats", prop, [type].concat(id || []).join("_"));
+				} else if (type === "slots") {
+					const lvl = tag.slice(-1);
+					prepareRawStats(["spellslots", lvl], prop, id);
+				} else if (attr === "") {
+					if (prop.attributes.name === "charactersheet_type" && current === "npc") this.isNpc = true;
+					prepareRawStats("stats", prop, [tag].concat(type || [], id || []).join("_"));
+				} else if (tag === "repeating" && d20plus.ba.singleSelected) {
+					const [stype, lvl] = type.split("-");
+					if (stype === "spell") {
+						if (lvl) {
+							prepareRawStats(["spells", id], prop, attr);
+							this.sheet.data.spells[id].lvl = lvl;
+						} else {
+							prepareRawStats("stats", prop, [type].concat(id || []).join("_"));
+						}
+					} else if (stype === "npcaction") {
+						prepareRawStats(["actions", id], prop, attr);
+						if (lvl) this.sheet.data.actions[id].actionType = lvl;
+					} else if (type === "attack") {
+						prepareRawStats(["attacks", id], prop, attr);
+					} else if (type === "inventory") {
+						prepareRawStats(["items", id], prop, attr);
+					} else if (["proficiencies", "tool", "resource", "traits"].includes(type)) {
+						const stype = type.last() === "s" ? type : `${type}s`;
+						prepareRawStats([stype, id], prop, attr);
+					} else if (["acmod", "damagemod", "savemod", "skillmod", "tohitmod"].includes(type)) {
+						const stype = type.split("mod")[0].replace("tohit", "attack");
+						prepareRawStats(["mods", stype, id], prop, attr);
+					} else if (type === "npctrait" || type === "trait") {
+						prepareRawStats(["traits", id], prop, attr);
+					}
+				} else if (type === "reporder") {
+					prepareRawStats("order", prop, attr, current.split(","));
+				} else if (tag === "global" && id === "mod" && attr === "flag") {
+					prepareRawStats(["mods", "active"], prop, type);
+				}
+			});
+			prepareResources();
+		}
+
+		const types = [
+			{
+				id: "spells",
+				utils: {
+					_char: () => this,
+					_get: function (q) {
+						return this._ref[q].attributes.current;
+					},
+				},
+			},
+			{
+				id: "attacks",
+				utils: {
+					_char: () => this,
+					_get: function (q) {
+						return this._ref[q].attributes.current;
+					},
+				},
+			},
+		]
+
+		this.sheet = {
+			get: (q) => {
+				if (this.isNpc && this.sheet.data.npcStats[q] !== undefined) return this.sheet.data.npcStats[q];
+				else if (this.sheet.data.stats[q] !== undefined) return this.sheet.data.stats[q];
+				else {
+					for (let i = 0; i < types.length; i++) {
+						const list = this.sheet.data[types[i].id];
+						if (list && list[q]) return Object.assign({_id: q}, types[i].utils || {}, list[q]);
+					}
+				}
+			},
+			getSpells: (lvl) => {
+				return this.sheet.data.spells?.filter(spl => !lvl || spl.lvl === lvl) || [];
+			},
+			getSpellSlots: (lvl) => {
+
+			},
+			getResource: (name) => {
+
+			},
+			getAttacks: () => {
+				return this.isNpc
+					? this.sheet.data.actions?.filter(act => act.attack_flag === "on") || []
+					: this.sheet.data.attacks || [];
+			},
+			fetch: () => {
+				if (this.sheet.fetched !== this._ref.attribs.models.length) {
+					this.sheet.fetched = this._ref.attribs.models.length;
+					fetchAttribs();
+				}
+			},
+			data: {
+				stats: {},
+				npcStats: {},
+			},
+			fetched: 0,
+		};
+
+		this.refresh = () => {
+			if (d20plus.ba.current.singleChar?.character?.id !== this.id) return;
+			this.sheet.fetch();
+			d20plus.ba.menu.refresh();
+		};
+
+		const init = async () => {
+			const gotToken = !ref.attribs;
+			if (gotToken && !ref.character && !ref._model?.character) return;
+
+			this._ref = ref._model?.character || ref.character || ref;
+			this.refLastToken = gotToken && (ref._model || ref);
+			this.id = this._ref.id;
+
+			await d20plus.ut.fetchCharAttribs(this._ref, true);
+			this.sheet.fetch();
+
+			d20plus.ba.characters.push(this);
+			this.refresh();
+			delete this.init;
+		}
+
+		init();
+	}
+
+	d20plus.ba.tokens.Connector = function (ref) {
+		this.hp = {
+			checkMode: () => {
+				for (let i = 1; i < 4; i++) {
+					const attr = this._ref.attributes[`bar${i}_link`];
+					if (attr && this.character?.sheet.data.stats?._ref?.hp.id === attr) {
+						this.hp.connected = true;
+						this.hp.bar = i;
+					}
+				}
+			},
+			reduce: () => {
+				void 0;
+			},
+		}
+
+		this.refresh = () => {
+			if (!d20plus.ba.current.charTokens?.map(t => t.id).includes(this.id)) return;
+			d20plus.ba.menu.refresh();
+		}
+
+		const init = async () => {
+			if ((ref?._model?.attributes || ref?.attributes)?.type !== "image") return;
+			if (!(ref?._model?.character || ref?.character)?.id) return;
+			this._ref = ref._model || ref;
+			this.id = this._ref.id;
+
+			const char = d20plus.ba.characters.get(this._ref.character.id);
+			this.character = char || await new d20plus.ba.characters.Connector(this._ref);
+			this.mods = {general: {}, stats: {}, skills: {}, attacks: {}, spells: {}};
+			this.hp.checkMode();
+
+			d20plus.ba.tokens.push(this);
+			delete this.init;
+			return this;
+		}
+
+		init();
+	}
+
+	d20plus.ba.initCharacters = () => {
+		const get = function (id) {
+			return this.find(it => it.id === id);
+		}
+
+		d20plus.ba.tokens.get = get;
+		d20plus.ba.characters.get = get;
+
+		d20plus.ba.getReady = function (ref) {
+			const gotToken = !ref.attribs;
+			if (gotToken && !ref.character && !ref._model?.character) return;
+
+			const token = ref._model || ref;
+			const existing = (gotToken ? d20plus.ba.tokens : d20plus.ba.characters).get(token.id);
+			// d20plus.ut.log(token, existing); check why it's called twice !!!!
+			const created = existing || (gotToken
+				? new d20plus.ba.tokens.Connector(token)
+				: new d20plus.ba.characters.Connector(token));
+			existing?.refresh();
+		}
+	}
+
+	window.d20debug = {
+		qattr: (q) => {
+			d20plus.ut.log(`Quering ${q}`);
+			d20plus.ba.characters.forEach(ch => d20plus.ut.log(ch.name.tk, ch.sheet.get(q)));
+		},
+	}
+}
+
+SCRIPT_EXTENSIONS.push(baseBACharacters);
 
 function baseBARollTemplates () {
 	d20plus.ba = d20plus.ba || {};
@@ -26848,13 +27393,13 @@ function baseBARollTemplates () {
 	const normalizeStyle = `color: inherit;text-decoration: none;cursor: auto;`;
 
 	const getRollMode = () => {
-		const adv = d20plus.ba.$dom.buttons.find(".b20-rolls .mods .advantage input").prop("checked");
-		const dis = d20plus.ba.$dom.buttons.find(".b20-rolls .mods .disadvantage input").prop("checked");
+		const adv = d20plus.ba.$dom.menu.find(".ba-list .mods:visible .advantage input").prop("checked");
+		const dis = d20plus.ba.$dom.menu.find(".ba-list .mods:visible .disadvantage input").prop("checked");
 		return adv ? "advantage" : dis ? "disadvantage" : "normal";
 	}
 
 	const getWMode = () => {
-		const togm = d20plus.ba.$dom.buttons.find(".b20-rolls .mods .togm input").prop("checked");
+		const togm = d20plus.ba.$dom.menu.find(".ba-list .mods:visible .togm input").prop("checked");
 		return togm ? "/w gm " : "";
 	}
 
@@ -27393,6 +27938,7 @@ function baseBARollTemplates () {
 		const tmplVals = getTmplVals && getTmplVals(spec, flags);
 		if (!tmplVals) return d20plus.ba.rollError();
 		tmplVals._modelType = "description";
+		tmplVals._expend = false;
 		outputTemplate(tmplVals);
 	}
 }
@@ -27406,6 +27952,7 @@ function remoteLibre () {
 			return fetch("https://api.github.com/repos/DMsGuild201/Roll20_resources/contents/playlist")
 				.then(response => response.json())
 				.then(data => {
+					if (!data.filter) return;
 					const promises = data.filter(file => file.download_url.toLowerCase().endsWith(".json"))
 						.map(file => d20plus.remoteLibre.downloadPlaylist(file.download_url));
 					return Promise.all(promises).then(res => d20plus.remoteLibre.processRemotePlaylists(res));
