@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.8.54
+// @version      1.35.8.55
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -265,7 +265,9 @@ function baseLanguage () {
 		ba_group_abilities: [`Abilities`],
 		ba_group_skills: [`Skills`],
 		ba_group_attacks: [`Attacks`],
+		ba_group_traits: [`Traits`],
 		ba_group_spells: [`Spells`],
+		ba_group_effects: [`Effects`],
 		ba_group_animations: [`Animations`],
 		ba_roll_initiative: [`Initiative`],
 		ba_roll_concentration: [`Concentration`],
@@ -523,7 +525,9 @@ function baseLanguage () {
 		ba_group_abilities: [`Характеристики}`],
 		ba_group_skills: [`Умения`],
 		ba_group_attacks: [`Атаки`],
+		ba_group_traits: [`Способности`],
 		ba_group_spells: [`Заклинания`],
+		ba_group_effects: [`Эффекты`],
 		ba_group_animations: [`Анимации`],
 		ba_roll_initiative: [`Инициатива`],
 		ba_roll_concentration: [`Концентрация`],
@@ -13312,16 +13316,16 @@ function initHTMLbaseMisc () {
 	document.addEventListener("b20initTemplates", function initHTML () {
 		d20plus.html.bActionsMenu = `
 		<div id="ba-panel">
-			<button aria-disabled="false" type="button" style="left: 62px;" class="el-button large page-button">
+			<button aria-disabled="false" type="button" style="" class="el-button large page-button">
 				<span><span style="font-family: Pictos;font-size: 21px;">U</span></span>
 			</button>
 			<div class="ba-menu" style="display:none">
 				<div class="ba-title">
 				<span class="ba-token" data-action="findtoken"><img src="https://img.icons8.com/ios-glyphs/30/multicultural-people.png"></span>
 					<span class="ba-name">Selected</span>
-					<!--span style="font-size:15px; font-weight: bold;line-height: 16px;width:110px">${window.char?.name.ch || window.char?.name.tk}</span-->
 					<span class="ba-title-actions">
-						<button data-action="collapse" title="Collapse/expand"></button>
+						<button data-action="collapsew" title="Collapse/expand"></button>
+						<button data-action="expandh" title="Lock/unlock menu height"></button>
 						<button data-action="close" title="Close this menu">*</button>
 						<!--<button data-action="speakas" title="Speak as character">w</button>
 						<button data-action="opensheet" title="Open character sheet">U</button>
@@ -13345,6 +13349,10 @@ function initHTMLbaseMisc () {
 						<img src="https://img.icons8.com/external-prettycons-solid-prettycons/60/external-swords-games-prettycons-solid-prettycons.png">
 						<span>${__("ba_group_attacks")}</span></a>
 					</li>
+					<li class="nav-tabs" data-tab="traits" style="display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/exercise.png">
+						<span>${__("ba_group_traits")}</span></a>
+					</li>
 					<li class="nav-tabs" data-tab="spells" style="display:none;"><a>
 						<img src="https://img.icons8.com/ios-filled/50/fantasy.png">
 						<span>${__("ba_group_spells")}</span></a>
@@ -13360,6 +13368,7 @@ function initHTMLbaseMisc () {
 						<ul data-list="stats"></ul>
 						<ul data-list="skills"></ul>
 						<ul data-list="attacks"></ul>
+						<ul data-list="traits"></ul>
 						<ul data-list="spells"></ul>
 						<ul data-list="animations"></ul>
 					</div>
@@ -13368,37 +13377,13 @@ function initHTMLbaseMisc () {
 						<ul data-pane="stats"><li> </li></ul>
 						<ul data-pane="skills"><li> </li></ul>
 						<ul data-pane="attacks"><li> </li></ul>
+						<ul data-pane="traits"><li> </li></ul>
 						<ul data-pane="spells"><li> </li></ul>
 						<ul data-pane="animations">
 							<li>Animations are set in the betteR20 tools menu</li>
 						</ul>
 					</div>
 				</div>
-				<!-- <ul class="b20-token-menu">
-					<li style="color:unset!important;">
-						<span style="position:relative;display: inline-block;">
-							<button class="btn" data-type="rolls">${__("ba_title_rolls")}</button>
-							<div class="b20-rolls d20contextmenu">
-								<ul></ul>
-							</div>
-						</span>
-						<span style="position:relative;">
-							<button class="btn" data-type="stats">${__("ba_title_stats")}</button>
-							<div class="b20-stats d20contextmenu">
-								<ul></ul>
-							</div>
-						</span>
-						<span style="position:relative; display: none">
-							<button class="btn" data-type="effects">Effects</button>
-						</span>
-						<span style="position:relative;">
-							<button class="btn" data-type="animate">Animate</button>
-							<div class="b20-animations d20contextmenu">
-								<ul></ul>
-							</div>
-						</span>
-					</li>
-				</ul> -->
 			</div>
 		</div>
 		`;
@@ -19134,7 +19119,7 @@ function baseCss () {
 			left: 118px;
 		}
 		#secondary-toolbar.legacy-menu.toolbar-collapse-adjust.master-toolbar-collapsed {
-			left: 62px;
+			left: 92px;
 		}
 
 		#ba-panel {
@@ -19145,6 +19130,7 @@ function baseCss () {
 		#ba-panel button.large.page-button {
 			position: absolute;
 			height: 40px;
+			left: 62px;
 			width: 40px;
 			top: 20px;
 			border-radius: 8px;
@@ -19154,6 +19140,7 @@ function baseCss () {
 			border-width: 1px;
 			border-color: var(--grayscale-light-l60);
 			backdrop-filter: blur(15px);
+			transition: left ease 200ms;
 		}
 		.dark #ba-panel button.large.page-button {
 			background-color: var(--colors-dark-050);
@@ -19161,6 +19148,9 @@ function baseCss () {
 		}
 		#ba-panel button.large.page-button:hover {
 			border-width: 3px;
+		}
+		#ba-panel.master-toolbar-collapsed button.large.page-button {
+			left: 36px;
 		}
 
 		/* Better actions menu dialog (general) */
@@ -19181,11 +19171,14 @@ function baseCss () {
 			font-weight: 300;
 			font-size: 13px;
 			color: var(--vtt-grayscale-base);
-			transition: width 1s ease, opacity 1s ease;
+			transition: width 1s ease, opacity 1s ease, left ease 200ms;
 			opacity: 0.7;
 		}
 		#ba-panel:hover .ba-menu {
 			opacity: unset;
+		}
+		#ba-panel.master-toolbar-collapsed .ba-menu {
+			left: 36px;
 		}
 		#ba-panel .ba-token {
 			background: var(--vtt-surface);
@@ -19270,13 +19263,15 @@ function baseCss () {
 			display: inline-block;
 			overflow-x: hidden;
 			overflow-y: auto;
-			height: 216px;
+			min-height: 216px;
+			max-height: 216px;
 			margin-bottom: 6px;
 			padding: 0px 5px;
 			box-sizing: border-box;
 			scrollbar-width: thin;
 			scrollbar-color: transparent transparent;
 			scrollbar-gutter: stable;
+			transition: max-height .5s ease;
 		}
 		.ba-list.content-left:hover, .ba-main .content-right:hover {
 			scrollbar-color: rgba(155,155,155,0.5) transparent;
@@ -19309,42 +19304,61 @@ function baseCss () {
 		}
 
 		/* Collapsed state */
-		#ba-panel .ba-menu.collapsed {
+		#ba-panel .ba-menu.wcollapsed {
 			width: 170px;
 		  }
-		.ba-menu.collapsed .ba-name {
-			max-width: 75px;
+		.ba-menu.wcollapsed .ba-name {
+			max-width: 55px;
 			overflow: hidden;
 			white-space: nowrap;
 			text-overflow: ellipsis;
 		  }
-		#ba-panel .ba-menu.collapsed .nav {
+		#ba-panel .ba-menu.wcollapsed .nav {
 			padding-left: 0px;
 			margin-top: 5px;
 		  }
-		.ba-menu.collapsed .nav-tabs > li > a {
-			width: 3px;
-			height: 15px;
-			padding-top: 6px;
-		  }
-		  .ba-menu.collapsed .nav:not(:hover) .nav-tabs.active a span, .ba-menu.collapsed .nav-tabs li:hover a span {
+		.ba-menu.wcollapsed .nav-tabs > li {
+			width: 21px;
+		}
+		.ba-menu.wcollapsed .nav-tabs > li > a {
+			width: 0px;
+			height: 13px;
+			padding-top: 5px;
+		}
+		.ba-menu.wcollapsed .nav-tabs > li > a > img {
+			width: 12px;
+			margin: -6px;
+		}
+		  .ba-menu.wcollapsed .nav:not(:hover) .nav-tabs.active a span, .ba-menu.wcollapsed .nav-tabs li:hover a span {
 			display: none;
 			margin-right: -9px;
 		  }
-		  #ba-panel .ba-menu.collapsed .ba-list.content-left {
+		  #ba-panel .ba-menu.wcollapsed .ba-list.content-left {
 			width: 164px;
 		  }
-		  #ba-panel .ba-menu.collapsed .ba-info.content-right {
+		  #ba-panel .ba-menu.wcollapsed .ba-info.content-right {
 			display: none;
 		  }
-		  .ba-menu.collapsed .ba-title-actions [data-action="collapse"]::after {
-			content: "\`";
+		  .ba-menu.wcollapsed .ba-title-actions [data-action="collapsew"]::after {
+			content: "N";
 			transform: none;
 		  }
-		  .ba-title-actions [data-action="collapse"]::after {
-			content: "4";
+		  .ba-title-actions [data-action="collapsew"]::after {
+			content: "l";
 			transform: rotate(180deg);
 			display: inline-block;
+		  }
+		  .ba-menu.hexpanded .ba-title-actions [data-action="expandh"]::after {
+			content: "J";
+			transform: none;
+		  }
+		  .ba-title-actions [data-action="expandh"]::after {
+			content: "\`";
+			font-size: 13px;
+			display: inline-block;
+		  }
+		  .ba-menu.hexpanded .ba-list.content-left, .ba-menu.hexpanded  .ba-main .content-right {
+			max-height: 70vh;
 		  }
 
 		.ba-list > ul > li {
@@ -19401,6 +19415,10 @@ function baseCss () {
 			overflow: hidden;
 			text-overflow: ellipsis;
 			border-left: none;
+		}
+		.ba-list ul[data-list="spells"] > .hasSub > .submenu > li.unprepared span {
+			color: #848484;
+			font-weight: 100;
 		}
 		.ba-list ul[data-list="spells"] i {
 			font-style: normal;
@@ -26254,7 +26272,7 @@ function baseBetterActions () {
 	d20plus.ba = d20plus.ba || {};
 
 	const peopleIcon = "https://img.icons8.com/ios-glyphs/30/multicultural-people.png";
-	const tabs = ["general", "stats", "skills", "attacks", "spells", "animations"];
+	const tabs = ["general", "stats", "skills", "attacks", "traits", "spells", "animations"];
 	const abilities = ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"];
 	let skills = "acrobatics,animal_handling,arcana,athletics,deception,history,insight,intimidation,investigation,medicine,nature,perception,performance,persuasion,religion,sleight_of_hand,stealth,survival";
 
@@ -26270,7 +26288,7 @@ function baseBetterActions () {
 		})
 	}
 
-	const getVar = {
+	/* const getVar = {
 		attack: function (param) {
 			const char = d20plus.ba.getSingleChar();
 			const attr = {
@@ -26355,7 +26373,7 @@ function baseBetterActions () {
 				char.spells[id] = spl;
 				char.spells[id]._getVar = getVar["spell"];
 			})
-		}); */
+		}); * /
 		Object.entries(char.raw.spells || {}).forEach(([id, spl]) => {
 			spl.id = id;
 			// spl.lvl = lvl;
@@ -26446,10 +26464,10 @@ function baseBetterActions () {
 		for (const t of d20plus.ba.tTokens) {
 			await d20plus.ba.fetchChar(t);
 		}
-	}
+	} */
 
 	const buildGroup = (name, subtree) => {
-		d20plus.ba.tree.rolls.push({
+		subtree && d20plus.ba.tree.rolls.push({
 			name,
 			type: "head",
 			items: subtree,
@@ -26491,72 +26509,70 @@ function baseBetterActions () {
 		}));
 	}
 
-	const buildSpellVariants = (lvl, id) => {
+	const buildSpellVariants = (spell, token) => {
 		const items = [];
-		const char = d20plus.ba.getSingleChar();
-		const ritual = char.raw.spells[id]?.spellritual;
-		const upcast = !isNaN(lvl)
-			&& char.raw.spells[id].spellathigherlevels;
+		const ritual = spell?._get("spellritual");
+		const upcast = !isNaN(spell.lvl);
 		ritual && items.push({
 			name: "As ritual",
 			action: "cast",
-			spec: id,
+			spec: spell._id,
 		});
-		upcast && [...Array(9 - lvl)].map((k, i) => {
-			const upLvl = i + lvl + 1;
-			const hasSlots = char.isNpc || char?.spellslots[upLvl].total;
+		upcast && [...Array(9 - spell.lvl)].map((k, i) => {
+			const upLvl = i + spell.lvl + 1;
+			const hasSlots = token.get("npc") || token.character.sheet.spellSlots.max();
 			hasSlots && items.push({
 				name: `Upcast at lvl ${upLvl}`,
 				action: "cast",
 				tag: `${upLvl}`,
-				spec: id,
+				spec: spell._id,
 			});
 		});
 		return items.length ? items : null;
 	}
 
 	const buildSpellSlots = (char, lvl) => {
-		if (char.spellslots && char.spellslots[lvl] && char.spellslots[lvl].total) {
-			const has = Number(char.spellslots[lvl].expended) || 0;
-			const total = Number(char.spellslots[lvl].total) || 0;
-			if (char.spellslots[lvl].total <= 4 && has >= 0) {
+		if (char.spellSlots.max(`${lvl}`)) {
+			const has = Number(char.spellSlots.current(`${lvl}`)) || 0;
+			const total = Number(char.spellSlots.max(`${lvl}`)) || 0;
+			if (char.spellSlots.max(`${lvl}`) <= 4 && has >= 0) {
 				return [...Array(total)].reduce((k, s, i) => {
 					return i <= has - 1 ? `${k}⬤` : `${k}◎`;
 				}, "");
-			} else return `${has}/${char.spellslots[lvl].total}`;
+			} else return `${has}/${char.spellSlots.max(`${lvl}`)}`;
 		}
 	}
 
 	const buildSpells = () => {
 		const subtree = [];
+		const token = d20plus.ba.tokens.getCurrent();
+		const shouldPrepare = ["Cleric", "Druid", "Paladin", "Wizard"].includes(token?.get("class"));
+		if (!token) return false;
 		for (let i = 0; i <= 9; i++) {
 			const lvl = i || "cantrip";
-			const char = d20plus.ba.getSingleChar();
-			const shouldPrepare = ["Cleric", "Druid", "Paladin", "Wizard"].includes(char.stats.class);
-			const spells = char?.spells?._byLvl[lvl];
-			const items = Object.keys(spells || {}).map(id => {
-				const spell = spells[id];
-				const isAttack = spell.spellattack
-					&& spell.spellattack !== "None";
+			const spells = token.character?.sheet.getSpells(`${lvl}`);
+			const items = spells.map(spell => {
+				const isAttack = spell._has("atk");
 				const hasVariants = (spell.spellathigherlevels
 					|| spell.spellritual)
 					&& i !== "cantrip";
-				const variants = hasVariants ? buildSpellVariants(lvl, id) : null;
+				const variants = hasVariants ? buildSpellVariants(spell, token) : null;
 				const unprepared = !shouldPrepare || !i || spell.spellprepared === "1" ? "" : " unprepared";
 				return {
-					name: spell.spellname,
+					name: spell._get("name"),
 					type: `spellaction selector${unprepared} ${variants ? "variable" : ""}`,
 					items: [{
 						name: "Show description",
 						icon: "🕮",
 						action: "spelldescription",
-						spec: id,
+						spec: spell._id,
 					}, {
 						name: "Cast spell",
 						icon: isAttack ? "⚔" : "⚕",
 						action: "cast",
-						spec: id,
+						spec: spell._id,
 					}].concat(variants ? {
+						name: "Cast at different level",
 						icon: "↪",
 						type: "parameters",
 						items: variants,
@@ -26564,13 +26580,13 @@ function baseBetterActions () {
 				}
 			});
 			items.length && subtree.push({
-				resource: buildSpellSlots(char, lvl),
+				resource: buildSpellSlots(token.character?.sheet, lvl),
 				name: !i ? __("ba_spells_cantrips") : `${__("ba_spells_lvl")} ${lvl}`,
 				type: "head",
 				items,
 			});
-			!items.length && (char.spellslots || {})[lvl]?.total && subtree.push({
-				resource: buildSpellSlots(char, lvl),
+			!items.length && token.character?.sheet.spellSlots?.max(`${lvl}`) && subtree.push({
+				resource: buildSpellSlots(token.character?.sheet, lvl),
 				name: `Level ${lvl}`,
 				type: "head",
 			})
@@ -26579,14 +26595,12 @@ function baseBetterActions () {
 	}
 
 	const buildAttacks = () => {
-		const char = d20plus.ba.getSingleChar();
-		return buildGroup(__("ba_group_attacks"), Object.entries(char.attacks || {}).filter(([id, at]) => {
-			return !at.spellid;
-		}).map(([id, at]) => {
-			const rangeField = char.isNpc ? at.attack_range : at.atkrange;
-			const isCast = !!at.saveflag || at.atkflag === "0";
-			const isRanged = !isCast && ((char.isNpc && at.attack_type === "Ranged")
-				|| (!char.isNpc && rangeField?.includes("/")));
+		const token = d20plus.ba.tokens.getCurrent();
+
+		return buildGroup(__("ba_group_attacks"), token?.get("attacks").map(at => {
+			const rangeField = at._get("range");
+			const isCast = !at._has("atk");
+			const isRanged = at._has("range");
 			const isVersatile = !isCast && rangeField?.includes("[V]");
 			const isOffhandable = !isCast && rangeField?.includes("[O]");
 			const types = [
@@ -26596,46 +26610,67 @@ function baseBetterActions () {
 				isVersatile ? " versatile" : "",
 			].join("");
 			return {
-				name: at.atkname || at.name,
+				name: at._get("name"),
 				type: `atkaction selector${types}`,
 				items: [{
 					name: "Attack",
 					icon: isCast ? "⚕" : isRanged ? "➹" : isVersatile ? "🗡🖑🖑" : "🗡",
 					action: "attack",
-					spec: id,
+					spec: at._id,
 				}].concat(isOffhandable ? {
 					name: "Attack with offhand",
 					icon: "⚔",
 					action: "attack",
-					spec: id,
+					spec: at._id,
 					flags: "O",
 				} : []).concat(isVersatile ? {
 					name: "Attack with single hand (versatile)",
 					icon: `🗡🖑`,
 					action: "attack",
-					spec: id,
+					spec: at._id,
 					flags: "V",
 				} : []).concat({
 					name: "Show description",
 					icon: "🕮",
 					action: "attackdescription",
-					spec: id,
+					spec: at._id,
 				}),
 			}
 		}));
 	}
 
-	const buildActions = () => {
-		void 0;
+	const buildTraits = () => {
+		const token = d20plus.ba.tokens.getCurrent();
+
+		return buildGroup(__("ba_group_attacks"), token?.get("traits").filter(tr => {
+			return tr._has("uses") || tr._has("action");
+		}).map(tr => {
+			return {
+				name: tr._get("name"),
+				type: `spellaction selector ${window.types}`,
+				items: [{
+					name: "Show description",
+					icon: "🕮",
+					action: "spelldescription",
+					spec: tr._id,
+				}].concat(tr._id ? { // wrong condition
+					name: "Use trait",
+					icon: "⚕",
+					action: "cast",
+					spec: tr._id,
+				} : []),
+			};
+		}));
 	}
 
 	const addCommonRolls = () => {
 		d20plus.ba.tree.rolls.push(
 			{name: __("ba_roll_initiative"), action: "roll", spec: "roll", flags: "initiative"},
 			{name: __("ba_roll_concentration"), action: "roll", spec: "roll", flags: "concentration"},
+			{name: __("Fall damage"), action: "roll", spec: "roll", flags: "fall"},
 		);
-		if (!d20plus.ba.singleSelected
-			|| !(d20plus.ba.getSingleChar()?.isNpc === false)) return;
+		if (!d20plus.ba.current.singleChar
+			|| d20plus.ba.tokens.getCurrent()?.get("npc")) return;
 		d20plus.ba.tree.rolls = d20plus.ba.tree.rolls.concat([
 			{name: __("ba_roll_deathsave"), action: "roll", spec: "roll", flags: "death save|10"},
 			{name: __("ba_roll_hitdice"), action: "roll", spec: "roll", flags: "hit dice"},
@@ -26691,64 +26726,63 @@ function baseBetterActions () {
 	}
 
 	const buildStatsHtml = () => {
-		const char = d20plus.ba.getSingleChar();
+		const token = d20plus.ba.tokens.getCurrent();
+		if (!token || !token.character?.sheet.data.stats) return;
 
-		const baseStats = (char.isNpc ? [
-			buildTag("HP:", `${char.hp.val || ""}&nbsp;${buildTag("/", char.hp.max, " ")}`),
-			buildTag("(", char.npcStats.hpformula, ")"),
+		const baseStats = (token.get("npc") ? [
+			buildTag("HP:", `${token.get("hp")}&nbsp;${buildTag("/", token.get("hp_max"), " ")}`),
+			buildTag("(", token.get("hpformula"), ")"),
 			"<br>",
-			buildTag("AC:", char.npcStats.ac),
-			buildTag("", char.npcStats.actype, ""),
-			buildTag("CR:", char.npcStats.challenge),
-			buildTag("Speed", char.npcStats.speed),
+			buildTag("AC:", token.get("ac")),
+			buildTag("", token.get("actype"), ""),
+			buildTag("CR:", token.get("challenge")),
+			buildTag("Speed", token.get("speed")),
 		] : [
-			buildTag("HP:", `${char.hp.val}&nbsp;${buildTag("/", char.hp.max, " ")}`),
-			buildTag("AC:", char.stats.ac),
-			buildTag("PB", char.stats.pb),
-			buildTag("Speed", char.stats.speed),
+			buildTag("HP:", `${token.get("hp")}&nbsp;${buildTag("/", token.get("hp_max"), " ")}`),
+			buildTag("AC:", token.get("ac")),
+			buildTag("PB", token.get("pb")),
+			buildTag("Speed", token.get("speed")),
 		]).concat([
-			buildTag("Initiative", char.stats.initiative_bonus),
-			buildTag("Passive Perception", char.isNpc ? (char.stats.passive || char.stats.passive_wisdom) : char.stats.passive_wisdom),
+			buildTag("Initiative", token.get("initiative_bonus")),
+			buildTag("Passive Perception", token.get("passive_perception")),
 		]).join(" ");
 
 		const baseAbilities = abilities.map(a => {
-			const rawMod = char.stats[`${a}_mod`];
-			const mod = rawMod !== undefined ? (rawMod > 0 ? `+${rawMod}` : rawMod) : "";
-			return buildTag(`${a.slice(0, 3).toUpperCase()}:`, `${char.stats[a] || ""}${buildTag(" (", mod, ")")}`);
+			const mod = token.get(`${a}_mod`);
+			return buildTag(`${a.slice(0, 3).toUpperCase()}:`, `${token.get(a) || ""}${buildTag(" (", mod, ")")}`);
 		}).join(" ");
-		const spellStats = Object.keys(char.spells || {}).length ? `<li>${[
-			buildTag("Caster Level", char.stats.caster_level),
-			buildTag("Spell Save DC", char.stats.spell_save_dc),
-			buildTag("Spell Attack Bonus", char.stats.spell_attack_bonus),
+		const spellStats = token.get("spells").length ? `<li>${[
+			buildTag("Caster Level", token.get(`caster_level`)),
+			buildTag("Spell Save DC", token.get(`spell_save_dc`)),
+			buildTag("Spell Attack Bonus", token.get(`spell_attack_bonus`)),
 		].join(" ")}</li>` : "";
 
-		const classDetails = char.stats.class_display
+		const classDetails = token.get("class_display")
 			?.split(" ").map(c => isNaN(c) && c ? i18n(c.toLowerCase(), c) : c)
 			.join(" ") || "";
-		const currency = !char.isNpc ? `<li>${["cp", "sp", "ep", "gp", "pp"].map(c => {
-			return buildTag(`${c.toUpperCase()}:`, char.stats[c] || "0");
-		}).join(" ")}</li>` : "";
 
-		const npcDetails = char.isNpc ? [
-			buildTag("Speaks:", char.npcStats.languages),
-			buildTag("Senses:", char.npcStats.senses),
-			buildTag("Vulnerable to:", char.npcStats.vulnerabilities),
-			buildTag("Resists:", char.npcStats.resistances),
-			buildTag("Immune to:", char.npcStats.condition_immunities),
-			buildTag("Immunities:", char.npcStats.immunities),
-		].join(" ") : "";
+		const charDetails = token.get("npc") ? [
+			buildTag("Speaks:", token.get("languages")),
+			buildTag("Senses:", token.get("senses")),
+			buildTag("Vulnerable to:", token.get("vulnerabilities")),
+			buildTag("Resists:", token.get("resistances")),
+			buildTag("Immune to:", token.get("condition_immunities")),
+			buildTag("Immunities:", token.get("immunities")),
+		].join(" ") : ["cp", "sp", "ep", "gp", "pp"].map(c => {
+			return buildTag(`${c.toUpperCase()}:`, token.get(c) || "0");
+		}).join(" ");
 
 		return `
-			<li><span>${char.isNpc ? char.npcStats.type : `${char.stats.race_display}, ${classDetails}`}</span></li>
-			<li>${baseStats}</li><li>${baseAbilities}</li>${spellStats}${currency}
-			${npcDetails ? `<li>${npcDetails}</li>` : ""}
+			<li><span>${token.get("npc") ? token.get("type") : `${token.get("race_display")}, ${classDetails}`}</span></li>
+			<li>${baseStats}</li><li>${baseAbilities}</li>${spellStats}
+			${charDetails ? `<li>${charDetails}</li>` : ""}
 		`;
 	}
 
 	const buildBasicRollsHtml = () => {
-		const stats = d20plus.ba.singleSelected ? buildStatsHtml() : `
+		const stats = d20plus.ba.current.singleChar ? buildStatsHtml() : `
 			<li style="width: 220px;">Group selected:</li>
-			${d20plus.ba.tTokens?.reduce((list, t) => `${list}<li>${t.attributes.name}</li>`, "")}
+			${d20plus.ba.current.charTokens?.reduce((list, t) => `${list}<li>${t.attributes.name}</li>`, "")}
 		`;
 		["general", "stats", "skills"].forEach((tab, i) => {
 			d20plus.ba.$dom.tabs[tab].toggle(true);
@@ -26760,17 +26794,13 @@ function baseBetterActions () {
 	}
 
 	const buildAdvRollsHtml = () => {
-		["attacks", "spells"].forEach(tab => {
-			const list = tab === "spells" ? buildSpells() : buildAttacks();
-			list.length && d20plus.ba.$dom.tabs[tab].toggle(true);
+		["attacks", "traits", "spells"].forEach(tab => {
+			const list = tab === "spells"
+				? buildSpells()
+				: (tab === "traits" ? buildTraits() : buildAttacks());
+			list?.length && d20plus.ba.$dom.tabs[tab].toggle(true);
 			d20plus.ba.$dom.lists[tab].html(buildHtml(list, tab));
 		})
-	}
-
-	const buildSheet = () => {
-		d20plus.ba.$dom.sheet.info.html(buildStatsHtml());
-		d20plus.ba.$dom.sheet.name.html(d20plus.ba.getSingleChar()?.name.tk);
-		d20plus.ba.$dom.sheet.general.html(buildHtml(d20plus.ba.tree.rolls[1].items));
 	}
 
 	const getAmConfig = () => {
@@ -26791,20 +26821,30 @@ function baseBetterActions () {
 		}
 	};
 
-	const findToken = async () => {
-		const token = d20plus.ba.current.singleChar;
-		if (!token) return;
-		const objects = d20.engine.canvas.getObjects();
-		const object = objects.find(t => t._model?.id === token.id);
-		d20.engine.centerOnPoint(token.attributes.left, token.attributes.top);
-		d20.engine.select(object);
-	}
-
 	const amExecute = async (action, spec, flags) => {
-		const selected = action === "animation"
+		const appliedTo = action !== "animation"
 			? d20plus.ba.current.charTokens
 			: d20plus.ba.current.imgTokens;
-		const isMultiple = selected.length > 1;
+		appliedTo.forEach(t => {
+			const b20Model = d20plus.ba.tokens.get(t.id || t._model.id);
+			if (action === "animation") {
+				d20plus.anim.animator.startAnimation(b20Model._object, spec);
+			} else if (["spelldescription", "attackdescription"].includes(action)) {
+				d20plus.ba.makeInfo({
+					token: b20Model,
+					action: action === "spelldescription" ? "spell" : "attack",
+					id: spec,
+				});
+			} else {
+				d20plus.ba.makeRoll({
+					token: b20Model,
+					action,
+					id: spec,
+					flags,
+				});
+			}
+		});
+		/* const isMultiple = selected.length > 1;
 		const singleAction = !["animation"].includes(action)
 			&& !["ability", "save", "skill", "initiative", "roll"].includes(spec);
 		const iterateSelected = (token) => {
@@ -26825,16 +26865,17 @@ function baseBetterActions () {
 			d20plus.ba.executing = false;
 		} else {
 			d20plus.ba.rollError();
-		}
+		} */
 	}
 
 	const amDo = (action) => {
-		const amCharId = d20plus.ba.getSingleChar()?.id;
-		if (action === "opensheet") d20plus.ba.tTokens[0].character.view.showDialog();
+		const amCharId = d20plus.ba.tokens.getCurrent()?.character.id;
+		if (action === "opensheet") d20plus.ba.tokens.getCurrent().character._ref.view.showDialog();
 		else if (action === "openchar") void 0;
-		else if (action === "findtoken") findToken();
+		else if (action === "findtoken") d20plus.ba.tokens.focusCurrent();
 		else if (action === "close") d20plus.ba.$dom.menu.toggle(false);
-		else if (action === "collapse") d20plus.ba.$dom.menu.toggleClass("collapsed");
+		else if (action === "collapsew") d20plus.ba.$dom.menu.toggleClass("wcollapsed");
+		else if (action === "expandh") d20plus.ba.$dom.menu.toggleClass("hexpanded");
 		else if (action === "speakas") {
 			const $speagingas = $("#speakingas");
 			const [type, speakAsId] = $speagingas.val().split("|");
@@ -26852,26 +26893,91 @@ function baseBetterActions () {
 		d20plus.ba.$dom.title.img.attr("src", peopleIcon);
 		d20plus.ba.$dom.title.img.removeAttr("title");
 		d20plus.ba.$dom.title.img.css({filter: "contrast(0.1)", cursor: "unset"});
-		if (d20plus.ba.hasChars) {
+		if (d20plus.ba.current.hasChars) {
 			buildBasicRollsHtml();
-			if (d20plus.ba.singleSelected) {
-				const char = d20plus.ba.getSingleChar();
+			if (d20plus.ba.current.singleChar) {
+				const token = d20plus.ba.tokens.getCurrent();
+				d20plus.ut.log("Drawing menu for", token.get("name"));
 				buildAdvRollsHtml();
-				d20plus.ba.$dom.title.name.text(char?.name?.tk || char?.name?.ch || "Token");
-				d20plus.ba.$dom.title.img.attr("src", d20plus.ba.singleSelected.attributes.imgsrc);
-				d20plus.ba.$dom.title.img.attr("title", char?.name?.tk || char?.name?.ch);
+				d20plus.ba.$dom.title.name.text(token.get("name") || "Token");
+				d20plus.ba.$dom.title.img.attr("src", token.get("image"));
+				d20plus.ba.$dom.title.img.attr("title", token.get("name"));
 				d20plus.ba.$dom.title.img.css({filter: "unset", cursor: "pointer"});
 			} else {
 				d20plus.ba.$dom.title.name.text("Group");
 			}
 		}
-		if (d20plus.ba.hasAnimatable) {
+		if (d20plus.ba.current.hasImages) {
 			buildAnimations();
 			d20plus.ba.$dom.lists.animations.html(buildHtml(d20plus.ba.tree.anims));
 			if (d20plus.ba.tree.anims.length) d20plus.ba.$dom.tabs.animations.toggle(true);
 		}
 		d20plus.ba.$dom.menu.find(".ba-tabs li.active:visible").length
 			|| d20plus.ba.$dom.menu.find(".ba-tabs li:visible").get(0)?.click();
+	}
+
+	const amEnterPortal = () => {
+		const actor = d20plus.ba.current.lastSelectedToken;
+		const mover = d20.engine.selected()[0]?._model;
+		const token = d20plus.ba.tokens.get(actor?.id);
+
+		d20plus.ba.current.lastSelectedToken = false;
+		d20.engine.unselect();
+
+		const adjacent = (actor
+			&& Math.abs(mover.attributes.top - actor.attributes.top) <= (actor.attributes.height + mover.attributes.height / 2)
+			&& Math.abs(mover.attributes.left - actor.attributes.left) <= (actor.attributes.width + mover.attributes.width / 2)
+		);
+
+		if (adjacent) {
+			const receiver = d20plus.ut.getTokenById(mover.attributes.custom_portal);
+			if (receiver) {
+				const layer = actor.attributes.layer;
+				actor.save({top: receiver.attributes.top, left: receiver.attributes.left, layer: "portal"});
+				setTimeout(() => {
+					d20.engine.unselect();
+					actor.save({layer});
+					token?.select();
+					token?.find();
+				}, 500);
+			}
+		}
+
+		setTimeout(() => {
+			d20.engine.unselect();
+		}, 400);
+	}
+
+	const amShowPortalConnection = () => {
+		const entry = d20.engine.selected()[0]?._model;
+		const exit = d20plus.ut.getTokenById(entry.attributes.custom_portal);
+		const author = d20.Campaign.players.models.find(p => p.id !== d20_player_id)?.id;
+
+		if (!exit || !author) return;
+		d20plus.ba.current.showingPortals = author;
+
+		d20.engine.receiveMeasureUpdate({
+			"x": entry.attributes.left,
+			"y": entry.attributes.top,
+			"to_x": exit.attributes.left,
+			"to_y": exit.attributes.top,
+			"player": author,
+			"pageid": d20.Campaign.activePage()?.id,
+			"currentLayer": "gmlayer",
+			"waypoints": [],
+			"sticky": 0,
+			"flags": 0,
+			"hide": false,
+			"action": "line",
+			"color": "#c9c9c9",
+			"type": "measuring",
+			"time": Number(new Date()),
+		});
+	};
+
+	const amResetPortalConnection = () => {
+		d20.engine.receiveEndMeasure({player: d20plus.ba.current.showingPortals});
+		d20plus.ba.current.showingPortals = false;
 	}
 
 	d20plus.ba.menu = {
@@ -26974,7 +27080,7 @@ function baseBetterActions () {
 		}, needsOpening ? 2000 : 0);
 	}
 
-	d20plus.ba.fetchChar = async (token) => {
+	/* d20plus.ba.fetchChar = async (token) => {
 		const tokenRef = token || d20plus.ba.tTokens[0];
 		const charRef = tokenRef?.character;
 		const char = d20plus.ba.characters.get(charRef.id);
@@ -26994,15 +27100,15 @@ function baseBetterActions () {
 		const ref = token || d20plus.ba.singleSelected || d20plus.ba.currentToken;
 		const id = ref?.character?.id;
 		return id && d20plus.ba.chars[id];
-	}
+	} */
 
 	d20plus.ba.initBetterActions = () => {
 		const $createMenu = $(d20plus.html.bActionsMenu);
-		d20plus.ba.chars = {};
 		d20plus.ba.initCharacters();
 		skills = i18n("skills-list", skills).split(",");
 
 		d20plus.ba.$dom = {
+			panel: $createMenu,
 			menu: $createMenu.find(".ba-menu"),
 			tabs: {all: $createMenu.find(`[data-tab]`)},
 			lists: {all: $createMenu.find(`[data-list]`)},
@@ -27037,18 +27143,31 @@ function baseBetterActions () {
 						&& Object.keys(d20plus.anim.animatorTool?._anims || {}).length,
 				};
 				(async () => {
-					d20plus.ba.thisGroup = "asdasd";
-					d20plus.ba.singleSelected = controlledChar;
-					await d20plus.ba.fetchChar(controlledChar);
-					d20plus.ba.getReady(controlledChar);
-					amShow();
+					d20plus.ba.tokens.ready(controlledChar);
+					// amShow();
 				})();
 			}
 		}
 
-		$("body").on("shape_selected", "#editor", evt => {
+		$("body").on("shape_selected", "#editor", async evt => {
 			if (!getAmConfig()) return;
 			const selected = d20.engine.selected();
+
+			if (d20plus.ba.current.showingPortals) amResetPortalConnection();
+
+			if (selected.length === 1
+				&& selected[0]._model?.attributes.custom_portal
+				&& (d20plus.ba.current.lastSelectedToken || !is_gm)) {
+				amEnterPortal();
+				return;
+			} else if (selected.length === 1
+				&& selected[0]._model?.attributes.custom_portal
+				&& !d20plus.ba.current.lastSelectedToken
+				&& is_gm) {
+				amShowPortalConnection();
+				return;
+			}
+
 			d20plus.ba.current = {
 				charTokens: selected
 					.filter(it => it._model?.character)
@@ -27067,31 +27186,18 @@ function baseBetterActions () {
 				&& d20plus.ba.current.imgTokens.length > 0
 				&& Object.keys(d20plus.anim.animatorTool?._anims || {}).length;
 
-			d20plus.ba.tTokens = selected
-				.filter(it => it._model?.character)
-				.map(it => it._model);
-			d20plus.ba.tAnims = selected
-				.filter(it => it.type === "image");
-			d20plus.ba.thisGroup = d20plus.ut.generateRowId();
-			d20plus.ba.singleSelected = d20plus.ba.tTokens.length > 1
-				? false
-				: d20plus.ba.tTokens[0]; // am.multipleTargets // hasMultiple
-			d20plus.ba.hasChars = d20plus.ba.enabledCharMenu
-				&& d20plus.ba.tTokens.length > 0;
-			d20plus.ba.hasAnimatable = is_gm
-				&& d20plus.ba.enabledAnimation
-				&& d20plus.ba.tAnims.length > 0
-				&& Object.keys(d20plus.anim.animatorTool?._anims || {}).length;
-
-			if (d20plus.ba.hasChars) {
+			if (d20plus.ba.current.hasChars) {
 				d20plus.ba.current.charTokens.forEach(async t => {
-					await d20plus.ba.fetchChar(t);
-					d20plus.ba.getReady(t);
+					const token = d20plus.ba.tokens.ready(t);
 				});
-				if (!d20plus.ba.current.singleChar) amShow();
-			} else if (d20plus.ba.hasAnimatable) {
+			} else if (d20plus.ba.current.hasImages) {
 				amShow();
 			}
+
+			d20plus.ba.current.lastSelectedToken = d20plus.ba.current.singleChar;
+		}).on("nothing_selected", "#editor", evt => {
+			amResetPortalConnection();
+			d20plus.ba.current.lastSelectedToken = false;
 		});
 
 		$createMenu.on("click", "[data-action], [data-spec]", evt => {
@@ -27121,6 +27227,11 @@ function baseBetterActions () {
 		}).on("click", ".page-button.large", evt => {
 			d20plus.ba.$dom.menu.toggle();
 		});
+
+		$("#toolbar-collapse-handle").on("click", (evt) => {
+			const barCollapsed = $(evt.currentTarget).hasClass("collapse-handle-collapsed");
+			d20plus.ba.$dom.panel.toggleClass("master-toolbar-collapsed", barCollapsed);
+		})
 	}
 }
 
@@ -27134,6 +27245,31 @@ function baseBACharacters () {
 	d20plus.ba.tokens = [];
 
 	d20plus.ba.characters.Connector = function (ref) {
+		const abilities = ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"];
+
+		const skills = {
+			acrobatics: "dexterity",
+			animal_handling: "wisdom",
+			arcana: "intelligence",
+			athletics: "strength",
+			deception: "charisma",
+			history: "intelligence",
+			insight: "wisdom",
+			intimidation: "charisma",
+			investigation: "intelligence",
+			medicine: "wisdom",
+			nature: "intelligence",
+			perception: "wisdom",
+			performance: "charisma",
+			persuasion: "charisma",
+			religion: "intelligence",
+			sleight_of_hand: "dexterity",
+			stealth: "dexterity",
+			survival: "wisdom",
+
+			initiative: "dexterity",
+		};
+
 		const prepareRawStats = (lvls, attrib, id, val) => {
 			if (!Array.isArray(lvls)) lvls = [lvls];
 			const max = attrib.attributes.max;
@@ -27150,14 +27286,14 @@ function baseBACharacters () {
 		}
 
 		const prepareResources = () => {
-			const resources = {};
+			const resources = { _ref: {} };
 			["other", "class"].forEach(r => {
 				const tag = this.sheet.data.stats[`${r}_resource_name`];
 				const num = this.sheet.data.stats[`${r}_resource`];
 				const ref = this.sheet.data.stats._ref[`${r}_resource`];
 				if (num !== undefined && tag) {
 					resources[tag] = num;
-					resources[tag]._ref = ref;
+					resources._ref[tag] = ref;
 				}
 			});
 			Object.entries(this.sheet.data.resources || {}).forEach(([id, r]) => {
@@ -27166,7 +27302,7 @@ function baseBACharacters () {
 					const num = r[`resource_${n}`];
 					if (num !== undefined && tag) {
 						resources[tag] = num;
-						resources[tag]._ref = this.sheet.data.resources[id]?._ref;
+						resources._ref[tag] = this.sheet.data.resources[id]?._ref;
 					}
 				});
 			})
@@ -27175,6 +27311,11 @@ function baseBACharacters () {
 
 		const fetchAttribs = () => {
 			this.isNpc = false;
+			this.sheet.data = {
+				stats: {},
+				npcStats: {},
+				spellslots: {},
+			};
 			this.name = {
 				tk: this.refLastToken.attributes.name,
 				ch: this._ref.attributes.name,
@@ -27186,16 +27327,10 @@ function baseBACharacters () {
 				if (type === undefined) {
 					if (tag === "npc" && current === "1") this.isNpc = true;
 					else prepareRawStats("stats", prop, tag);
-				} else if (tag === "npc" && attr === "") {
-					if (type === "name") this.name.npc = prop.attributes.current;
-					prepareRawStats("npcStats", prop, [type].concat(id || []).join("_"));
 				} else if (type === "slots") {
 					const lvl = tag.slice(-1);
 					prepareRawStats(["spellslots", lvl], prop, id);
-				} else if (attr === "") {
-					if (prop.attributes.name === "charactersheet_type" && current === "npc") this.isNpc = true;
-					prepareRawStats("stats", prop, [tag].concat(type || [], id || []).join("_"));
-				} else if (tag === "repeating" && d20plus.ba.singleSelected) {
+				} else if (tag === "repeating") {
 					const [stype, lvl] = type.split("-");
 					if (stype === "spell") {
 						if (lvl) {
@@ -27224,9 +27359,63 @@ function baseBACharacters () {
 					prepareRawStats("order", prop, attr, current.split(","));
 				} else if (tag === "global" && id === "mod" && attr === "flag") {
 					prepareRawStats(["mods", "active"], prop, type);
+				} else if (tag === "npc") {
+					if (type === "name") this.name.npc = prop.attributes.current;
+					prepareRawStats("npcStats", prop, [type].concat(id || [], attr || []).join("_"));
+				} else {
+					if (prop.attributes.name === "charactersheet_type" && current === "npc") this.isNpc = true;
+					prepareRawStats("stats", prop, [tag].concat(type || [], id || [], attr || []).join("_"));
 				}
 			});
-			prepareResources();
+		}
+
+		const getMod = (val) => {
+			return val
+				? `+${val}`.replace("++", "+").replace("+-", "-")
+				: "+0";
+		}
+
+		const filterVal = (val) => {
+			return val === undefined ? undefined : `${val}`;
+		}
+
+		const checkType = function (type) {
+			switch (type) {
+				case "ability": return abilities.includes(this.val);
+				case "ability_mod": return abilities.map(a => `${a}_mod`).includes(this.val);
+				case "ability_save": return abilities.map(a => `${a}_save`).includes(this.val);
+				case "skill": return Object.keys(skills).includes(this.val);
+				case "skill_mod": return Object.keys(skills).map(a => `${a}_mod`).includes(this.val);
+				case "skill_pb": return Object.keys(skills).map(a => `${a}_pb`).includes(this.val);
+			}
+		}
+
+		const getStats = (q) => {
+			const char = this.sheet.data.stats._ref;
+			const npc = this.sheet.data.npcStats._ref;
+			const str = {val: q, is: checkType};
+			if (str.is("ability")) return `${char[q]?.attributes.current}` || "10";
+			else if (str.is("ability_mod")) return getMod(char[q]?.attributes.current);
+			else if (str.is("ability_save")) {
+				return getMod(
+					(this.isNpc && filterVal(npc[`${q.substr(0, 3)}_save`]?.attributes.current))
+					|| char[`${q}_bonus`]?.attributes.current);
+			} else if (str.is("skill")) {
+				return `${10 + Number(
+					(this.isNpc && filterVal(npc[q]?.attributes.current))
+					|| char[`${q}_bonus`]?.attributes.current || 0)}`;
+			} else if (str.is("skill_mod")) {
+				q = q === "concentration_mod" ? "constitution" : q.replace("_mod", "");
+				return getMod(
+					(this.isNpc && filterVal(npc[q]?.attributes.current))
+					|| char[`${q}_bonus`]?.attributes.current);
+			} else if (q === "passive_perception") {
+				return `${
+					(this.isNpc && (10 + Number(filterVal(npc[`passive`]?.attributes.current)
+						|| filterVal(npc[`perception`]?.attributes.current)
+						|| filterVal(char[`perception_bonus`]?.attributes.current))))
+					|| char[`passive_wisdom`]?.attributes.current}`;
+			} else return (this.isNpc && filterVal(npc[q]?.attributes.current)) || char[q]?.attributes.current;
 		}
 
 		const types = [
@@ -27235,7 +27424,60 @@ function baseBACharacters () {
 				utils: {
 					_char: () => this,
 					_get: function (q) {
-						return this._ref[q].attributes.current;
+						if (q === "name") return this._ref.spellname?.attributes.current;
+						else if (q === "description") return this._ref.spelldescription?.attributes.current;
+						else if (q === "uses") {
+							if (this._resource === undefined) {
+								const resourceName = this._ref.innate?.attributes.current;
+								const resource = this._char().sheet.getResources(resourceName);
+								this._resource = resource || false;
+							}
+							return this._resource?.current;
+						}
+						return this._ref[q]?.attributes.current;
+					},
+					_has: function (q) {
+						switch (q) {
+							case "atk": return (
+								this._ref.spellattack?.attributes.current
+								&& this._ref.spellattack?.attributes.current !== "None"
+							);
+							case "dmg": return (
+								this._ref.spelldamage?.attributes.current
+								|| this._ref.spelldamage2?.attributes.current
+							);
+							case "dmgorheal": return (
+								this._ref.spelldamage?.attributes.current
+								|| this._ref.spelldamage2?.attributes.current
+								|| this._ref.spellhealing?.attributes.current
+							);
+							case "upcast": return (
+								!isNaN(this._ref.spellhldie?.attributes.current)
+								&& !!this._ref.spellhldietype?.attributes.current
+							);
+							case "action": return (
+								this._ref.spelldamage?.attributes.current
+								|| this._ref.spelldamage2?.attributes.current
+								|| this._ref.spellhealing?.attributes.current
+								|| (this._ref.spellattack?.attributes.current
+									&& this._ref.spellattack?.attributes.current !== "None")
+								|| this._ref.spellsave?.attributes.current
+							);
+							case "uses": {
+								if (this._resource) return true;
+								const resourceName = this._ref.innate?.attributes.current;
+								const resource = this._char().sheet.getResources(resourceName);
+								if (resource) {
+									this._resource = resource;
+									return true;
+								} else {
+									this._resource = false;
+									return false;
+								}
+							}
+							case "ritual": return this._ref.spellritual?.attributes.current !== "0";
+							case "save": return !!this._ref.spellsave?.attributes.current;
+						}
 					},
 				},
 			},
@@ -27244,38 +27486,234 @@ function baseBACharacters () {
 				utils: {
 					_char: () => this,
 					_get: function (q) {
-						return this._ref[q].attributes.current;
+						switch (q) {
+							case "name": return this._ref.atkname?.attributes.current;
+							case "range": return this._ref.atkrange?.attributes.current;
+							case "dmg1type": return this._ref.dmgtype?.attributes.current;
+							case "dmg2type": return this._ref.dmg2type?.attributes.current;
+							case "dmg1": return this._ref.attack_damage?.attributes.current;
+							case "dmg2": return this._ref.attack_damage2?.attributes.current;
+							case "attr": return this._ref.atkattr_base?.attributes.current.replace(/@{(.*?)}/, "$1");
+							default: return this._ref[q]?.attributes.current;
+						}
+					},
+					_has: function (q) {
+						switch (q) {
+							case "atk": return this._ref.atkflag?.attributes.current !== "0";
+							case "save": return !!this._ref.savedc?.attributes.current;
+							case "dmg1": return (
+								!!this._ref.dmgbase?.attributes.current
+								&& this._ref.dmgflag?.attributes.current !== "0");
+							case "dmg2": return (
+								!!this._ref.dmg2base?.attributes.current
+								&& this._ref.dmg2flag?.attributes.current !== "0");
+							case "pb": return this._ref.atkprofflag?.attributes.current !== "0"; // idiotic thing (pc only)?
+							case "range": return this._ref.atkrange?.attributes.current.includes("/");
+							default: return (
+								this._ref[q]?.attributes.current
+								&& this._ref[q]?.attributes.current !== "0");
+						}
 					},
 				},
+			},
+			{
+				id: "actions", // npc's attack are stored here
+				utils: {
+					_char: () => this,
+					_get: function (q) {
+						switch (q) {
+							case "name": return this._ref.name?.attributes.current;
+							case "range": return this._ref.attack_range?.attributes.current;
+							case "dmg1type": return this._ref.attack_damagetype?.attributes.current;
+							case "dmg2type": return this._ref.attack_damagetype2?.attributes.current;
+							case "dmg1": return this._ref.attack_damage?.attributes.current;
+							case "dmg2": return this._ref.attack_damage2?.attributes.current;
+							case "attr": return undefined;
+							default: return this._ref[q]?.attributes.current;
+						}
+					},
+					_has: function (q) {
+						switch (q) {
+							case "atk": return this._ref.attack_flag?.attributes.current !== "0";
+							case "dmg1": return !!this._ref.attack_damage?.attributes.current;
+							case "dmg2": return !!this._ref.attack_damage2?.attributes.current;
+							case "pb": return false; // idiotic thing (pc only)?
+							case "save": return false;
+							case "range": return this._ref.attack_type?.attributes.current === "Ranged";
+							default: return (
+								this._ref[q]?.attributes.current
+								&& this._ref[q]?.attributes.current !== "0");
+						}
+					},
+				},
+			},
+			{
+				id: "traits",
+				utils: {
+					_char: () => this,
+					_get: function (q) {
+						switch (q) {
+							case "name": return this._ref.name?.attributes.current;
+							case "description": return this._ref.description?.attributes.current;
+							case "resource": return this._ref.source_type?.attributes.current;
+							case "uses": {
+								if (this._resource === undefined) {
+									const resourceName = this._ref.source_type?.attributes.current;
+									const resource = this._char().sheet.getResources(resourceName);
+									this._resource = resource || false;
+								}
+								return this._resource?.current;
+							}
+							default: return this._ref[q]?.attributes.current;
+						}
+					},
+					_has: function (q) {
+						switch (q) {
+							case "atk": return false;
+							case "dmg1": return false;
+							case "dmg2": return false;
+							case "pb": return false;
+							case "save": return false;
+							case "range": return false;
+							case "action": return false;
+							case "uses": {
+								if (this._resource) return true;
+								const resourceName = this._ref.source_type?.attributes.current;
+								const resource = this._char().sheet.getResources(resourceName);
+								if (resource) {
+									this._resource = resource;
+									return true;
+								} else {
+									this._resource = false;
+									return false;
+								}
+							}
+							default: return (
+								this._ref[q]?.attributes.current
+								&& this._ref[q]?.attributes.current !== "0"
+							);
+						}
+					},
+				},
+			},
+			function (param) {
+				const char = d20plus.ba.getSingleChar();
+				const attr = {
+					name: {pc: "atkname", npc: "name"},
+					range: {pc: "atkrange", npc: "attack_range"},
+					hasattack: {pc: "atkflag", npc: "attack_flag", q: {false: ["0"]}},
+					hasdamage: {get: (at) => char.isNpc ? !!at.attack_damage : !!at.dmgbase && at.dmgflag !== "0"},
+					hasdamage2: {get: (at) => char.isNpc ? !!at.attack_damage2 : !!at.dmg2base && at.dmg2flag !== "0"},
+					damagetype: {pc: "dmgtype", npc: "attack_damagetype"},
+					damagetype2: {pc: "dmg2type", npc: "attack_damagetype2"},
+					profbonus: {pc: "atkprofflag", q: {false: ["0"]}},
+				}[param];
+				const val = char.isNpc ? this[attr?.npc] : this[attr?.pc];
+				if (attr.get) return attr.get(this);
+				else if (!attr.q) return val;
+				else return attr.q.true?.includes(val) || (attr.q.false && !attr.q.false.includes(val));
+			},
+			function (param) {
+				const char = d20plus.ba.getSingleChar();
+				const attr = {
+					hasattack: {get: (sp) => !!sp.spellattack && sp.spellattack !== "None"},
+					hasdamage: {get: (sp) => !!sp.spelldamage || !!sp.spelldamage2},
+					hasdamageorhealing: {get: (sp) => !!sp.spelldamage || !!sp.spelldamage2 || !!sp.spellhealing},
+					hassave: {get: (sp) => !!sp.spellsave && sp.spellsave !== ""},
+				}[param];
+				const val = char.isNpc ? this[attr?.npc] : this[attr?.pc];
+				if (attr.get) return attr.get(this);
+				else if (!attr.q) return val;
+				else return attr.q.true?.includes(val) || (attr.q.false && !attr.q.false.includes(val));
 			},
 		]
 
 		this.sheet = {
 			get: (q) => {
-				if (this.isNpc && this.sheet.data.npcStats[q] !== undefined) return this.sheet.data.npcStats[q];
-				else if (this.sheet.data.stats[q] !== undefined) return this.sheet.data.stats[q];
-				else {
-					for (let i = 0; i < types.length; i++) {
-						const list = this.sheet.data[types[i].id];
-						if (list && list[q]) return Object.assign({_id: q}, types[i].utils || {}, list[q]);
-					}
+				for (let i = 0; i < types.length; i++) {
+					const list = this.sheet.data[types[i].id];
+					if (list && list[q]) return Object.assign({_id: q}, types[i].utils || {}, list[q]);
 				}
+				return this.sheet.data.stats?._ref && getStats(q);
 			},
 			getSpells: (lvl) => {
-				return this.sheet.data.spells?.filter(spl => !lvl || spl.lvl === lvl) || [];
+				const all = this.sheet.data.spells || {};
+				return Object.keys(all).reduce((spls, id) => {
+					if (
+						(lvl && all[id].lvl !== lvl)
+						|| all[id]._ref.innate?.attributes.current
+					) return spls;
+					spls.push(Object.assign({}, types[0].utils || {}, all[id]));
+					return spls;
+				}, []);
 			},
-			getSpellSlots: (lvl) => {
-
+			getTraits: () => {
+				const all = Object.assign({},
+					this.sheet.data.traits || {},
+					this.sheet.data.spells || {},
+				);
+				return Object.keys(all).reduce((trts, id) => {
+					if (all[id]._ref.source_type?.attributes.current) {
+						trts.push(Object.assign({}, types[3].utils || {}, all[id]));
+					} else if (all[id]._ref.innate?.attributes.current) {
+						trts.push(Object.assign({}, types[0].utils || {}, all[id]));
+					}
+					return trts;
+				}, []);
 			},
-			getResource: (name) => {
-
+			getResources: (name) => {
+				const resources = {};
+				[["default", {}]].concat(Object.entries(this.sheet.data.resources || {})).forEach(([id, r]) => {
+					const isDefault = id === "default";
+					const pair = isDefault ? ["other", "class"] : ["left", "right"];
+					pair.forEach(n => {
+						const pointer = isDefault ? `${n}_resource` : `resource_${n}`;
+						const stack = isDefault ? this.sheet.data.stats._ref : r._ref;
+						const name = stack[`${pointer}_name`]?.attributes.current;
+						const num = String(stack[pointer]?.attributes.current);
+						const pb = !!stack[`${pointer}_use_pb`]?.attributes.current
+							&& stack[`${pointer}_use_pb`].attributes.current !== "0";
+						if (num !== undefined && name) {
+							resources[name] = {
+								_ref: {
+									name: stack[`${pointer}_name`],
+									resource: stack[pointer],
+									pb: stack[`${pointer}_use_pb`],
+								},
+								name: name,
+								current: num,
+								type: isDefault ? "resource" : "repeated",
+								side: n,
+								max: pb ? this.sheet.get("pb") : stack[pointer].attributes.max,
+							};
+						}
+					});
+				});
+				return name ? resources[name] : resources;
 			},
 			getAttacks: () => {
-				return this.isNpc
-					? this.sheet.data.actions?.filter(act => act.attack_flag === "on") || []
-					: this.sheet.data.attacks || [];
+				const all = this.isNpc
+					? this.sheet.data.actions || {}
+					: this.sheet.data.attacks || {};
+				const utils = this.isNpc
+					? types[2].utils || {}
+					: types[1].utils || {};
+				return Object.keys(all).reduce((atks, id) => {
+					if (
+						(this.isNpc && all[id].attack_flag === "on")
+						|| (!this.isNpc && !all[id].spellid)
+					) atks.push(Object.assign({}, utils || {}, all[id]));
+					return atks;
+				}, []);
+			},
+			getRollModifier: (r) => {
+				const r20q = /.*@{(?<attr>[^}]*)}.*/g;
+				return r?.split("+").reduce((res, attr) => {
+					return res + (Number(attr.replace(r20q, (...s) => this.sheet.get(s.last().attr))) || 0);
+				}, 0) || 0;
 			},
 			fetch: () => {
+				// d20plus.ut.log("Fetching character", this.sheet.fetched, this._ref.attribs.models.length)
 				if (this.sheet.fetched !== this._ref.attribs.models.length) {
 					this.sheet.fetched = this._ref.attribs.models.length;
 					fetchAttribs();
@@ -27284,14 +27722,51 @@ function baseBACharacters () {
 			data: {
 				stats: {},
 				npcStats: {},
+				spellslots: {},
+			},
+			spellSlots: {
+				current: (lvl) => {
+					return this.sheet.data.spellslots
+					&& (this.sheet.data.spellslots[lvl]?._ref.expended?.attributes.current
+					|| this.sheet.data.spellslots[lvl]?._ref.total?.attributes.current
+					|| 0);
+				},
+				expended: (lvl) => {
+					const calc = this.sheet.data.spellslots && (
+						(this.sheet.data.spellslots[lvl]?._ref.total?.attributes.current || 0)
+						- (this.sheet.data.spellslots[lvl]?._ref.expended?.attributes.current || 0));
+					return calc >= 0 ? calc : 0;
+				},
+				max: (lvl) => {
+					return this.sheet.data.spellslots
+						&& (this.sheet.data.spellslots[lvl]?._ref.total?.attributes.current || 0);
+				},
+				expend: (lvl) => {
+					void 0;
+				},
 			},
 			fetched: 0,
 		};
 
+		this.ready = async () => {
+			return new Promise(resolve => {
+				let inProgress = 0;
+				const wait = setInterval(() => {
+					const statsFetched = Object.keys(this.sheet.data.stats).length > 1;
+					inProgress++;
+					if (statsFetched) resolve(true);
+					if (statsFetched || inProgress > 120) {
+						resolve(false);
+						clearInterval(wait);
+					}
+				}, 30);
+			});
+		}
+
 		this.refresh = () => {
 			if (d20plus.ba.current.singleChar?.character?.id !== this.id) return;
 			this.sheet.fetch();
-			d20plus.ba.menu.refresh();
+			this.sheet.data.stats?._ref && d20plus.ba.menu.refresh();
 		};
 
 		const init = async () => {
@@ -27303,19 +27778,34 @@ function baseBACharacters () {
 			this.id = this._ref.id;
 
 			await d20plus.ut.fetchCharAttribs(this._ref, true);
-			this.sheet.fetch();
+			d20plus.ut.injectCode(
+				this._ref.attribs._callbacks.change.next,
+				"callback",
+				(callback, p) => {
+					callback(...p);
+					setTimeout(this.refresh, 100);
+				},
+			);
 
 			d20plus.ba.characters.push(this);
+			this.sheet.fetch();
 			this.refresh();
-			delete this.init;
 		}
 
 		init();
 	}
 
 	d20plus.ba.tokens.Connector = function (ref) {
+		const getHP = (max) => {
+			return !max
+				? this._ref.attributes[`bar${this.hp.bar}_value`]
+				: this._ref.attributes[`bar${this.hp.bar}_max`];
+		};
+
 		this.hp = {
 			checkMode: () => {
+				this.hp.connected = false;
+				this.hp.bar = Number(d20plus.cfg.getOrDefault("chat", "dmgTokenBar"));
 				for (let i = 1; i < 4; i++) {
 					const attr = this._ref.attributes[`bar${i}_link`];
 					if (attr && this.character?.sheet.data.stats?._ref?.hp.id === attr) {
@@ -27330,55 +27820,136 @@ function baseBACharacters () {
 		}
 
 		this.refresh = () => {
-			if (!d20plus.ba.current.charTokens?.map(t => t.id).includes(this.id)) return;
+			if (!d20plus.ba.current.charTokens?.find(t => this.id === t.id)) return;
+			// d20plus.ut.log("Fetching token", this.get("name"), this.character.sheet.fetched, this.character._ref.attribs.models.length)
+			this.hp.checkMode();
 			d20plus.ba.menu.refresh();
+		}
+
+		this.select = () => {
+			d20.engine.select(this._object);
+		}
+
+		this.find = () => {
+			d20.engine.centerOnPoint(this._ref?.attributes?.left || 0, this._ref?.attributes?.top || 0);
+		}
+
+		this.get = (q) => {
+			switch (q) {
+				case "image": return this._ref.attributes.imgsrc;
+				case "npc": return this.character?.isNpc;
+				case "hp": return getHP();
+				case "hp_max": return getHP("max");
+				case "name": return this._ref.attributes.name || "";
+				case "char_name": return this._ref.character.attributes.name || "";
+				case "npc_name": return this.character?.sheet.get("name") || "";
+				case "spells": return this.character?.sheet.getSpells();
+				case "attacks": return this.character?.sheet.getAttacks();
+				case "traits": return this.character?.sheet.getTraits();
+				default: return this.character?.sheet.get(q);
+			}
+		}
+
+		this.ready = async () => {
+			return new Promise(resolve => {
+				let inProgress = 0;
+				const wait = setInterval(() => {
+					const statsFetched = Object.keys(this.character?.sheet?.data.stats).length > 1;
+					inProgress++;
+					if (statsFetched) resolve(true);
+					if (statsFetched || inProgress > 120) {
+						resolve(false);
+						clearInterval(wait);
+					}
+				}, 30);
+			});
 		}
 
 		const init = async () => {
 			if ((ref?._model?.attributes || ref?.attributes)?.type !== "image") return;
 			if (!(ref?._model?.character || ref?.character)?.id) return;
 			this._ref = ref._model || ref;
+			this._object = ref._model
+				? ref
+				: d20.engine.canvas.getObjects()?.find(t => t._model?.id === this._ref.id);
 			this.id = this._ref.id;
 
 			const char = d20plus.ba.characters.get(this._ref.character.id);
 			this.character = char || await new d20plus.ba.characters.Connector(this._ref);
-			this.mods = {general: {}, stats: {}, skills: {}, attacks: {}, spells: {}};
-			this.hp.checkMode();
+			this.mods = {general: {}, stats: {}, skills: {}, attacks: {}, spells: {}, traits: {}};
 
 			d20plus.ba.tokens.push(this);
-			delete this.init;
-			return this;
+			this.refresh();
 		}
 
 		init();
 	}
 
 	d20plus.ba.initCharacters = () => {
-		const get = function (id) {
-			return this.find(it => it.id === id);
+		const get = function (ref) {
+			return Object.isObject(ref)
+				? this.find(it => it.id === ref.id
+					|| it.id === ref._model?.id
+					|| it.id === ref.character?.id
+					|| it.id === ref._model?.character?.id)
+				: this.find(it => it.id === ref);
+		}
+
+		const ready = function (ref) {
+			const isToken = !!this.getCurrent;
+			if ((isToken && !ref?.id
+					&& !ref._model.id
+					&& !ref.character
+					&& !ref._model?.character)
+				|| (!isToken && !ref?.id
+					&& !ref.attribs)) return;
+
+			const existing = this.get(ref.id || this._model?.id);
+			const created = existing || new this.Connector(ref);
+
+			existing?.refresh();
+			return existing || created;
 		}
 
 		d20plus.ba.tokens.get = get;
 		d20plus.ba.characters.get = get;
 
-		d20plus.ba.getReady = function (ref) {
+		d20plus.ba.tokens.ready = ready;
+		d20plus.ba.characters.ready = ready;
+
+		d20plus.ba.tokens.getCurrent = () => {
+			return d20plus.ba.tokens.get(d20plus.ba.current.singleChar?.id);
+		}
+
+		d20plus.ba.tokens.focusCurrent = () => {
+			const token = d20plus.ba.tokens.getCurrent();
+			d20.engine.unselect();
+			token?.find();
+			token?.select();
+		}
+
+		d20plus.ba.getReady = function (ref) { // legacy
 			const gotToken = !ref.attribs;
 			if (gotToken && !ref.character && !ref._model?.character) return;
 
 			const token = ref._model || ref;
 			const existing = (gotToken ? d20plus.ba.tokens : d20plus.ba.characters).get(token.id);
-			// d20plus.ut.log(token, existing); check why it's called twice !!!!
+			d20plus.ut.log(token, existing); // check why it's called twice !!!!
 			const created = existing || (gotToken
 				? new d20plus.ba.tokens.Connector(token)
 				: new d20plus.ba.characters.Connector(token));
 			existing?.refresh();
+			return existing || created;
 		}
 	}
 
 	window.d20debug = {
 		qattr: (q) => {
-			d20plus.ut.log(`Quering ${q}`);
 			d20plus.ba.characters.forEach(ch => d20plus.ut.log(ch.name.tk, ch.sheet.get(q)));
+			d20plus.ut.log(`Quering ${q}: ${d20plus
+				.ba.characters
+				.reduce((r, ch) => `${r}\n${ch.name.ch}:\t ${ch.sheet.get(q)}`, "")
+			}`);
 		},
 	}
 }
@@ -27449,6 +28020,7 @@ function baseBARollTemplates () {
 	}
 
 	const buildAttackTemplate = (v) => {
+		v.targetId = v._onSelf ? v._this.id : v.targetId;
 		const tmplModel = [
 			{tag: `attack`,	 val: "1"},
 			{tag: `crit`,	 val: "1"},
@@ -27584,20 +28156,10 @@ function baseBARollTemplates () {
 		if (!template) return d20plus.ba.rollError();
 
 		d20.textchat.doChatInput(`${getWMode()}${template}`);
-		console.log(values, template)
 		if (values._expend) d20plus.engine.expendResources(values._expend);
 	}
 
-	const buildRollModifier = (r) => {
-		const char = d20plus.ba.getSingleChar();
-		const r20q = /.*@{(?<attr>[^}]*)}.*/g;
-		return r?.split("+").reduce((res, attr) => {
-			return res + (Number(attr.replace(r20q, (...s) => char.stats[s.last().attr])) || 0);
-		}, 0) || 0;
-	}
-
 	const buildRollModel = (r) => {
-		console.log(r);
 		const critrange = r.critrange && Number(r.critrange) !== 20 ? `cs>${r.critrange}` : "";
 		const base = !r.base ? ""
 			: r.base.toLowerCase().includes("d") ? r.base : `1d${r.base}${critrange}`;
@@ -27622,41 +28184,43 @@ function baseBARollTemplates () {
 		const mods = r.mods?.reduce((s, m) => {
 			if (!m) return s;
 			return s + (Number(m[0]) || 0);
-		}, 0) || 0;
+		}, 0) || 0; d20plus.ut.log("Building modifier", mods, r)
 		const sign = mods < 0 || !r.base ? "" : "+";
 		return `${base}${sign}${mods}`;
 	}
 
-	const getAbilityVals = (spec, attr, dc) => {
-		const char = d20plus.ba.getSingleChar();
-		if (!dc) [attr, dc] = (attr).split("|");
+	const getAbilityVals = (q) => { // spec, attr, dc
+		const [attr, dcTmp] = (q.flags).split("|");
+		const dc = q.dc || dcTmp;
+		const spec = q.id;
 
 		const abbr = attr.slice(0, 3).toUpperCase();
 		const attrBase = attr.replaceAll(" ", "_").replaceAll("-", "_");
-		const attrId = spec === "save" ? `${attrBase}_save_bonus` : (spec === "ability" ? `${attrBase}_mod` : `${attrBase}_bonus`);
-		const attrIdNpc = spec === "save" ? `${abbr.toLowerCase()}_save` : (spec === "skill" ? attrBase : "");
-		const attrVal = (char.isNpc && char.npcStats[attrIdNpc]) || char.stats[attrId];
+		const attrId = spec === "save" ? `${attrBase}_save` : `${attrBase}_mod`;
+		const attrMod = q.token.get(attrId);
 
 		const roll = {
-			base: attr !== "hit dice" ? `20` : `${char.stats.hitdietype}`,
+			base: attr !== "hit dice" ? `20` : `${q.token.get("hitdietype")}`,
 			// type: spec === "hit dice" ? `heal` : null,
 			// target: spec === "hit dice" ? token.id : null,
 			mods: [
-				attr === "hit dice" || attr === "concentration" ? [char.stats.constitution_mod, "CON"] : [attrVal, abbr],
-				attr === "initiative" ? [` `, `init${char.lastTokenId}`] : null,
-				spec === "ability" && !char.isNpc ? [`${char.stats.jack_bonus}`, "JACK"] : null,
+				[attrMod, abbr],
+				attr === "initiative" ? [` `, `init${q.token.id}`] : null,
+				spec === "ability" && !q.token.get("npc") ? [`${q.token.get("jack_bonus")}`, "JACK"] : null,
 			],
 		}
 
+		if (attr === "hit dice") roll.mods[0] = [q.token.get("constitution_mod"), "CON"];
+		if (attr === "concentration") roll.mods[0] = [q.token.get("constitution_save"), "CON"];
+
 		const tmplVals = {
-			_thisId: char.id,
-			_isNpc: char.isNpc,
-			_modelType: attr !== "hit dice" ? "ability" : "attack",
+			_thisId: q.token.character.id,
+			_isNpc: q.token.get("npc"),
+			_modelType: !["hit dice", "fall"].includes(attr) ? "ability" : "attack",
 			_onSelf: true,
 			dc,
-			chId: char.id,
 			rMode: getRollMode(),
-			title: attr !== "hit dice" ? char.name.tk : `^{hit-dice-u}`,
+			title: attr !== "hit dice" ? q.token.get("name") : `^{hit-dice-u}`,
 			subTitle: `^{${spec === "ability" ? "abilities" : ["skill", "save", "roll"].includes(spec) ? spec : attr}}`,
 			attrName: `^{${spec === "save" ? `${attrBase}-save` : (["death save", "hit dice"].includes(attr) ? attr.split(" ").concat("u").join("-") : attrBase)}}`,
 			mod: buildDisplayMod(roll),
@@ -27667,8 +28231,8 @@ function baseBARollTemplates () {
 			dmg1tag: "heal",
 			dmg1type: `^{hp}`,
 			dmg1roll: buildRollModel(roll),
-			charName: char.name.tk,
-			targetId: char.lastTokenId,
+			charName: q.token.get("name"),
+			targetId: q.token.id,
 		}
 
 		return tmplVals;
@@ -27727,96 +28291,97 @@ function baseBARollTemplates () {
 		return d20plus.ba.templateModel("ability", tmplVars);
 	};
 
-	const getAttackVals = (id, flags) => {
-		const char = d20plus.ba.getSingleChar();
-		const atk = char?.attacks[id];
-		const ammo = atk.ammo;
-		const dmg = atk.rollbase_crit?.match(/{{dmg1=\[\[(?<dmg1>[^}]*)\]\]}}(?:.*?){{dmg2=\[\[(?<dmg2>[^}]*)\]\]}}(?:.*?){{crit1=\[\[(?<crit1>[^}]*)\]\]}}(?:.*?){{crit2=\[\[(?<crit2>[^}]*)\]\]}}/)?.groups || {};
-		const atkattr = atk.atkattr_base?.replace(/@{(.*?)}/, "$1");
+	const getAttackVals = (q) => {
+		const atk = q.token.get(q.id);
+		const dmg = atk._get("rollbase_crit")?.match(/{{dmg1=\[\[(?<dmg1>[^}]*)\]\]}}(?:.*?){{dmg2=\[\[(?<dmg2>[^}]*)\]\]}}(?:.*?){{crit1=\[\[(?<crit1>[^}]*)\]\]}}(?:.*?){{crit2=\[\[(?<crit2>[^}]*)\]\]}}/)?.groups || {};
+		const atkattr = atk._get("attr");
 
 		const atkRoll = {
 			base: `20`,
-			critrange: atk.atkcritrange || char.stats.default_critical_range || "20",
+			critrange: atk._get("atkcritrange") || q.token.get("default_critical_range") || "20",
 			mods: [
-				char.isNpc ? [atk.attack_tohit, "MOD"] : undefined,
-				atk.atkattr_base ? [char.stats[atkattr], atkattr?.slice(0, 3).toUpperCase()] : undefined,
-				atk._getVar("profbonus") && !char.isNpc ? [char.stats.pb, "PB"] : undefined,
+				q.token.get("npc") ? [atk._get("attack_tohit"), "MOD"] : undefined,
+				atkattr ? [q.token.get(atkattr), atkattr?.slice(0, 3).toUpperCase()] : undefined,
+				atk._has("pb") && !q.token.get("npc") ? [q.token.get("pb"), "PB"] : undefined,
 			],
 		}
 
 		const tmplVals = {
-			_thisId: char.id,
-			_isNpc: char.isNpc,
-			_onSelf: atk._getVar("range")?.includes("[S]"),
-			_targeted: !!atk._getVar("hasattack") || !!atk._getVar("hasdamage") || !!atk._getVar("hasdamage2") || !!atk.savedc,
-			_modelType: atk._getVar("hasattack") ? "attack" : atk.savedc && atk._getVar("hasdamage") ? "cast" : "action",
-			_expend: atk.ammo ? {type: "item", name: atk.ammo, charID: char.id} : undefined,
+			_this: q.token,
+			_thisId: q.token.character.id,
+			_isNpc: q.token.get("npc"),
+			_onSelf: atk._get("range")?.includes("[S]"),
+			_targeted: atk._has("atk") || atk._has("dmg1") || atk._has("dmg2") || atk._has("save"),
+			_modelType: atk._has("atk") ? "attack" : atk._has("save") && atk._has("dmg1") ? "cast" : "action",
+			_expend: atk._get("ammo") ? {type: "item", name: atk._get("ammo"), charID: q.token.character.id} : undefined,
 
-			chId: char.id, // !
-			title: atk._getVar("name") || "^{attack-u}",
-			subTitle: [atk._getVar("range")?.replace(/\[\w\]/g, "").replaceAll("]", "&#93;"), i18n(atk.attack_type?.toLowerCase(), "")]
+			title: atk._get("name") || "^{attack-u}",
+			subTitle: [atk._get("range")?.replace(/\[\w\]/g, "").replaceAll("]", "&#93;"), i18n(atk._get("attack_type")?.toLowerCase(), "")]
 				.reduce((t, v) => v && (!t || `${t}, ${v}`.length < 27) ? `${t}${v && t ? ", " : ""}${v}` : t, ""),
-			charName: char.name.tk,
-			description: atk.description,
+			charName: q.token.get("name"),
+			description: atk._get("description"),
 
-			dmg2on: atk._getVar("hasdamage2"),
-			dmg1tag:	atk._getVar("damagetype")?.includes("Healing") ? "heal" : "dmg",
-			dmg2tag:	atk._getVar("damagetype2")?.includes("Healing") ? "heal" : "dmg",
-			dmg1type:	atk._getVar("damagetype") || "",
-			dmg2type:	atk._getVar("damagetype2") || "",
-			dmg1roll:	atk.attack_damage || dmg.dmg1 || 0,
-			dmg2roll:	atk.attack_damage2 || dmg.dmg2 || 0,
+			dmg2on:	atk._has("dmg2"),
+			dmg1tag:	atk._get("dmg1type")?.includes("Healing") ? "heal" : "dmg",
+			dmg2tag:	atk._get("dmg2type")?.includes("Healing") ? "heal" : "dmg",
+			dmg1type:	atk._get("dmg1type") || "",
+			dmg2type:	atk._get("dmg2type") || "",
+			dmg1roll:	atk._get("attack_damage") || dmg.dmg1 || 0,
+			dmg2roll:	atk._get("attack_damage2") || dmg.dmg2 || 0,
 			rMode: getRollMode(),
-			crit1roll:	atk.attack_crit || dmg.crit1 || 0,
-			crit2roll:	atk.attack_crit2 || dmg.crit2 || 0,
+			crit1roll:	atk._get("attack_crit") || dmg.crit1 || 0,
+			crit2roll:	atk._get("attack_crit2") || dmg.crit2 || 0,
 			atk1: buildRollModel(atkRoll),
 			atkMod:	buildDisplayMod(atkRoll),
-			saveAttr: atk.saveattr?.toLowerCase() || "",
-			dc: atk.savedc && buildRollModifier(atk.savedc),
+			saveAttr: atk._get("saveattr")?.toLowerCase() || "",
+			dc: q.token.character.sheet.getRollModifier(atk._get("savedc")),
 		}
 		return tmplVals;
 	}
 
-	const getSpellVals = (id, flags) => {
+	const getSpellVals = (q) => { // id, flags
 		const expendCfg = d20plus.cfg.getOrDefault("chat", "autoExpend");
-		const char = d20plus.ba.getSingleChar();
-		const [lvl, upcast] = String(flags).split("|");
-		const spell = char.spells[id];
+		const [lvl, upcast] = String(q.flags).split("|");
+		const spell = q.token.get(q.id);
 		const spellAbility = spell.spell_ability && spell.spell_ability?.length > 2
-			? (spell.spell_ability !== "spell" ? spell.spell_ability : char.stats.spellcasting_ability)?.replace(/@{(.*?)(_mod|)}(\+|)/, "$1") || ""
+			? (spell.spell_ability !== "spell" ? spell.spell_ability : q.token.get("spellcasting_ability"))?.replace(/@{(.*?)(_mod|)}(\+|)/, "$1") || ""
 			: "";
 		const subTitle = [spell.spellrange, spell.spellduration, spell.spelltarget, i18n(spell.spellattack?.toLowerCase(), "")]
 			.reduce((t, v) => v && (!t || `${t}, ${v}`.length < 27) ? `${t}${v && t ? ", " : ""}${v}` : t, "");
 		const onSelf = spell.spellrange?.includes("[S]") || spell.spelltarget?.includes("Self");
-		const spelldmgmod = spell.spelldmgmod === "Yes" ? char.stats[`${spellAbility}_mod`] || 0 : "";
+		const spelldmgmod = spell.spelldmgmod === "Yes" ? q.token.get(`${spellAbility}_mod`) || 0 : "";
+
+		const expend = (spell.lvl === undefined || !!spell._get("innate"))
+			? (spell._has("uses") ? {type: spell._resource.type, res: spell._resource.side, name: spell._resource.name, charID: q.token.character.id} : undefined)
+			: (spell.lvl !== "cantrip" ? {type: "spell", lvl: spell.lvl, charID: q.token.character.id} : undefined);
 
 		const atkRoll = {
 			base: `20`,
 			// type: `atk`,
 			// target: targetTag,
-			critrange: char.stats.default_critical_range || "20",
+			critrange: q.token.get("default_critical_range") || "20",
 			mods: [
-				spell.spell_ability === "spell" && [char.stats.spell_attack_bonus, "SPELL"], // `@{${char.id}|spell_attack_mod}[MOD]+${spellAbility}@{${char.id}|pb}[PB]`
-				spell.spell_ability !== "spell" && [char.stats.spell_attack_mod, "MOD"],
-				spell.spell_ability !== "spell" && [char.stats[`${spellAbility}_mod`], spellAbility.slice(0, 3).toUpperCase()],
-				spell.spell_ability !== "spell" && [char.stats.pb, "PB"],
+				spell.spell_ability === "spell" && [q.token.get("spell_attack_bonus"), "SPELL"], // `@{${char.id}|spell_attack_mod}[MOD]+${spellAbility}@{${char.id}|pb}[PB]`
+				spell.spell_ability !== "spell" && [q.token.get("spell_attack_mod"), "MOD"],
+				spell.spell_ability !== "spell" && [q.token.get(`${spellAbility}_mod`), spellAbility.slice(0, 3).toUpperCase()],
+				spell.spell_ability !== "spell" && [q.token.get("pb"), "PB"],
 			],
 		}
 
 		const tmplVals = {
-			_thisId: char.id,
-			_isNpc:	char.isNpc,
+			_this: q.token,
+			_thisId: q.token.character.id,
+			_isNpc: q.token.get("npc"),
 			_isSpell: spell.spell_ability === "spell",
 			_save: spell.spellsave?.toLowerCase() || false,
-			_expend: spell.lvl !== "cantrip" ? {type: "spell", lvl: spell.lvl, charID: char.id} : undefined,
-			_onSelf: spell.spellrange?.includes("[S]"),
-			_targeted: !!spell._getVar("hasattack") || !!spell._getVar("hasdamageorhealing") || !!spell._getVar("hassave"),
-			_modelType: spell._getVar("hasattack") || (!spell._getVar("hassave") && spell._getVar("hasdamageorhealing")) ? "attack" : (spell._getVar("hassave") && spell._getVar("hasdamage") ? "cast" : "action"),
+			_expend: expend,
+			_onSelf: spell._get("spellrange")?.includes("[S]") || spell._get("spelltarget") === "self",
+			_targeted: !!spell._has("atk") || !!spell._has("dmgorheal") || !!spell._has("save"),
+			_modelType: spell._has("atk") || (!spell._has("save") && spell._has("dmgorheal")) ? "attack" : (spell._has("save") && spell._has("dmg") ? "cast" : "action"),
 
-			rMode: spell._getVar("hasattack") ? getRollMode() : /* spell._getVar("hassave") || !!spell.spelldamage2 ? "always" : */ "",
-			chId: char.id,
-			charName: char.name.tk,
-			title:	spell.spellname,
+			rMode: spell._has("atk") ? getRollMode() : /* spell._getVar("hassave") || !!spell.spelldamage2 ? "always" : */ "",
+			charName: q.token.get("name"),
+			title:	spell._get("name"),
 			subTitle,
 
 			dmg1on: !!spell.spelldamage || !!spell.spellhealing,
@@ -27834,11 +28399,11 @@ function baseBARollTemplates () {
 			crit2roll:	spell.spelldamage2,
 			atk1: buildRollModel(atkRoll),
 			atkMod:	buildDisplayMod(atkRoll),
-			description: spell.spelldescription,
+			description: spell._get("description"),
 
 			dc: spell.spell_ability !== "spell"
-				? buildDisplayMod({mods: [[8], [char.stats.spell_dc_mod], [char.stats[`${spellAbility}_mod`]], [char.stats.pb]]})
-				: (char.stats.spell_save_dc || "10"),
+				? buildDisplayMod({mods: [[8], [q.token.get("spell_dc_mod")], [q.token.get(`${spellAbility}_mod`)], [q.token.get("pb")]]})
+				: (q.token.get("spell_save_dc") || "10"),
 			saveAttr: spell.spellsave?.toLowerCase() || "",
 			// dmgType: spell.spelldamagetype ? `${spell.spelldamagetype} ${spell.spelldamagetype2 || ""}` : "",
 			dmgOnFail: `$[[0]]`,
@@ -27860,33 +28425,41 @@ function baseBARollTemplates () {
 			switchTargeting("off");
 			return d20.engine.nextTargetCallback = false;
 		} else if (!target) {
-			console.log("START TARGETING", vals);
+			// d20plus.ut.log("START TARGETING", vals);
 			switchTargeting("on");
 			d20.engine.nextTargetCallback = (t) => { d20plus.ba.getTarget(vals, t); };
 		} else if (vals._aoe) {
 			// console.log(target);
 		} else {
 			if (!target._model?.character) return d20plus.ut.sendHackerChat("Target the token that represents a PC or NPC", true);
-			const targetChar = await d20plus.ba.fetchChar(target._model);
-			const thisToken = d20plus.ut.getTokenById(d20plus.ba.chars[vals._thisId].lastTokenId);
-			const distance = d20plus.ut.getTokensDistanceText(target._model, thisToken);
+			const targetToken = d20plus.ba.tokens.ready(target);
+			const distance = d20plus.ut.getTokensDistanceText(target._model, vals._this._ref);
+			await targetToken.ready();
 
-			console.log("Getting target", vals);
+			// const targetChar = await d20plus.ba.fetchChar(target._model);
+			// const thisToken = d20plus.ut.getTokenById(d20plus.ba.chars[vals._thisId].lastTokenId);
+
+			d20plus.ut.log("Getting target", vals);
 			switchTargeting("off");
 			d20.engine.nextTargetCallback = false;
 
 			if (vals._save) {
-				d20plus.ba.currentToken = target._model;
-				d20plus.ba.singleSelected = target._model;
-				outputTemplate(getAbilityVals("save", vals._save, vals.dc));
+				// d20plus.ba.currentToken = target._model;
+				// d20plus.ba.singleSelected = target._model;
+				outputTemplate(getAbilityVals({ // "save", vals._save, vals.dc
+					id: "save",					// spec, attr, dc
+					flags: vals._save,
+					dc: vals.dc,
+					token: targetToken,
+				}));
 			}
 
 			vals.targetId = target._model.id;
 			vals.targetName = target._model.attributes.name;
-			vals.targetAc = targetChar.isNpc ? targetChar.npcStats.ac : targetChar.stats.ac;
+			vals.targetAc = targetToken.get("ac"); // targetChar.isNpc ? targetChar.npcStats.ac : targetChar.stats.ac;
 			vals.distance = distance;
-			outputTemplate(vals);
-			console.log("END TARGETING", vals);
+			setTimeout(i => { outputTemplate(vals) }, 500);
+			// d20plus.ut.log("END TARGETING", vals);
 		}
 	}
 
@@ -27915,30 +28488,62 @@ function baseBARollTemplates () {
 		})
 	}
 
-	d20plus.ba.makeRoll = (action, spec, flags) => {
+	d20plus.ba.getFallHeight = (vals) => {
+		const $fd = $(`
+			<div>
+				Enter fall height, ft.
+				<input type="number" style="width:45px;">
+			</div>
+		`).dialog({
+			title: "Fall damage",
+			autoopen: true,
+			close: () => { $fd.off(); $fd.dialog("destroy").remove() },
+			buttons: {
+				"Cancel": () => { $fd.off(); $fd.dialog("destroy").remove() },
+				"Roll": () => {
+					const $input = $fd.find("input");
+					const height = $input.val();
+					if (!isNaN(height)) {
+						const dmgRoll = Math.min(Math.abs(Math.floor(height / 10)), 20);
+						vals.dmg1roll = `${dmgRoll}d6[dmg${vals._thisId}]`;
+						vals.title = "Fall";
+						vals.subTitle = "Fall damage";
+						vals.dmg1tag = "dmg";
+						vals.dmg1type = `bludgeoning`;
+						vals.mod = `${height} ft.`;
+						outputTemplate(vals);
+					}
+					$fd.off(); $fd.dialog("destroy").remove();
+				},
+			},
+		})
+	}
+
+	d20plus.ba.makeRoll = (q) => { // action, spec, flags
 		const getTmplVals = {
 			roll: getAbilityVals,
 			attack: getAttackVals,
 			cast: getSpellVals,
-		}[action];
+		}[q.action];
 
-		const tmplVals = getTmplVals && getTmplVals(spec, flags);
+		const tmplVals = getTmplVals && getTmplVals(q); // spec, flags
 		if (!tmplVals) return d20plus.ba.rollError();
-		else if (flags === "concentration") d20plus.ba.getConcentrationDC(tmplVals);
-		else if (tmplVals._targeted) d20plus.ba.getTarget(tmplVals);
+		else if (q.flags === "concentration") d20plus.ba.getConcentrationDC(tmplVals);
+		else if (q.flags === "fall") d20plus.ba.getFallHeight(tmplVals);
+		else if (tmplVals._targeted && !tmplVals._onSelf) d20plus.ba.getTarget(tmplVals);
 		else outputTemplate(tmplVals);
 	}
 
-	d20plus.ba.makeInfo = (action, spec, flags) => {
+	d20plus.ba.makeInfo = (q) => {
 		const getTmplVals = {
 			spell: getSpellVals,
 			attack: getAttackVals,
-		}[action];
+		}[q.action];
 
-		const tmplVals = getTmplVals && getTmplVals(spec, flags);
+		const tmplVals = getTmplVals && getTmplVals(q);
 		if (!tmplVals) return d20plus.ba.rollError();
 		tmplVals._modelType = "description";
-		tmplVals._expend = false;
+		tmplVals._expend = false; d20plus.ut.log("Outputting template", tmplVals);
 		outputTemplate(tmplVals);
 	}
 }
