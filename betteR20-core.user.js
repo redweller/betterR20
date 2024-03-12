@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.8.55
+// @version      1.35.8.56
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -271,6 +271,7 @@ function baseLanguage () {
 		ba_group_animations: [`Animations`],
 		ba_roll_initiative: [`Initiative`],
 		ba_roll_concentration: [`Concentration`],
+		ba_roll_falldamage: [`Fall damage`],
 		ba_roll_deathsave: [`Death save`],
 		ba_roll_hitdice: [`Hit dice`],
 		ba_roll_save: [`Save`],
@@ -531,6 +532,7 @@ function baseLanguage () {
 		ba_group_animations: [`Анимации`],
 		ba_roll_initiative: [`Инициатива`],
 		ba_roll_concentration: [`Концентрация`],
+		ba_roll_falldamage: [`Урон от падения`],
 		ba_roll_deathsave: [`Спас от смерти`],
 		ba_roll_hitdice: [`Кость хитов`],
 		ba_roll_save: [`Спасбросок`],
@@ -734,7 +736,12 @@ function baseUtil () {
 							if (!isStreamer) {
 								const rawToolsInstallUrl = "https://github.com/redweller/betterR20/raw/run/betteR20-5etools.user.js";
 								const rawCoreInstallUrl = "https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js";
-								d20plus.ut.sendHackerChat(__("msg_b20_version_update", [scriptName, avail, rawToolsInstallUrl, rawCoreInstallUrl]), true);
+								const msgVars = [scriptName, avail, rawToolsInstallUrl, rawCoreInstallUrl];
+								d20plus.ut.sendHackerChat(`
+									<div class="userscript-b20intro" style="border: 1px solid; background-color: #582124;">
+									${__("msg_b20_version_update", msgVars)}
+									</div>
+								`);
 							} else {
 								d20plus.ut.sendHackerChat(__("msg_b20_version_update_stream", [scriptName]));
 							}
@@ -798,7 +805,11 @@ function baseUtil () {
 		} else {
 			d20plus.ut.showHardDickMessage(scriptName);
 		}
-		d20plus.betaFeaturesEnabled && !isStreamer && d20plus.ut.sendHackerChat(__("msg_b20_r20beta_warning"), true);
+		d20plus.betaFeaturesEnabled && !isStreamer && d20plus.ut.sendHackerChat(`
+			<div class="userscript-b20intro" style="border: 1px solid; background-color: #582124;">
+			${__("msg_b20_r20beta_warning")}
+			</div>
+		`);
 		$boringProgress
 			.before(`<span><span>&gt;</span>all systems operational</span>`)
 			.html("");// RB20 EXCLUDE START
@@ -13379,6 +13390,7 @@ function initHTMLbaseMisc () {
 						<ul data-pane="attacks"><li> </li></ul>
 						<ul data-pane="traits"><li> </li></ul>
 						<ul data-pane="spells"><li> </li></ul>
+						<ul data-pane="context" style="font-size: 12px; line-height: 15px; font-weight: 100;"><li> </li></ul>
 						<ul data-pane="animations">
 							<li>Animations are set in the betteR20 tools menu</li>
 						</ul>
@@ -26667,7 +26679,7 @@ function baseBetterActions () {
 		d20plus.ba.tree.rolls.push(
 			{name: __("ba_roll_initiative"), action: "roll", spec: "roll", flags: "initiative"},
 			{name: __("ba_roll_concentration"), action: "roll", spec: "roll", flags: "concentration"},
-			{name: __("Fall damage"), action: "roll", spec: "roll", flags: "fall"},
+			{name: __("ba_roll_falldamage"), action: "roll", spec: "roll", flags: "fall"},
 		);
 		if (!d20plus.ba.current.singleChar
 			|| d20plus.ba.tokens.getCurrent()?.get("npc")) return;
@@ -26897,12 +26909,14 @@ function baseBetterActions () {
 			buildBasicRollsHtml();
 			if (d20plus.ba.current.singleChar) {
 				const token = d20plus.ba.tokens.getCurrent();
-				d20plus.ut.log("Drawing menu for", token.get("name"));
-				buildAdvRollsHtml();
-				d20plus.ba.$dom.title.name.text(token.get("name") || "Token");
-				d20plus.ba.$dom.title.img.attr("src", token.get("image"));
-				d20plus.ba.$dom.title.img.attr("title", token.get("name"));
-				d20plus.ba.$dom.title.img.css({filter: "unset", cursor: "pointer"});
+				if (token) {
+					d20plus.ut.log("Drawing menu for", token.get("name"));
+					buildAdvRollsHtml();
+					d20plus.ba.$dom.title.name.text(token.get("name") || "Token");
+					d20plus.ba.$dom.title.img.attr("src", token.get("image"));
+					d20plus.ba.$dom.title.img.attr("title", token.get("name"));
+					d20plus.ba.$dom.title.img.css({filter: "unset", cursor: "pointer"});
+				}
 			} else {
 				d20plus.ba.$dom.title.name.text("Group");
 			}
@@ -26933,13 +26947,17 @@ function baseBetterActions () {
 			const receiver = d20plus.ut.getTokenById(mover.attributes.custom_portal);
 			if (receiver) {
 				const layer = actor.attributes.layer;
-				actor.save({top: receiver.attributes.top, left: receiver.attributes.left, layer: "portal"});
+				actor.save({
+					top: receiver.attributes.top,
+					left: receiver.attributes.left,
+					layer: is_gm ? "gmlayer" : "objects",
+				});
 				setTimeout(() => {
-					d20.engine.unselect();
+					// d20.engine.unselect();
 					actor.save({layer});
-					token?.select();
 					token?.find();
-				}, 500);
+					setTimeout(() => token?.select(), 600);
+				}, 600);
 			}
 		}
 
@@ -27125,6 +27143,7 @@ function baseBetterActions () {
 		d20plus.ba.$dom.r20targetingNote = $("#targetinginstructions");
 		d20plus.ba.$dom.r20toolbar = $("#secondary-toolbar");
 		d20plus.ba.$dom.r20tokenActions = d20plus.ba.$dom.r20toolbar.find(".mode.tokenactions");
+		d20plus.ba.$dom.infos["context"] = d20plus.ba.$dom.menu.find(`[data-pane=context]`);
 		$("body").append($createMenu);
 
 		if (getAmConfig()) {
@@ -27226,6 +27245,29 @@ function baseBetterActions () {
 			}
 		}).on("click", ".page-button.large", evt => {
 			d20plus.ba.$dom.menu.toggle();
+		}).on("mouseover", ".spellaction, .atkaction", (evt) => {
+			const $entry = $(evt.currentTarget);
+			const id = $entry.find("[data-spec]").data("spec");
+			const token = d20plus.ba.tokens.getCurrent();
+			const ability = token.get(id);
+			const name = ability._get("name");
+			const description = ability._get("description")?.replaceAll("\n", "<br>");
+
+			if (!description) {
+				const tab = $entry.closest("[data-list]").data("list");
+				d20plus.ba.$dom.infos.all.removeClass("active");
+				d20plus.ba.$dom.infos[tab]?.addClass("active");
+				return;
+			}
+
+			const html = `
+				<li><strong>${name}</strong></li>
+				<li style="font-size:11px;font-family:sans-serif">${description}</li>
+			`;
+
+			d20plus.ba.$dom.infos.all.removeClass("active");
+			d20plus.ba.$dom.infos.context.addClass("active");
+			d20plus.ba.$dom.infos.context.html(html);
 		});
 
 		$("#toolbar-collapse-handle").on("click", (evt) => {
@@ -27832,6 +27874,7 @@ function baseBACharacters () {
 
 		this.find = () => {
 			d20.engine.centerOnPoint(this._ref?.attributes?.left || 0, this._ref?.attributes?.top || 0);
+			// d20.token_editor.removeRadialMenu();
 		}
 
 		this.get = (q) => {
@@ -28214,6 +28257,7 @@ function baseBARollTemplates () {
 		if (attr === "concentration") roll.mods[0] = [q.token.get("constitution_save"), "CON"];
 
 		const tmplVals = {
+			_this: q.token,
 			_thisId: q.token.character.id,
 			_isNpc: q.token.get("npc"),
 			_modelType: !["hit dice", "fall"].includes(attr) ? "ability" : "attack",
@@ -28507,7 +28551,7 @@ function baseBARollTemplates () {
 						const dmgRoll = Math.min(Math.abs(Math.floor(height / 10)), 20);
 						vals.dmg1roll = `${dmgRoll}d6[dmg${vals._thisId}]`;
 						vals.title = "Fall";
-						vals.subTitle = "Fall damage";
+						vals.subTitle = __("ba_roll_falldamage");
 						vals.dmg1tag = "dmg";
 						vals.dmg1type = `bludgeoning`;
 						vals.mod = `${height} ft.`;
@@ -28964,7 +29008,7 @@ const D20plus = function (version) {
 				d20plus.ut.log("Injection successful...");
 			} else {
 				if (timeWaitedForEnhancementSuiteMs > 2 * 5000) {
-					alert("betteR20 requires the VTTES (R20ES) extension to be installed!\nPlease install it from https://ssstormy.github.io/roll20-enhancement-suite/\nClicking ok will take you there.");
+					alert("betteR20 may require the VTTES (R20ES) extension to be installed!\nPlease install it from https://ssstormy.github.io/roll20-enhancement-suite/\nClicking ok will take you there.");
 					window.open("https://ssstormy.github.io/roll20-enhancement-suite/", "_blank");
 				} else {
 					timeWaitedForEnhancementSuiteMs += 100;
