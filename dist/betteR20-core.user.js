@@ -2,7 +2,7 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.184.4
+// @version      1.35.184.5
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -162,9 +162,14 @@ function baseUtil () {
 					if (cmp < 0) {
 						setTimeout(() => {
 							if (!isStreamer) {
-								const rawToolsInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-5etools.user.js?raw=true";
-								const rawCoreInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-core.user.js?raw=true";
-								d20plus.ut.sendHackerChat(`<br>A newer version of ${scriptName} is available.<br>Get ${d20plus.ut.avail} <a href="${rawToolsInstallUrl}">5etools</a> OR <a href="${rawCoreInstallUrl}">core</a>.<br><br>`);
+								const rawToolsInstallUrl = "https://github.com/redweller/betterR20/raw/run/betteR20-5etools.user.js";
+								const rawCoreInstallUrl = "https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js";
+								const msgVars = [scriptName, d20plus.ut.avail, rawToolsInstallUrl, rawCoreInstallUrl];
+								d20plus.ut.sendHackerChat(`
+									<div class="userscript-b20intro" style="border: 1px solid; background-color: #582124;">
+									${`<br>A newer version of ${msgVars[0]} is available.<br>Get ${msgVars[1]} <a href="${msgVars[2]}">5etools</a> OR <a href="${msgVars[3]}">core</a>.<br><br>`}
+									</div>
+								`);
 							} else {
 								d20plus.ut.sendHackerChat(`<br>A newer version of ${scriptName} is available.<br><br>`);
 							}
@@ -229,9 +234,9 @@ function baseUtil () {
 			d20plus.ut.showHardDickMessage(scriptName);
 		}
 		d20plus.betaFeaturesEnabled && !isStreamer && d20plus.ut.sendHackerChat(`
-			betteR20 does not support the beta UI preview at this moment!
-			Using it will make some betteR20 or roll20 functionality unavailable.
-			If you experience problems with Page Settings, disable roll20 Beta Features.
+			<div class="userscript-b20intro" style="border: 1px solid; background-color: #582124;">
+			betteR20 does not support the beta UI preview at this moment! Using it MAY OR MAY NOT make some betteR20 or roll20 functionality unavailable. If you experience problems, try disabling roll20 Beta Features.
+			</div>
 		`);
 		$boringProgress
 			.before(`<span><span>&gt;</span>all systems operational</span>`)
@@ -254,10 +259,10 @@ function baseUtil () {
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- Beta features overview:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br><strong>Better token Actions & Automation</strong><br>⦁ new automatic token action buttons: Rolls, Stats and Animation<br>⦁ rolls lets you select available actions with custom roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots and items are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>The system is still in an unfinished state, so use with caution!<br><strong>Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ a better Random Side randomizer (gives seemingly more random results)<br><code>-- v.184.1 changes:</code><br>⦁ edit token images directly from roll20 Token Editor<br>⦁ update Token Editor html (added Open Character button)<br><code>-- v.184.2 changes:</code><br>⦁ fix sending descriptions to chat via "book" icon<br>⦁ fix Better Actions targeting with the NewUI<br>⦁ fix Page Toolbar malfunctioning with the NewUI<br><code>-- v.184.3 changes:</code><br>⦁ add new Extra Layers toolbar as part of r20 newUI<br>⦁ add show/hide layers toggles to b20 layers<br><code>-- v.184.4 changes:</code><br>⦁ trying to remove VTTES dependency<br>⦁ add setting to restyle token markers menu (without VTTES)<br></p>
+					<p>This version contains following changes<br><code>-- Beta features overview:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Layers</strong><br>⦁ add new Extra Layers toolbar as part of r20 newUI<br>⦁ add show/hide layers toggles to b20 layers<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br>⦁ fix Page Toolbar malfunctioning with the NewUI<br>⦁ removed VTTES dependency<br>The system is still in an unfinished state, so use with caution!<br><strong>Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ a better Random Side randomizer (gives seemingly more random results)<br>⦁ edit token images directly from roll20 Token Editor<br><code>-- v.184.5 changes:</code><br>⦁ fixed bug with context menu appearing on left click<br><strong>Better token Actions & Automation</strong><br>⦁ new character menu in left top corner of the screen<br>- new design, the menu works even when no character is selected<br>- browse stats and actions for last selected token<br>⦁ use available actions with custom roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots, items and resources are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>- view descriptions before you use a spell or a trait<br>- upcast or use spells as ritual<br></p>
 				</div>
 			`);
-			if (d20plus.ut.cmpVersions("1.35.8.53", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
+			if (d20plus.ut.cmpVersions("1.35.8.57", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
 			<div class="userscript-b20intro">
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					New release detected
@@ -461,9 +466,12 @@ function baseUtil () {
 		return JSON.parse(journalFolder);
 	};
 
-	d20plus.ut.fetchCharAttribs = async (char) => {
+	d20plus.ut.fetchCharAttribs = async (char, keepSync) => {
 		const attribs = char?.attribs;
 		if (!attribs) return false;
+		if (keepSync && !attribs.backboneFirebase) {
+			attribs.backboneFirebase = new BackboneFirebase(attribs)
+		}
 		if (attribs.length) {
 			return char;
 		}
@@ -12002,32 +12010,101 @@ function initHTMLbaseMisc () {
 	</div>
 	`;
 
-	d20plus.html.bActionsButtons = `
-	<ul style="display: inline-block;" class="b20-token-menu">
-		<li style="color:unset!important;">
-			<span style="position:relative;display: inline-block;">
-				<button class="btn" data-type="rolls">Rolls</button>
-				<div class="b20-rolls d20contextmenu">
-					<ul></ul>
+	d20plus.html.bActionsMenu = `
+	<div id="ba-panel">
+		<button aria-disabled="false" type="button" style="" class="el-button large page-button">
+			<span><span style="font-family: Pictos;font-size: 21px;">U</span></span>
+		</button>
+		<div class="ba-menu" style="display:none">
+			<div class="ba-title">
+				<span class="ba-token" data-action="findtoken"><img src="https://img.icons8.com/ios-glyphs/30/multicultural-people.png"></span>
+				<span class="ba-name">Selected</span>
+				<span class="ba-title-actions">
+					<button data-action="collapsew" title="Collapse/expand"></button>
+					<button data-action="expandh" title="Lock/unlock menu height"></button>
+					<button data-action="close" title="Close this menu">*</button>
+					<!--<button data-action="speakas" title="Speak as character">w</button>
+						<button data-action="opensheet" title="Open character sheet">U</button>
+						<button data-action="openchar" title="Open character settings">x</button><br>-->
+				</span>
+			</div>
+			<ul class="ba-tabs nav nav-tabs">
+				<li class="nav-tabs active" data-tab="general"><a>
+						<img src="https://img.icons8.com/ios-glyphs/30/pulse.png">
+						<span>General</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="stats" style="display:none;"><a>
+						<img src="https://img.icons8.com/external-kmg-design-glyph-kmg-design/32/external-muscle-gym-kmg-design-glyph-kmg-design.png">
+						<span>Abilities</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="skills" style="display:none;"><a>
+						<img src="https://img.icons8.com/external-icongeek26-glyph-icongeek26/64/external-Lute-music-icongeek26-glyph-icongeek26.png">
+						<span>Skills</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="attacks" style="display:none;"><a>
+						<img src="https://img.icons8.com/external-prettycons-solid-prettycons/60/external-swords-games-prettycons-solid-prettycons.png">
+						<span>Attacks</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="traits" style="display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/exercise.png">
+						<span>Traits</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="spells" style="display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/fantasy.png">
+						<span>Spells</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="items" style="display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/red-purse.png">
+						<span>Items</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="animations" style="float:right;display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/service.png">
+						<span>Animations</span></a>
+				</li>
+			</ul>
+			<div class="ba-main">
+				<div class="ba-list content-left">
+					<ul class="active" data-list="general"></ul>
+					<ul data-list="stats"></ul>
+					<ul class="uneven" data-list="skills"></ul>
+					<ul data-list="attacks"></ul>
+					<ul data-list="traits"></ul>
+					<ul data-list="spells"></ul>
+					<ul data-list="items"></ul>
+					<ul data-list="animations"></ul>
 				</div>
-			</span>
-			<span style="position:relative;">
-				<button class="btn" data-type="stats">Stats</button>
-				<div class="b20-stats d20contextmenu">
-					<ul></ul>
+				<div class="ba-info content-right">
+					<ul class="active" data-pane="general">
+						<li>You don't seem to have controllable tokens on this map. Please select something to begin</li>
+					</ul>
+					<ul data-pane="stats">
+						<li> </li>
+					</ul>
+					<ul data-pane="skills">
+						<li> </li>
+					</ul>
+					<ul data-pane="attacks">
+						<li> </li>
+					</ul>
+					<ul data-pane="traits">
+						<li> </li>
+					</ul>
+					<ul data-pane="spells">
+						<li> </li>
+					</ul>
+					<ul data-pane="items">
+						<li> </li>
+					</ul>
+					<ul data-pane="context" style="font-size: 12px; line-height: 15px; font-weight: 100;">
+						<li> </li>
+					</ul>
+					<ul data-pane="animations">
+						<li>Animations are set in the betteR20 tools menu</li>
+					</ul>
 				</div>
-			</span>
-			<span style="position:relative; display: none">
-				<button class="btn" data-type="effects">Effects</button>
-			</span>
-			<span style="position:relative;">
-				<button class="btn" data-type="animate">Animate</button>
-				<div class="b20-animations d20contextmenu">
-					<ul></ul>
-				</div>
-			</span>
-		</li>
-	</ul>
+			</div>
+		</div>
+	</div>
 	`;
 
 	d20plus.html.layerExtrasButton = `
@@ -12916,12 +12993,12 @@ function d20plusEngine () {
 		d20plus.ut.log(attrib);
 		if (isNaN(attrib._cur)) return;
 		if (expend.restore !== undefined) {
-			attrib._ref[refs.cur].save({current: expend.restore});
+			attrib._ref[refs.cur].save({current: String(expend.restore)});
 			attrib._msg = `/w "${characterName}" ${characterName} has ${expend.restore} ${getMsgText()} again`;
 			syncSheet();
 		} else if (attrib._cur - expend.amt >= 0) {
 			attrib._new = attrib._cur - expend.amt;
-			attrib._ref[refs.cur].save({current: attrib._new});
+			attrib._ref[refs.cur].save({current: String(attrib._new)});
 			attrib._undo = {...expend}; attrib._undo.restore = attrib._cur;
 			attrib._msg = `/w "${characterName}" ${characterName} now has ${attrib._new} ${getMsgText()} left`;
 			syncSheet();
@@ -13404,11 +13481,13 @@ function baseMenu () {
 
 		// BEGIN ROLL20 CODE
 		var e, t = !1, n = [];
-		var i = function() {
+		d20plus.ut.injectCode(d20.token_editor, "closeContextMenu", (func) => {
 			t && (t.remove(),
 				t = !1),
-			e && clearTimeout(e)
-		};
+			e && clearTimeout(e);
+			func();
+		})
+		var i = d20.token_editor.closeContextMenu;
 		var r = function (r) {
 			var o, a;
 			r.changedTouches && r.changedTouches.length > 0 ? (o = r.changedTouches[0].pageX,
@@ -14520,8 +14599,8 @@ function baseMenu () {
 		}
 
 		d20.token_editor.showContextMenu = r;
-		d20.token_editor.closeContextMenu = i;
-		$(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
+		// d20.token_editor.closeContextMenu = i;
+		// $(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
 	};
 }
 
@@ -16218,19 +16297,6 @@ function baseCss () {
 			s: ".sheet-grey .inlinerollresult.showtip.check, .inlinerollresult.showtip.check.attack-success, .inlinerollresult.showtip.attack-fail",
 			r: "margin-right: unset;",
 		},
-		// Styles for betterActions dialog
-		{
-			s: ".better-sheet .tab-content",
-			r: "height: calc(100% - 55px);",
-		},
-		{
-			s: ".better-sheet .tab-pane",
-			r: "display:none;height: 100%;",
-		},
-		{
-			s: ".better-sheet .tab-content > div",
-			r: "width:50%;display: inline-block;height: 100%;overflow: auto;",
-		},
 		// Styles for altered messages
 		{
 			s: ".userscript-modify-message",
@@ -16929,193 +16995,415 @@ function baseCss () {
 	`;
 
 	d20plus.css.actionMenu = `
-		#secondary-toolbar {
+		/* Widen traits template for spell descriptions (not necessary) */
+		.sheet-rolltemplate-traits {
+			width:90%;
+		}
+
+		/* Adjust token actions position */
+		#secondary-toolbar.legacy-menu.toolbar-collapse-adjust {
+			left: 118px;
+		}
+		#secondary-toolbar.legacy-menu.toolbar-collapse-adjust.master-toolbar-collapsed {
+			left: 92px;
+		}
+
+		#ba-panel {
+			display: block;
+		}
+
+		/* Better actions button */
+		#ba-panel button.large.page-button {
+			position: absolute;
 			height: 40px;
-			line-height: 40px;
+			left: 62px;
+			width: 40px;
+			top: 20px;
+			border-radius: 8px;
+			padding: 0 !important;
+			background-color: var(--colors-light-060);
+			border-style: solid;
+			border-width: 1px;
+			border-color: var(--grayscale-light-l60);
+			backdrop-filter: blur(15px);
+			transition: left ease 200ms;
 		}
-		#secondary-toolbar .btn {
-			margin-right: 1px;
+		.dark #ba-panel button.large.page-button {
+			background-color: var(--colors-dark-050);
+			border-color: --grayscale-light-l-30;
 		}
-		#secondary-toolbar .tokenactions:not([style*="display: none"]) {
-			display: inline-block !important;
+		#ba-panel button.large.page-button:hover {
+			border-width: 3px;
 		}
-		#secondary-toolbar .b20-token-menu {
-			vertical-align: top;
-			position: relative;
-			top: -5px;
+		#ba-panel.master-toolbar-collapsed button.large.page-button {
+			left: 36px;
 		}
-		#secondary-toolbar .b20-token-menu > li {
-			overflow: visible;
-			font-size: 0px;
-		}
-		#secondary-toolbar .b20-token-menu span .d20contextmenu {
-			display: none;
-			left: 0px;
-		}
-		#secondary-toolbar .b20-token-menu span:hover .d20contextmenu {
-			display: block;
-		}
-		.b20-token-menu li.head.hasSub > span::after {
-			content: " »";
-		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu > ul,
-		#secondary-toolbar .b20-token-menu .d20contextmenu ul li ul.submenu {
-			top: 0px;
-			left: 100px;
-			width: 100px;
-			height: unset;
-			border: 2px solid black;
-			margin: 0;
-		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu ul li > ul.submenu {
-			display: none;
-		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu ul li:hover > ul.submenu {
-			display: inline-block;
-			overflow: visible;
-		}
-		#secondary-toolbar .b20-token-menu ul > li {
-			display: block;
-			overflow: visible;
-			padding: 2px 3px 2px 3px;
-			font-size: 13px;
-			line-height: 18px;
-			height: 18px;
-			text-align: left;
-			color: inherit;
-		}
-		#secondary-toolbar .b20-token-menu ul > li.hasSub:hover {
-			line-height: 28px;
-			height: 29px;
-		}
-		#secondary-toolbar .b20-token-menu ul > li.hasSub.selector:hover {
-			height: unset;
-			padding-bottom: 0px;
-			line-height: 18px;
-		}
-		#secondary-toolbar .b20-token-menu ul li.selector:hover > ul.submenu {
-			position: relative;
-			left: -3px;
-			border: none;
-			border-radius: unset;
-			display: block;
-		}
-		#secondary-toolbar .b20-token-menu ul li.selector > ul.submenu > li {
-			display: inline-block;
-			width: 70px;
-			border-left: unset;
-			box-sizing: border-box;
-			border-radius: unset;
-			height: 25px;
-			text-align: center;
-			margin: 0px;
-			line-height: 25px;
-			border-bottom: unset;
-		}
-		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu {
-			display: inline-flex;
-			flex-wrap: wrap;
-		}
-		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu li {
-			flex-basis: 32%;
-			height: 28px;
-			flex-grow: 1;
-			margin-top: 2px;
-		}
-		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu li:first-child {
-			flex-basis: 75px;
-		}
-		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu li:first-child::first-letter {
-			font-size: 24px;
-		}
-		#secondary-toolbar .hasSub.atkaction.selector:hover ul.submenu li:last-child {
-			flex-basis: 25px;
-			flex-grow: 0;
-		}
-		.spellaction.unprepared > span {
-			color: #929292;
-		}
-		#secondary-toolbar .b20-token-menu .spellaction > ul > li {
-			font-weight: bolder;
-			font-size: 18px;
-		}
-		#secondary-toolbar .b20-token-menu ul li.selector > ul.submenu > li:first-child {
-			width: 30px;
-			font-weight: normal;
-		}
-		#secondary-toolbar .b20-token-menu li.selector.variable > ul > li:last-child {
-			width: 22px;
-			vertical-align: top;
-			border-right: none;
-			font-size: 16px;
-		}
-		#secondary-toolbar .b20-token-menu ul li.selector.variable > ul > li {
-			width: 44px;
-		}
-		#secondary-toolbar .b20-token-menu .spellaction.variable > ul > li > .submenu {
-			left: 23px;
-		}
-		.dark .b20-token-menu ul li.hasSub:hover {
-			background: var(--dark-primary-highlight);
-		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu label input[type="checkbox"] {
-			vertical-align: top;
-		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li > span > i {
+
+		/* Better actions menu dialog (general) */
+		#ba-panel .ba-menu {
+			position: absolute;
+			left: 62px;
+			top: 72px;
+			width: 350px;
+			background-color: var(--vtt-surface);
+			border-radius: 8px;
+			box-shadow: var(--vtt-submenu-box-shadow);
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			padding: 4px;
+			font-family: var(--font-family-proxima-nova);
 			font-style: normal;
-			width: 30px;
+			font-weight: 300;
+			font-size: 13px;
+			color: var(--vtt-grayscale-base);
+			transition: width 1s ease, opacity 1s ease, left ease 200ms;
+			opacity: 0.7;
+		}
+		#ba-panel:hover .ba-menu {
+			opacity: unset;
+		}
+		#ba-panel.master-toolbar-collapsed .ba-menu {
+			left: 36px;
+		}
+		#ba-panel .ba-token {
+			background: var(--vtt-surface);
+			width: 45px;
+			display: inline-block;
+			height: 45px;
+			border-radius: 23px;
+			position: relative;
+			top: -10px;
+			left: -13px;
+			border: 1px solid var(--vtt-grayscale-base);
+		}
+		#ba-panel .ba-token img {
+			width: 45px;
+		}
+		.ba-title {
+			width: 100%;
+			height: 35px;
+		}
+		.ba-title .ba-name {
+			height: 100%;
+			display: inline-block;
+			vertical-align: middle;
+			font-weight: bold;
+		}
+		.ba-title-actions {
+			display: block;
+			float: right;
+			cursor: pointer;
+		}
+		.ba-title-actions button {
+			font-family: Pictos;
+			font-size: 15px;
+			padding: 3px;
+		}
+		.ba-menu .ba-main {
+			font-family: "Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;;
+			font-size: 13px;
+			font-weight: normal;
+			width: 100%;
+		}
+
+		/* Better actions tabs */
+		#ba-panel .nav {
+			margin-bottom: 10px;
+			width: 100%;
+			padding-left: 34px;
+ 			box-sizing: border-box;
+			transition: padding-left 1s ease;
+			overflow: clip;
+			white-space: nowrap;
+			height: 37px;
+		}
+		.ba-menu .nav-tabs > li > a {
+			padding: 9px;
+			height: 17px;
+			text-decoration: none;
+		}
+		#ba-panel .ba-tabs > .nav-tabs a:hover {
+			cursor: pointer;
+			background: rgba(155,155,155,0.5);
+		}
+		.dark .ba-menu .nav-tabs a img {
+			filter: contrast(0) brightness(2);
+		}
+		.ba-menu .nav-tabs a img {
+			width: 15px;
+ 			margin: -5px;
+		}
+		.ba-menu .nav:not(:hover) .nav-tabs.active a span, .ba-menu .nav-tabs li:hover a span {
+			max-width: 55px;
+			padding-left: 6px;
+			text-overflow: ellipsis;
+		}
+		.ba-menu .nav-tabs a span {
+			display: inline-block;
+			padding-left: 0px;
+			margin-right: -3px;
+			max-width: 0px;
+			color: var(--vtt-grayscale-base);
+			overflow: hidden;
+			transition: max-width 1s ease, padding-left 1s ease;
+		}
+
+		.ba-list.content-left, .ba-main .content-right {
+			display: inline-block;
+			overflow-x: hidden;
+			overflow-y: auto;
+			min-height: 216px;
+			max-height: 216px;
+			margin-bottom: 6px;
+			padding: 0px 5px;
+			box-sizing: border-box;
+			scrollbar-width: thin;
+			scrollbar-color: transparent transparent;
+			scrollbar-gutter: stable;
+			transition: width 1s ease, max-height 0.6s ease, padding 0.5s 0.5s;
+		}
+		.ba-list.content-left:hover, .ba-main .content-right:hover {
+			scrollbar-color: rgba(155,155,155,0.5) transparent;
+		}
+		.ba-main .content-left {
+			width: 160px;
+		}
+		.ba-main .content-right {
+			width: 180px;
+			float: right;
+			box-sizing: content-box;
+		}
+		.ba-info > ul, .ba-list > ul {
+			list-style: none;
+			margin: 0px;
+		}
+		.ba-info > ul > li {
+			border-bottom: 1px solid rgba(155,155,155,0.5);
+			padding-bottom: 5px;
+		}
+		.ba-info > ul > li > span {
+			display: inline-block;
+			padding-right: 4px;
+			font-weight: lighter;
+			color: var(--vtt-grayscale-base);
+		}
+		.ba-info > ul > li > span strong {
+			font-weight: normal;
+			color: rgb(140,140,140);
+			white-space: nowrap;
+		}
+
+		/* Collapsed state */
+		#ba-panel .ba-menu.wcollapsed {
+			width: 170px;
+		  }
+		.ba-menu.wcollapsed .ba-name {
+			max-width: 55px;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		  }
+		#ba-panel .ba-menu.wcollapsed .nav {
+			padding-left: 0px;
+			margin-top: 5px;
+			height: 29px;
+		  }
+		.ba-menu.wcollapsed .nav-tabs > li {
+			width: 21px;
+		}
+		.ba-menu.wcollapsed .nav-tabs > li > a {
+			width: 0px;
+			height: 13px;
+			padding-top: 5px;
+		}
+		.ba-menu.wcollapsed .nav-tabs > li > a > img {
+			width: 12px;
+			margin: -6px;
+		}
+		  .ba-menu.wcollapsed .nav:not(:hover) .nav-tabs.active a span, .ba-menu.wcollapsed .nav-tabs li:hover a span {
+			display: none;
+			margin-right: -9px;
+		  }
+		  #ba-panel .ba-menu.wcollapsed .ba-list.content-left {
+			width: 164px;
+		  }
+		  #ba-panel .ba-menu.wcollapsed .ba-info.content-right {
+			padding: 0px;
+			width: 0%;
+			height: 200px;
+			position: absolute;
+			top: 85px;
+		  }
+		  .ba-menu.wcollapsed .ba-title-actions [data-action="collapsew"]::after {
+			content: "N";
+			transform: none;
+		  }
+		  .ba-title-actions [data-action="collapsew"]::after {
+			content: "l";
+			transform: rotate(180deg);
+			display: inline-block;
+		  }
+		  .ba-menu.hexpanded .ba-title-actions [data-action="expandh"]::after {
+			content: "\`\`";
+			font-size: 14px;
+			display: inline-block;
+			width: 14px;
+			overflow: clip;
+			text-indent: -7px;
+			letter-spacing: 1px;
+		  }
+		  .ba-title-actions [data-action="expandh"]::after {
+			content: "\`";
+			font-size: 13px;
+			display: inline-block;
+		  }
+		  .ba-menu.hexpanded .ba-list.content-left, .ba-menu.hexpanded  .ba-main .content-right {
+			max-height: 70vh;
+		  }
+
+		.ba-list > ul > li {
+			border-bottom: 1px solid rgba(155,155,155,0.5);
+			padding: 5px 0px 5px 5px;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overflow-x: hidden;
+		}
+		.ba-list ul > li[data-action]:hover {
+			background-color: rgba(155,155,155,0.5);
+			cursor: pointer;
+		}
+		.ba-list > ul > li:hover > .submenu {
+			display: flex;
+			margin: 0px 5px 0px -5px;
+		}
+		.ba-list .submenu {
+			display: none;
+		}
+		.ba-list .submenu > li {
+			list-style: none;
+			display: block;
+			text-align: center;
+			padding: 3px;
+			box-sizing: content-box;
+			margin-bottom: -3px;
+			margin-top: 2px;
+			flex-grow: 1;
+			border-left: 1px solid rgba(155,155,155,0.5);
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.ba-list .submenu > li:first-child {
+			border-left: none;
+		}
+		.ba-list ul.uneven li.inactive > span, .ba-list li.inactive[data-action] {
+			color: #848484;
+			font-weight: 100;
+		}
+		.ba-list ul.uneven.filtered li.inactive, .ba-list ul.uneven.filtered .hasSub li.inactive {
+			display: none;
+		}
+		.ba-list ul:not(.uneven) li.mods label.filter {
+			display: none;
+		}
+		.ba-list ul[data-list="spells"] > li > span {
+			text-align: right;
+			width: 100%;
+			display: inline-block;
+			padding-right: 14px;
+			box-sizing: border-box;
+			font-weight: bold;
+		}
+		.ba-list ul[data-list="spells"] > .hasSub > .submenu {
+			display: block;
+			margin: 0px;
+		}
+		.ba-list ul[data-list="spells"] > .hasSub > .submenu > li {
+			width: 100%;
+			display: block;
+			text-align: left;
+			margin: 3px 0px 3px -5px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			border-left: none;
+		}
+		.ba-list ul[data-list="spells"] i {
+			font-style: normal;
 			display: inline-block;
 			font-size: 8px;
 			font-weight: normal;
+			float: left;
 		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li:not(.hasSub),
-		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li > span {
-			max-width: 100px;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
+		.ba-list ul[data-list="spells"] .selector:hover .submenu {
+			display: flex;
+			margin-left: 0px; 
 		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu.b20-stats > ul,
-		#secondary-toolbar .b20-token-menu .d20contextmenu.b20-stats ul > li {
-			max-width: unset;
-			width: 210px;
-			font-size: 12px;
-			line-height: 14px;
-			cursor: default;
-			height: unset;
-			min-height: 15px;
-			white-space: unset;
+		.ba-list ul[data-list="spells"] .submenu .parameters > .submenu {
+			display: none;
 		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu.b20-stats ul > li {
-			width: 203px;
+		.ba-list ul[data-list="spells"] .submenu .parameters:hover > .submenu {
+			display: block;
+			position: absolute;
+			z-index: 10;
+			top: 75px;
+			left: 130px;
+			background: var(--vtt-surface);
+			height: 240px;
+			border-left: 1px dashed rgba(155,155,155,0.5);
 		}
-		#secondary-toolbar .b20-token-menu .b20-stats strong {
-			font-weight: bolder;
+		.ba-info [data-pane] {
+			width: 175px;
 		}
-		#secondary-toolbar .d20contextmenu li > label {
-			overflow: hidden;
-			text-overflow: ellipsis;
+		.ba-list [data-list], .ba-info [data-pane] {
+			display: none;
 		}
-		#secondary-toolbar .mods > li:not(.last-in-group) {
-			border-bottom: none;
+		.ba-list .active[data-list], .ba-info [data-pane] {
+			display: none;
 		}
-		#secondary-toolbar .b20-stats button {
-			font-family:pictos;
-			background: var(--dark-primary);
-			line-height: 1;
-			border-radius: 5px;
-			margin-left: -2px;
-			vertical-align: super;
+		.ba-list .active[data-list], .ba-info .active[data-pane] {
+			display: block;
 		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu.b20-stats ul > li > span {
-			width: unset;
-			max-width: unset;
-			padding-left: 5px;
-			white-space: unset;
-			line-height: 12px;
+		.ba-list .mods {
+			position: sticky;
+			top: 0px;
+			background: var(--vtt-surface);
+			padding-top: 1px;
 		}
-		#secondary-toolbar .b20-token-menu .d20contextmenu ul > li > span {
+		.ba-list li.mods label {
 			display: inline-block;
+			margin-bottom: 3px;
+		}
+		.ba-list li.mods label span {
+			cursor: pointer;
+			padding: 0px 3px;
+			margin-right: 3px;
+			border: 1px solid transparent;
+			border-radius: 4px;
+		}
+		.ba-list li.mods label.filter span {
+			font-family: pictos;
+			font-size: 12px;
+			display: inline-block;
+			height: 19px;
+			box-sizing: border-box;
+			vertical-align: top;
+			color: gray;
+			width: 19px;
+			overflow: clip;
+			margin-left: 4px;
+			transform: rotate(180deg);
+			border-radius: 12px;
+		}
+		.ba-list li.mods label span:hover {
+			background: rgba(155,155,155,0.5);
+		}
+		.ba-list li.mods input:checked + span {
+			background-color: var(--primary-dark);
+			color: var(--grayscale-dark-base);
+			border: 1px solid var(--primary-dark-l20);
+		}
+		.ba-list li.mods label input {
+			display: none;
 		}
 	`;
 
@@ -23513,6 +23801,786 @@ function baseChat () {
 SCRIPT_EXTENSIONS.push(baseChat);
 
 
+function baseBACharacters () {
+	d20plus.ba = d20plus.ba || {};
+
+	d20plus.ba.characters = [];
+	d20plus.ba.tokens = [];
+
+	d20plus.ba.characters.Connector = function (ref) {
+		const abilities = ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"];
+
+		const skills = {
+			acrobatics: "dexterity",
+			animal_handling: "wisdom",
+			arcana: "intelligence",
+			athletics: "strength",
+			deception: "charisma",
+			history: "intelligence",
+			insight: "wisdom",
+			intimidation: "charisma",
+			investigation: "intelligence",
+			medicine: "wisdom",
+			nature: "intelligence",
+			perception: "wisdom",
+			performance: "charisma",
+			persuasion: "charisma",
+			religion: "intelligence",
+			sleight_of_hand: "dexterity",
+			stealth: "dexterity",
+			survival: "wisdom",
+
+			initiative: "dexterity",
+		};
+
+		const prepareRawStats = (lvls, attrib, id, val) => {
+			if (!Array.isArray(lvls)) lvls = [lvls];
+			const max = attrib.attributes.max;
+			let obj = this.sheet.data;
+			lvls.forEach(lvl => {
+				obj[lvl] = obj[lvl] || {};
+				obj = obj[lvl];
+			});
+			obj._ref = obj._ref || {};
+			obj._ref[id] = attrib;
+			obj[id] = val || attrib.attributes.current;
+			if (max !== undefined && max !== "") obj[`${id}_max`] = max;
+			if (lvls.length > 1) obj._id = lvls.last();
+		}
+
+		const prepareResources = () => {
+			const resources = { _ref: {} };
+			["other", "class"].forEach(r => {
+				const tag = this.sheet.data.stats[`${r}_resource_name`];
+				const num = this.sheet.data.stats[`${r}_resource`];
+				const ref = this.sheet.data.stats._ref[`${r}_resource`];
+				if (num !== undefined && tag) {
+					resources[tag] = num;
+					resources._ref[tag] = ref;
+				}
+			});
+			Object.entries(this.sheet.data.resources || {}).forEach(([id, r]) => {
+				["left", "right"].forEach(n => {
+					const tag = r[`resource_${n}_name`];
+					const num = r[`resource_${n}`];
+					if (num !== undefined && tag) {
+						resources[tag] = num;
+						resources._ref[tag] = this.sheet.data.resources[id]?._ref;
+					}
+				});
+			})
+			this.sheet.data.resources = resources;
+		}
+
+		const fetchAttribs = () => {
+			this.isNpc = false;
+			this.sheet.data = {
+				stats: {},
+				npcStats: {},
+				spellslots: {},
+			};
+			this.name = {
+				tk: this.refLastToken.attributes.name,
+				ch: this._ref.attributes.name,
+			};
+			this._ref.attribs?.models.forEach(prop => {
+				const [tag, type, id, ...attrPath] = prop.attributes.name.split("_");
+				const attr = attrPath.join("_");
+				const current = prop.attributes.current;
+				if (type === undefined) {
+					if (tag === "npc" && current === "1") this.isNpc = true;
+					else prepareRawStats("stats", prop, tag);
+				} else if (type === "slots") {
+					const lvl = tag.slice(-1);
+					prepareRawStats(["spellslots", lvl], prop, id);
+				} else if (tag === "repeating") {
+					const [stype, lvl] = type.split("-");
+					if (stype === "spell") {
+						if (lvl) {
+							prepareRawStats(["spells", id], prop, attr);
+							this.sheet.data.spells[id].lvl = lvl;
+						} else {
+							prepareRawStats("stats", prop, [type].concat(id || []).join("_"));
+						}
+					} else if (stype === "npcaction") {
+						prepareRawStats(["actions", id], prop, attr);
+						if (lvl) this.sheet.data.actions[id].actionType = lvl;
+					} else if (type === "attack") {
+						prepareRawStats(["attacks", id], prop, attr);
+					} else if (type === "inventory") {
+						prepareRawStats(["items", id], prop, attr);
+					} else if (["proficiencies", "tool", "resource", "traits"].includes(type)) {
+						const stype = type.last() === "s" ? type : `${type}s`;
+						prepareRawStats([stype, id], prop, attr);
+					} else if (["acmod", "damagemod", "savemod", "skillmod", "tohitmod"].includes(type)) {
+						const stype = type.split("mod")[0].replace("tohit", "attack");
+						prepareRawStats(["mods", stype, id], prop, attr);
+					} else if (type === "npctrait" || type === "trait") {
+						prepareRawStats(["traits", id], prop, attr);
+					}
+				} else if (type === "reporder") {
+					prepareRawStats("order", prop, attr, current.split(","));
+				} else if (tag === "global" && id === "mod" && attr === "flag") {
+					prepareRawStats(["mods", "active"], prop, type);
+				} else if (tag === "npc") {
+					if (type === "name") this.name.npc = prop.attributes.current;
+					prepareRawStats("npcStats", prop, [type].concat(id || [], attr || []).join("_"));
+				} else {
+					if (prop.attributes.name === "charactersheet_type" && current === "npc") this.isNpc = true;
+					prepareRawStats("stats", prop, [tag].concat(type || [], id || [], attr || []).join("_"));
+				}
+			});
+		}
+
+		const getMod = (val) => {
+			return val
+				? `+${val}`.replace("++", "+").replace("+-", "-")
+				: "+0";
+		}
+
+		const filterVal = (val) => {
+			return val === undefined ? undefined : `${val}`;
+		}
+
+		const checkType = function (type) {
+			switch (type) {
+				case "ability": return abilities.includes(this.val);
+				case "ability_mod": return abilities.map(a => `${a}_mod`).includes(this.val);
+				case "ability_save": return abilities.map(a => `${a}_save`).includes(this.val);
+				case "skill": return Object.keys(skills).includes(this.val);
+				case "skill_mod": return Object.keys(skills).map(a => `${a}_mod`).includes(this.val);
+				case "skill_pb": return Object.keys(skills).map(a => `${a}_pb`).includes(this.val);
+			}
+		}
+
+		const getStats = (q) => {
+			const char = this.sheet.data.stats._ref;
+			const npc = this.sheet.data.npcStats._ref;
+			const str = {val: q, is: checkType};
+			if (str.is("ability")) return `${char[q]?.attributes.current}` || "10";
+			else if (str.is("ability_mod")) return getMod(char[q]?.attributes.current);
+			else if (str.is("ability_save")) {
+				return getMod(
+					(this.isNpc && filterVal(npc[`${q.substr(0, 3)}_save`]?.attributes.current))
+					|| char[`${q}_bonus`]?.attributes.current);
+			} else if (str.is("skill")) {
+				return `${10 + Number(
+					(this.isNpc && filterVal(npc[q]?.attributes.current))
+					|| char[`${q}_bonus`]?.attributes.current || 0)}`;
+			} else if (str.is("skill_mod")) {
+				q = q === "concentration_mod" ? "constitution" : q.replace("_mod", "");
+				return getMod(
+					(this.isNpc && filterVal(npc[q]?.attributes.current))
+					|| char[`${q}_bonus`]?.attributes.current);
+			} else if (q === "passive_perception") {
+				return `${
+					(this.isNpc && (10 + Number(filterVal(npc[`passive`]?.attributes.current)
+						|| filterVal(npc[`perception`]?.attributes.current)
+						|| filterVal(char[`perception_bonus`]?.attributes.current))))
+					|| char[`passive_wisdom`]?.attributes.current}`;
+			} else return (this.isNpc && filterVal(npc[q]?.attributes.current)) || char[q]?.attributes.current;
+		}
+
+		const types = [
+			{
+				id: "spells",
+				utils: {
+					_char: () => this,
+					_get: function (q) {
+						if (q === "name") return this._ref.spellname?.attributes.current;
+						else if (q === "description") return this._ref.spelldescription?.attributes.current;
+						else if (q === "uses") {
+							if (this._resource === undefined) {
+								const resourceName = this._ref.innate?.attributes.current;
+								const resource = this._char().sheet.getResources(resourceName);
+								this._resource = resource || false;
+							}
+							return this._resource?.current;
+						}
+						return this._ref[q]?.attributes.current;
+					},
+					_has: function (q) {
+						switch (q) {
+							case "atk": return (
+								this._ref.spellattack?.attributes.current
+								&& this._ref.spellattack?.attributes.current !== "None"
+							);
+							case "dmg": return (
+								this._ref.spelldamage?.attributes.current
+								|| this._ref.spelldamage2?.attributes.current
+							);
+							case "dmgorheal": return (
+								this._ref.spelldamage?.attributes.current
+								|| this._ref.spelldamage2?.attributes.current
+								|| this._ref.spellhealing?.attributes.current
+							);
+							case "upcast": return (
+								!isNaN(this._ref.spellhldie?.attributes.current)
+								&& !!this._ref.spellhldietype?.attributes.current
+							);
+							case "action": return (
+								this._ref.spelldamage?.attributes.current
+								|| this._ref.spelldamage2?.attributes.current
+								|| this._ref.spellhealing?.attributes.current
+								|| (this._ref.spellattack?.attributes.current
+									&& this._ref.spellattack?.attributes.current !== "None")
+								|| this._ref.spellsave?.attributes.current
+							);
+							case "uses": {
+								if (this._resource) return true;
+								const resourceName = this._ref.innate?.attributes.current;
+								const resource = this._char().sheet.getResources(resourceName);
+								if (resource) {
+									this._resource = resource;
+									return true;
+								} else {
+									this._resource = false;
+									return false;
+								}
+							}
+							case "active": return this._ref.spellprepared?.attributes.current === "1"
+							case "ritual": return this._ref.spellritual?.attributes.current !== "0";
+							case "save": return !!this._ref.spellsave?.attributes.current;
+						}
+					},
+				},
+			},
+			{
+				id: "attacks",
+				utils: {
+					_char: () => this,
+					_get: function (q) {
+						switch (q) {
+							case "name": return this._ref.atkname?.attributes.current;
+							case "range": return this._ref.atkrange?.attributes.current;
+							case "dmg1type": return this._ref.dmgtype?.attributes.current;
+							case "dmg2type": return this._ref.dmg2type?.attributes.current;
+							case "dmg1": return this._ref.attack_damage?.attributes.current;
+							case "dmg2": return this._ref.attack_damage2?.attributes.current;
+							case "attr": return this._ref.atkattr_base?.attributes.current.replace(/@{(.*?)}/, "$1");
+							default: return this._ref[q]?.attributes.current;
+						}
+					},
+					_has: function (q) {
+						switch (q) {
+							case "atk": return this._ref.atkflag?.attributes.current !== "0";
+							case "save": return !!this._ref.savedc?.attributes.current;
+							case "dmg1": return (
+								!!this._ref.dmgbase?.attributes.current
+								&& this._ref.dmgflag?.attributes.current !== "0");
+							case "dmg2": return (
+								!!this._ref.dmg2base?.attributes.current
+								&& this._ref.dmg2flag?.attributes.current !== "0");
+							case "pb": return this._ref.atkprofflag?.attributes.current !== "0"; // idiotic thing (pc only)?
+							case "range": return this._ref.atkrange?.attributes.current.includes("/");
+							default: return (
+								this._ref[q]?.attributes.current
+								&& this._ref[q]?.attributes.current !== "0");
+						}
+					},
+				},
+			},
+			{
+				id: "actions", // npc's attack are stored here
+				utils: {
+					_char: () => this,
+					_get: function (q) {
+						switch (q) {
+							case "name": return this._ref.name?.attributes.current;
+							case "range": return this._ref.attack_range?.attributes.current;
+							case "dmg1type": return this._ref.attack_damagetype?.attributes.current;
+							case "dmg2type": return this._ref.attack_damagetype2?.attributes.current;
+							case "dmg1": return this._ref.attack_damage?.attributes.current;
+							case "dmg2": return this._ref.attack_damage2?.attributes.current;
+							case "attr": return undefined;
+							default: return this._ref[q]?.attributes.current;
+						}
+					},
+					_has: function (q) {
+						switch (q) {
+							case "atk": return this._ref.attack_flag?.attributes.current !== "0";
+							case "dmg1": return !!this._ref.attack_damage?.attributes.current;
+							case "dmg2": return !!this._ref.attack_damage2?.attributes.current;
+							case "pb": return false; // idiotic thing (pc only)?
+							case "save": return false;
+							case "range": return this._ref.attack_type?.attributes.current === "Ranged";
+							default: return (
+								this._ref[q]?.attributes.current
+								&& this._ref[q]?.attributes.current !== "0");
+						}
+					},
+				},
+			},
+			{
+				id: "traits",
+				utils: {
+					_char: () => this,
+					_get: function (q) {
+						switch (q) {
+							case "name": return this._ref.name?.attributes.current;
+							case "description": return this._ref.description?.attributes.current;
+							case "resource": return this._ref.source_type?.attributes.current;
+							case "uses": {
+								if (this._resource === undefined) {
+									const resourceName = this._ref.source_type?.attributes.current;
+									const resource = this._char().sheet.getResources(resourceName);
+									this._resource = resource || false;
+								}
+								return this._resource?.current;
+							}
+							default: return this._ref[q]?.attributes.current;
+						}
+					},
+					_has: function (q) {
+						switch (q) {
+							case "atk": return false;
+							case "dmg1": return false;
+							case "dmg2": return false;
+							case "pb": return false;
+							case "save": return false;
+							case "range": return false;
+							case "action": return false;
+							case "uses": {
+								if (this._resource) return true;
+								const resourceName = this._ref.source_type?.attributes.current;
+								const resource = !!resourceName && this._char().sheet.getResources(resourceName);
+								if (resource) {
+									this._resource = resource;
+									return true;
+								} else {
+									this._resource = false;
+									return false;
+								}
+							}
+							default: return (
+								this._ref[q]?.attributes.current
+								&& this._ref[q]?.attributes.current !== "0"
+							);
+						}
+					},
+				},
+			},
+			{
+				id: "items",
+				utils: {
+					_char: () => this,
+					_get: function (q) {
+						switch (q) {
+							case "name": return this._ref.itemname?.attributes.current;
+							case "description": return this._ref.itemcontent?.attributes.current;
+							case "equipped": return this._ref.equipped?.attributes.current;
+							default: return this._ref[q]?.attributes.current;
+						}
+					},
+					_has: function (q) {
+						switch (q) {
+							case "atk": return false;
+							case "dmg1": return false;
+							case "dmg2": return false;
+							case "pb": return false;
+							case "save": return false;
+							case "range": return false;
+							case "action": return false;
+							case "active": return this._ref.equipped?.attributes.current !== "0"
+							default: return (
+								this._ref[q]?.attributes.current
+								&& this._ref[q]?.attributes.current !== "0"
+							);
+						}
+					},
+					_equip: function (toggle) {
+						const current = this._ref.equipped?.attributes.current !== "0";
+						const changing = toggle === undefined
+							? (current ? "0" : "1")
+							: (toggle ? "1" : "0");
+						this._ref.equipped?.save({current: changing});
+					},
+				},
+			},
+			function (param) {
+				const char = d20plus.ba.getSingleChar();
+				const attr = {
+					name: {pc: "atkname", npc: "name"},
+					range: {pc: "atkrange", npc: "attack_range"},
+					hasattack: {pc: "atkflag", npc: "attack_flag", q: {false: ["0"]}},
+					hasdamage: {get: (at) => char.isNpc ? !!at.attack_damage : !!at.dmgbase && at.dmgflag !== "0"},
+					hasdamage2: {get: (at) => char.isNpc ? !!at.attack_damage2 : !!at.dmg2base && at.dmg2flag !== "0"},
+					damagetype: {pc: "dmgtype", npc: "attack_damagetype"},
+					damagetype2: {pc: "dmg2type", npc: "attack_damagetype2"},
+					profbonus: {pc: "atkprofflag", q: {false: ["0"]}},
+				}[param];
+				const val = char.isNpc ? this[attr?.npc] : this[attr?.pc];
+				if (attr.get) return attr.get(this);
+				else if (!attr.q) return val;
+				else return attr.q.true?.includes(val) || (attr.q.false && !attr.q.false.includes(val));
+			},
+			function (param) {
+				const char = d20plus.ba.getSingleChar();
+				const attr = {
+					hasattack: {get: (sp) => !!sp.spellattack && sp.spellattack !== "None"},
+					hasdamage: {get: (sp) => !!sp.spelldamage || !!sp.spelldamage2},
+					hasdamageorhealing: {get: (sp) => !!sp.spelldamage || !!sp.spelldamage2 || !!sp.spellhealing},
+					hassave: {get: (sp) => !!sp.spellsave && sp.spellsave !== ""},
+				}[param];
+				const val = char.isNpc ? this[attr?.npc] : this[attr?.pc];
+				if (attr.get) return attr.get(this);
+				else if (!attr.q) return val;
+				else return attr.q.true?.includes(val) || (attr.q.false && !attr.q.false.includes(val));
+			},
+		]
+
+		this.sheet = {
+			get: (q) => {
+				for (let i = 0; i < types.length; i++) {
+					const list = this.sheet.data[types[i].id];
+					if (list && list[q]) return Object.assign({_id: q}, types[i].utils || {}, list[q]);
+				}
+				return this.sheet.data.stats?._ref && getStats(q);
+			},
+			getSpells: (lvl) => {
+				const all = this.sheet.data.spells || {};
+				return Object.keys(all).reduce((spls, id) => {
+					if (
+						(lvl && all[id].lvl !== lvl)
+						|| all[id]._ref.innate?.attributes.current
+					) return spls;
+					spls.push(Object.assign({}, types[0].utils || {}, all[id]));
+					return spls;
+				}, []);
+			},
+			getTraits: () => {
+				const all = Object.assign({},
+					this.sheet.data.traits || {},
+					this.sheet.data.spells || {},
+				);
+				return Object.keys(all).reduce((trts, id) => {
+					if (all[id]._ref.source_type?.attributes.current
+						|| all[id]._ref.description?.attributes.current) {
+						trts.push(Object.assign({}, types[3].utils || {}, all[id]));
+					} else if (all[id]._ref.innate?.attributes.current) {
+						trts.push(Object.assign({}, types[0].utils || {}, all[id]));
+					}
+					return trts;
+				}, []);
+			},
+			getAttacks: () => {
+				const all = this.isNpc
+					? this.sheet.data.actions || {}
+					: this.sheet.data.attacks || {};
+				const utils = this.isNpc
+					? types[2].utils || {}
+					: types[1].utils || {};
+				return Object.keys(all).reduce((atks, id) => {
+					if (
+						(this.isNpc && all[id].attack_flag === "on")
+						|| (!this.isNpc && !all[id].spellid)
+					) atks.push(Object.assign({}, utils || {}, all[id]));
+					return atks;
+				}, []);
+			},
+			getItems: () => {
+				const all = this.isNpc
+					? {}
+					: this.sheet.data.items || {};
+				const utils = types[4].utils || {};
+				return Object.keys(all).reduce((atks, id) => {
+					if (
+						(this.isNpc && all[id].attack_flag === "on")
+						|| (!this.isNpc && !all[id].spellid)
+					) atks.push(Object.assign({}, utils || {}, all[id]));
+					return atks;
+				}, []);
+			},
+			getResources: (name) => {
+				const resources = {};
+				[["default", {}]].concat(Object.entries(this.sheet.data.resources || {})).forEach(([id, r]) => {
+					const isDefault = id === "default";
+					const pair = isDefault ? ["other", "class"] : ["left", "right"];
+					pair.forEach(n => {
+						const pointer = isDefault ? `${n}_resource` : `resource_${n}`;
+						const stack = isDefault ? this.sheet.data.stats._ref : r._ref;
+						const name = stack[`${pointer}_name`]?.attributes.current;
+						const num = String(stack[pointer]?.attributes.current);
+						const pb = !!stack[`${pointer}_use_pb`]?.attributes.current
+							&& stack[`${pointer}_use_pb`].attributes.current !== "0";
+						if (num !== undefined && name) {
+							resources[name] = {
+								_ref: {
+									name: stack[`${pointer}_name`],
+									resource: stack[pointer],
+									pb: stack[`${pointer}_use_pb`],
+								},
+								name: name,
+								current: num,
+								type: isDefault ? "resource" : "repeated",
+								side: n,
+								max: pb ? this.sheet.get("pb") : stack[pointer].attributes.max,
+							};
+						}
+					});
+				});
+				return name ? resources[name] : resources;
+			},
+			getRollModifier: (r) => {
+				const r20q = /.*@{(?<attr>[^}]*)}.*/g;
+				return r?.split("+").reduce((res, attr) => {
+					return res + (Number(attr.replace(r20q, (...s) => this.sheet.get(s.last().attr))) || 0);
+				}, 0) || 0;
+			},
+			fetch: () => {
+				// d20plus.ut.log("Fetching character", this.sheet.fetched, this._ref.attribs.models.length)
+				if (this.sheet.fetched !== this._ref.attribs.models.length) {
+					this.sheet.fetched = this._ref.attribs.models.length;
+					fetchAttribs();
+				}
+			},
+			data: {
+				stats: {},
+				npcStats: {},
+				spellslots: {},
+			},
+			spellSlots: {
+				current: (lvl) => {
+					return this.sheet.data.spellslots
+					&& (this.sheet.data.spellslots[lvl]?._ref.expended?.attributes.current
+					|| this.sheet.data.spellslots[lvl]?._ref.total?.attributes.current
+					|| 0);
+				},
+				expended: (lvl) => {
+					const calc = this.sheet.data.spellslots && (
+						(this.sheet.data.spellslots[lvl]?._ref.total?.attributes.current || 0)
+						- (this.sheet.data.spellslots[lvl]?._ref.expended?.attributes.current || 0));
+					return calc >= 0 ? calc : 0;
+				},
+				max: (lvl) => {
+					return this.sheet.data.spellslots
+						&& (this.sheet.data.spellslots[lvl]?._ref.total?.attributes.current || 0);
+				},
+				expend: (lvl) => {
+					void 0;
+				},
+			},
+			fetched: 0,
+		};
+
+		this.ready = async () => {
+			return new Promise(resolve => {
+				let inProgress = 0;
+				const wait = setInterval(() => {
+					const statsFetched = Object.keys(this.sheet.data.stats).length > 1;
+					inProgress++;
+					if (statsFetched) resolve(true);
+					if (statsFetched || inProgress > 120) {
+						resolve(false);
+						clearInterval(wait);
+					}
+				}, 30);
+			});
+		}
+
+		this.refresh = () => {
+			if (d20plus.ba.current.singleChar?.character?.id !== this.id) return;
+			this.sheet.fetch();
+			this.sheet.data.stats?._ref && d20plus.ba.menu.refresh();
+		};
+
+		const init = async () => {
+			const gotToken = !ref.attribs;
+			if (gotToken && !ref.character && !ref._model?.character) return;
+
+			this._ref = ref._model?.character || ref.character || ref;
+			this.refLastToken = gotToken && (ref._model || ref);
+			this.id = this._ref.id;
+
+			await d20plus.ut.fetchCharAttribs(this._ref, true);
+			d20plus.ut.injectCode(
+				this._ref.attribs._callbacks.change.next,
+				"callback",
+				(callback, p) => {
+					callback(...p);
+					setTimeout(this.refresh, 100);
+				},
+			);
+
+			d20plus.ba.characters.push(this);
+			this.sheet.fetch();
+			this.refresh();
+		}
+
+		init();
+	}
+
+	d20plus.ba.tokens.Connector = function (ref) {
+		const getHP = (max) => {
+			return !max
+				? this._ref.attributes[`bar${this.hp.bar}_value`]
+				: this._ref.attributes[`bar${this.hp.bar}_max`];
+		};
+
+		this.hp = {
+			checkMode: () => {
+				this.hp.connected = false;
+				this.hp.bar = Number(d20plus.cfg.getOrDefault("chat", "dmgTokenBar"));
+				for (let i = 1; i < 4; i++) {
+					const attr = this._ref.attributes[`bar${i}_link`];
+					if (attr && this.character?.sheet.data.stats?._ref?.hp.id === attr) {
+						this.hp.connected = true;
+						this.hp.bar = i;
+					}
+				}
+			},
+			reduce: () => {
+				void 0;
+			},
+		}
+
+		this.refresh = () => {
+			if (!d20plus.ba.current.charTokens?.find(t => this.id === t.id)) return;
+			// d20plus.ut.log("Fetching token", this.get("name"), this.character.sheet.fetched, this.character._ref.attribs.models.length)
+			this.hp.checkMode();
+			d20plus.ba.menu.refresh();
+		}
+
+		this.select = () => {
+			d20.engine.select(this._object);
+		}
+
+		this.find = () => {
+			d20.engine.centerOnPoint(this._ref?.attributes?.left || 0, this._ref?.attributes?.top || 0);
+			// d20.token_editor.removeRadialMenu();
+		}
+
+		this.get = (q) => {
+			switch (q) {
+				case "image": return this._ref.attributes.imgsrc;
+				case "npc": return this.character?.isNpc;
+				case "hp": return getHP();
+				case "hp_max": return getHP("max");
+				case "name": return this._ref.attributes.name || "";
+				case "char_name": return this._ref.character.attributes.name || "";
+				case "npc_name": return this.character?.sheet.get("name") || "";
+				case "spells": return this.character?.sheet.getSpells();
+				case "attacks": return this.character?.sheet.getAttacks();
+				case "items": return this.character?.sheet.getItems();
+				case "traits": return this.character?.sheet.getTraits();
+				default: return this.character?.sheet.get(q);
+			}
+		}
+
+		this.ready = async () => {
+			return new Promise(resolve => {
+				let inProgress = 0;
+				const wait = setInterval(() => {
+					const statsFetched = Object.keys(this.character?.sheet?.data.stats).length > 1;
+					inProgress++;
+					if (statsFetched) resolve(true);
+					if (statsFetched || inProgress > 120) {
+						resolve(false);
+						clearInterval(wait);
+					}
+				}, 30);
+			});
+		}
+
+		const init = async () => {
+			if ((ref?._model?.attributes || ref?.attributes)?.type !== "image") return;
+			if (!(ref?._model?.character || ref?.character)?.id) return;
+			this._ref = ref._model || ref;
+			this._object = ref._model
+				? ref
+				: d20.engine.canvas.getObjects()?.find(t => t._model?.id === this._ref.id);
+			this.id = this._ref.id;
+
+			const char = d20plus.ba.characters.get(this._ref.character.id);
+			this.character = char || await new d20plus.ba.characters.Connector(this._ref);
+			this.mods = {
+				general: {},
+				stats: {},
+				skills: {},
+				attacks: {},
+				spells: {filter: true},
+				items: {filter: true},
+				traits: {filter: true},
+			};
+
+			d20plus.ba.tokens.push(this);
+			this.refresh();
+		}
+
+		init();
+	}
+
+	d20plus.ba.initCharacters = () => {
+		const get = function (ref) {
+			return Object.isObject(ref)
+				? this.find(it => it.id === ref.id
+					|| it.id === ref._model?.id
+					|| it.id === ref.character?.id
+					|| it.id === ref._model?.character?.id)
+				: this.find(it => it.id === ref);
+		}
+
+		const ready = function (ref) {
+			const isToken = !!this.getCurrent;
+			if ((isToken && !ref?.id
+					&& !ref._model.id
+					&& !ref.character
+					&& !ref._model?.character)
+				|| (!isToken && !ref?.id
+					&& !ref.attribs)) return;
+
+			const existing = this.get(ref.id || this._model?.id);
+			const created = existing || new this.Connector(ref);
+
+			existing?.refresh();
+			return existing || created;
+		}
+
+		d20plus.ba.tokens.get = get;
+		d20plus.ba.characters.get = get;
+
+		d20plus.ba.tokens.ready = ready;
+		d20plus.ba.characters.ready = ready;
+
+		d20plus.ba.tokens.getCurrent = () => {
+			return d20plus.ba.tokens.get(d20plus.ba.current.singleChar?.id);
+		}
+
+		d20plus.ba.tokens.focusCurrent = () => {
+			const token = d20plus.ba.tokens.getCurrent();
+			d20.engine.unselect();
+			token?.find();
+			token?.select();
+		}
+
+		d20plus.ba.getReady = function (ref) { // legacy
+			const gotToken = !ref.attribs;
+			if (gotToken && !ref.character && !ref._model?.character) return;
+
+			const token = ref._model || ref;
+			const existing = (gotToken ? d20plus.ba.tokens : d20plus.ba.characters).get(token.id);
+			d20plus.ut.log(token, existing); // check why it's called twice !!!!
+			const created = existing || (gotToken
+				? new d20plus.ba.tokens.Connector(token)
+				: new d20plus.ba.characters.Connector(token));
+			existing?.refresh();
+			return existing || created;
+		}
+	}
+
+	window.d20debug = {
+		qattr: (q) => {
+			d20plus.ba.characters.forEach(ch => d20plus.ut.log(ch.name.tk, ch.sheet.get(q)));
+			d20plus.ut.log(`Quering ${q}: ${d20plus
+				.ba.characters
+				.reduce((r, ch) => `${r}\n${ch.name.ch}:\t ${ch.sheet.get(q)}`, "")
+			}`);
+		},
+	}
+}
+
+SCRIPT_EXTENSIONS.push(baseBACharacters);
+
 function baseBARollTemplates () {
 	d20plus.ba = d20plus.ba || {};
 
@@ -23521,18 +24589,14 @@ function baseBARollTemplates () {
 	const normalizeStyle = `color: inherit;text-decoration: none;cursor: auto;`;
 
 	const getRollMode = () => {
-		const adv = d20plus.ba.$dom.buttons.find(".b20-rolls .mods .advantage input").prop("checked");
-		const dis = d20plus.ba.$dom.buttons.find(".b20-rolls .mods .disadvantage input").prop("checked");
+		const adv = d20plus.ba.$dom.menu.find(".ba-list .mods:visible .advantage input").prop("checked");
+		const dis = d20plus.ba.$dom.menu.find(".ba-list .mods:visible .disadvantage input").prop("checked");
 		return adv ? "advantage" : dis ? "disadvantage" : "normal";
 	}
 
 	const getWMode = () => {
-		const togm = d20plus.ba.$dom.buttons.find(".b20-rolls .mods .togm input").prop("checked");
+		const togm = d20plus.ba.$dom.menu.find(".ba-list .mods:visible .togm input").prop("checked");
 		return togm ? "/w gm " : "";
-	}
-
-	const getDisplayName = (char) => {
-
 	}
 
 	const getTemplatePart = ([tag, val, props], subtree) => {
@@ -23577,6 +24641,7 @@ function baseBARollTemplates () {
 	}
 
 	const buildAttackTemplate = (v) => {
+		v.targetId = v._onSelf ? v._this.id : v.targetId;
 		const tmplModel = [
 			{tag: `attack`,	 val: "1"},
 			{tag: `crit`,	 val: "1"},
@@ -23709,23 +24774,13 @@ function baseBARollTemplates () {
 		}[values?._modelType];
 
 		const template = templateModel && templateModel(values);
-		if (!template) return d20plus.ba.rollError();
+		if (!template) return d20plus.ba.rollError(); d20plus.ut.log(values);
 
 		d20.textchat.doChatInput(`${getWMode()}${template}`);
-		console.log(values, template)
 		if (values._expend) d20plus.engine.expendResources(values._expend);
 	}
 
-	const buildRollModifier = (r) => {
-		const char = d20plus.ba.getSingleChar();
-		const r20q = /.*@{(?<attr>[^}]*)}.*/g;
-		return r?.split("+").reduce((res, attr) => {
-			return res + (Number(attr.replace(r20q, (...s) => char.stats[s.last().attr])) || 0);
-		}, 0) || 0;
-	}
-
 	const buildRollModel = (r) => {
-		console.log(r);
 		const critrange = r.critrange && Number(r.critrange) !== 20 ? `cs>${r.critrange}` : "";
 		const base = !r.base ? ""
 			: r.base.toLowerCase().includes("d") ? r.base : `1d${r.base}${critrange}`;
@@ -23750,41 +24805,44 @@ function baseBARollTemplates () {
 		const mods = r.mods?.reduce((s, m) => {
 			if (!m) return s;
 			return s + (Number(m[0]) || 0);
-		}, 0) || 0;
+		}, 0) || 0; d20plus.ut.log("Building modifier", mods, r)
 		const sign = mods < 0 || !r.base ? "" : "+";
 		return `${base}${sign}${mods}`;
 	}
 
-	const getAbilityVals = (spec, attr, dc) => {
-		const char = d20plus.ba.getSingleChar();
-		if (!dc) [attr, dc] = (attr).split("|");
+	const getAbilityVals = (q) => { // spec, attr, dc
+		const [attr, dcTmp] = (q.flags).split("|");
+		const dc = q.dc || dcTmp;
+		const spec = q.id;
 
 		const abbr = attr.slice(0, 3).toUpperCase();
 		const attrBase = attr.replaceAll(" ", "_").replaceAll("-", "_");
-		const attrId = spec === "save" ? `${attrBase}_save_bonus` : (spec === "ability" ? `${attrBase}_mod` : `${attrBase}_bonus`);
-		const attrIdNpc = spec === "save" ? `${abbr.toLowerCase()}_save` : (spec === "skill" ? attrBase : "");
-		const attrVal = (char.isNpc && char.npcStats[attrIdNpc]) || char.stats[attrId];
+		const attrId = spec === "save" ? `${attrBase}_save` : `${attrBase}_mod`;
+		const attrMod = q.token.get(attrId);
 
 		const roll = {
-			base: attr !== "hit dice" ? `20` : `${char.stats.hitdietype}`,
+			base: attr !== "hit dice" ? `20` : `${q.token.get("hitdietype")}`,
 			// type: spec === "hit dice" ? `heal` : null,
 			// target: spec === "hit dice" ? token.id : null,
 			mods: [
-				attr === "hit dice" || attr === "concentration" ? [char.stats.constitution_mod, "CON"] : [attrVal, abbr],
-				attr === "initiative" ? [` `, `init${char.lastTokenId}`] : null,
-				spec === "ability" && !char.isNpc ? [`${char.stats.jack_bonus}`, "JACK"] : null,
+				[attrMod, abbr],
+				attr === "initiative" ? [` `, `init${q.token.id}`] : null,
+				spec === "ability" && !q.token.get("npc") ? [`${q.token.get("jack_bonus")}`, "JACK"] : null,
 			],
 		}
 
+		if (attr === "hit dice") roll.mods[0] = [q.token.get("constitution_mod"), "CON"];
+		if (attr === "concentration") roll.mods[0] = [q.token.get("constitution_save"), "CON"];
+
 		const tmplVals = {
-			_thisId: char.id,
-			_isNpc: char.isNpc,
-			_modelType: attr !== "hit dice" ? "ability" : "attack",
+			_this: q.token,
+			_thisId: q.token.character.id,
+			_isNpc: q.token.get("npc"),
+			_modelType: !["hit dice", "fall"].includes(attr) ? "ability" : "attack",
 			_onSelf: true,
 			dc,
-			chId: char.id,
 			rMode: getRollMode(),
-			title: attr !== "hit dice" ? char.name.tk : `^{hit-dice-u}`,
+			title: attr !== "hit dice" ? q.token.get("name") : `^{hit-dice-u}`,
 			subTitle: `^{${spec === "ability" ? "abilities" : ["skill", "save", "roll"].includes(spec) ? spec : attr}}`,
 			attrName: `^{${spec === "save" ? `${attrBase}-save` : (["death save", "hit dice"].includes(attr) ? attr.split(" ").concat("u").join("-") : attrBase)}}`,
 			mod: buildDisplayMod(roll),
@@ -23795,180 +24853,147 @@ function baseBARollTemplates () {
 			dmg1tag: "heal",
 			dmg1type: `^{hp}`,
 			dmg1roll: buildRollModel(roll),
-			charName: char.name.tk,
-			targetId: char.lastTokenId,
+			charName: q.token.get("name"),
+			targetId: q.token.id,
 		}
 
 		return tmplVals;
 	};
 
-	const getAbilityTemplateOld = (token, spec, attr) => {
-		const char = getSingleChar(token);
-		const type = attr || "roll"
-		// const roll = spec !== "hit dice" ? `d20` : `1d${char.stats.hitdietype}`;
-		const typeName = spec === "ability" ? "abilities" : ["skill", "save"].includes(spec) ? spec : type;
-
-		attr = attr || spec;
-		const attrBase = attr.replaceAll(" ", "_").replaceAll("-", "_");
-		const attrId = spec === "save" ? `${attrBase}_save_bonus` : (spec === "ability" ? `${attrBase}_mod` : `${attrBase}_bonus`);
-		const attrName = spec === "save" ? `${attrBase}-save` : (["death save", "hit dice"].includes(spec) ? attr.split(" ").concat("u").join("-") : attrBase);
-		const abbr = attr.slice(0, 3).toUpperCase();
-
-		const roll = {
-			base: spec !== "hit dice" ? `d20` : `1d${char.stats.hitdietype || 20}`,
-			type: spec !== "hit dice" ? `heal` : undefined,
-			self: spec !== "hit dice" ? true : undefined,
-			mods: [
-				spec === "hit dice" ? [`${char.stats.constitution_mod}`, "CON"] : [`${char.stats[attrId]}`, abbr],
-				type === "ability" && "!isNpc" ? [`${char.stats.jack_bonus}`, "JACK"] : null,
-			],
-		}
-		const mods = {base: [
-			spec === "hit dice" ? [`${char.stats.constitution_mod}`, "CON"] : [`${char.stats[attrId]}`, abbr],
-			type === "ability" && "!isNpc" ? [`${char.stats.jack_bonus}`, "JACK"] : null,
-		]};
-		mods.r1 = mods.base.concat([
-			spec === "initiative" ? ["&{tracker}"] : null,	// should be the last one
-		]).filter(s => !!s).map(s => `${s[0]}${s[1] ? `[${s[1]}]` : ""}`).join(" ");		// TODO proper Initiative adding and NPCs
-		mods.r2 = mods.base.concat([])
-			.filter(s => !!s).map(s => `${s[0]}${s[1] ? `[${s[1]}]` : ""}`).join(" ");
-		mods.title = mods.base.concat([
-			spec === "hit dice" ? [`+ D${char.stats.hitdietype}`] : null,
-		]).filter(s => !!s).map(s => s[0]).join(" ");
-
-		const hiddenVars = [
-			`${char.stats.global_skill_mod}`,
-		].filter(s => !!s).join(" ");
-
-		const tmplVars = {
-			chId: char.id,
-			rMode: getRollMode(),
-			title: char.name,
-			subTitle: `^{${typeName}} (${mods.title})`,
-			attrName: `^{${attrName}}`,
-			r1: `[[${roll}+${mods.r1}]]`, // +$[[0]]`,
-			r2: `[[${roll}+${mods.r2}]]`, // +$[[0]]`,
-			hidden: hiddenVars,
-			isNpc: char.isNpc,
-		}
-
-		return d20plus.ba.templateModel("ability", tmplVars);
-	};
-
-	const getAttackVals = (id, flags) => {
-		const char = d20plus.ba.getSingleChar();
-		const atk = char?.attacks[id];
-		const ammo = atk.ammo;
-		const dmg = atk.rollbase_crit?.match(/{{dmg1=\[\[(?<dmg1>[^}]*)\]\]}}(?:.*?){{dmg2=\[\[(?<dmg2>[^}]*)\]\]}}(?:.*?){{crit1=\[\[(?<crit1>[^}]*)\]\]}}(?:.*?){{crit2=\[\[(?<crit2>[^}]*)\]\]}}/)?.groups || {};
-		const atkattr = atk.atkattr_base?.replace(/@{(.*?)}/, "$1");
+	const getAttackVals = (q) => {
+		const atk = q.token.get(q.id);
+		const dmg = atk._get("rollbase_crit")?.match(/{{dmg1=\[\[(?<dmg1>[^}]*)\]\]}}(?:.*?){{dmg2=\[\[(?<dmg2>[^}]*)\]\]}}(?:.*?){{crit1=\[\[(?<crit1>[^}]*)\]\]}}(?:.*?){{crit2=\[\[(?<crit2>[^}]*)\]\]}}/)?.groups || {};
+		const atkattr = atk._get("attr");
 
 		const atkRoll = {
 			base: `20`,
-			critrange: atk.atkcritrange || char.stats.default_critical_range || "20",
+			critrange: atk._get("atkcritrange") || q.token.get("default_critical_range") || "20",
 			mods: [
-				char.isNpc ? [atk.attack_tohit, "MOD"] : undefined,
-				atk.atkattr_base ? [char.stats[atkattr], atkattr?.slice(0, 3).toUpperCase()] : undefined,
-				atk._getVar("profbonus") && !char.isNpc ? [char.stats.pb, "PB"] : undefined,
+				q.token.get("npc") ? [atk._get("attack_tohit"), "MOD"] : undefined,
+				atkattr ? [q.token.get(atkattr), atkattr?.slice(0, 3).toUpperCase()] : undefined,
+				atk._has("pb") && !q.token.get("npc") ? [q.token.get("pb"), "PB"] : undefined,
 			],
 		}
 
 		const tmplVals = {
-			_thisId: char.id,
-			_isNpc: char.isNpc,
-			_onSelf: atk._getVar("range")?.includes("[S]"),
-			_targeted: !!atk._getVar("hasattack") || !!atk._getVar("hasdamage") || !!atk._getVar("hasdamage2") || !!atk.savedc,
-			_modelType: atk._getVar("hasattack") ? "attack" : atk.savedc && atk._getVar("hasdamage") ? "cast" : "action",
-			_expend: atk.ammo ? {type: "item", name: atk.ammo, charID: char.id} : undefined,
+			_this: q.token,
+			_thisId: q.token.character.id,
+			_isNpc: q.token.get("npc"),
+			_onSelf: atk._get("range")?.includes("[S]"),
+			_targeted: atk._has("atk") || atk._has("dmg1") || atk._has("dmg2") || atk._has("save"),
+			_modelType: atk._has("atk") ? "attack" : atk._has("save") && atk._has("dmg1") ? "cast" : "action",
+			_expend: atk._get("ammo") ? {type: "item", name: atk._get("ammo"), charID: q.token.character.id} : undefined,
 
-			chId: char.id, // !
-			title: atk._getVar("name") || "^{attack-u}",
-			subTitle: [atk._getVar("range")?.replace(/\[\w\]/g, "").replaceAll("]", "&#93;"), i18n(atk.attack_type?.toLowerCase(), "")]
+			title: atk._get("name") || "^{attack-u}",
+			subTitle: [atk._get("range")?.replace(/\[\w\]/g, "").replaceAll("]", "&#93;"), i18n(atk._get("attack_type")?.toLowerCase(), "")]
 				.reduce((t, v) => v && (!t || `${t}, ${v}`.length < 27) ? `${t}${v && t ? ", " : ""}${v}` : t, ""),
-			charName: char.name.tk,
-			description: atk.description,
+			charName: q.token.get("name"),
+			description: atk._get("description"),
 
-			dmg2on: atk._getVar("hasdamage2"),
-			dmg1tag:	atk._getVar("damagetype")?.includes("Healing") ? "heal" : "dmg",
-			dmg2tag:	atk._getVar("damagetype2")?.includes("Healing") ? "heal" : "dmg",
-			dmg1type:	atk._getVar("damagetype") || "",
-			dmg2type:	atk._getVar("damagetype2") || "",
-			dmg1roll:	atk.attack_damage || dmg.dmg1 || 0,
-			dmg2roll:	atk.attack_damage2 || dmg.dmg2 || 0,
+			dmg2on:	atk._has("dmg2"),
+			dmg1tag:	atk._get("dmg1type")?.includes("Healing") ? "heal" : "dmg",
+			dmg2tag:	atk._get("dmg2type")?.includes("Healing") ? "heal" : "dmg",
+			dmg1type:	atk._get("dmg1type") || "",
+			dmg2type:	atk._get("dmg2type") || "",
+			dmg1roll:	atk._get("attack_damage") || dmg.dmg1 || 0,
+			dmg2roll:	atk._get("attack_damage2") || dmg.dmg2 || 0,
 			rMode: getRollMode(),
-			crit1roll:	atk.attack_crit || dmg.crit1 || 0,
-			crit2roll:	atk.attack_crit2 || dmg.crit2 || 0,
+			crit1roll:	atk._get("attack_crit") || dmg.crit1 || 0,
+			crit2roll:	atk._get("attack_crit2") || dmg.crit2 || 0,
 			atk1: buildRollModel(atkRoll),
 			atkMod:	buildDisplayMod(atkRoll),
-			saveAttr: atk.saveattr?.toLowerCase() || "",
-			dc: atk.savedc && buildRollModifier(atk.savedc),
+			saveAttr: atk._get("saveattr")?.toLowerCase() || "",
+			dc: q.token.character.sheet.getRollModifier(atk._get("savedc")),
 		}
 		return tmplVals;
 	}
 
-	const getSpellVals = (id, flags) => {
+	const getSpellVals = (q) => { // id, flags
 		const expendCfg = d20plus.cfg.getOrDefault("chat", "autoExpend");
-		const char = d20plus.ba.getSingleChar();
-		const [lvl, upcast] = String(flags).split("|");
-		const spell = char.spells[id];
-		const spellAbility = spell.spell_ability && spell.spell_ability?.length > 2
-			? (spell.spell_ability !== "spell" ? spell.spell_ability : char.stats.spellcasting_ability)?.replace(/@{(.*?)(_mod|)}(\+|)/, "$1") || ""
+		const lvls = String(q.flags).split(",");
+		const spell = q.token.get(q.id);
+		const spell_ability = spell._get("spell_ability");
+		const spellAbility = spell_ability && spell_ability?.length > 2
+			? (spell_ability !== "spell" ? spell_ability : q.token.get("spellcasting_ability"))?.replace(/@{(.*?)(_mod|)}(\+|)/, "$1") || ""
 			: "";
 		const subTitle = [spell.spellrange, spell.spellduration, spell.spelltarget, i18n(spell.spellattack?.toLowerCase(), "")]
 			.reduce((t, v) => v && (!t || `${t}, ${v}`.length < 27) ? `${t}${v && t ? ", " : ""}${v}` : t, "");
 		const onSelf = spell.spellrange?.includes("[S]") || spell.spelltarget?.includes("Self");
-		const spelldmgmod = spell.spelldmgmod === "Yes" ? char.stats[`${spellAbility}_mod`] || 0 : "";
+		const spelldmgmod = spell._get("spelldmgmod") === "Yes" ? q.token.get(`${spellAbility}_mod`) || 0 : "";
+
+		const expend = (spell.lvl === undefined || !!spell._get("innate"))
+			? (spell._has("uses") ? {type: spell._resource.type, res: spell._resource.side, name: spell._resource.name, charID: q.token.character.id} : undefined)
+			: (spell.lvl !== "cantrip" ? {type: "spell", lvl: spell.lvl, charID: q.token.character.id} : undefined);
 
 		const atkRoll = {
 			base: `20`,
 			// type: `atk`,
 			// target: targetTag,
-			critrange: char.stats.default_critical_range || "20",
+			critrange: q.token.get("default_critical_range") || "20",
 			mods: [
-				spell.spell_ability === "spell" && [char.stats.spell_attack_bonus, "SPELL"], // `@{${char.id}|spell_attack_mod}[MOD]+${spellAbility}@{${char.id}|pb}[PB]`
-				spell.spell_ability !== "spell" && [char.stats.spell_attack_mod, "MOD"],
-				spell.spell_ability !== "spell" && [char.stats[`${spellAbility}_mod`], spellAbility.slice(0, 3).toUpperCase()],
-				spell.spell_ability !== "spell" && [char.stats.pb, "PB"],
+				spell_ability === "spell" && [q.token.get("spell_attack_bonus"), "SPELL"], // `@{${char.id}|spell_attack_mod}[MOD]+${spellAbility}@{${char.id}|pb}[PB]`
+				spell_ability !== "spell" && [q.token.get("spell_attack_mod"), "MOD"],
+				spell_ability !== "spell" && [q.token.get(`${spellAbility}_mod`), spellAbility.slice(0, 3).toUpperCase()],
+				spell_ability !== "spell" && [q.token.get("pb"), "PB"],
 			],
 		}
 
-		const tmplVals = {
-			_thisId: char.id,
-			_isNpc:	char.isNpc,
-			_isSpell: spell.spell_ability === "spell",
-			_save: spell.spellsave?.toLowerCase() || false,
-			_expend: spell.lvl !== "cantrip" ? {type: "spell", lvl: spell.lvl, charID: char.id} : undefined,
-			_onSelf: spell.spellrange?.includes("[S]"),
-			_targeted: !!spell._getVar("hasattack") || !!spell._getVar("hasdamageorhealing") || !!spell._getVar("hassave"),
-			_modelType: spell._getVar("hasattack") || (!spell._getVar("hassave") && spell._getVar("hasdamageorhealing")) ? "attack" : (spell._getVar("hassave") && spell._getVar("hasdamage") ? "cast" : "action"),
+		const upcast = lvls.reduce((vars, lvl) => {
+			lvl = Number(lvl);
+			if (!lvl) return vars;
+			const splvl = spell.lvl !== "cantrip" ? Number(spell.lvl) : 0;
+			const base = spell._get("spelldamage") ? spell._get("spelldamage") : (spell._get("spellhealing") && !spell._get("spellsave") ? spell._get("spellhealing") : "");
+			const diff = lvl - splvl;
+			const mult = diff * (spell._get("spellhldie") || 1);
+			const addBonus = spell._get("spellhlbonus") && !isNaN(spell._get("spellhlbonus")) ? `+${Number(spell._get("spellhlbonus"))}` : "";
+			const addDice = spell._get("spellhldietype") ? `${mult}${spell._get("spellhldietype")}${addBonus}` : "";
 
-			rMode: spell._getVar("hasattack") ? getRollMode() : /* spell._getVar("hassave") || !!spell.spelldamage2 ? "always" : */ "",
-			chId: char.id,
-			charName: char.name.tk,
-			title:	spell.spellname,
+			vars[lvl] = {
+				dmg1roll: base ? buildRollModel({base, mods: [[spelldmgmod], [addDice, `LVL${lvl}`]]}) : "",
+				crit1roll: base ? buildRollModel({base, mods: [[`${mult}${spell._get("spellhldietype")}`, `LVL${lvl}`]]}) : "",
+			}
+			return vars;
+		}, []);
+
+		const tmplVals = {
+			_this: q.token,
+			_thisId: q.token.character.id,
+			_isNpc: q.token.get("npc"),
+			_isSpell: spell._get("spell_ability") === "spell",
+			_upcast: upcast,
+			_save: spell._get("spellsave")?.toLowerCase() || false,
+			_expend: expend,
+			_onSelf: spell._get("spellrange")?.includes("[S]") || spell._get("spelltarget") === "self",
+			_targeted: !!spell._has("atk") || !!spell._has("dmgorheal") || !!spell._has("save"),
+			_modelType: spell._has("atk") || (!spell._has("save") && spell._has("dmgorheal")) ? "attack" : (spell._has("save") && spell._has("dmg") ? "cast" : "action"),
+
+			rMode: spell._has("atk") ? getRollMode() : /* spell._getVar("hassave") || !!spell.spelldamage2 ? "always" : */ "",
+			charName: q.token.get("name"),
+			title:	spell._get("name"),
 			subTitle,
 
-			dmg1on: !!spell.spelldamage || !!spell.spellhealing,
-			dmg2on: !!spell.spelldamage2,
-			dmg1tag:	spell.spelldamage || spell.spelldamage2 ? "dmg" : spell.spellhealing ? "heal" : "",
-			dmg2tag:	spell.spelldamage2 ? "dmg" : spell.spelldamage && spell.spellhealing ? "heal" : "",
-			dmg1type:	spell.spelldamagetype || (spell.spellhealing ? "healing" : ""),
-			dmg2type:	spell.spelldamagetype2 || (spell.spelldamage && spell.spellhealing ? "healing" : ""),
-			dmg1roll:	spell.spelldamage ? buildRollModel({base: spell.spelldamage, mods: [[spelldmgmod]]})
-				: spell.spellhealing && !spell.spellsave ? buildRollModel({base: spell.spellhealing, mods: [[spelldmgmod]]}) : "",
-			dmg2roll:	spell.spelldamage2 ? buildRollModel({base: spell.spelldamage2, mods: [[spelldmgmod]]})
-				: spell.spelldamage && spell.spellhealing && !spell.spellsave ? buildRollModel({base: spell.spellhealing, mods: [[spelldmgmod]]}) : "",
+			dmg1on: !!spell._get("spelldamage") || !!spell._get("spellhealing"),
+			dmg2on: !!spell._get("spelldamage2"),
+			dmg1tag:	spell._get("spelldamage") || spell._get("spelldamage2") ? "dmg" : spell._get("spellhealing") ? "heal" : "",
+			dmg2tag:	spell._get("spelldamage2") ? "dmg" : spell._get("spelldamage") && spell._get("spellhealing") ? "heal" : "",
+			dmg1type:	spell._get("spelldamagetype") || (spell._get("spellhealing") ? "healing" : ""),
+			dmg2type:	spell._get("spelldamagetype2") || (spell._get("spelldamage") && spell._get("spellhealing") ? "healing" : ""),
+			dmg1roll:	spell._get("spelldamage") ? buildRollModel({base: spell._get("spelldamage"), mods: [[spelldmgmod]]})
+				: spell._get("spellhealing") && !spell._get("spellsave") ? buildRollModel({base: spell._get("spellhealing"), mods: [[spelldmgmod]]}) : "",
+			dmg2roll:	spell._get("spelldamage2") ? buildRollModel({base: spell._get("spelldamage2"), mods: [[spelldmgmod]]})
+				: spell._get("spelldamage") && spell._get("spellhealing") && !spell._get("spellsave") ? buildRollModel({base: spell._get("spellhealing"), mods: [[spelldmgmod]]}) : "",
 
-			crit1roll:	spell.spelldamage,
-			crit2roll:	spell.spelldamage2,
+			crit1roll:	spell._get("spelldamage"),
+			crit2roll:	spell._get("spelldamage2"),
 			atk1: buildRollModel(atkRoll),
 			atkMod:	buildDisplayMod(atkRoll),
-			description: spell.spelldescription,
+			description: spell._get("description"),
+			hldescription: spell._get("spellathigherlevels"),
 
-			dc: spell.spell_ability !== "spell"
-				? buildDisplayMod({mods: [[8], [char.stats.spell_dc_mod], [char.stats[`${spellAbility}_mod`]], [char.stats.pb]]})
-				: (char.stats.spell_save_dc || "10"),
-			saveAttr: spell.spellsave?.toLowerCase() || "",
-			// dmgType: spell.spelldamagetype ? `${spell.spelldamagetype} ${spell.spelldamagetype2 || ""}` : "",
+			dc: spell._get("spell_ability") !== "spell"
+				? buildDisplayMod({mods: [[8], [q.token.get("spell_dc_mod")], [q.token.get(`${spellAbility}_mod`)], [q.token.get("pb")]]})
+				: (q.token.get("spell_save_dc") || "10"),
+			saveAttr: spell._get("spellsave")?.toLowerCase() || "",
 			dmgOnFail: `$[[0]]`,
 			dmgOnSuccess: spell.lvl === "cantrip" ? "[[0]]" : `$[[1]]`,
 		}
@@ -23988,33 +25013,41 @@ function baseBARollTemplates () {
 			switchTargeting("off");
 			return d20.engine.nextTargetCallback = false;
 		} else if (!target) {
-			console.log("START TARGETING", vals);
+			// d20plus.ut.log("START TARGETING", vals);
 			switchTargeting("on");
 			d20.engine.nextTargetCallback = (t) => { d20plus.ba.getTarget(vals, t); };
 		} else if (vals._aoe) {
 			// console.log(target);
 		} else {
 			if (!target._model?.character) return d20plus.ut.sendHackerChat("Target the token that represents a PC or NPC", true);
-			const targetChar = await d20plus.ba.fetchChar(target._model);
-			const thisToken = d20plus.ut.getTokenById(d20plus.ba.chars[vals._thisId].lastTokenId);
-			const distance = d20plus.ut.getTokensDistanceText(target._model, thisToken);
+			const targetToken = d20plus.ba.tokens.ready(target);
+			const distance = d20plus.ut.getTokensDistanceText(target._model, vals._this._ref);
+			await targetToken.ready();
 
-			console.log("Getting target", vals);
+			// const targetChar = await d20plus.ba.fetchChar(target._model);
+			// const thisToken = d20plus.ut.getTokenById(d20plus.ba.chars[vals._thisId].lastTokenId);
+
+			d20plus.ut.log("Getting target", vals);
 			switchTargeting("off");
 			d20.engine.nextTargetCallback = false;
 
 			if (vals._save) {
-				d20plus.ba.currentToken = target._model;
-				d20plus.ba.singleSelected = target._model;
-				outputTemplate(getAbilityVals("save", vals._save, vals.dc));
+				// d20plus.ba.currentToken = target._model;
+				// d20plus.ba.singleSelected = target._model;
+				outputTemplate(getAbilityVals({ // "save", vals._save, vals.dc
+					id: "save",					// spec, attr, dc
+					flags: vals._save,
+					dc: vals.dc,
+					token: targetToken,
+				}));
 			}
 
 			vals.targetId = target._model.id;
 			vals.targetName = target._model.attributes.name;
-			vals.targetAc = targetChar.isNpc ? targetChar.npcStats.ac : targetChar.stats.ac;
+			vals.targetAc = targetToken.get("ac"); // targetChar.isNpc ? targetChar.npcStats.ac : targetChar.stats.ac;
 			vals.distance = distance;
-			outputTemplate(vals);
-			console.log("END TARGETING", vals);
+			setTimeout(i => { outputTemplate(vals) }, 500);
+			// d20plus.ut.log("END TARGETING", vals);
 		}
 	}
 
@@ -24043,29 +25076,103 @@ function baseBARollTemplates () {
 		})
 	}
 
-	d20plus.ba.makeRoll = (action, spec, flags) => {
+	d20plus.ba.getFallHeight = (vals) => {
+		const $fd = $(`
+			<div>
+				Enter fall height, ft.
+				<input type="number" style="width:45px;">
+			</div>
+		`).dialog({
+			title: "Fall damage",
+			autoopen: true,
+			close: () => { $fd.off(); $fd.dialog("destroy").remove() },
+			buttons: {
+				"Cancel": () => { $fd.off(); $fd.dialog("destroy").remove() },
+				"Roll": () => {
+					const $input = $fd.find("input");
+					const height = $input.val();
+					if (!isNaN(height)) {
+						const dmgRoll = Math.min(Math.abs(Math.floor(height / 10)), 20);
+						vals.dmg1roll = `${dmgRoll}d6[dmg${vals._thisId}]`;
+						vals.title = "Fall";
+						vals.subTitle = "Fall damage";
+						vals.dmg1tag = "dmg";
+						vals.dmg1type = `bludgeoning`;
+						vals.mod = `${height} ft.`;
+						outputTemplate(vals);
+					}
+					$fd.off(); $fd.dialog("destroy").remove();
+				},
+			},
+		})
+	}
+
+	d20plus.ba.getUpcastSpell = (vals, flags) => {
+		const lvls = flags.split(",");
+		const options = lvls.reduce((html, lvl) => {
+			const name = lvl === "0" ? "As ritual" : `Level ${lvl}`;
+			return `${html}<option value="${lvl}">${name}</option>`;
+		}, "")
+		const $uc = $(`
+			<div>
+				<h3>${vals.title}</h3>
+				${vals.hldescription ? `<p>${vals.hldescription}</p>` : ""}
+				Select spell slot to expend:
+				<select style="width:90px;">${options}</select>
+			</div>
+		`).dialog({
+			title: "Upcast spell",
+			autoopen: true,
+			close: () => { $fd.off(); $uc.dialog("destroy").remove() },
+			buttons: {
+				"Cancel": () => { $uc.off(); $uc.dialog("destroy").remove() },
+				"Roll": () => {
+					const $input = $uc.find("select");
+					const level = $input.val();
+					if (level === "0") {
+						vals._expend = false;
+					} else {
+						vals._expend.lvl = level;
+						if (vals._upcast && vals._upcast[level]?.dmg1roll) {
+							vals.dmg1roll = vals._upcast[level]?.dmg1roll;
+							if (vals._upcast[level]?.crit1roll) vals.crit1roll = vals._upcast[level]?.crit1roll;
+						}
+					}
+					if (vals._targeted && !vals._onSelf) d20plus.ba.getTarget(vals);
+					else outputTemplate(vals);
+					$uc.off(); $uc.dialog("destroy").remove();
+				},
+			},
+		})
+	}
+
+	d20plus.ba.makeRoll = (q) => { // action, spec, flags
 		const getTmplVals = {
 			roll: getAbilityVals,
 			attack: getAttackVals,
 			cast: getSpellVals,
-		}[action];
+			upcast: getSpellVals,
+		}[q.action];
 
-		const tmplVals = getTmplVals && getTmplVals(spec, flags);
+		const tmplVals = getTmplVals && getTmplVals(q); // spec, flags
 		if (!tmplVals) return d20plus.ba.rollError();
-		else if (flags === "concentration") d20plus.ba.getConcentrationDC(tmplVals);
-		else if (tmplVals._targeted) d20plus.ba.getTarget(tmplVals);
+		else if (q.flags === "concentration") d20plus.ba.getConcentrationDC(tmplVals);
+		else if (q.flags === "fall") d20plus.ba.getFallHeight(tmplVals);
+		else if (q.action === "upcast") d20plus.ba.getUpcastSpell(tmplVals, q.flags);
+		else if (tmplVals._targeted && !tmplVals._onSelf) d20plus.ba.getTarget(tmplVals);
 		else outputTemplate(tmplVals);
 	}
 
-	d20plus.ba.makeInfo = (action, spec, flags) => {
+	d20plus.ba.makeInfo = (q) => {
 		const getTmplVals = {
 			spell: getSpellVals,
 			attack: getAttackVals,
-		}[action];
+		}[q.action];
 
-		const tmplVals = getTmplVals && getTmplVals(spec, flags);
+		const tmplVals = getTmplVals && getTmplVals(q);
 		if (!tmplVals) return d20plus.ba.rollError();
 		tmplVals._modelType = "description";
+		tmplVals._expend = false; d20plus.ut.log("Outputting template", tmplVals);
 		outputTemplate(tmplVals);
 	}
 }
@@ -24076,6 +25183,8 @@ SCRIPT_EXTENSIONS.push(baseBARollTemplates);
 function baseBetterActions () {
 	d20plus.ba = d20plus.ba || {};
 
+	const peopleIcon = "https://img.icons8.com/ios-glyphs/30/multicultural-people.png";
+	const tabs = ["general", "stats", "skills", "attacks", "traits", "spells", "items", "animations"];
 	const abilities = ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"];
 	let skills = "acrobatics,animal_handling,arcana,athletics,deception,history,insight,intimidation,investigation,medicine,nature,perception,performance,persuasion,religion,sleight_of_hand,stealth,survival";
 
@@ -24091,321 +25200,144 @@ function baseBetterActions () {
 		})
 	}
 
-	const getVar = {
-		attack: function (param) {
-			const char = d20plus.ba.getSingleChar();
-			const attr = {
-				name: {pc: "atkname", npc: "name"},
-				range: {pc: "atkrange", npc: "attack_range"},
-				hasattack: {pc: "atkflag", npc: "attack_flag", q: {false: ["0"]}},
-				hasdamage: {get: (at) => char.isNpc ? !!at.attack_damage : !!at.dmgbase && at.dmgflag !== "0"},
-				hasdamage2: {get: (at) => char.isNpc ? !!at.attack_damage2 : !!at.dmg2base && at.dmg2flag !== "0"},
-				damagetype: {pc: "dmgtype", npc: "attack_damagetype"},
-				damagetype2: {pc: "dmg2type", npc: "attack_damagetype2"},
-				profbonus: {pc: "atkprofflag", q: {false: ["0"]}},
-			}[param];
-			const val = char.isNpc ? this[attr?.npc] : this[attr?.pc];
-			if (attr.get) return attr.get(this);
-			else if (!attr.q) return val;
-			else return attr.q.true?.includes(val) || (attr.q.false && !attr.q.false.includes(val));
-		},
-		spell: function (param) {
-			const char = d20plus.ba.getSingleChar();
-			const attr = {
-				hasattack: {get: (sp) => !!sp.spellattack && sp.spellattack !== "None"},
-				hasdamage: {get: (sp) => !!sp.spelldamage || !!sp.spelldamage2},
-				hasdamageorhealing: {get: (sp) => !!sp.spelldamage || !!sp.spelldamage2 || !!sp.spellhealing},
-				hassave: {get: (sp) => !!sp.spellsave && sp.spellsave !== ""},
-			}[param];
-			const val = char.isNpc ? this[attr?.npc] : this[attr?.pc];
-			if (attr.get) return attr.get(this);
-			else if (!attr.q) return val;
-			else return attr.q.true?.includes(val) || (attr.q.false && !attr.q.false.includes(val));
-		},
-		char: function (param) {
-			void 0;
-		},
-	}
-
-	const prepareResources = (char) => {
-		["other", "class"].forEach(r => {
-			const tag = char.stats[`${r}_resource_name`];
-			const num = char.stats[`${r}_resource`];
-			if (num !== undefined && tag) {
-				char.resources = char.resources || {};
-				char.resources[tag] = num;
-			}
-		});
-		Object.entries(char.raw.resources || {}).forEach(([id, r]) => {
-			["left", "right"].forEach(n => {
-				const tag = r[`resource_${n}_name`];
-				const num = r[`resource_${n}`];
-				if (num !== undefined && tag) {
-					char.resources = char.resources || {};
-					char.resources[tag] = num;
-				}
-			});
-		})
-	}
-
-	const prepareAttacks = (char) => {
-		char.attacks = {};
-		Object.entries(char.raw.attacks || {}).filter(([id, at]) => {
-			return !at.spellid;
-		}).forEach(([id, at]) => {
-			at.id = id;
-			char.attacks[id] = at;
-			char.attacks[id]._getVar = getVar["attack"];
-		});
-		char.isNpc && Object.entries(char.raw.actions || {}).filter(([id, at]) => {
-			return at.attack_flag === "on";
-		}).forEach(([id, at]) => {
-			at.id = id;
-			char.attacks[id] = at;
-			char.attacks[id]._getVar = getVar["attack"];
-		});
-	}
-
-	const prepareSpells = (char) => {
-		char.spells = {};
-		char.spells._byLvl = {};
-		/* Object.entries(char.raw.spells || {}).forEach(([lvl, list]) => {
-			Object.entries(list || {}).forEach(([id, spl]) => {
-				spl.id = id;
-				spl.lvl = lvl;
-				char.spells[id] = spl;
-				char.spells[id]._getVar = getVar["spell"];
-			})
-		}); */
-		Object.entries(char.raw.spells || {}).forEach(([id, spl]) => {
-			spl.id = id;
-			// spl.lvl = lvl;
-			char.spells[id] = spl;
-			char.spells[id]._getVar = getVar["spell"];
-			char.spells._byLvl[spl.lvl] = char.spells._byLvl[spl.lvl] || {};
-			char.spells._byLvl[spl.lvl][id] = char.spells[id];
-		})
-	}
-
-	const prepareStats = (stats, vals, tag) => {
-		if (tag === "hp") stats.hpMax = vals.max;
-		stats[tag] = vals.current;
-	}
-
-	const prepareTreeStats = (obj, lvls, attr, val) => {
-		lvls.forEach(lvl => {
-			obj[lvl] = obj[lvl] || {};
-			obj = obj[lvl];
-		});
-		obj[attr] = val;
-	}
-
-	const prepareChar = (char, charRef) => {
-		char.stats = {};
-		char.isNpc = false;
-		charRef.attribs?.models.forEach(prop => {
-			const [tag, type, id, ...attrPath] = prop.attributes.name.split("_");
-			const attr = attrPath.join("_");
-			const current = prop.attributes.current;
-			if (type === undefined) {
-				if (tag === "npc" && current === "1") char.isNpc = true;
-				else prepareStats(char.stats, prop.attributes, tag);
-			} else if (tag === "npc" && attr === "") {
-				char.npcStats = char.npcStats || {};
-				if (type === "name") char.name = {ch: prop.attributes.current, tk: char.name.tk, npc: char.name.ch};
-				else prepareStats(char.npcStats, prop.attributes, [type].concat(id || []).join("_"));
-			} else if (type === "slots") {
-				const lvl = tag.slice(-1);
-				prepareTreeStats(char, ["spellslots", lvl], id, current);
-			} else if (attr === "") {
-				if (prop.attributes.name === "charactersheet_type" && current === "npc") char.isNpc = true;
-				prepareStats(char.stats, prop.attributes, [tag].concat(type || [], id || []).join("_"));
-			} else if (tag === "repeating" && d20plus.ba.singleSelected) {
-				const [stype, lvl] = type.split("-");
-				if (stype === "spell") {
-					if (lvl) {
-						prepareTreeStats(char, ["raw", "spells", id], attr, current);
-						char.raw.spells[id].lvl = lvl;
-					} else {
-						char.stats = char.stats || {};
-						prepareStats(char.stats, prop.attributes, [type].concat(id || []).join("_"));
-					}
-				} else if (stype === "npcaction") {
-					prepareTreeStats(char, ["raw", "actions", id], attr, current);
-					if (lvl) char.raw.actions[id].actionType = lvl;
-				} else if (type === "attack") {
-					prepareTreeStats(char, ["raw", "attacks", id], attr, current);
-				} else if (type === "inventory") {
-					prepareTreeStats(char, ["raw", "items", id], attr, current);
-				} else if (["proficiencies", "tool", "resource"].includes(type)) {
-					const stype = type === "proficiencies" ? "proficiencies" : `${type}s`;
-					prepareTreeStats(char, ["raw", stype, id], attr, current);
-				} else if (["acmod", "damagemod", "savemod", "skillmod", "tohitmod"].includes(type)) {
-					const stype = type.split("mod")[0].replace("tohit", "attack");
-					prepareTreeStats(char, ["mods", stype, id], attr, current);
-				} else if (type === "npctrait" || type === "trait") {
-					prepareTreeStats(char, ["raw", "traits", id], attr, current);
-				}
-			} else if (type === "reporder") {
-				char.order = char.order || {};
-				char.order[attr] = current.split(",");
-			} else if (tag === "global" && id === "mod" && attr === "flag") {
-				prepareTreeStats(char, ["mods", "active"], type, current);
-			}
-		});
-		if (d20plus.ba.singleSelected) {
-			prepareSpells(char);
-			prepareAttacks(char);
-			prepareResources(char);
-		}
-		char.hp.val = char.hp.val || char.stats.hp || char.npcStats?.hpbase;
-		char.hp.max = char.hp.max || char.stats.hpMax;
-		return char;
-	}
-
-	const prepareAllChars = async () => {
-		for (const t of d20plus.ba.tTokens) {
-			await d20plus.ba.fetchChar(t);
-		}
-	}
-
 	const buildGroup = (name, subtree) => {
-		d20plus.ba.tree.rolls.push({
+		subtree && d20plus.ba.tree.rolls.push({
 			name,
 			type: "head",
 			items: subtree,
 		});
+		return subtree;
 	}
 
 	const buildAbilities = () => {
 		const subtree = abilities.map(ab => {
+			const id = ab.replaceAll("-", "_");
 			return {
-				name: i18n(ab.replaceAll("-", "_"), ab.toSentenceCase()),
-				type: "selector",
+				name: i18n(id, ab.toSentenceCase()),
+				type: `selector`,
 				items: [{
 					name: "Roll plain check",
-					icon: "🗹",
+					icon: "Check",
 					action: "roll",
 					spec: "ability",
 					flags: ab,
 				}, {
 					name: "Save",
+					icon: "Save",
 					action: "roll",
 					spec: "save",
 					flags: ab,
 				}],
 			}
 		});
-		buildGroup("Abilities", subtree);
+		return buildGroup("Abilities", subtree);
 	}
 
 	const buildSkills = () => {
-		buildGroup("Skills", skills.map(sk => {
+		const token = d20plus.ba.tokens.getCurrent();
+		return buildGroup("Skills", skills.map(sk => {
+			const id = sk.replaceAll("-", "_");
+			const prof = token
+				? (((!token.character.isNpc && token.get(`${id}_prof`) && token.get(`${id}_prof`) !== "0")
+					|| (token.character.isNpc && token.get(`${id}_base`)))
+					? "active"
+					: "inactive")
+				: "";
 			return {
-				name: i18n(sk.replaceAll("-", "_"), sk.toSentenceCase().replaceAll("_", " ")),
+				name: i18n(id, sk.toSentenceCase().replaceAll("_", " ")),
 				action: "roll",
 				spec: "skill",
+				type: prof,
 				flags: sk,
 			};
 		}));
 	}
 
-	const buildSpellVariants = (lvl, id) => {
+	const buildSpellVariants = (spell, token) => {
 		const items = [];
-		const char = d20plus.ba.getSingleChar();
-		const ritual = char.raw.spells[id]?.spellritual;
-		const upcast = !isNaN(lvl)
-			&& char.raw.spells[id].spellathigherlevels;
-		ritual && items.push({
-			name: "As ritual",
-			action: "cast",
-			spec: id,
-		});
+		const ritual = spell?._get("spellritual");
+		const lvl = Number(spell.lvl);
+		const upcast = !isNaN(spell.lvl);
+		ritual && items.push(0);
 		upcast && [...Array(9 - lvl)].map((k, i) => {
 			const upLvl = i + lvl + 1;
-			const hasSlots = char.isNpc || char?.spellslots[upLvl].total;
-			hasSlots && items.push({
-				name: `Upcast at lvl ${upLvl}`,
-				action: "cast",
-				tag: `${upLvl}`,
-				spec: id,
-			});
+			const hasSlots = token.get("npc") || token.character.sheet.spellSlots.max(upLvl);
+			hasSlots && items.push(upLvl);
 		});
-		return items.length ? items : null;
+		return items.length ? items.join(",") : null;
 	}
 
 	const buildSpellSlots = (char, lvl) => {
-		if (char.spellslots && char.spellslots[lvl] && char.spellslots[lvl].total) {
-			const has = Number(char.spellslots[lvl].expended) || 0;
-			const total = Number(char.spellslots[lvl].total) || 0;
-			if (char.spellslots[lvl].total <= 4 && has >= 0) {
+		if (char.spellSlots.max(`${lvl}`)) {
+			const has = Number(char.spellSlots.current(`${lvl}`)) || 0;
+			const total = Number(char.spellSlots.max(`${lvl}`)) || 0;
+			if (char.spellSlots.max(`${lvl}`) <= 4 && has >= 0) {
 				return [...Array(total)].reduce((k, s, i) => {
 					return i <= has - 1 ? `${k}⬤` : `${k}◎`;
 				}, "");
-			} else return `${has}/${char.spellslots[lvl].total}`;
+			} else return `${has}/${char.spellSlots.max(`${lvl}`)}`;
 		}
 	}
 
 	const buildSpells = () => {
 		const subtree = [];
+		const token = d20plus.ba.tokens.getCurrent();
+		const shouldPrepare = ["Cleric", "Druid", "Paladin", "Wizard"].includes(token?.get("class"));
+		if (!token) return false;
 		for (let i = 0; i <= 9; i++) {
 			const lvl = i || "cantrip";
-			const char = d20plus.ba.getSingleChar();
-			const shouldPrepare = ["Cleric", "Druid", "Paladin", "Wizard"].includes(char.stats.class);
-			const spells = char?.spells?._byLvl[lvl];
-			const items = Object.keys(spells || {}).map(id => {
-				const spell = spells[id];
-				const isAttack = spell.spellattack
-					&& spell.spellattack !== "None";
+			const spells = token.character?.sheet.getSpells(`${lvl}`);
+			const items = spells.map(spell => {
+				const isAttack = spell._has("atk");
 				const hasVariants = (spell.spellathigherlevels
 					|| spell.spellritual)
 					&& i !== "cantrip";
-				const variants = hasVariants ? buildSpellVariants(lvl, id) : null;
-				const unprepared = !shouldPrepare || !i || spell.spellprepared === "1" ? "" : " unprepared";
+				const variants = i !== "cantrip" ? buildSpellVariants(spell, token) : null;
+				const unprepared = (!i && " ") || (spell._has("active") ? " active" : " inactive");
 				return {
-					name: spell.spellname,
+					name: spell._get("name"),
 					type: `spellaction selector${unprepared} ${variants ? "variable" : ""}`,
 					items: [{
 						name: "Show description",
 						icon: "🕮",
 						action: "spelldescription",
-						spec: id,
+						spec: spell._id,
 					}, {
 						name: "Cast spell",
 						icon: isAttack ? "⚔" : "⚕",
 						action: "cast",
-						spec: id,
+						spec: spell._id,
 					}].concat(variants ? {
+						name: "Cast at different level",
 						icon: "↪",
-						type: "parameters",
-						items: variants,
+						action: "upcast",
+						spec: spell._id,
+						flags: variants,
 					} : []),
 				}
 			});
 			items.length && subtree.push({
-				resource: buildSpellSlots(char, lvl),
+				resource: buildSpellSlots(token.character?.sheet, lvl),
 				name: !i ? "Cantrips" : `Level ${lvl}`,
 				type: "head",
 				items,
 			});
-			!items.length && (char.spellslots || {})[lvl]?.total && subtree.push({
-				resource: buildSpellSlots(char, lvl),
+			!items.length && token.character?.sheet.spellSlots?.max(`${lvl}`) && subtree.push({
+				resource: buildSpellSlots(token.character?.sheet, lvl),
 				name: `Level ${lvl}`,
 				type: "head",
 			})
 		}
-		buildGroup("Spells", subtree);
+		return buildGroup("Spells", subtree);
 	}
 
 	const buildAttacks = () => {
-		const char = d20plus.ba.getSingleChar();
-		buildGroup("Attacks", Object.entries(char.attacks || {}).filter(([id, at]) => {
-			return !at.spellid;
-		}).map(([id, at]) => {
-			const rangeField = char.isNpc ? at.attack_range : at.atkrange;
-			const isCast = !!at.saveflag || at.atkflag === "0";
-			const isRanged = !isCast && ((char.isNpc && at.attack_type === "Ranged")
-				|| (!char.isNpc && rangeField?.includes("/")));
+		const token = d20plus.ba.tokens.getCurrent();
+
+		return buildGroup("Attacks", token?.get("attacks").map(at => {
+			const rangeField = at._get("range");
+			const isCast = !at._has("atk");
+			const isRanged = at._has("range");
 			const isVersatile = !isCast && rangeField?.includes("[V]");
 			const isOffhandable = !isCast && rangeField?.includes("[O]");
 			const types = [
@@ -24415,50 +25347,95 @@ function baseBetterActions () {
 				isVersatile ? " versatile" : "",
 			].join("");
 			return {
-				name: at.atkname || at.name,
+				name: at._get("name"),
 				type: `atkaction selector${types}`,
 				items: [{
+					name: "Show description",
+					icon: "🕮",
+					action: "attackdescription",
+					spec: at._id,
+				}, {
 					name: "Attack",
 					icon: isCast ? "⚕" : isRanged ? "➹" : isVersatile ? "🗡🖑🖑" : "🗡",
 					action: "attack",
-					spec: id,
+					spec: at._id,
 				}].concat(isOffhandable ? {
 					name: "Attack with offhand",
 					icon: "⚔",
 					action: "attack",
-					spec: id,
+					spec: at._id,
 					flags: "O",
 				} : []).concat(isVersatile ? {
 					name: "Attack with single hand (versatile)",
 					icon: `🗡🖑`,
 					action: "attack",
-					spec: id,
+					spec: at._id,
 					flags: "V",
-				} : []).concat({
-					name: "Show description",
-					icon: "🕮",
-					action: "attackdescription",
-					spec: id,
-				}),
+				} : []),
 			}
 		}));
 	}
 
-	const buildActions = () => {
-		void 0;
+	const buildTraits = () => {
+		const token = d20plus.ba.tokens.getCurrent();
+
+		return buildGroup("Attacks", token?.get("traits").map(tr => {
+			const canBeUsed = tr._has("uses") || tr._has("action") || !isNaN(tr.lvl);
+			const usable = canBeUsed ? "active" : "inactive";
+			return {
+				name: tr._get("name"),
+				type: `spellaction selector ${usable}`,
+				items: [{
+					name: "Show description",
+					icon: "🕮",
+					action: "spelldescription",
+					spec: tr._id,
+				}].concat(canBeUsed ? {
+					name: "Use trait",
+					icon: "⚕",
+					action: "cast",
+					spec: tr._id,
+				} : []),
+			};
+		}));
+	}
+
+	const buildItems = () => {
+		const token = d20plus.ba.tokens.getCurrent();
+
+		return buildGroup("Items", token?.get("items").map(it => {
+			const equipped = it._has("active") ? "active" : "inactive";
+			return {
+				name: it._get("name"),
+				type: `spellaction selector ${equipped}`,
+				items: [{
+					name: "Show description",
+					icon: "🕮",
+					action: "spelldescription",
+					spec: it._id,
+				}].concat(!it._id ? { // wrong condition
+					name: "Use trait",
+					icon: "⚕",
+					action: "cast",
+					spec: it._id,
+				} : []),
+			};
+		}));
 	}
 
 	const addCommonRolls = () => {
 		d20plus.ba.tree.rolls.push(
 			{name: "Initiative", action: "roll", spec: "roll", flags: "initiative"},
 			{name: "Concentration", action: "roll", spec: "roll", flags: "concentration"},
+			{name: "Fall damage", action: "roll", spec: "roll", flags: "fall"},
 		);
-		if (!d20plus.ba.singleSelected
-			|| !(d20plus.ba.getSingleChar()?.isNpc === false)) return;
+		if (!d20plus.ba.current.singleChar
+			|| d20plus.ba.tokens.getCurrent()?.get("npc")) return;
 		d20plus.ba.tree.rolls = d20plus.ba.tree.rolls.concat([
 			{name: "Death save", action: "roll", spec: "roll", flags: "death save|10"},
 			{name: "Hit dice", action: "roll", spec: "roll", flags: "hit dice"},
 		]);
+		return d20plus.ba.tree.rolls.filter(roll => roll.action === "roll");
 	}
 
 	const buildTag = (title, txt, close) => {
@@ -24469,7 +25446,26 @@ function baseBetterActions () {
 		} else return "";
 	}
 
-	const buildHtml = (tree) => {
+	const buildModsHtml = (tab) => {
+		const token = d20plus.ba.tokens.get(d20plus.ba.current.singleChar?.id);
+		const mods = [
+			{label: "ADV", id: "advantage", title: "Toggle advantage"},
+			{label: "DIS", id: "disadvantage", title: "Toggle disadvantage"},
+			{label: "GM", id: "togm", title: "Send to GM only"},
+			{label: "&lt;l", id: "filter", title: "Filter items", except: ["general", "stats"]},
+		];
+		if (token?.mods[tab].filter) d20plus.ba.$dom.lists[tab].addClass("filtered");
+		else d20plus.ba.$dom.lists[tab].removeClass("filtered");
+		return `<li class="mods ${tab}">${mods.reduce((res, mod) => {
+			if (mod.except?.includes(tab)) return res;
+			const checked = token?.mods[tab][mod.id] ? ` checked="on"` : "";
+			return `${res}<label class="${mod.id}" title="${mod.title}">
+				<input type="checkbox"${checked}><span>${mod.label}</span>
+			</label>`;
+		}, "")}</li>`;
+	}
+
+	const buildHtml = (tree, mod) => {
 		tree = tree || d20plus.ba.tree.rolls;
 		return tree.reduce((html, it) => {
 			if (it.items) {
@@ -24483,106 +25479,100 @@ function baseBetterActions () {
 						${buildHtml(it.items)}
 					</ul>
 				</li>`;
-			} else if (it.type === "mods") {
-				const willBe = `${html}
-				<li class="head hasSub">
-					<span><span style="font-family:Pictos">y</span> Mods</span>
-					<ul class="mods submenu">
-						<li><label><input type="checkbox"> Token name</label></li>
-						<li><label><input type="checkbox"> Char name</label></li>
-						<li class="last-in-group"><label><input type="checkbox"> Hide name</label></li>
-						<li><label class="mod advantage"><input type="checkbox"> Advantage</label></li>
-						<li class="last-in-group"><label class="mod disadvantage"><input type="checkbox"> Disadvantage</label></li>
-						<li><label><input type="checkbox"> To GM</label></li>
-						<li class="last-in-group"><label><input type="checkbox"> To self</label></li>
-						<li class="last-in-group"><label><input type="checkbox"> Auro-roll damage</label></li>
-						<li><label><input type="checkbox"> Hide mods</label></li>
-					</ul>
-				</li>`;
-				return `${html}
-				<li class="head hasSub">
-					<span><span style="font-family:Pictos">y</span> Mods</span>
-					<ul class="mods submenu">
-						<li><label class="mod advantage"><input type="checkbox"> Advantage</label></li>
-						<li class="last-in-group"><label class="mod disadvantage"><input type="checkbox"> Disadvantage</label></li>
-						<li><label class="mod togm"><input type="checkbox" ${d20plus.ba.singleSelected?.attributes?.layer === "gmlayer" ? "checked" : ""}> To GM</label></li>
-					</ul>
-				</li>`;
 			} else {
 				const dataAttribs = `data-action="${it.action}" data-spec="${it.spec}"${it.flags ? ` data-flags="${it.flags}"` : ""}`;
-				return `${html}<li ${dataAttribs}${it.icon || it.name?.length > 15 ? ` title="${it.name || ""}"` : ""}>
+				const typeAttribs = it.type ? `class="${it.type}" ` : "";
+				return `${html}<li ${typeAttribs}${dataAttribs}${it.icon || it.name?.length > 15 ? ` title="${it.name || ""}"` : ""}>
 					${it.resource ? `<span><i>${it.resource}</i>` : ""}
 					${it.icon || it.name}${it.resource ? `</span>` : ""}
 				</li>`;
 			}
-		}, "");
+		}, mod ? buildModsHtml(mod) : "");
 	}
 
 	const buildStatsHtml = () => {
-		const char = d20plus.ba.getSingleChar();
+		const token = d20plus.ba.tokens.getCurrent();
+		if (!token || !token.character?.sheet.data.stats) return;
 
-		const baseStats = (char.isNpc ? [
-			buildTag("HP:", `${char.hp.val || ""}&nbsp;${buildTag("/", char.hp.max, " ")}`),
-			buildTag("(", char.npcStats.hpformula, ")"),
+		const baseStats = (token.get("npc") ? [
+			buildTag("HP:", `${token.get("hp")}&nbsp;${buildTag("/", token.get("hp_max"), " ")}`),
+			buildTag("(", token.get("hpformula"), ")"),
 			"<br>",
-			buildTag("AC:", char.npcStats.ac),
-			buildTag("", char.npcStats.actype, ""),
-			buildTag("CR:", char.npcStats.challenge),
-			buildTag("Speed", char.npcStats.speed),
+			buildTag("AC:", token.get("ac")),
+			buildTag("", token.get("actype"), ""),
+			buildTag("CR:", token.get("challenge")),
+			buildTag("Speed", token.get("speed")),
 		] : [
-			buildTag("HP:", `${char.hp.val}&nbsp;${buildTag("/", char.hp.max, " ")}`),
-			buildTag("AC:", char.stats.ac),
-			buildTag("PB", char.stats.pb),
-			buildTag("Speed", char.stats.speed),
+			buildTag("HP:", `${token.get("hp")}&nbsp;${buildTag("/", token.get("hp_max"), " ")}`),
+			buildTag("AC:", token.get("ac")),
+			buildTag("PB", token.get("pb")),
+			buildTag("Speed", token.get("speed")),
 		]).concat([
-			buildTag("Initiative", char.stats.initiative_bonus),
-			buildTag("Passive Perception", char.isNpc ? (char.stats.passive || char.stats.passive_wisdom) : char.stats.passive_wisdom),
+			buildTag("Initiative", token.get("initiative_bonus")),
+			buildTag("Passive Perception", token.get("passive_perception")),
 		]).join(" ");
 
 		const baseAbilities = abilities.map(a => {
-			const rawMod = char.stats[`${a}_mod`];
-			const mod = rawMod !== undefined ? (rawMod > 0 ? `+${rawMod}` : rawMod) : "";
-			return buildTag(`${a.slice(0, 3).toUpperCase()}:`, `${char.stats[a] || ""}${buildTag(" (", mod, ")")}`);
+			const mod = token.get(`${a}_mod`);
+			return buildTag(`${a.slice(0, 3).toUpperCase()}:`, `${token.get(a) || ""}${buildTag(" (", mod, ")")}`);
 		}).join(" ");
-		const spellStats = Object.keys(char.spells || {}).length ? `<li>${[
-			buildTag("Caster Level", char.stats.caster_level),
-			buildTag("Spell Save DC", char.stats.spell_save_dc),
-			buildTag("Spell Attack Bonus", char.stats.spell_attack_bonus),
+		const spellStats = token.get("spells").length ? `<li>${[
+			buildTag("Caster Level", token.get(`caster_level`)),
+			buildTag("Spell Save DC", token.get(`spell_save_dc`)),
+			buildTag("Spell Attack Bonus", token.get(`spell_attack_bonus`)),
 		].join(" ")}</li>` : "";
 
-		const classDetails = char.stats.class_display
+		const classDetails = token.get("class_display")
 			?.split(" ").map(c => isNaN(c) && c ? i18n(c.toLowerCase(), c) : c)
 			.join(" ") || "";
-		const currency = !char.isNpc ? `<li>${["cp", "sp", "ep", "gp", "pp"].map(c => {
-			return buildTag(`${c.toUpperCase()}:`, char.stats[c] || "0");
-		}).join(" ")}</li>` : "";
 
-		const npcDetails = char.isNpc ? [
-			buildTag("Speaks:", char.npcStats.languages),
-			buildTag("Senses:", char.npcStats.senses),
-			buildTag("Vulnerable to:", char.npcStats.vulnerabilities),
-			buildTag("Resists:", char.npcStats.resistances),
-			buildTag("Immune to:", char.npcStats.condition_immunities),
-			buildTag("Immunities:", char.npcStats.immunities),
-		].join(" ") : "";
+		const charDetails = token.get("npc") ? [
+			buildTag("Speaks:", token.get("languages")),
+			buildTag("Senses:", token.get("senses")),
+			buildTag("Vulnerable to:", token.get("vulnerabilities")),
+			buildTag("Resists:", token.get("resistances")),
+			buildTag("Immune to:", token.get("condition_immunities")),
+			buildTag("Immunities:", token.get("immunities")),
+		].join(" ") : ["cp", "sp", "ep", "gp", "pp"].map(c => {
+			return buildTag(`${c.toUpperCase()}:`, token.get(c) || "0");
+		}).join(" ");
 
 		return `
-			<li><span style="font-size:15px; font-weight: bold;line-height: 16px;width:110px">${char.name.ch || char.name.tk}</span>
-				<span style="float: right">
-					<button data-action="speakas" title="Speak as character">w</button>
-					<button data-action="opensheet" title="Open character sheet">U</button>
-					<button data-action="openchar" title="Open character settings">x</button><br>
-				</span>
-				<span>${char.isNpc ? char.npcStats.type : `${char.stats.race_display}, ${classDetails}`}</span>
-			</li><li>${baseStats}</li><li>${baseAbilities}</li>${spellStats}${currency}
-			${npcDetails ? `<li>${npcDetails}</li>` : ""}
+			<li><span>${token.get("npc") ? token.get("type") : `${token.get("race_display")}, ${classDetails}`}</span></li>
+			<li>${baseStats}</li><li>${baseAbilities}</li>${spellStats}
+			${charDetails ? `<li>${charDetails}</li>` : ""}
 		`;
 	}
 
-	const buildSheet = () => {
-		d20plus.ba.$dom.sheet.info.html(buildStatsHtml());
-		d20plus.ba.$dom.sheet.name.html(d20plus.ba.getSingleChar()?.name.tk);
-		d20plus.ba.$dom.sheet.general.html(buildHtml(d20plus.ba.tree.rolls[1].items));
+	const buildBasicRollsHtml = () => {
+		const stats = d20plus.ba.current.singleChar ? buildStatsHtml() : `
+			<li style="width: 220px;">Group selected:</li>
+			${d20plus.ba.current.charTokens?.reduce((list, t) => `${list}<li>${t.attributes.name}</li>`, "")}
+		`;
+		["general", "stats", "skills"].forEach((tab, i) => {
+			d20plus.ba.$dom.tabs[tab].toggle(true);
+		});
+		d20plus.ba.$dom.infos.all.filter(":not([data-pane=animations])").html(stats);
+		d20plus.ba.$dom.lists.general.html(buildHtml(addCommonRolls(), "general"));
+		d20plus.ba.$dom.lists.stats.html(buildHtml(buildAbilities(), "stats"));
+		d20plus.ba.$dom.lists.skills.html(buildHtml(buildSkills(), "skills"));
+	}
+
+	const buildAdvRollsHtml = () => {
+		[
+			{id: "attacks", callback: buildAttacks},
+			{id: "traits", callback: buildTraits},
+			{id: "spells", callback: buildSpells},
+			{id: "items", callback: buildItems},
+		].forEach(tab => {
+			const list = tab.callback();
+			list?.length && d20plus.ba.$dom.tabs[tab.id].toggle(true);
+			d20plus.ba.$dom.lists[tab.id].html(buildHtml(list, tab.id));
+			const active = d20plus.ba.$dom.lists[tab.id].find(".active").length;
+			const inactive = d20plus.ba.$dom.lists[tab.id].find(".inactive").length;
+			if (active && inactive) d20plus.ba.$dom.lists[tab.id].addClass("uneven");
+			else d20plus.ba.$dom.lists[tab.id].removeClass("uneven");
+		})
 	}
 
 	const getAmConfig = () => {
@@ -24593,48 +25583,39 @@ function baseBetterActions () {
 		return d20plus.ba.enabled;
 	}
 
-	const getActions = (action, token, spec, flags) => {
-		if (action === "animation") {
-			d20plus.anim.animator.startAnimation(token, spec);
-		} else if (["spelldescription", "attackdescription"].includes(action)) {
-			d20plus.ba.makeInfo(action === "spelldescription" ? "spell" : "attack", spec);
-		} else {
-			d20plus.ba.makeRoll(action, spec, flags);
-		}
-	};
-
 	const amExecute = async (action, spec, flags) => {
-		const selected = action === "animation"
-			? d20.engine.selected().filter(it => it.type === "image")
-			: d20.engine.selected().filter(it => it._model?.character);
-		const isMultiple = selected.length > 1;
-		const singleAction = !["animation"].includes(action)
-			&& !["ability", "save", "skill", "initiative", "roll"].includes(spec);
-		const iterateSelected = (token) => {
-			d20plus.ba.currentToken = !d20plus.ba.currentToken && token._model;
-			return ["initiative"].includes(spec) || ["animation"].includes(action);
-		}
-		d20plus.ut.log({action, spec, singleAction, iterateSelected});
-		if (!isMultiple || !singleAction) {
-			d20plus.ba.executing = true;
-			const tokens = [...selected];
-			d20.engine.unselect();
-			tokens.forEach(t => {
-				iterateSelected(t) && d20.engine.select(t);
-				getActions(action, t._model, spec, flags);
-				iterateSelected(t) && d20.engine.unselect();
-			});
-			// if (!iterateSelected) tokens.forEach(t => d20.engine.select(t));
-			d20plus.ba.executing = false;
-		} else {
-			d20plus.ba.rollError();
-		}
+		const appliedTo = action !== "animation"
+			? d20plus.ba.current.charTokens
+			: d20plus.ba.current.imgTokens;
+		appliedTo.forEach(t => {
+			const b20Model = d20plus.ba.tokens.get(t.id || t._model.id);
+			if (action === "animation") {
+				d20plus.anim.animator.startAnimation(b20Model._object, spec);
+			} else if (["spelldescription", "attackdescription"].includes(action)) {
+				d20plus.ba.makeInfo({
+					token: b20Model,
+					action: action === "spelldescription" ? "spell" : "attack",
+					id: spec,
+				});
+			} else {
+				d20plus.ba.makeRoll({
+					token: b20Model,
+					action,
+					id: spec,
+					flags,
+				});
+			}
+		});
 	}
 
 	const amDo = (action) => {
-		const amCharId = d20plus.ba.getSingleChar()?.id;
-		if (action === "opensheet") d20plus.ba.tTokens[0].character.view.showDialog();
-		else if (action === "openchar") d20plus.ba.showDialog();
+		const amCharId = d20plus.ba.tokens.getCurrent()?.character.id;
+		if (action === "opensheet") d20plus.ba.tokens.getCurrent().character._ref.view.showDialog();
+		else if (action === "openchar") void 0;
+		else if (action === "findtoken") d20plus.ba.tokens.focusCurrent();
+		else if (action === "close") d20plus.ba.$dom.menu.toggle(false);
+		else if (action === "collapsew") d20plus.ba.$dom.menu.toggleClass("wcollapsed");
+		else if (action === "expandh") d20plus.ba.$dom.menu.toggleClass("hexpanded");
 		else if (action === "speakas") {
 			const $speagingas = $("#speakingas");
 			const [type, speakAsId] = $speagingas.val().split("|");
@@ -24645,43 +25626,114 @@ function baseBetterActions () {
 
 	const amShow = async () => {
 		if (d20plus.ba.executing) return;
-		d20plus.ba.tree = {rolls: [{type: "mods"}], stats: [], anims: []};
-		d20plus.ba.$dom.buttons.anim.toggle(false);
-		d20plus.ba.$dom.buttons.roll.toggle(false);
-		d20plus.ba.$dom.buttons.stat.toggle(false);
-		if (d20plus.ba.hasChars) {
-			if (!d20plus.ba.singleSelected) prepareAllChars();
-			else await d20plus.ba.fetchChar();
-			buildAbilities();
-			buildSkills();
-			if (d20plus.ba.singleSelected) {
-				buildAttacks();
-				buildSpells();
-				buildActions();
-				buildSheet();
-				d20plus.ba.$dom.statsList.html(buildStatsHtml());
-				d20plus.ba.$dom.buttons.stat.toggle(true);
+		d20plus.ba.tree = {rolls: [], stats: [], anims: []};
+		tabs.forEach((tab, i) => {
+			d20plus.ba.$dom.tabs[tab].toggle(false);
+		});
+		d20plus.ba.$dom.title.img.attr("src", peopleIcon);
+		d20plus.ba.$dom.title.img.removeAttr("title");
+		d20plus.ba.$dom.title.img.css({filter: "contrast(0.1)", cursor: "unset"});
+		if (d20plus.ba.current.hasChars) {
+			buildBasicRollsHtml();
+			if (d20plus.ba.current.singleChar) {
+				const token = d20plus.ba.tokens.getCurrent();
+				if (token) {
+					d20plus.ut.log("Drawing menu for", token.get("name"));
+					buildAdvRollsHtml();
+					d20plus.ba.$dom.title.name.text(token.get("name") || "Token");
+					d20plus.ba.$dom.title.img.attr("src", token.get("image"));
+					d20plus.ba.$dom.title.img.attr("title", token.get("name"));
+					d20plus.ba.$dom.title.img.css({filter: "unset", cursor: "pointer"});
+				}
+			} else {
+				d20plus.ba.$dom.title.name.text("Group");
 			}
-			addCommonRolls();
-			d20plus.ba.$dom.rollsList.html(buildHtml());
-			d20plus.ba.$dom.buttons.roll.toggle(true);
 		}
-		if (d20plus.ba.hasAnimatable) {
+		if (d20plus.ba.current.hasImages) {
 			buildAnimations();
-			d20plus.ba.$dom.animationsList.html(buildHtml(d20plus.ba.tree.anims));
-			if (d20plus.ba.tree.anims.length) d20plus.ba.$dom.buttons.anim.toggle(true);
+			d20plus.ba.$dom.lists.animations.html(buildHtml(d20plus.ba.tree.anims));
+			if (d20plus.ba.tree.anims.length) d20plus.ba.$dom.tabs.animations.toggle(true);
 		}
-		d20plus.ba.$dom.buttons.toggle(true);
-		if (d20plus.ba.$dom.r20toolbar.css("display") === "none") {
-			d20plus.ba.$dom.r20toolbar.toggle(true);
-			d20plus.ba.$dom.r20tokenActions.css("display", "none");
-		} else {
-			d20plus.ba.$dom.r20tokenActions.css("display", "inline-block");
-		}
+		d20plus.ba.$dom.menu.find(".ba-tabs li.active:visible").length
+			|| d20plus.ba.$dom.menu.find(".ba-tabs li:visible").get(0)?.click();
 	}
 
-	const amHide = () => {
-		d20plus.ba.$dom.buttons.toggle(false);
+	const amEnterPortal = () => {
+		const actor = d20plus.ba.current.lastSelectedToken;
+		const mover = d20.engine.selected()[0]?._model;
+		const token = d20plus.ba.tokens.get(actor?.id);
+
+		d20plus.ba.current.lastSelectedToken = false;
+		d20.engine.unselect();
+
+		const adjacent = (actor
+			&& Math.abs(mover.attributes.top - actor.attributes.top) <= (actor.attributes.height + mover.attributes.height / 2)
+			&& Math.abs(mover.attributes.left - actor.attributes.left) <= (actor.attributes.width + mover.attributes.width / 2)
+		);
+
+		if (adjacent) {
+			const receiver = d20plus.ut.getTokenById(mover.attributes.custom_portal);
+			if (receiver) {
+				const layer = actor.attributes.layer;
+				actor.save({
+					top: receiver.attributes.top,
+					left: receiver.attributes.left,
+					layer: is_gm ? "gmlayer" : "objects",
+				});
+				d20.engine.centerOnPoint(receiver.attributes.left || 0, receiver.attributes.top || 0);
+				setTimeout(() => {
+					// d20.engine.unselect();
+					actor.save({layer});
+					// token?.find();
+					setTimeout(() => token?.select(), 600);
+				}, 600);
+			}
+		}
+
+		setTimeout(() => {
+			d20.engine.unselect();
+		}, 400);
+	}
+
+	const amShowPortalConnection = () => {
+		const entry = d20.engine.selected()[0]?._model;
+		const exit = d20plus.ut.getTokenById(entry.attributes.custom_portal);
+		const author = d20.Campaign.players.models.find(p => p.id !== d20_player_id)?.id;
+
+		if (!exit || !author) return;
+		d20plus.ba.current.showingPortals = author;
+
+		d20.engine.receiveMeasureUpdate({
+			"x": entry.attributes.left,
+			"y": entry.attributes.top,
+			"to_x": exit.attributes.left,
+			"to_y": exit.attributes.top,
+			"player": author,
+			"pageid": d20.Campaign.activePage()?.id,
+			"currentLayer": "gmlayer",
+			"waypoints": [],
+			"sticky": 0,
+			"flags": 0,
+			"hide": false,
+			"action": "line",
+			"color": "#c9c9c9",
+			"type": "measuring",
+			"time": Number(new Date()),
+		});
+	};
+
+	const amResetPortalConnection = () => {
+		d20.engine.receiveEndMeasure({player: d20plus.ba.current.showingPortals});
+		d20plus.ba.current.showingPortals = false;
+	}
+
+	d20plus.ba.menu = {
+		refresh: () => {
+			amShow();
+		},
+		fetchCharLegacy: (...params) => {
+			prepareChar(...params);
+		},
 	}
 
 	d20plus.ba.rollError = () => {
@@ -24775,112 +25827,165 @@ function baseBetterActions () {
 		}, needsOpening ? 2000 : 0);
 	}
 
-	d20plus.ba.fetchChar = async (token) => {
-		const tokenRef = token || d20plus.ba.tTokens[0];
-		const charRef = tokenRef?.character;
-		const isUp2Date = d20plus.ba.chars[charRef.id]?.lastGroup === d20plus.ba.thisGroup;
-		if (!charRef || isUp2Date) return;
-
-		const name = {ch: charRef?.attributes.name, tk: tokenRef?.attributes.name};
-		const hp = {val: tokenRef.attributes.bar1_value, max: tokenRef.attributes.bar1_max};
-		await d20plus.ut.fetchCharAttribs(charRef);
-
-		d20plus.ba.chars[charRef.id] = {id: charRef.id, lastTokenId: tokenRef.id, name, hp};
-		return prepareChar(d20plus.ba.chars[charRef.id], charRef);
-	}
-
-	d20plus.ba.getSingleChar = (token) => {
-		const ref = token || d20plus.ba.singleSelected || d20plus.ba.currentToken;
-		const id = ref?.character?.id;
-		return id && d20plus.ba.chars[id];
-	}
-
-	d20plus.ba.showDialog = () => {
-		d20plus.ba.$dom.sheet.dialog("open");
-	}
-
 	d20plus.ba.initBetterActions = () => {
-		d20plus.ba.chars = {};
+		const $createMenu = $(d20plus.html.bActionsMenu);
+		d20plus.ba.initCharacters();
 		skills = i18n("skills-list", skills).split(",");
 
 		d20plus.ba.$dom = {
-			buttons: $(d20plus.html.bActionsButtons),
-			sheet: $(d20plus.ba.dialogHtml).dialog({
-				title: `<span class="char-name"></span>`,
-				autoOpen: false,
-				width: 500,
-				height: 450,
-			}),
+			panel: $createMenu,
+			menu: $createMenu.find(".ba-menu"),
+			tabs: {all: $createMenu.find(`[data-tab]`)},
+			lists: {all: $createMenu.find(`[data-list]`)},
+			infos: {all: $createMenu.find(`[data-pane]`)},
+			title: {name: $createMenu.find(`.ba-name`), img: $createMenu.find(`.ba-token img`)},
 		};
 
-		d20plus.ba.$dom.buttons.roll = d20plus.ba.$dom.buttons.find(`[data-type=rolls]`);
-		d20plus.ba.$dom.buttons.stat = d20plus.ba.$dom.buttons.find(`[data-type=stats]`);
-		d20plus.ba.$dom.buttons.anim = d20plus.ba.$dom.buttons.find(`[data-type=animate]`);
-		d20plus.ba.$dom.rollsList = d20plus.ba.$dom.buttons.find(`.b20-rolls > ul`);
-		d20plus.ba.$dom.statsList = d20plus.ba.$dom.buttons.find(`.b20-stats > ul`);
-		d20plus.ba.$dom.animationsList = d20plus.ba.$dom.buttons.find(`.b20-animations > ul`);
-
-		d20plus.ba.$dom.sheet.info = d20plus.ba.$dom.sheet.find(`.content-right.info`);
-		d20plus.ba.$dom.sheet.general = d20plus.ba.$dom.sheet.find(`.items .general`);
-		d20plus.ba.$dom.sheet.name = d20plus.ba.$dom.sheet.parent().find(`.char-name`);
+		tabs.forEach((data, i) => {
+			d20plus.ba.$dom.tabs[data] = d20plus.ba.$dom.menu.find(`[data-tab=${data}]`);
+			d20plus.ba.$dom.lists[data] = d20plus.ba.$dom.menu.find(`[data-list=${data}]`);
+			d20plus.ba.$dom.infos[data] = d20plus.ba.$dom.menu.find(`[data-pane=${data}]`);
+		});
 
 		d20plus.ba.$dom.r20targetingNote = $("#targetinginstructions");
 		d20plus.ba.$dom.r20toolbar = $("#secondary-toolbar");
-		d20plus.ba.$dom.r20toolbar.prepend(d20plus.ba.$dom.buttons);
 		d20plus.ba.$dom.r20tokenActions = d20plus.ba.$dom.r20toolbar.find(".mode.tokenactions");
+		d20plus.ba.$dom.infos["context"] = d20plus.ba.$dom.menu.find(`[data-pane=context]`);
+		$("body").append($createMenu);
 
-		$("body").on("shape_selected", "#editor", evt => {
-			const enabled = getAmConfig();
+		if (getAmConfig()) {
+			const controlledChar = d20.Campaign
+				.activePage().thegraphics.models
+				.find(t => !!t.character && t.character.currentPlayerControls());
+			if (controlledChar) {
+				d20plus.ba.current = {
+					charTokens: [controlledChar],
+					imgTokens: [controlledChar],
+					id: d20plus.ut.generateRowId(),
+					singleChar: controlledChar,
+					hasChars: true,
+					hasImages: is_gm
+						&& d20plus.ba.enabledAnimation
+						&& Object.keys(d20plus.anim.animatorTool?._anims || {}).length,
+				};
+				(async () => {
+					d20plus.ba.tokens.ready(controlledChar);
+					// amShow();
+				})();
+			}
+		}
+
+		$("body").on("shape_selected", "#editor", async evt => {
+			if (!getAmConfig()) return;
 			const selected = d20.engine.selected();
-			if (!enabled) return;
-			d20plus.ba.tTokens = selected
-				.filter(it => it._model?.character)
-				.map(it => it._model);
-			d20plus.ba.tAnims = selected
-				.filter(it => it.type === "image");
-			d20plus.ba.thisGroup = d20plus.ut.generateRowId();
-			d20plus.ba.singleSelected = d20plus.ba.tTokens.length > 1
+
+			if (d20plus.ba.current.showingPortals) amResetPortalConnection();
+
+			if (selected.length === 1
+				&& selected[0]._model?.attributes.custom_portal
+				&& (d20plus.ba.current.lastSelectedToken || !is_gm)) {
+				amEnterPortal();
+				return;
+			} else if (selected.length === 1
+				&& selected[0]._model?.attributes.custom_portal
+				&& !d20plus.ba.current.lastSelectedToken
+				&& is_gm) {
+				amShowPortalConnection();
+				return;
+			}
+
+			d20plus.ba.current = {
+				charTokens: selected
+					.filter(it => it._model?.character)
+					.map(it => it._model),
+				imgTokens: selected
+					.filter(it => it.type === "image"),
+				id: d20plus.ut.generateRowId(),
+			};
+			d20plus.ba.current.singleChar = d20plus.ba.current.charTokens.length > 1
 				? false
-				: d20plus.ba.tTokens[0]; // am.multipleTargets // hasMultiple
-			d20plus.ba.hasChars = d20plus.ba.enabledCharMenu
-				&& d20plus.ba.tTokens.length > 0;
-			d20plus.ba.hasAnimatable = is_gm
+				: d20plus.ba.current.charTokens[0] || false;
+			d20plus.ba.current.hasChars = d20plus.ba.enabledCharMenu
+				&& d20plus.ba.current.charTokens.length > 0;
+			d20plus.ba.current.hasImages = is_gm
 				&& d20plus.ba.enabledAnimation
-				&& d20plus.ba.tAnims.length > 0
+				&& d20plus.ba.current.imgTokens.length > 0
 				&& Object.keys(d20plus.anim.animatorTool?._anims || {}).length;
-			if (d20plus.ba.hasChars || d20plus.ba.hasAnimatable) amShow();
-			else amHide();
+
+			if (d20plus.ba.current.hasChars) {
+				d20plus.ba.current.charTokens.forEach(async t => {
+					const token = d20plus.ba.tokens.ready(t);
+				});
+			} else if (d20plus.ba.current.hasImages) {
+				amShow();
+			}
+
+			d20plus.ba.current.lastSelectedToken = d20plus.ba.current.singleChar;
 		}).on("nothing_selected", "#editor", evt => {
-			amHide();
+			amResetPortalConnection();
+			d20plus.ba.current.lastSelectedToken = false;
 		});
 
-		d20plus.ba.$dom.buttons.on("click", "[data-action], [data-spec]", evt => {
-			const $clicked = $(evt.target);
+		$createMenu.on("click", "[data-action], [data-spec]", evt => {
+			const $clicked = $(evt.currentTarget);
 			const action = $clicked.data("action");
 			const spec = $clicked.data("spec");
 			const flags = $clicked.data("flags");
 			if (spec && action) amExecute(action, spec, flags);
 			// else if (action && mod) amSet(mod);
 			else if (!spec && action) amDo(action);
-		});
-	}
+		}).on("click", "[data-tab]", evt => {
+			const $clicked = $(evt.currentTarget);
+			const tab = $clicked.data("tab");
+			d20plus.ba.$dom.tabs.all.removeClass("active");
+			d20plus.ba.$dom.lists.all.removeClass("active");
+			d20plus.ba.$dom.infos.all.removeClass("active");
+			$clicked.addClass("active");
+			d20plus.ba.$dom.lists[tab].addClass("active");
+			d20plus.ba.$dom.infos[tab].addClass("active");
+		}).on("click", ".mods label span", evt => {
+			const type = $(evt.target).closest("label").attr("class");
+			const tab = $(evt.target).closest("[data-list]").data("list");
+			if (d20plus.ba.current.singleChar) {
+				const token = d20plus.ba.tokens.get(d20plus.ba.current.singleChar?.id);
+				token.mods[tab][type] = !$(evt.target).prev().prop("checked");
+				if (type === "filter") {
+					if (token.mods[tab][type]) d20plus.ba.$dom.lists[tab].addClass("filtered");
+					else d20plus.ba.$dom.lists[tab].removeClass("filtered");
+				}
+			}
+		}).on("click", ".page-button.large", evt => {
+			d20plus.ba.$dom.menu.toggle();
+		}).on("mouseover", ".spellaction, .atkaction", (evt) => {
+			const $entry = $(evt.currentTarget);
+			const id = $entry.find("[data-spec]").data("spec");
+			const token = d20plus.ba.tokens.getCurrent();
+			const ability = token.get(id);
+			const name = ability._get("name");
+			const description = ability._get("description")?.replaceAll("\n", "<br>");
 
-	d20plus.ba.dialogHtml = `
-	<div class="better-sheet">
-		<ul class="nav nav-tabs">
-			<li class="nav-tabs"><a data-tab="general">General</a></li>
-			<li class="nav-tabs"><a data-tab="attacks">Attacks</a></li>
-			<li class="nav-tabs"><a data-tab="attacks">Spells</a></li>
-			<li class="nav-tabs"><a data-tab="inventory">Inventory</a></li>
-		</ul>
-		<div class="tab-content">
-			<div class="content-left items">
-				<div class="tab-pane general" style="display:block">General</div>
-				<div class="tab-pane attacks">Attacks</div>
-			</div><div class="content-right info">Stats</div>
-		</div>
-	</div>
-	`;
+			if (!description) {
+				const tab = $entry.closest("[data-list]").data("list");
+				d20plus.ba.$dom.infos.all.removeClass("active");
+				d20plus.ba.$dom.infos[tab]?.addClass("active");
+				return;
+			}
+
+			const html = `
+				<li><strong>${name}</strong></li>
+				<li style="font-size:11px;font-family:sans-serif">${description}</li>
+			`;
+
+			d20plus.ba.$dom.infos.all.removeClass("active");
+			d20plus.ba.$dom.infos.context.addClass("active");
+			d20plus.ba.$dom.infos.context.html(html);
+		});
+
+		$("#toolbar-collapse-handle").on("click", (evt) => {
+			const barCollapsed = $(evt.currentTarget).hasClass("collapse-handle-collapsed");
+			d20plus.ba.$dom.panel.toggleClass("master-toolbar-collapsed", barCollapsed);
+		})
+	}
 }
 
 SCRIPT_EXTENSIONS.push(baseBetterActions);
@@ -25290,7 +26395,7 @@ const D20plus = function (version) {
 				d20plus.ut.log("Injection successful...");
 			} else {
 				if (timeWaitedForEnhancementSuiteMs > 2 * 5000) {
-					alert("betteR20 requires the VTTES (R20ES) extension to be installed!\nPlease install it from https://ssstormy.github.io/roll20-enhancement-suite/\nClicking ok will take you there.");
+					alert("betteR20 may require the VTTES (R20ES) extension to be installed!\nPlease install it from https://ssstormy.github.io/roll20-enhancement-suite/\nClicking ok will take you there.");
 					window.open("https://ssstormy.github.io/roll20-enhancement-suite/", "_blank");
 				} else {
 					timeWaitedForEnhancementSuiteMs += 100;
