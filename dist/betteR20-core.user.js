@@ -2,7 +2,7 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.184.5
+// @version      1.35.184.6
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -259,7 +259,7 @@ function baseUtil () {
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- Beta features overview:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Layers</strong><br>⦁ add new Extra Layers toolbar as part of r20 newUI<br>⦁ add show/hide layers toggles to b20 layers<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br>⦁ fix Page Toolbar malfunctioning with the NewUI<br>⦁ removed VTTES dependency<br>The system is still in an unfinished state, so use with caution!<br><strong>Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ a better Random Side randomizer (gives seemingly more random results)<br>⦁ edit token images directly from roll20 Token Editor<br><code>-- v.184.5 changes:</code><br>⦁ fixed bug with context menu appearing on left click<br><strong>Better token Actions & Automation</strong><br>⦁ new character menu in left top corner of the screen<br>- new design, the menu works even when no character is selected<br>- browse stats and actions for last selected token<br>⦁ use available actions with custom roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots, items and resources are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>- view descriptions before you use a spell or a trait<br>- upcast or use spells as ritual<br></p>
+					<p>This version contains following changes<br><code>-- Beta features overview:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Layers</strong><br>⦁ add new Extra Layers toolbar as part of r20 newUI<br>⦁ add show/hide layers toggles to b20 layers<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br>⦁ removed VTTES dependency<br>⦁ fixed Page Toolbar malfunctioning with the NewUI<br>⦁ fixed context menu appearing on left click<br><strong>Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ a better Random Side randomizer (for seemingly more random results)<br>⦁ edit token images directly from roll20 Token Editor<br><strong>Better token Actions & Automation</strong><br>⦁ new character menu in left top corner of the screen<br>- new design, the menu works even when no character is selected<br>- browse stats and actions for last selected token<br>⦁ use available actions with custom roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots, items and resources are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>- view descriptions before you use a spell or a trait<br>- upcast or use spells as ritual<br><code>-- v.184.6 changes:</code><br>- fix attack bonus and magic attack bonus calculation<br>- fix target AC calculations for players' attacks<br>- fix failure if no controllable tokens are present on player login<br></p>
 				</div>
 			`);
 			if (d20plus.ut.cmpVersions("1.35.8.57", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
@@ -24864,21 +24864,24 @@ function baseBARollTemplates () {
 		const atk = q.token.get(q.id);
 		const dmg = atk._get("rollbase_crit")?.match(/{{dmg1=\[\[(?<dmg1>[^}]*)\]\]}}(?:.*?){{dmg2=\[\[(?<dmg2>[^}]*)\]\]}}(?:.*?){{crit1=\[\[(?<crit1>[^}]*)\]\]}}(?:.*?){{crit2=\[\[(?<crit2>[^}]*)\]\]}}/)?.groups || {};
 		const atkattr = atk._get("attr");
+		const isNpc = q.token.get("npc");
 
 		const atkRoll = {
 			base: `20`,
 			critrange: atk._get("atkcritrange") || q.token.get("default_critical_range") || "20",
 			mods: [
-				q.token.get("npc") ? [atk._get("attack_tohit"), "MOD"] : undefined,
+				isNpc ? [atk._get("attack_tohit"), "MOD"] : undefined,
+				!isNpc ? [atk._get("atkmod"), "MOD"] : undefined,
+				!isNpc ? [atk._get("atkmagic"), "MB"] : undefined,
 				atkattr ? [q.token.get(atkattr), atkattr?.slice(0, 3).toUpperCase()] : undefined,
-				atk._has("pb") && !q.token.get("npc") ? [q.token.get("pb"), "PB"] : undefined,
+				atk._has("pb") && !isNpc ? [q.token.get("pb"), "PB"] : undefined,
 			],
 		}
 
 		const tmplVals = {
 			_this: q.token,
 			_thisId: q.token.character.id,
-			_isNpc: q.token.get("npc"),
+			_isNpc: isNpc,
 			_onSelf: atk._get("range")?.includes("[S]"),
 			_targeted: atk._has("atk") || atk._has("dmg1") || atk._has("dmg2") || atk._has("save"),
 			_modelType: atk._has("atk") ? "attack" : atk._has("save") && atk._has("dmg1") ? "cast" : "action",
@@ -25023,6 +25026,7 @@ function baseBARollTemplates () {
 			const targetToken = d20plus.ba.tokens.ready(target);
 			const distance = d20plus.ut.getTokensDistanceText(target._model, vals._this._ref);
 			await targetToken.ready();
+			await targetToken.character.sheet.fetch();
 
 			// const targetChar = await d20plus.ba.fetchChar(target._model);
 			// const thisToken = d20plus.ut.getTokenById(d20plus.ba.chars[vals._thisId].lastTokenId);
@@ -25879,16 +25883,16 @@ function baseBetterActions () {
 			if (!getAmConfig()) return;
 			const selected = d20.engine.selected();
 
-			if (d20plus.ba.current.showingPortals) amResetPortalConnection();
+			if (d20plus.ba.current?.showingPortals) amResetPortalConnection();
 
 			if (selected.length === 1
 				&& selected[0]._model?.attributes.custom_portal
-				&& (d20plus.ba.current.lastSelectedToken || !is_gm)) {
+				&& (d20plus.ba.current?.lastSelectedToken || !is_gm)) {
 				amEnterPortal();
 				return;
 			} else if (selected.length === 1
 				&& selected[0]._model?.attributes.custom_portal
-				&& !d20plus.ba.current.lastSelectedToken
+				&& !d20plus.ba.current?.lastSelectedToken
 				&& is_gm) {
 				amShowPortalConnection();
 				return;
