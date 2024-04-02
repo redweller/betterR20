@@ -2,7 +2,7 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.8.56
+// @version      1.35.8.57
 // @description  Enhance your Roll20 experience
 // @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
@@ -267,6 +267,7 @@ function baseLanguage () {
 		ba_group_attacks: [`Attacks`],
 		ba_group_traits: [`Traits`],
 		ba_group_spells: [`Spells`],
+		ba_group_items: [`Items`],
 		ba_group_effects: [`Effects`],
 		ba_group_animations: [`Animations`],
 		ba_roll_initiative: [`Initiative`],
@@ -528,6 +529,7 @@ function baseLanguage () {
 		ba_group_attacks: [`Атаки`],
 		ba_group_traits: [`Способности`],
 		ba_group_spells: [`Заклинания`],
+		ba_group_items: [`Вещи`],
 		ba_group_effects: [`Эффекты`],
 		ba_group_animations: [`Анимации`],
 		ba_roll_initiative: [`Инициатива`],
@@ -13368,6 +13370,10 @@ function initHTMLbaseMisc () {
 						<img src="https://img.icons8.com/ios-filled/50/fantasy.png">
 						<span>${__("ba_group_spells")}</span></a>
 					</li>
+					<li class="nav-tabs" data-tab="items" style="display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/red-purse.png">
+						<span>${__("ba_group_items")}</span></a>
+					</li>
 					<li class="nav-tabs" data-tab="animations" style="float:right;display:none;"><a>
 						<img src="https://img.icons8.com/ios-filled/50/service.png">
 						<span>${__("ba_group_animations")}</span></a>
@@ -13377,10 +13383,11 @@ function initHTMLbaseMisc () {
 					<div class="ba-list content-left">
 						<ul class="active" data-list="general"></ul>
 						<ul data-list="stats"></ul>
-						<ul data-list="skills"></ul>
+						<ul class="uneven" data-list="skills"></ul>
 						<ul data-list="attacks"></ul>
 						<ul data-list="traits"></ul>
 						<ul data-list="spells"></ul>
+						<ul data-list="items"></ul>
 						<ul data-list="animations"></ul>
 					</div>
 					<div class="ba-info content-right">
@@ -13390,6 +13397,7 @@ function initHTMLbaseMisc () {
 						<ul data-pane="attacks"><li> </li></ul>
 						<ul data-pane="traits"><li> </li></ul>
 						<ul data-pane="spells"><li> </li></ul>
+						<ul data-pane="items"><li> </li></ul>
 						<ul data-pane="context" style="font-size: 12px; line-height: 15px; font-weight: 100;"><li> </li></ul>
 						<ul data-pane="animations">
 							<li>Animations are set in the betteR20 tools menu</li>
@@ -14032,7 +14040,7 @@ function d20plusEngine () {
 		}).on("click", ".weather input[type=range]", (evt) => {
 			const {currentTarget: target} = evt;
 			if (target.name) $(`.${target.name}`).val(target.value);
-		}).on("click", ".chooseablepage .js__settings-page", () => {
+		}).on("mouseup", ".chooseablepage .js__settings-page, .page-container .settings-menu-trigger-container", () => {
 			setTimeout(() => d20plus.engine.enhancePageSettings(), 50);
 		}).on("click", ".pagedetails_navigation .nav-tabs--beta", () => {
 			d20plus.engine._populatePageCustomOptions();
@@ -14129,8 +14137,11 @@ function d20plusEngine () {
 	}
 
 	d20plus.engine.enhancePageSettings = () => {
-		if (!d20plus.engine._lastSettingsPageId) return;
-		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		const page = !d20plus.betaFeaturesEnabled
+			? d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId)
+			: d20.Campaign.pages.find(p => $(p.view.el).is(":visible"));
+		d20plus.engine._lastSettingsPageId = page.id;
+		d20plus.ut.log("Enhancing page", page);
 		if (page && page.get) {
 			const $dialog = $(`.pagedetails_navigation:visible`).closest(`.ui-dialog`);
 			const $saveBtn = $dialog.find(`.btn-primary:visible`);
@@ -14279,7 +14290,7 @@ function d20plusEngine () {
 	d20plus.engine._populatePageCustomOptions = (page, dialog) => {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
-		if (!d20plus.engine._customPageOptions[page.id]) return;
+		if (!d20plus.engine._customPageOptions[page?.id]) return;
 		Object.entries(d20plus.engine._customPageOptions[page.id]).forEach(([name, val]) => {
 			dialog.find(`[name="${name}"]`).each((i, e) => {
 				const $e = $(e);
@@ -14520,12 +14531,12 @@ function d20plusEngine () {
 		d20plus.ut.log(attrib);
 		if (isNaN(attrib._cur)) return;
 		if (expend.restore !== undefined) {
-			attrib._ref[refs.cur].save({current: expend.restore});
+			attrib._ref[refs.cur].save({current: String(expend.restore)});
 			attrib._msg = `/w "${characterName}" ${characterName} has ${expend.restore} ${getMsgText()} again`;
 			syncSheet();
 		} else if (attrib._cur - expend.amt >= 0) {
 			attrib._new = attrib._cur - expend.amt;
-			attrib._ref[refs.cur].save({current: attrib._new});
+			attrib._ref[refs.cur].save({current: String(attrib._new)});
 			attrib._undo = {...expend}; attrib._undo.restore = attrib._cur;
 			attrib._msg = `/w "${characterName}" ${characterName} now has ${attrib._new} ${getMsgText()} left`;
 			syncSheet();
@@ -14920,7 +14931,21 @@ function d20plusEngine () {
 		d20.engine.canvas.drawTokensWithoutAuras = _.bind(d20plus.mod.drawTokensWithoutAuras, d20.engine.canvas);// RB20 EXCLUDE START
 		// d20.engine.canvas._renderAll = _.bind(d20plus.mod.legacy_renderAll, d20.engine.canvas);
 		// d20.engine.canvas._layerIteratorGenerator = d20plus.mod.legacy_layerIteratorGenerator;// RB20 EXCLUDE END
+
+		if (window.is_gm) {
+			$(document).on("d20:new_page_fully_loaded", d20plus.engine.checkPageSettings);
+			d20plus.engine.checkPageSettings();
+		}
 	};
+
+	d20plus.engine.checkPageSettings = () => {
+		if (!d20.Campaign.activePage() || !d20.Campaign.activePage().get) {
+			setTimeout(d20plus.engine.checkPageSettings, 50);
+		} else {
+			d20plus.engine.layersVisibilityCheck();
+			d20plus.views.populateMenu();
+		}
+	}
 
 	d20plus.engine.removeLinkConfirmation = function () {
 		d20.utils.handleURL = d20plus.mod.handleURL;
@@ -15014,11 +15039,13 @@ function baseMenu () {
 
 		// BEGIN ROLL20 CODE
 		var e, t = !1, n = [];
-		var i = function() {
+		d20plus.ut.injectCode(d20.token_editor, "closeContextMenu", (func) => {
 			t && (t.remove(),
 				t = !1),
-			e && clearTimeout(e)
-		};
+			e && clearTimeout(e);
+			func();
+		})
+		var i = d20.token_editor.closeContextMenu;
 		var r = function (r) {
 			var o, a;
 			r.changedTouches && r.changedTouches.length > 0 ? (o = r.changedTouches[0].pageX,
@@ -16213,8 +16240,8 @@ function baseMenu () {
 		}
 
 		d20.token_editor.showContextMenu = r;
-		d20.token_editor.closeContextMenu = i;
-		$(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
+		// d20.token_editor.closeContextMenu = i;
+		// $(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
 	};// RB20 EXCLUDE START
 
 	d20plus.menu._neatActionsView = (id) => {
@@ -17257,22 +17284,11 @@ function baseViews () {
 		$(`#editinglayer .choose${window.currentEditingLayer}`).click();
 	}
 
-	d20plus.views.checkPageSettings = () => {
-		if (!d20.Campaign.activePage() || !d20.Campaign.activePage().get) {
-			setTimeout(d20plus.views.checkPageSettings, 50);
-		} else {
-			d20plus.engine.layersVisibilityCheck();
-			d20plus.views.populateMenu();
-		}
-	}
-
 	d20plus.views.addViews = () => {
 		if (window.is_gm) {
 			d20plus.views._initViewsCss();
 			d20plus.views._initLayerMenu();
 			d20plus.views._initMenuActions();
-			document.addEventListener("VePageChange", d20plus.views.checkPageSettings);
-			d20plus.views.checkPageSettings();
 		}
 	}
 }
@@ -18410,11 +18426,6 @@ function baseCss () {
 			s: ".sheet-grey .inlinerollresult.showtip.check, .inlinerollresult.showtip.check.attack-success, .inlinerollresult.showtip.attack-fail",
 			r: "margin-right: unset;",
 		},
-		// Styles for betterActions dialog
-		{
-			s: "#ba-panel",
-			r: "display: none;",
-		},
 		// Styles for altered messages
 		{
 			s: ".userscript-modify-message",
@@ -19230,6 +19241,7 @@ function baseCss () {
 			font-family: "Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;;
 			font-size: 13px;
 			font-weight: normal;
+			width: 100%;
 		}
 
 		/* Better actions tabs */
@@ -19239,6 +19251,9 @@ function baseCss () {
 			padding-left: 34px;
  			box-sizing: border-box;
 			transition: padding-left 1s ease;
+			overflow: clip;
+			white-space: nowrap;
+			height: 37px;
 		}
 		.ba-menu .nav-tabs > li > a {
 			padding: 9px;
@@ -19283,17 +19298,18 @@ function baseCss () {
 			scrollbar-width: thin;
 			scrollbar-color: transparent transparent;
 			scrollbar-gutter: stable;
-			transition: max-height .5s ease;
+			transition: width 1s ease, max-height 0.6s ease, padding 0.5s 0.5s;
 		}
 		.ba-list.content-left:hover, .ba-main .content-right:hover {
 			scrollbar-color: rgba(155,155,155,0.5) transparent;
 		}
 		.ba-main .content-left {
-			width: 40%;
+			width: 160px;
 		}
 		.ba-main .content-right {
-			width: 60%;
-			float:right;
+			width: 180px;
+			float: right;
+			box-sizing: content-box;
 		}
 		.ba-info > ul, .ba-list > ul {
 			list-style: none;
@@ -19328,6 +19344,7 @@ function baseCss () {
 		#ba-panel .ba-menu.wcollapsed .nav {
 			padding-left: 0px;
 			margin-top: 5px;
+			height: 29px;
 		  }
 		.ba-menu.wcollapsed .nav-tabs > li {
 			width: 21px;
@@ -19349,7 +19366,11 @@ function baseCss () {
 			width: 164px;
 		  }
 		  #ba-panel .ba-menu.wcollapsed .ba-info.content-right {
-			display: none;
+			padding: 0px;
+			width: 0%;
+			height: 200px;
+			position: absolute;
+			top: 85px;
 		  }
 		  .ba-menu.wcollapsed .ba-title-actions [data-action="collapsew"]::after {
 			content: "N";
@@ -19361,8 +19382,13 @@ function baseCss () {
 			display: inline-block;
 		  }
 		  .ba-menu.hexpanded .ba-title-actions [data-action="expandh"]::after {
-			content: "J";
-			transform: none;
+			content: "\`\`";
+			font-size: 14px;
+			display: inline-block;
+			width: 14px;
+			overflow: clip;
+			text-indent: -7px;
+			letter-spacing: 1px;
 		  }
 		  .ba-title-actions [data-action="expandh"]::after {
 			content: "\`";
@@ -19407,6 +19433,16 @@ function baseCss () {
 		.ba-list .submenu > li:first-child {
 			border-left: none;
 		}
+		.ba-list ul.uneven li.inactive > span, .ba-list li.inactive[data-action] {
+			color: #848484;
+			font-weight: 100;
+		}
+		.ba-list ul.uneven.filtered li.inactive, .ba-list ul.uneven.filtered .hasSub li.inactive {
+			display: none;
+		}
+		.ba-list ul:not(.uneven) li.mods label.filter {
+			display: none;
+		}
 		.ba-list ul[data-list="spells"] > li > span {
 			text-align: right;
 			width: 100%;
@@ -19427,10 +19463,6 @@ function baseCss () {
 			overflow: hidden;
 			text-overflow: ellipsis;
 			border-left: none;
-		}
-		.ba-list ul[data-list="spells"] > .hasSub > .submenu > li.unprepared span {
-			color: #848484;
-			font-weight: 100;
 		}
 		.ba-list ul[data-list="spells"] i {
 			font-style: normal;
@@ -19455,6 +19487,9 @@ function baseCss () {
 			background: var(--vtt-surface);
 			height: 240px;
 			border-left: 1px dashed rgba(155,155,155,0.5);
+		}
+		.ba-info [data-pane] {
+			width: 175px;
 		}
 		.ba-list [data-list], .ba-info [data-pane] {
 			display: none;
@@ -19481,6 +19516,20 @@ function baseCss () {
 			margin-right: 3px;
 			border: 1px solid transparent;
 			border-radius: 4px;
+		}
+		.ba-list li.mods label.filter span {
+			font-family: pictos;
+			font-size: 12px;
+			display: inline-block;
+			height: 19px;
+			box-sizing: border-box;
+			vertical-align: top;
+			color: gray;
+			width: 19px;
+			overflow: clip;
+			margin-left: 4px;
+			transform: rotate(180deg);
+			border-radius: 12px;
 		}
 		.ba-list li.mods label span:hover {
 			background: rgba(155,155,155,0.5);
@@ -26284,7 +26333,7 @@ function baseBetterActions () {
 	d20plus.ba = d20plus.ba || {};
 
 	const peopleIcon = "https://img.icons8.com/ios-glyphs/30/multicultural-people.png";
-	const tabs = ["general", "stats", "skills", "attacks", "traits", "spells", "animations"];
+	const tabs = ["general", "stats", "skills", "attacks", "traits", "spells", "items", "animations"];
 	const abilities = ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"];
 	let skills = "acrobatics,animal_handling,arcana,athletics,deception,history,insight,intimidation,investigation,medicine,nature,perception,performance,persuasion,religion,sleight_of_hand,stealth,survival";
 
@@ -26300,184 +26349,6 @@ function baseBetterActions () {
 		})
 	}
 
-	/* const getVar = {
-		attack: function (param) {
-			const char = d20plus.ba.getSingleChar();
-			const attr = {
-				name: {pc: "atkname", npc: "name"},
-				range: {pc: "atkrange", npc: "attack_range"},
-				hasattack: {pc: "atkflag", npc: "attack_flag", q: {false: ["0"]}},
-				hasdamage: {get: (at) => char.isNpc ? !!at.attack_damage : !!at.dmgbase && at.dmgflag !== "0"},
-				hasdamage2: {get: (at) => char.isNpc ? !!at.attack_damage2 : !!at.dmg2base && at.dmg2flag !== "0"},
-				damagetype: {pc: "dmgtype", npc: "attack_damagetype"},
-				damagetype2: {pc: "dmg2type", npc: "attack_damagetype2"},
-				profbonus: {pc: "atkprofflag", q: {false: ["0"]}},
-			}[param];
-			const val = char.isNpc ? this[attr?.npc] : this[attr?.pc];
-			if (attr.get) return attr.get(this);
-			else if (!attr.q) return val;
-			else return attr.q.true?.includes(val) || (attr.q.false && !attr.q.false.includes(val));
-		},
-		spell: function (param) {
-			const char = d20plus.ba.getSingleChar();
-			const attr = {
-				hasattack: {get: (sp) => !!sp.spellattack && sp.spellattack !== "None"},
-				hasdamage: {get: (sp) => !!sp.spelldamage || !!sp.spelldamage2},
-				hasdamageorhealing: {get: (sp) => !!sp.spelldamage || !!sp.spelldamage2 || !!sp.spellhealing},
-				hassave: {get: (sp) => !!sp.spellsave && sp.spellsave !== ""},
-			}[param];
-			const val = char.isNpc ? this[attr?.npc] : this[attr?.pc];
-			if (attr.get) return attr.get(this);
-			else if (!attr.q) return val;
-			else return attr.q.true?.includes(val) || (attr.q.false && !attr.q.false.includes(val));
-		},
-		char: function (param) {
-			void 0;
-		},
-	}
-
-	const prepareResources = (char) => {
-		["other", "class"].forEach(r => {
-			const tag = char.stats[`${r}_resource_name`];
-			const num = char.stats[`${r}_resource`];
-			if (num !== undefined && tag) {
-				char.resources = char.resources || {};
-				char.resources[tag] = num;
-			}
-		});
-		Object.entries(char.raw.resources || {}).forEach(([id, r]) => {
-			["left", "right"].forEach(n => {
-				const tag = r[`resource_${n}_name`];
-				const num = r[`resource_${n}`];
-				if (num !== undefined && tag) {
-					char.resources = char.resources || {};
-					char.resources[tag] = num;
-				}
-			});
-		})
-	}
-
-	const prepareAttacks = (char) => {
-		char.attacks = {};
-		Object.entries(char.raw.attacks || {}).filter(([id, at]) => {
-			return !at.spellid;
-		}).forEach(([id, at]) => {
-			at.id = id;
-			char.attacks[id] = at;
-			char.attacks[id]._getVar = getVar["attack"];
-		});
-		char.isNpc && Object.entries(char.raw.actions || {}).filter(([id, at]) => {
-			return at.attack_flag === "on";
-		}).forEach(([id, at]) => {
-			at.id = id;
-			char.attacks[id] = at;
-			char.attacks[id]._getVar = getVar["attack"];
-		});
-	}
-
-	const prepareSpells = (char) => {
-		char.spells = {};
-		char.spells._byLvl = {};
-		/* Object.entries(char.raw.spells || {}).forEach(([lvl, list]) => {
-			Object.entries(list || {}).forEach(([id, spl]) => {
-				spl.id = id;
-				spl.lvl = lvl;
-				char.spells[id] = spl;
-				char.spells[id]._getVar = getVar["spell"];
-			})
-		}); * /
-		Object.entries(char.raw.spells || {}).forEach(([id, spl]) => {
-			spl.id = id;
-			// spl.lvl = lvl;
-			char.spells[id] = spl;
-			char.spells[id]._getVar = getVar["spell"];
-			char.spells._byLvl[spl.lvl] = char.spells._byLvl[spl.lvl] || {};
-			char.spells._byLvl[spl.lvl][id] = char.spells[id];
-		})
-	}
-
-	const prepareStats = (stats, vals, tag) => {
-		if (tag === "hp") stats.hpMax = vals.max;
-		stats[tag] = vals.current;
-	}
-
-	const prepareTreeStats = (obj, lvls, attr, val) => {
-		lvls.forEach(lvl => {
-			obj[lvl] = obj[lvl] || {};
-			obj = obj[lvl];
-		});
-		obj[attr] = val;
-	}
-
-	const prepareChar = (char, charRef) => {
-		char.stats = {};
-		char.isNpc = false;
-		charRef.attribs?.models.forEach(prop => {
-			const [tag, type, id, ...attrPath] = prop.attributes.name.split("_");
-			const attr = attrPath.join("_");
-			const current = prop.attributes.current;
-			if (type === undefined) {
-				if (tag === "npc" && current === "1") char.isNpc = true;
-				else prepareStats(char.stats, prop.attributes, tag);
-			} else if (tag === "npc" && attr === "") {
-				char.npcStats = char.npcStats || {};
-				if (type === "name") char.name = {ch: prop.attributes.current, tk: char.name.tk, npc: char.name.ch};
-				else prepareStats(char.npcStats, prop.attributes, [type].concat(id || []).join("_"));
-			} else if (type === "slots") {
-				const lvl = tag.slice(-1);
-				prepareTreeStats(char, ["spellslots", lvl], id, current);
-			} else if (attr === "") {
-				if (prop.attributes.name === "charactersheet_type" && current === "npc") char.isNpc = true;
-				prepareStats(char.stats, prop.attributes, [tag].concat(type || [], id || []).join("_"));
-			} else if (tag === "repeating" && d20plus.ba.singleSelected) {
-				const [stype, lvl] = type.split("-");
-				if (stype === "spell") {
-					if (lvl) {
-						prepareTreeStats(char, ["raw", "spells", id], attr, current);
-						char.raw.spells[id].lvl = lvl;
-					} else {
-						char.stats = char.stats || {};
-						prepareStats(char.stats, prop.attributes, [type].concat(id || []).join("_"));
-					}
-				} else if (stype === "npcaction") {
-					prepareTreeStats(char, ["raw", "actions", id], attr, current);
-					if (lvl) char.raw.actions[id].actionType = lvl;
-				} else if (type === "attack") {
-					prepareTreeStats(char, ["raw", "attacks", id], attr, current);
-				} else if (type === "inventory") {
-					prepareTreeStats(char, ["raw", "items", id], attr, current);
-				} else if (["proficiencies", "tool", "resource"].includes(type)) {
-					const stype = type === "proficiencies" ? "proficiencies" : `${type}s`;
-					prepareTreeStats(char, ["raw", stype, id], attr, current);
-				} else if (["acmod", "damagemod", "savemod", "skillmod", "tohitmod"].includes(type)) {
-					const stype = type.split("mod")[0].replace("tohit", "attack");
-					prepareTreeStats(char, ["mods", stype, id], attr, current);
-				} else if (type === "npctrait" || type === "trait") {
-					prepareTreeStats(char, ["raw", "traits", id], attr, current);
-				}
-			} else if (type === "reporder") {
-				char.order = char.order || {};
-				char.order[attr] = current.split(",");
-			} else if (tag === "global" && id === "mod" && attr === "flag") {
-				prepareTreeStats(char, ["mods", "active"], type, current);
-			}
-		});
-		if (d20plus.ba.singleSelected) {
-			prepareSpells(char);
-			prepareAttacks(char);
-			prepareResources(char);
-		}
-		char.hp.val = char.hp.val || char.stats.hp || char.npcStats?.hpbase;
-		char.hp.max = char.hp.max || char.stats.hpMax;
-		return char;
-	}
-
-	const prepareAllChars = async () => {
-		for (const t of d20plus.ba.tTokens) {
-			await d20plus.ba.fetchChar(t);
-		}
-	} */
-
 	const buildGroup = (name, subtree) => {
 		subtree && d20plus.ba.tree.rolls.push({
 			name,
@@ -26489,9 +26360,10 @@ function baseBetterActions () {
 
 	const buildAbilities = () => {
 		const subtree = abilities.map(ab => {
+			const id = ab.replaceAll("-", "_");
 			return {
-				name: i18n(ab.replaceAll("-", "_"), ab.toSentenceCase()),
-				type: "selector",
+				name: i18n(id, ab.toSentenceCase()),
+				type: `selector`,
 				items: [{
 					name: "Roll plain check",
 					icon: __("ba_roll_check"),
@@ -26511,11 +26383,20 @@ function baseBetterActions () {
 	}
 
 	const buildSkills = () => {
+		const token = d20plus.ba.tokens.getCurrent();
 		return buildGroup(__("ba_group_skills"), skills.map(sk => {
+			const id = sk.replaceAll("-", "_");
+			const prof = token
+				? (((!token.character.isNpc && token.get(`${id}_prof`) && token.get(`${id}_prof`) !== "0")
+					|| (token.character.isNpc && token.get(`${id}_base`)))
+					? "active"
+					: "inactive")
+				: "";
 			return {
-				name: i18n(sk.replaceAll("-", "_"), sk.toSentenceCase().replaceAll("_", " ")),
+				name: i18n(id, sk.toSentenceCase().replaceAll("_", " ")),
 				action: "roll",
 				spec: "skill",
+				type: prof,
 				flags: sk,
 			};
 		}));
@@ -26524,23 +26405,15 @@ function baseBetterActions () {
 	const buildSpellVariants = (spell, token) => {
 		const items = [];
 		const ritual = spell?._get("spellritual");
+		const lvl = Number(spell.lvl);
 		const upcast = !isNaN(spell.lvl);
-		ritual && items.push({
-			name: "As ritual",
-			action: "cast",
-			spec: spell._id,
+		ritual && items.push(0);
+		upcast && [...Array(9 - lvl)].map((k, i) => {
+			const upLvl = i + lvl + 1;
+			const hasSlots = token.get("npc") || token.character.sheet.spellSlots.max(upLvl);
+			hasSlots && items.push(upLvl);
 		});
-		upcast && [...Array(9 - spell.lvl)].map((k, i) => {
-			const upLvl = i + spell.lvl + 1;
-			const hasSlots = token.get("npc") || token.character.sheet.spellSlots.max();
-			hasSlots && items.push({
-				name: `Upcast at lvl ${upLvl}`,
-				action: "cast",
-				tag: `${upLvl}`,
-				spec: spell._id,
-			});
-		});
-		return items.length ? items : null;
+		return items.length ? items.join(",") : null;
 	}
 
 	const buildSpellSlots = (char, lvl) => {
@@ -26568,8 +26441,8 @@ function baseBetterActions () {
 				const hasVariants = (spell.spellathigherlevels
 					|| spell.spellritual)
 					&& i !== "cantrip";
-				const variants = hasVariants ? buildSpellVariants(spell, token) : null;
-				const unprepared = !shouldPrepare || !i || spell.spellprepared === "1" ? "" : " unprepared";
+				const variants = i !== "cantrip" ? buildSpellVariants(spell, token) : null;
+				const unprepared = (!i && " ") || (spell._has("active") ? " active" : " inactive");
 				return {
 					name: spell._get("name"),
 					type: `spellaction selector${unprepared} ${variants ? "variable" : ""}`,
@@ -26586,8 +26459,9 @@ function baseBetterActions () {
 					}].concat(variants ? {
 						name: "Cast at different level",
 						icon: "↪",
-						type: "parameters",
-						items: variants,
+						action: "upcast",
+						spec: spell._id,
+						flags: variants,
 					} : []),
 				}
 			});
@@ -26625,6 +26499,11 @@ function baseBetterActions () {
 				name: at._get("name"),
 				type: `atkaction selector${types}`,
 				items: [{
+					name: "Show description",
+					icon: "🕮",
+					action: "attackdescription",
+					spec: at._id,
+				}, {
 					name: "Attack",
 					icon: isCast ? "⚕" : isRanged ? "➹" : isVersatile ? "🗡🖑🖑" : "🗡",
 					action: "attack",
@@ -26641,12 +26520,7 @@ function baseBetterActions () {
 					action: "attack",
 					spec: at._id,
 					flags: "V",
-				} : []).concat({
-					name: "Show description",
-					icon: "🕮",
-					action: "attackdescription",
-					spec: at._id,
-				}),
+				} : []),
 			}
 		}));
 	}
@@ -26654,22 +26528,45 @@ function baseBetterActions () {
 	const buildTraits = () => {
 		const token = d20plus.ba.tokens.getCurrent();
 
-		return buildGroup(__("ba_group_attacks"), token?.get("traits").filter(tr => {
-			return tr._has("uses") || tr._has("action");
-		}).map(tr => {
+		return buildGroup(__("ba_group_attacks"), token?.get("traits").map(tr => {
+			const canBeUsed = tr._has("uses") || tr._has("action") || !isNaN(tr.lvl);
+			const usable = canBeUsed ? "active" : "inactive";
 			return {
 				name: tr._get("name"),
-				type: `spellaction selector ${window.types}`,
+				type: `spellaction selector ${usable}`,
 				items: [{
 					name: "Show description",
 					icon: "🕮",
 					action: "spelldescription",
 					spec: tr._id,
-				}].concat(tr._id ? { // wrong condition
+				}].concat(canBeUsed ? {
 					name: "Use trait",
 					icon: "⚕",
 					action: "cast",
 					spec: tr._id,
+				} : []),
+			};
+		}));
+	}
+
+	const buildItems = () => {
+		const token = d20plus.ba.tokens.getCurrent();
+
+		return buildGroup(__("ba_group_items"), token?.get("items").map(it => {
+			const equipped = it._has("active") ? "active" : "inactive";
+			return {
+				name: it._get("name"),
+				type: `spellaction selector ${equipped}`,
+				items: [{
+					name: "Show description",
+					icon: "🕮",
+					action: "spelldescription",
+					spec: it._id,
+				}].concat(!it._id ? { // wrong condition
+					name: "Use trait",
+					icon: "⚕",
+					action: "cast",
+					spec: it._id,
 				} : []),
 			};
 		}));
@@ -26699,15 +26596,19 @@ function baseBetterActions () {
 	}
 
 	const buildModsHtml = (tab) => {
+		const token = d20plus.ba.tokens.get(d20plus.ba.current.singleChar?.id);
 		const mods = [
-			{label: "ADV", id: "advantage"},
-			{label: "DIS", id: "disadvantage"},
-			{label: "GM", id: "togm"},
+			{label: "ADV", id: "advantage", title: "Toggle advantage"},
+			{label: "DIS", id: "disadvantage", title: "Toggle disadvantage"},
+			{label: "GM", id: "togm", title: "Send to GM only"},
+			{label: "&lt;l", id: "filter", title: "Filter items", except: ["general", "stats"]},
 		];
+		if (token?.mods[tab].filter) d20plus.ba.$dom.lists[tab].addClass("filtered");
+		else d20plus.ba.$dom.lists[tab].removeClass("filtered");
 		return `<li class="mods ${tab}">${mods.reduce((res, mod) => {
-			const token = d20plus.ba.tokens.get(d20plus.ba.current.singleChar?.id);
+			if (mod.except?.includes(tab)) return res;
 			const checked = token?.mods[tab][mod.id] ? ` checked="on"` : "";
-			return `${res}<label class="${mod.id}">
+			return `${res}<label class="${mod.id}" title="${mod.title}">
 				<input type="checkbox"${checked}><span>${mod.label}</span>
 			</label>`;
 		}, "")}</li>`;
@@ -26729,7 +26630,8 @@ function baseBetterActions () {
 				</li>`;
 			} else {
 				const dataAttribs = `data-action="${it.action}" data-spec="${it.spec}"${it.flags ? ` data-flags="${it.flags}"` : ""}`;
-				return `${html}<li ${dataAttribs}${it.icon || it.name?.length > 15 ? ` title="${it.name || ""}"` : ""}>
+				const typeAttribs = it.type ? `class="${it.type}" ` : "";
+				return `${html}<li ${typeAttribs}${dataAttribs}${it.icon || it.name?.length > 15 ? ` title="${it.name || ""}"` : ""}>
 					${it.resource ? `<span><i>${it.resource}</i>` : ""}
 					${it.icon || it.name}${it.resource ? `</span>` : ""}
 				</li>`;
@@ -26806,12 +26708,19 @@ function baseBetterActions () {
 	}
 
 	const buildAdvRollsHtml = () => {
-		["attacks", "traits", "spells"].forEach(tab => {
-			const list = tab === "spells"
-				? buildSpells()
-				: (tab === "traits" ? buildTraits() : buildAttacks());
-			list?.length && d20plus.ba.$dom.tabs[tab].toggle(true);
-			d20plus.ba.$dom.lists[tab].html(buildHtml(list, tab));
+		[
+			{id: "attacks", callback: buildAttacks},
+			{id: "traits", callback: buildTraits},
+			{id: "spells", callback: buildSpells},
+			{id: "items", callback: buildItems},
+		].forEach(tab => {
+			const list = tab.callback();
+			list?.length && d20plus.ba.$dom.tabs[tab.id].toggle(true);
+			d20plus.ba.$dom.lists[tab.id].html(buildHtml(list, tab.id));
+			const active = d20plus.ba.$dom.lists[tab.id].find(".active").length;
+			const inactive = d20plus.ba.$dom.lists[tab.id].find(".inactive").length;
+			if (active && inactive) d20plus.ba.$dom.lists[tab.id].addClass("uneven");
+			else d20plus.ba.$dom.lists[tab.id].removeClass("uneven");
 		})
 	}
 
@@ -26822,16 +26731,6 @@ function baseBetterActions () {
 		d20plus.ba.enabledAnimation = cfg.includes("anim");
 		return d20plus.ba.enabled;
 	}
-
-	const getActions = (action, token, spec, flags) => {
-		if (action === "animation") {
-			d20plus.anim.animator.startAnimation(token, spec);
-		} else if (["spelldescription", "attackdescription"].includes(action)) {
-			d20plus.ba.makeInfo(action === "spelldescription" ? "spell" : "attack", spec);
-		} else {
-			d20plus.ba.makeRoll(action, spec, flags);
-		}
-	};
 
 	const amExecute = async (action, spec, flags) => {
 		const appliedTo = action !== "animation"
@@ -26856,28 +26755,6 @@ function baseBetterActions () {
 				});
 			}
 		});
-		/* const isMultiple = selected.length > 1;
-		const singleAction = !["animation"].includes(action)
-			&& !["ability", "save", "skill", "initiative", "roll"].includes(spec);
-		const iterateSelected = (token) => {
-			d20plus.ba.currentToken = !d20plus.ba.currentToken && token._model;
-			return ["initiative"].includes(spec) || ["animation"].includes(action);
-		}
-		d20plus.ut.log({action, spec, singleAction, iterateSelected});
-		if (!isMultiple || !singleAction) {
-			d20plus.ba.executing = true;
-			const tokens = [...selected];
-			d20.engine.unselect();
-			tokens.forEach(t => {
-				iterateSelected(t) && d20.engine.select(t);
-				getActions(action, t._model, spec, flags);
-				iterateSelected(t) && d20.engine.unselect();
-			});
-			// if (!iterateSelected) tokens.forEach(t => d20.engine.select(t));
-			d20plus.ba.executing = false;
-		} else {
-			d20plus.ba.rollError();
-		} */
 	}
 
 	const amDo = (action) => {
@@ -26952,10 +26829,11 @@ function baseBetterActions () {
 					left: receiver.attributes.left,
 					layer: is_gm ? "gmlayer" : "objects",
 				});
+				d20.engine.centerOnPoint(receiver.attributes.left || 0, receiver.attributes.top || 0);
 				setTimeout(() => {
 					// d20.engine.unselect();
 					actor.save({layer});
-					token?.find();
+					// token?.find();
 					setTimeout(() => token?.select(), 600);
 				}, 600);
 			}
@@ -27098,28 +26976,6 @@ function baseBetterActions () {
 		}, needsOpening ? 2000 : 0);
 	}
 
-	/* d20plus.ba.fetchChar = async (token) => {
-		const tokenRef = token || d20plus.ba.tTokens[0];
-		const charRef = tokenRef?.character;
-		const char = d20plus.ba.characters.get(charRef.id);
-		const isUp2Date = d20plus.ba.chars[charRef.id]?.lastGroup === d20plus.ba.thisGroup;
-		if (!charRef || isUp2Date) return;
-
-		const name = {ch: charRef?.attributes.name, tk: tokenRef?.attributes.name};
-		const hp = {val: tokenRef.attributes.bar1_value, max: tokenRef.attributes.bar1_max};
-		await d20plus.ut.fetchCharAttribs(charRef, true);
-
-		d20plus.ba.chars[charRef.id] = {id: charRef.id, lastTokenId: tokenRef.id, name, hp};
-
-		return prepareChar(d20plus.ba.chars[charRef.id], charRef);
-	}
-
-	d20plus.ba.getSingleChar = (token) => {
-		const ref = token || d20plus.ba.singleSelected || d20plus.ba.currentToken;
-		const id = ref?.character?.id;
-		return id && d20plus.ba.chars[id];
-	} */
-
 	d20plus.ba.initBetterActions = () => {
 		const $createMenu = $(d20plus.html.bActionsMenu);
 		d20plus.ba.initCharacters();
@@ -27172,16 +27028,16 @@ function baseBetterActions () {
 			if (!getAmConfig()) return;
 			const selected = d20.engine.selected();
 
-			if (d20plus.ba.current.showingPortals) amResetPortalConnection();
+			if (d20plus.ba.current?.showingPortals) amResetPortalConnection();
 
 			if (selected.length === 1
 				&& selected[0]._model?.attributes.custom_portal
-				&& (d20plus.ba.current.lastSelectedToken || !is_gm)) {
+				&& (d20plus.ba.current?.lastSelectedToken || !is_gm)) {
 				amEnterPortal();
 				return;
 			} else if (selected.length === 1
 				&& selected[0]._model?.attributes.custom_portal
-				&& !d20plus.ba.current.lastSelectedToken
+				&& !d20plus.ba.current?.lastSelectedToken
 				&& is_gm) {
 				amShowPortalConnection();
 				return;
@@ -27242,6 +27098,10 @@ function baseBetterActions () {
 			if (d20plus.ba.current.singleChar) {
 				const token = d20plus.ba.tokens.get(d20plus.ba.current.singleChar?.id);
 				token.mods[tab][type] = !$(evt.target).prev().prop("checked");
+				if (type === "filter") {
+					if (token.mods[tab][type]) d20plus.ba.$dom.lists[tab].addClass("filtered");
+					else d20plus.ba.$dom.lists[tab].removeClass("filtered");
+				}
 			}
 		}).on("click", ".page-button.large", evt => {
 			d20plus.ba.$dom.menu.toggle();
@@ -27314,7 +27174,7 @@ function baseBACharacters () {
 
 		const prepareRawStats = (lvls, attrib, id, val) => {
 			if (!Array.isArray(lvls)) lvls = [lvls];
-			const max = attrib.attributes.max;
+			const max = attrib?.attributes.max;
 			let obj = this.sheet.data;
 			lvls.forEach(lvl => {
 				obj[lvl] = obj[lvl] || {};
@@ -27388,14 +27248,15 @@ function baseBACharacters () {
 						prepareRawStats(["attacks", id], prop, attr);
 					} else if (type === "inventory") {
 						prepareRawStats(["items", id], prop, attr);
-					} else if (["proficiencies", "tool", "resource", "traits"].includes(type)) {
+					} else if (["proficiencies", "tool", "resource"].includes(type)) {
 						const stype = type.last() === "s" ? type : `${type}s`;
 						prepareRawStats([stype, id], prop, attr);
 					} else if (["acmod", "damagemod", "savemod", "skillmod", "tohitmod"].includes(type)) {
 						const stype = type.split("mod")[0].replace("tohit", "attack");
 						prepareRawStats(["mods", stype, id], prop, attr);
-					} else if (type === "npctrait" || type === "trait") {
+					} else if (type === "npctrait" || type === "traits") {
 						prepareRawStats(["traits", id], prop, attr);
+						prepareRawStats(["traits", id], undefined, "isTrait", true);
 					}
 				} else if (type === "reporder") {
 					prepareRawStats("order", prop, attr, current.split(","));
@@ -27460,8 +27321,8 @@ function baseBACharacters () {
 			} else return (this.isNpc && filterVal(npc[q]?.attributes.current)) || char[q]?.attributes.current;
 		}
 
-		const types = [
-			{
+		const types = {
+			spells: {
 				id: "spells",
 				utils: {
 					_char: () => this,
@@ -27517,13 +27378,14 @@ function baseBACharacters () {
 									return false;
 								}
 							}
+							case "active": return this._ref.spellprepared?.attributes.current === "1"
 							case "ritual": return this._ref.spellritual?.attributes.current !== "0";
 							case "save": return !!this._ref.spellsave?.attributes.current;
 						}
 					},
 				},
 			},
-			{
+			attacks: {
 				id: "attacks",
 				utils: {
 					_char: () => this,
@@ -27558,7 +27420,7 @@ function baseBACharacters () {
 					},
 				},
 			},
-			{
+			actions: {
 				id: "actions", // npc's attack are stored here
 				utils: {
 					_char: () => this,
@@ -27589,7 +27451,7 @@ function baseBACharacters () {
 					},
 				},
 			},
-			{
+			traits: {
 				id: "traits",
 				utils: {
 					_char: () => this,
@@ -27621,7 +27483,7 @@ function baseBACharacters () {
 							case "uses": {
 								if (this._resource) return true;
 								const resourceName = this._ref.source_type?.attributes.current;
-								const resource = this._char().sheet.getResources(resourceName);
+								const resource = !!resourceName && this._char().sheet.getResources(resourceName);
 								if (resource) {
 									this._resource = resource;
 									return true;
@@ -27638,6 +27500,44 @@ function baseBACharacters () {
 					},
 				},
 			},
+			items: {
+				id: "items",
+				utils: {
+					_char: () => this,
+					_get: function (q) {
+						switch (q) {
+							case "name": return this._ref.itemname?.attributes.current;
+							case "description": return this._ref.itemcontent?.attributes.current;
+							case "equipped": return this._ref.equipped?.attributes.current;
+							default: return this._ref[q]?.attributes.current;
+						}
+					},
+					_has: function (q) {
+						switch (q) {
+							case "atk": return false;
+							case "dmg1": return false;
+							case "dmg2": return false;
+							case "pb": return false;
+							case "save": return false;
+							case "range": return false;
+							case "action": return false;
+							case "active": return this._ref.equipped?.attributes.current !== "0"
+							default: return (
+								this._ref[q]?.attributes.current
+								&& this._ref[q]?.attributes.current !== "0"
+							);
+						}
+					},
+					_equip: function (toggle) {
+						const current = this._ref.equipped?.attributes.current !== "0";
+						const changing = toggle === undefined
+							? (current ? "0" : "1")
+							: (toggle ? "1" : "0");
+						this._ref.equipped?.save({current: changing});
+					},
+				},
+			},
+			/*
 			function (param) {
 				const char = d20plus.ba.getSingleChar();
 				const attr = {
@@ -27668,13 +27568,14 @@ function baseBACharacters () {
 				else if (!attr.q) return val;
 				else return attr.q.true?.includes(val) || (attr.q.false && !attr.q.false.includes(val));
 			},
-		]
+			*/
+		}
 
 		this.sheet = {
 			get: (q) => {
-				for (let i = 0; i < types.length; i++) {
-					const list = this.sheet.data[types[i].id];
-					if (list && list[q]) return Object.assign({_id: q}, types[i].utils || {}, list[q]);
+				for (let i = 0; i < Object.keys(types).length; i++) {
+					const list = this.sheet.data[types[Object.keys(types)[i]].id];
+					if (list && list[q]) return Object.assign({_id: q}, types[Object.keys(types)[i]].utils || {}, list[q]);
 				}
 				return this.sheet.data.stats?._ref && getStats(q);
 			},
@@ -27685,7 +27586,7 @@ function baseBACharacters () {
 						(lvl && all[id].lvl !== lvl)
 						|| all[id]._ref.innate?.attributes.current
 					) return spls;
-					spls.push(Object.assign({}, types[0].utils || {}, all[id]));
+					spls.push(Object.assign({}, types.spells.utils || {}, all[id]));
 					return spls;
 				}, []);
 			},
@@ -27693,14 +27594,47 @@ function baseBACharacters () {
 				const all = Object.assign({},
 					this.sheet.data.traits || {},
 					this.sheet.data.spells || {},
+					(this.isNpc && this.sheet.data.actions) || {},
 				);
 				return Object.keys(all).reduce((trts, id) => {
-					if (all[id]._ref.source_type?.attributes.current) {
-						trts.push(Object.assign({}, types[3].utils || {}, all[id]));
+					if (all[id].isTrait) {
+						trts.push(Object.assign({}, types.traits.utils || {}, all[id]));
 					} else if (all[id]._ref.innate?.attributes.current) {
-						trts.push(Object.assign({}, types[0].utils || {}, all[id]));
+						trts.push(Object.assign({}, types.spells.utils || {}, all[id]));
+					} else if (this.isNpc
+							&& all[id]._ref.attack_flag
+							&& all[id]._ref.attack_flag.attributes.current !== "on") {
+						trts.push(Object.assign({}, types.actions.utils || {}, all[id]));
 					}
 					return trts;
+				}, []);
+			},
+			getAttacks: () => {
+				const all = this.isNpc
+					? this.sheet.data.actions || {}
+					: this.sheet.data.attacks || {};
+				const utils = this.isNpc
+					? types.actions.utils || {}
+					: types.attacks.utils || {};
+				return Object.keys(all).reduce((atks, id) => {
+					if (
+						(this.isNpc && all[id]._ref.attack_flag?.attributes.current === "on")
+						|| (!this.isNpc && !all[id].spellid)
+					) atks.push(Object.assign({}, utils || {}, all[id]));
+					return atks;
+				}, []);
+			},
+			getItems: () => {
+				const all = this.isNpc
+					? {}
+					: this.sheet.data.items || {};
+				const utils = types.items.utils || {};
+				return Object.keys(all).reduce((atks, id) => {
+					if (
+						(this.isNpc && all[id].attack_flag === "on")
+						|| (!this.isNpc && !all[id].spellid)
+					) atks.push(Object.assign({}, utils || {}, all[id]));
+					return atks;
 				}, []);
 			},
 			getResources: (name) => {
@@ -27732,21 +27666,6 @@ function baseBACharacters () {
 					});
 				});
 				return name ? resources[name] : resources;
-			},
-			getAttacks: () => {
-				const all = this.isNpc
-					? this.sheet.data.actions || {}
-					: this.sheet.data.attacks || {};
-				const utils = this.isNpc
-					? types[2].utils || {}
-					: types[1].utils || {};
-				return Object.keys(all).reduce((atks, id) => {
-					if (
-						(this.isNpc && all[id].attack_flag === "on")
-						|| (!this.isNpc && !all[id].spellid)
-					) atks.push(Object.assign({}, utils || {}, all[id]));
-					return atks;
-				}, []);
 			},
 			getRollModifier: (r) => {
 				const r20q = /.*@{(?<attr>[^}]*)}.*/g;
@@ -27888,6 +27807,7 @@ function baseBACharacters () {
 				case "npc_name": return this.character?.sheet.get("name") || "";
 				case "spells": return this.character?.sheet.getSpells();
 				case "attacks": return this.character?.sheet.getAttacks();
+				case "items": return this.character?.sheet.getItems();
 				case "traits": return this.character?.sheet.getTraits();
 				default: return this.character?.sheet.get(q);
 			}
@@ -27919,7 +27839,15 @@ function baseBACharacters () {
 
 			const char = d20plus.ba.characters.get(this._ref.character.id);
 			this.character = char || await new d20plus.ba.characters.Connector(this._ref);
-			this.mods = {general: {}, stats: {}, skills: {}, attacks: {}, spells: {}, traits: {}};
+			this.mods = {
+				general: {},
+				stats: {},
+				skills: {},
+				attacks: {},
+				spells: {filter: true},
+				items: {filter: true},
+				traits: {filter: true},
+			};
 
 			d20plus.ba.tokens.push(this);
 			this.refresh();
@@ -28015,10 +27943,6 @@ function baseBARollTemplates () {
 	const getWMode = () => {
 		const togm = d20plus.ba.$dom.menu.find(".ba-list .mods:visible .togm input").prop("checked");
 		return togm ? "/w gm " : "";
-	}
-
-	const getDisplayName = (char) => {
-
 	}
 
 	const getTemplatePart = ([tag, val, props], subtree) => {
@@ -28196,7 +28120,7 @@ function baseBARollTemplates () {
 		}[values?._modelType];
 
 		const template = templateModel && templateModel(values);
-		if (!template) return d20plus.ba.rollError();
+		if (!template) return d20plus.ba.rollError(); d20plus.ut.log(values);
 
 		d20.textchat.doChatInput(`${getWMode()}${template}`);
 		if (values._expend) d20plus.engine.expendResources(values._expend);
@@ -28282,78 +28206,28 @@ function baseBARollTemplates () {
 		return tmplVals;
 	};
 
-	const getAbilityTemplateOld = (token, spec, attr) => {
-		const char = getSingleChar(token);
-		const type = attr || "roll"
-		// const roll = spec !== "hit dice" ? `d20` : `1d${char.stats.hitdietype}`;
-		const typeName = spec === "ability" ? "abilities" : ["skill", "save"].includes(spec) ? spec : type;
-
-		attr = attr || spec;
-		const attrBase = attr.replaceAll(" ", "_").replaceAll("-", "_");
-		const attrId = spec === "save" ? `${attrBase}_save_bonus` : (spec === "ability" ? `${attrBase}_mod` : `${attrBase}_bonus`);
-		const attrName = spec === "save" ? `${attrBase}-save` : (["death save", "hit dice"].includes(spec) ? attr.split(" ").concat("u").join("-") : attrBase);
-		const abbr = attr.slice(0, 3).toUpperCase();
-
-		const roll = {
-			base: spec !== "hit dice" ? `d20` : `1d${char.stats.hitdietype || 20}`,
-			type: spec !== "hit dice" ? `heal` : undefined,
-			self: spec !== "hit dice" ? true : undefined,
-			mods: [
-				spec === "hit dice" ? [`${char.stats.constitution_mod}`, "CON"] : [`${char.stats[attrId]}`, abbr],
-				type === "ability" && "!isNpc" ? [`${char.stats.jack_bonus}`, "JACK"] : null,
-			],
-		}
-		const mods = {base: [
-			spec === "hit dice" ? [`${char.stats.constitution_mod}`, "CON"] : [`${char.stats[attrId]}`, abbr],
-			type === "ability" && "!isNpc" ? [`${char.stats.jack_bonus}`, "JACK"] : null,
-		]};
-		mods.r1 = mods.base.concat([
-			spec === "initiative" ? ["&{tracker}"] : null,	// should be the last one
-		]).filter(s => !!s).map(s => `${s[0]}${s[1] ? `[${s[1]}]` : ""}`).join(" ");		// TODO proper Initiative adding and NPCs
-		mods.r2 = mods.base.concat([])
-			.filter(s => !!s).map(s => `${s[0]}${s[1] ? `[${s[1]}]` : ""}`).join(" ");
-		mods.title = mods.base.concat([
-			spec === "hit dice" ? [`+ D${char.stats.hitdietype}`] : null,
-		]).filter(s => !!s).map(s => s[0]).join(" ");
-
-		const hiddenVars = [
-			`${char.stats.global_skill_mod}`,
-		].filter(s => !!s).join(" ");
-
-		const tmplVars = {
-			chId: char.id,
-			rMode: getRollMode(),
-			title: char.name,
-			subTitle: `^{${typeName}} (${mods.title})`,
-			attrName: `^{${attrName}}`,
-			r1: `[[${roll}+${mods.r1}]]`, // +$[[0]]`,
-			r2: `[[${roll}+${mods.r2}]]`, // +$[[0]]`,
-			hidden: hiddenVars,
-			isNpc: char.isNpc,
-		}
-
-		return d20plus.ba.templateModel("ability", tmplVars);
-	};
-
 	const getAttackVals = (q) => {
 		const atk = q.token.get(q.id);
 		const dmg = atk._get("rollbase_crit")?.match(/{{dmg1=\[\[(?<dmg1>[^}]*)\]\]}}(?:.*?){{dmg2=\[\[(?<dmg2>[^}]*)\]\]}}(?:.*?){{crit1=\[\[(?<crit1>[^}]*)\]\]}}(?:.*?){{crit2=\[\[(?<crit2>[^}]*)\]\]}}/)?.groups || {};
 		const atkattr = atk._get("attr");
+		const isNpc = q.token.get("npc");
 
 		const atkRoll = {
 			base: `20`,
 			critrange: atk._get("atkcritrange") || q.token.get("default_critical_range") || "20",
 			mods: [
-				q.token.get("npc") ? [atk._get("attack_tohit"), "MOD"] : undefined,
+				isNpc ? [atk._get("attack_tohit"), "MOD"] : undefined,
+				!isNpc ? [atk._get("atkmod"), "MOD"] : undefined,
+				!isNpc ? [atk._get("atkmagic"), "MB"] : undefined,
 				atkattr ? [q.token.get(atkattr), atkattr?.slice(0, 3).toUpperCase()] : undefined,
-				atk._has("pb") && !q.token.get("npc") ? [q.token.get("pb"), "PB"] : undefined,
+				atk._has("pb") && !isNpc ? [q.token.get("pb"), "PB"] : undefined,
 			],
 		}
 
 		const tmplVals = {
 			_this: q.token,
 			_thisId: q.token.character.id,
-			_isNpc: q.token.get("npc"),
+			_isNpc: isNpc,
 			_onSelf: atk._get("range")?.includes("[S]"),
 			_targeted: atk._has("atk") || atk._has("dmg1") || atk._has("dmg2") || atk._has("save"),
 			_modelType: atk._has("atk") ? "attack" : atk._has("save") && atk._has("dmg1") ? "cast" : "action",
@@ -28385,15 +28259,16 @@ function baseBARollTemplates () {
 
 	const getSpellVals = (q) => { // id, flags
 		const expendCfg = d20plus.cfg.getOrDefault("chat", "autoExpend");
-		const [lvl, upcast] = String(q.flags).split("|");
+		const lvls = String(q.flags).split(",");
 		const spell = q.token.get(q.id);
-		const spellAbility = spell.spell_ability && spell.spell_ability?.length > 2
-			? (spell.spell_ability !== "spell" ? spell.spell_ability : q.token.get("spellcasting_ability"))?.replace(/@{(.*?)(_mod|)}(\+|)/, "$1") || ""
+		const spell_ability = spell._get("spell_ability");
+		const spellAbility = spell_ability && spell_ability?.length > 2
+			? (spell_ability !== "spell" ? spell_ability : q.token.get("spellcasting_ability"))?.replace(/@{(.*?)(_mod|)}(\+|)/, "$1") || ""
 			: "";
 		const subTitle = [spell.spellrange, spell.spellduration, spell.spelltarget, i18n(spell.spellattack?.toLowerCase(), "")]
 			.reduce((t, v) => v && (!t || `${t}, ${v}`.length < 27) ? `${t}${v && t ? ", " : ""}${v}` : t, "");
 		const onSelf = spell.spellrange?.includes("[S]") || spell.spelltarget?.includes("Self");
-		const spelldmgmod = spell.spelldmgmod === "Yes" ? q.token.get(`${spellAbility}_mod`) || 0 : "";
+		const spelldmgmod = spell._get("spelldmgmod") === "Yes" ? q.token.get(`${spellAbility}_mod`) || 0 : "";
 
 		const expend = (spell.lvl === undefined || !!spell._get("innate"))
 			? (spell._has("uses") ? {type: spell._resource.type, res: spell._resource.side, name: spell._resource.name, charID: q.token.character.id} : undefined)
@@ -28405,19 +28280,37 @@ function baseBARollTemplates () {
 			// target: targetTag,
 			critrange: q.token.get("default_critical_range") || "20",
 			mods: [
-				spell.spell_ability === "spell" && [q.token.get("spell_attack_bonus"), "SPELL"], // `@{${char.id}|spell_attack_mod}[MOD]+${spellAbility}@{${char.id}|pb}[PB]`
-				spell.spell_ability !== "spell" && [q.token.get("spell_attack_mod"), "MOD"],
-				spell.spell_ability !== "spell" && [q.token.get(`${spellAbility}_mod`), spellAbility.slice(0, 3).toUpperCase()],
-				spell.spell_ability !== "spell" && [q.token.get("pb"), "PB"],
+				spell_ability === "spell" && [q.token.get("spell_attack_bonus"), "SPELL"], // `@{${char.id}|spell_attack_mod}[MOD]+${spellAbility}@{${char.id}|pb}[PB]`
+				spell_ability !== "spell" && [q.token.get("spell_attack_mod"), "MOD"],
+				spell_ability !== "spell" && [q.token.get(`${spellAbility}_mod`), spellAbility.slice(0, 3).toUpperCase()],
+				spell_ability !== "spell" && [q.token.get("pb"), "PB"],
 			],
 		}
+
+		const upcast = lvls.reduce((vars, lvl) => {
+			lvl = Number(lvl);
+			if (!lvl) return vars;
+			const splvl = spell.lvl !== "cantrip" ? Number(spell.lvl) : 0;
+			const base = spell._get("spelldamage") ? spell._get("spelldamage") : (spell._get("spellhealing") && !spell._get("spellsave") ? spell._get("spellhealing") : "");
+			const diff = lvl - splvl;
+			const mult = diff * (spell._get("spellhldie") || 1);
+			const addBonus = spell._get("spellhlbonus") && !isNaN(spell._get("spellhlbonus")) ? `+${Number(spell._get("spellhlbonus"))}` : "";
+			const addDice = spell._get("spellhldietype") ? `${mult}${spell._get("spellhldietype")}${addBonus}` : "";
+
+			vars[lvl] = {
+				dmg1roll: base ? buildRollModel({base, mods: [[spelldmgmod], [addDice, `LVL${lvl}`]]}) : "",
+				crit1roll: base ? buildRollModel({base, mods: [[`${mult}${spell._get("spellhldietype")}`, `LVL${lvl}`]]}) : "",
+			}
+			return vars;
+		}, []);
 
 		const tmplVals = {
 			_this: q.token,
 			_thisId: q.token.character.id,
 			_isNpc: q.token.get("npc"),
-			_isSpell: spell.spell_ability === "spell",
-			_save: spell.spellsave?.toLowerCase() || false,
+			_isSpell: spell._get("spell_ability") === "spell",
+			_upcast: upcast,
+			_save: spell._get("spellsave")?.toLowerCase() || false,
 			_expend: expend,
 			_onSelf: spell._get("spellrange")?.includes("[S]") || spell._get("spelltarget") === "self",
 			_targeted: !!spell._has("atk") || !!spell._has("dmgorheal") || !!spell._has("save"),
@@ -28428,28 +28321,28 @@ function baseBARollTemplates () {
 			title:	spell._get("name"),
 			subTitle,
 
-			dmg1on: !!spell.spelldamage || !!spell.spellhealing,
-			dmg2on: !!spell.spelldamage2,
-			dmg1tag:	spell.spelldamage || spell.spelldamage2 ? "dmg" : spell.spellhealing ? "heal" : "",
-			dmg2tag:	spell.spelldamage2 ? "dmg" : spell.spelldamage && spell.spellhealing ? "heal" : "",
-			dmg1type:	spell.spelldamagetype || (spell.spellhealing ? "healing" : ""),
-			dmg2type:	spell.spelldamagetype2 || (spell.spelldamage && spell.spellhealing ? "healing" : ""),
-			dmg1roll:	spell.spelldamage ? buildRollModel({base: spell.spelldamage, mods: [[spelldmgmod]]})
-				: spell.spellhealing && !spell.spellsave ? buildRollModel({base: spell.spellhealing, mods: [[spelldmgmod]]}) : "",
-			dmg2roll:	spell.spelldamage2 ? buildRollModel({base: spell.spelldamage2, mods: [[spelldmgmod]]})
-				: spell.spelldamage && spell.spellhealing && !spell.spellsave ? buildRollModel({base: spell.spellhealing, mods: [[spelldmgmod]]}) : "",
+			dmg1on: !!spell._get("spelldamage") || !!spell._get("spellhealing"),
+			dmg2on: !!spell._get("spelldamage2"),
+			dmg1tag:	spell._get("spelldamage") || spell._get("spelldamage2") ? "dmg" : spell._get("spellhealing") ? "heal" : "",
+			dmg2tag:	spell._get("spelldamage2") ? "dmg" : spell._get("spelldamage") && spell._get("spellhealing") ? "heal" : "",
+			dmg1type:	spell._get("spelldamagetype") || (spell._get("spellhealing") ? "healing" : ""),
+			dmg2type:	spell._get("spelldamagetype2") || (spell._get("spelldamage") && spell._get("spellhealing") ? "healing" : ""),
+			dmg1roll:	spell._get("spelldamage") ? buildRollModel({base: spell._get("spelldamage"), mods: [[spelldmgmod]]})
+				: spell._get("spellhealing") && !spell._get("spellsave") ? buildRollModel({base: spell._get("spellhealing"), mods: [[spelldmgmod]]}) : "",
+			dmg2roll:	spell._get("spelldamage2") ? buildRollModel({base: spell._get("spelldamage2"), mods: [[spelldmgmod]]})
+				: spell._get("spelldamage") && spell._get("spellhealing") && !spell._get("spellsave") ? buildRollModel({base: spell._get("spellhealing"), mods: [[spelldmgmod]]}) : "",
 
-			crit1roll:	spell.spelldamage,
-			crit2roll:	spell.spelldamage2,
+			crit1roll:	spell._get("spelldamage"),
+			crit2roll:	spell._get("spelldamage2"),
 			atk1: buildRollModel(atkRoll),
 			atkMod:	buildDisplayMod(atkRoll),
 			description: spell._get("description"),
+			hldescription: spell._get("spellathigherlevels"),
 
-			dc: spell.spell_ability !== "spell"
+			dc: spell._get("spell_ability") !== "spell"
 				? buildDisplayMod({mods: [[8], [q.token.get("spell_dc_mod")], [q.token.get(`${spellAbility}_mod`)], [q.token.get("pb")]]})
 				: (q.token.get("spell_save_dc") || "10"),
-			saveAttr: spell.spellsave?.toLowerCase() || "",
-			// dmgType: spell.spelldamagetype ? `${spell.spelldamagetype} ${spell.spelldamagetype2 || ""}` : "",
+			saveAttr: spell._get("spellsave")?.toLowerCase() || "",
 			dmgOnFail: `$[[0]]`,
 			dmgOnSuccess: spell.lvl === "cantrip" ? "[[0]]" : `$[[1]]`,
 		}
@@ -28479,6 +28372,7 @@ function baseBARollTemplates () {
 			const targetToken = d20plus.ba.tokens.ready(target);
 			const distance = d20plus.ut.getTokensDistanceText(target._model, vals._this._ref);
 			await targetToken.ready();
+			await targetToken.character.sheet.fetch();
 
 			// const targetChar = await d20plus.ba.fetchChar(target._model);
 			// const thisToken = d20plus.ut.getTokenById(d20plus.ba.chars[vals._thisId].lastTokenId);
@@ -28563,17 +28457,58 @@ function baseBARollTemplates () {
 		})
 	}
 
+	d20plus.ba.getUpcastSpell = (vals, flags) => {
+		const lvls = flags.split(",");
+		const options = lvls.reduce((html, lvl) => {
+			const name = lvl === "0" ? "As ritual" : `Level ${lvl}`;
+			return `${html}<option value="${lvl}">${name}</option>`;
+		}, "")
+		const $uc = $(`
+			<div>
+				<h3>${vals.title}</h3>
+				${vals.hldescription ? `<p>${vals.hldescription}</p>` : ""}
+				Select spell slot to expend:
+				<select style="width:90px;">${options}</select>
+			</div>
+		`).dialog({
+			title: "Upcast spell",
+			autoopen: true,
+			close: () => { $fd.off(); $uc.dialog("destroy").remove() },
+			buttons: {
+				"Cancel": () => { $uc.off(); $uc.dialog("destroy").remove() },
+				"Roll": () => {
+					const $input = $uc.find("select");
+					const level = $input.val();
+					if (level === "0") {
+						vals._expend = false;
+					} else {
+						vals._expend.lvl = level;
+						if (vals._upcast && vals._upcast[level]?.dmg1roll) {
+							vals.dmg1roll = vals._upcast[level]?.dmg1roll;
+							if (vals._upcast[level]?.crit1roll) vals.crit1roll = vals._upcast[level]?.crit1roll;
+						}
+					}
+					if (vals._targeted && !vals._onSelf) d20plus.ba.getTarget(vals);
+					else outputTemplate(vals);
+					$uc.off(); $uc.dialog("destroy").remove();
+				},
+			},
+		})
+	}
+
 	d20plus.ba.makeRoll = (q) => { // action, spec, flags
 		const getTmplVals = {
 			roll: getAbilityVals,
 			attack: getAttackVals,
 			cast: getSpellVals,
+			upcast: getSpellVals,
 		}[q.action];
 
 		const tmplVals = getTmplVals && getTmplVals(q); // spec, flags
 		if (!tmplVals) return d20plus.ba.rollError();
 		else if (q.flags === "concentration") d20plus.ba.getConcentrationDC(tmplVals);
 		else if (q.flags === "fall") d20plus.ba.getFallHeight(tmplVals);
+		else if (q.action === "upcast") d20plus.ba.getUpcastSpell(tmplVals, q.flags);
 		else if (tmplVals._targeted && !tmplVals._onSelf) d20plus.ba.getTarget(tmplVals);
 		else outputTemplate(tmplVals);
 	}
@@ -28919,9 +28854,9 @@ const betteR20Core = function () {
 			}
 			d20plus.engine.enhancePathWidths();
 			// d20plus.ut.fix3dDice();
+			d20plus.views.addViews();
 			d20plus.engine.addLayers();
 			d20plus.weather.addWeather();
-			d20plus.views.addViews();
 			d20plus.engine.repairPrototypeMethods();
 			d20plus.engine.disableFrameRecorder();
 			d20plus.engine.fixPolygonTool();
