@@ -193,17 +193,28 @@ module.exports = {
 
 	ba_title_rolls: ["Броски"],
 	ba_title_stats: ["Инфо"],
-	ba_title_animations: ["Анимации"],
 
-	ba_group_abilities: ["Способности"],
+	ba_group_general: ["Общее"],
+	ba_group_abilities: ["Характеристики}"],
 	ba_group_skills: ["Умения"],
 	ba_group_attacks: ["Атаки"],
+	ba_group_traits: ["Способности"],
 	ba_group_spells: ["Заклинания"],
+	ba_group_items: ["Вещи"],
+	ba_group_effects: ["Эффекты"],
+	ba_group_animations: ["Анимации"],
 
 	ba_roll_initiative: ["Инициатива"],
 	ba_roll_concentration: ["Концентрация"],
+	ba_roll_falldamage: ["Урон от падения"],
 	ba_roll_deathsave: ["Спас от смерти"],
 	ba_roll_hitdice: ["Кость хитов"],
+	ba_roll_save: ["Спасбросок"],
+	ba_roll_check: ["Проверка"],
+
+	ba_spells_cantrips: ["Заговоры"],
+	ba_spells_lvl: ["Круг"],
+	ba_nothing_selected: ["На этой карте не найдено токенов, которые вы могли бы контролировать. Пожалуйста, выберите что-нибудь"],
 
 	lang_common: ["Общий"],
 	lang_dwarvish: ["Дварфийский"],
@@ -272,10 +283,12 @@ module.exports = {
 	msg_b20_chat_help_title: [`<strong>Список команд чата:</strong><br>Команды от betteR20 отмечены &#42;`],
 
 	msg_b20_vtte_init: [`VTTE обнаружен и $0 успешно загрузился.<br>`],
-	msg_b20_version_stream: [`<br>$0 обновился, доступна новая версия.<br><br>`],
-	msg_b20_version: [`<br>$0 обновился, доступна новая версия. Загрузите $1 в варианте <a href="$2">5etools</a> ИЛИ <a href="$3">core</a>.<br><br>`],
+	msg_b20_version_update_stream: [`<br>$0 обновился, доступна новая версия.<br><br>`],
+	msg_b20_version_update: [`<br>$0 обновился, доступна новая версия. Загрузите $1 в варианте <a href="$2">5etools</a> ИЛИ <a href="$3">core</a>.<br><br>`],
+	msg_b20_r20beta_warning: [`betteR20 пока не поддерживает betaUI preview от roll20! Включение betaUI МОЖЕТ (или нет) сделать часть функционала betteR20 недоступным. Если вы столкнулись с проблемой, попробуйте отключить betaUI preview в настройках roll20.`],
 
-	msg_welcome_versions: ["VTTES v$1 найден<br>$0 загружен"],
+	msg_welcome_not: "не",
+	msg_welcome_versions: ["VTTES $1 найден<br>$0 загружен"],
 	msg_welcome_faq: ["Нужна помощь? Посетите <a href=\"$0/index.php/BetteR20_FAQ\"><strong>вики</strong></a> или зайдите в"],
 	msg_welcome_sarcasm: ["Вроде, это должно быть очевидно"],
 	msg_welcome_p1: ["Пожалуйста, НЕ НАДО постить про этот скрипт или относящийся к нему контент в официальных каналах, включая форумы Roll20."],

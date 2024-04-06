@@ -2,10 +2,10 @@ const fs = require("fs");
 const beautify_html = require("js-beautify").html;
 const lzstring = require("./lz-string");
 
-const SCRIPT_VERSION = "1.35.8.53";
+const SCRIPT_VERSION = "1.35.8.57";
 const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/";
 
-const SCRIPT_BETA = "1.35.184.3";
+const SCRIPT_BETA = "1.35.184.7";
 const SCRIPT_BETA_REPO = "https://github.com/redweller/betterR20/raw/beta/";
 const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
 -- Beta features overview:
@@ -15,28 +15,34 @@ const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
 <strong>Filter Imports by List</strong>
 ⦁ when importing, you can filter by a list of items
 ⦁ also filter by source, compatible with copying csvs from 5etools
-<strong>Miscellaneous</strong>
-⦁ change players' avatars size
-<strong>Better token Actions & Automation</strong>
-⦁ new automatic token action buttons: Rolls, Stats and Animation
-⦁ rolls lets you select available actions with custom roll templates
-- the damage/healing values are clickable and are applied on click
-- spell slots and items are spent automatically 
-- auto roll saves, and show save/attack success or failure
-The system is still in an unfinished state, so use with caution!
-<strong>Edit Token Images dialog</strong>
-⦁ manage token images at any moment via context menu
-⦁ a better Random Side randomizer (gives seemingly more random results)
--- v.184.1 changes:
-⦁ edit token images directly from roll20 Token Editor
-⦁ update Token Editor html (added Open Character button)
--- v.184.2 changes:
-⦁ fix sending descriptions to chat via "book" icon
-⦁ fix Better Actions targeting with the NewUI
-⦁ fix Page Toolbar malfunctioning with the NewUI
--- v.184.3 changes:
+<strong>Layers</strong>
 ⦁ add new Extra Layers toolbar as part of r20 newUI
 ⦁ add show/hide layers toggles to b20 layers
+<strong>Miscellaneous</strong>
+⦁ change players' avatars size
+⦁ removed VTTES dependency
+⦁ fixed Page Toolbar malfunctioning with the NewUI
+⦁ fixed context menu appearing on left click
+<strong>Edit Token Images dialog</strong>
+⦁ manage token images at any moment via context menu
+⦁ a better Random Side randomizer (for seemingly more random results)
+⦁ edit token images directly from roll20 Token Editor
+<strong>Better token Actions & Automation</strong>
+⦁ new character menu in left top corner of the screen
+- new design, the menu works even when no character is selected
+- browse stats and actions for last selected token
+⦁ use available actions with custom roll templates
+- the damage/healing values are clickable and are applied on click
+- spell slots, items and resources are spent automatically 
+- auto roll saves, and show save/attack success or failure
+- view descriptions before you use a spell or a trait
+- filter prepared spells/useable traits etc.
+- upcast or use spells as ritual
+-- v.184.7 changes:
+- fix BA upcasting at highest available levels
+- fix BA detectiing ritual spells
+- page settings now work with beta UI
+- art repo is functional again
 `;
 
 const matchString = `
@@ -267,6 +273,7 @@ const SCRIPTS = {
 			"base-chat-languages",
 			"base-chat",
 			"base-ba",
+			"base-ba-character",
 			"base-ba-rolltemplates",
 			"base-remote-libre",
 			"base-jukebox-widget",
@@ -315,6 +322,7 @@ const SCRIPTS = {
 			"base-chat-languages",
 			"base-chat",
 			"base-ba",
+			"base-ba-character",
 			"base-ba-rolltemplates",
 			"base-remote-libre",
 			"base-jukebox-widget",
@@ -382,6 +390,8 @@ const CHANGED_SCRIPTS = [
 	"5etools-main",
 	"5etools-template",
 	"base-art",
+	"base-art-browse",
+	"base-remote-libre",
 	"base-config",
 	"base-css",
 	"base-chat-languages",
@@ -389,6 +399,7 @@ const CHANGED_SCRIPTS = [
 	"base-chat",
 	"base-ba",
 	"base-ba-rolltemplates",
+	"base-ba-character",
 	"base-engine",
 	"base-journal",
 	"base-qpi",

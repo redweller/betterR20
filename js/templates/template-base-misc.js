@@ -408,32 +408,85 @@ function initHTMLbaseMisc () {
 	});
 
 	document.addEventListener("b20initTemplates", function initHTML () {
-		d20plus.html.bActionsButtons = `
-		<ul style="display: inline-block;" class="b20-token-menu">
-			<li style="color:unset!important;">
-				<span style="position:relative;display: inline-block;">
-					<button class="btn" data-type="rolls">${__("ba_title_rolls")}</button>
-					<div class="b20-rolls d20contextmenu">
-						<ul></ul>
+		d20plus.html.bActionsMenu = `
+		<div id="ba-panel">
+			<button aria-disabled="false" type="button" style="" class="el-button large page-button">
+				<span><span style="font-family: Pictos;font-size: 21px;">U</span></span>
+			</button>
+			<div class="ba-menu" style="display:none">
+				<div class="ba-title">
+				<span class="ba-token" data-action="findtoken"><img src="https://img.icons8.com/ios-glyphs/30/multicultural-people.png"></span>
+					<span class="ba-name">Selected</span>
+					<span class="ba-title-actions">
+						<button data-action="collapsew" title="Collapse/expand"></button>
+						<button data-action="expandh" title="Lock/unlock menu height"></button>
+						<button data-action="close" title="Close this menu">*</button>
+						<!--<button data-action="speakas" title="Speak as character">w</button>
+						<button data-action="opensheet" title="Open character sheet">U</button>
+						<button data-action="openchar" title="Open character settings">x</button><br>-->
+					</span>
+				</div>
+				<ul class="ba-tabs nav nav-tabs">
+					<li class="nav-tabs active" data-tab="general"><a>
+						<img src="https://img.icons8.com/ios-glyphs/30/pulse.png">
+						<span>${__("ba_group_general")}</span></a>
+					</li>
+					<li class="nav-tabs" data-tab="stats" style="display:none;"><a>
+						<img src="https://img.icons8.com/external-kmg-design-glyph-kmg-design/32/external-muscle-gym-kmg-design-glyph-kmg-design.png">
+						<span>${__("ba_group_abilities")}</span></a>
+					</li>
+					<li class="nav-tabs" data-tab="skills" style="display:none;"><a>
+						<img src="https://img.icons8.com/external-icongeek26-glyph-icongeek26/64/external-Lute-music-icongeek26-glyph-icongeek26.png">
+						<span>${__("ba_group_skills")}</span></a>
+					</li>
+					<li class="nav-tabs" data-tab="attacks" style="display:none;"><a>
+						<img src="https://img.icons8.com/external-prettycons-solid-prettycons/60/external-swords-games-prettycons-solid-prettycons.png">
+						<span>${__("ba_group_attacks")}</span></a>
+					</li>
+					<li class="nav-tabs" data-tab="traits" style="display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/exercise.png">
+						<span>${__("ba_group_traits")}</span></a>
+					</li>
+					<li class="nav-tabs" data-tab="spells" style="display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/fantasy.png">
+						<span>${__("ba_group_spells")}</span></a>
+					</li>
+					<li class="nav-tabs" data-tab="items" style="display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/red-purse.png">
+						<span>${__("ba_group_items")}</span></a>
+					</li>
+					<li class="nav-tabs" data-tab="animations" style="float:right;display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/service.png">
+						<span>${__("ba_group_animations")}</span></a>
+					</li>
+				</ul>
+				<div class="ba-main">
+					<div class="ba-list content-left">
+						<ul class="active" data-list="general"></ul>
+						<ul data-list="stats"></ul>
+						<ul class="uneven" data-list="skills"></ul>
+						<ul data-list="attacks"></ul>
+						<ul data-list="traits"></ul>
+						<ul data-list="spells"></ul>
+						<ul data-list="items"></ul>
+						<ul data-list="animations"></ul>
 					</div>
-				</span>
-				<span style="position:relative;">
-					<button class="btn" data-type="stats">${__("ba_title_stats")}</button>
-					<div class="b20-stats d20contextmenu">
-						<ul></ul>
+					<div class="ba-info content-right">
+						<ul class="active" data-pane="general"><li>${__("ba_nothing_selected")}</li></ul>
+						<ul data-pane="stats"><li> </li></ul>
+						<ul data-pane="skills"><li> </li></ul>
+						<ul data-pane="attacks"><li> </li></ul>
+						<ul data-pane="traits"><li> </li></ul>
+						<ul data-pane="spells"><li> </li></ul>
+						<ul data-pane="items"><li> </li></ul>
+						<ul data-pane="context" style="font-size: 12px; line-height: 15px; font-weight: 100;"><li> </li></ul>
+						<ul data-pane="animations">
+							<li>Animations are set in the betteR20 tools menu</li>
+						</ul>
 					</div>
-				</span>
-				<span style="position:relative; display: none">
-					<button class="btn" data-type="effects">Effects</button>
-				</span>
-				<span style="position:relative;">
-					<button class="btn" data-type="animate">Animate</button>
-					<div class="b20-animations d20contextmenu">
-						<ul></ul>
-					</div>
-				</span>
-			</li>
-		</ul>
+				</div>
+			</div>
+		</div>
 		`;
 		document.removeEventListener("b20initTemplates", initHTML, false);
 	});

@@ -57,11 +57,13 @@ function baseMenu () {
 
 		// BEGIN ROLL20 CODE
 		var e, t = !1, n = [];
-		var i = function() {
+		d20plus.ut.injectCode(d20.token_editor, "closeContextMenu", (func) => {
 			t && (t.remove(),
 				t = !1),
-			e && clearTimeout(e)
-		};
+			e && clearTimeout(e);
+			func();
+		})
+		var i = d20.token_editor.closeContextMenu;
 		var r = function (r) {
 			var o, a;
 			r.changedTouches && r.changedTouches.length > 0 ? (o = r.changedTouches[0].pageX,
@@ -459,8 +461,7 @@ function baseMenu () {
 
 							options = options.map(it => `<option>${it}</option>`);
 
-							const dialog= $("<div><p style='font-size: 1.15em;'><strong>" + d20.utils.strip_tags(''+__('ui_dialog_select')) + ":</strong> <select style='width: 150px; margin-left: 5px;'>" + options.join("") + "</select></p></div>");
-
+							const dialog= $("<div><p style='font-size: 1.15em;'><strong>" + d20.utils.strip_tags("Select Save") + ":</strong> <select style='width: 150px; margin-left: 5px;'>" + options.join("") + "</select></p></div>");
 							dialog.dialog({
 								title: __('ui_dialog_title'),
 								beforeClose: function() {
@@ -495,25 +496,7 @@ function baseMenu () {
 						if ("rollsaves" === e) {
 							// Mass roll: Saves
 							const options = ["str", "dex", "con", "int", "wis", "cha"].map(it => Parser.attAbvToFull(it));
-							if (!!d20plus.cfg.get('token','massRollAssumesOGL')) {
-								const out_options = [];
-								const loc_options = {
-									[__('stat_save_str')]: 'Strength',
-									[__('stat_save_dex')]: 'Dexterity',
-									[__('stat_save_con')]: 'Constitution',
-									[__('stat_save_int')]: 'Intelligence',
-									[__('stat_save_wis')]: 'Wisdom',
-									[__('stat_save_cha')]: 'Charisma',
-								}
-								for (const i in loc_options) out_options.push(i);
-								showRollOptions(
-									(token, val) => {
-										return `@{selected|wtype} &{template:simple} {{rname=^{${loc_options[val].toLowerCase()}-save-u}}} {{charname=@{selected|token_name}}} {{mod=@{selected|${loc_options[val].toLowerCase()}_save_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|${loc_options[val].toLowerCase()}_save_bonus}]]}} {{r2=[[@{selected|d20}+@{selected|${loc_options[val].toLowerCase()}_save_bonus}]]}}`;
-									},
-									out_options
-								);
-							}
-							else if (d20plus.sheet === "ogl") {
+							if (d20plus.sheet === "ogl") {
 								showRollOptions(
 									(token, val) => {
 										if (getTokenType(token) === 1) {
@@ -539,13 +522,9 @@ function baseMenu () {
 							sel.forEach(it => {
 								d20.engine.select(it);
 								let toRoll = ``;
-								if (!!d20plus.cfg.get('token','massRollAssumesOGL')) {
-									toRoll = `&{template:simple} {{rname=${__('stat_init')}}} {{charname=@{selected|token_name}}} {{mod=@{selected|initiative_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|initiative_bonus} &{tracker}]]}} {{r2=[[@{selected|d20}+@{selected|initiative_bonus}]]}}`;
-								}
-								else if ((d20plus.sheet === "ogl") || !!d20plus.cfg.get('token','massRollAssumesOGL')) {
+								if (d20plus.sheet === "ogl") {
 									toRoll = `%{selected|Initiative}`;
-								}
-								else if (d20plus.sheet === "shaped") {
+								} else if (d20plus.sheet === "shaped") {
 									toRoll = `@{selected|output_option} &{template:5e-shaped} {{ability=1}} {{title=INITIATIVE}} {{roll1=[[@{selected|initiative_formula}]]}}`;
 								}
 								d20.textchat.doChatInput(toRoll);
@@ -577,93 +556,56 @@ function baseMenu () {
 								"Persuasion"
 							].sort();
 
-							if (!!d20plus.cfg.get('token','massRollAssumesOGL')) {
-								let out_options = [];
-								const loc_options = {
-									[__('stat_ab_athl')]: 'Athletics',
-									[__('stat_ab_acrb')]: 'Acrobatics',
-									[__('stat_ab_sloh')]: 'Sleight of Hand',
-									[__('stat_ab_stel')]: 'Stealth',
-									[__('stat_ab_arcn')]: 'Arcana',
-									[__('stat_ab_hist')]: 'History',
-									[__('stat_ab_invs')]: 'Investigation',
-									[__('stat_ab_natr')]: 'Nature',
-									[__('stat_ab_relg')]: 'Religion',
-									[__('stat_ab_anih')]: 'Animal Handling',
-									[__('stat_ab_insg')]: 'Insight',
-									[__('stat_ab_medc')]: 'Medicine',
-									[__('stat_ab_perc')]: 'Perception',
-									[__('stat_ab_surv')]: 'Survival',
-									[__('stat_ab_decp')]: 'Deception',
-									[__('stat_ab_intm')]: 'Intimidation',
-									[__('stat_ab_perf')]: 'Performance',
-									[__('stat_ab_pers')]: 'Persuasion',
-								}
-								for (const i in loc_options) out_options.push(i);
-								out_options = out_options.sort();
-								showRollOptions(
-									(token, val) => {
-										const ready_val = loc_options[val].toLowerCase().replace(/ /g, "_");
-										return `&{template:simple} {{rname=^{${ready_val}-u}}} {{charname=@{selected|token_name}}} {{mod=@{selected|${ready_val}_bonus}}} {{always=1}} {{r1=[[@{selected|d20}+@{selected|${ready_val}_bonus}]]}} {{r2=[[@{selected|d20}+@{selected|${ready_val}_bonus}]]}}`;
-									},
-									out_options
-								);
-							}
-							else {
-								showRollOptions(
-									(token, val) => {
-										const clean = val.toLowerCase().replace(/ /g, "_");
-										const abil = `${Parser.attAbvToFull(Parser.skillToAbilityAbv(val.toLowerCase())).toLowerCase()}_mod`;
-	
-										let doRoll = '';
-										if (d20plus.sheet === "ogl") {
-											doRoll = (atb = abil) => {
-												if (getTokenType(token) === 1) {
-													const slugged = val.replace(/\s/g, "_").toLowerCase();
-													return `${getTokenWhisperPart()}@{selected|wtype}&{template:npc} @{selected|npc_name_flag} {{type=Skill}} @{selected|rtype} + [[@{selected|npc_${slugged}}]]]]}}; {{rname=${val}}}; {{r1=[[1d20 + [[@{selected|npc_${slugged}}]]]]}}`;
-												} else {
-													return `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val}}} {{mod=@{selected|${atb}}}} {{r1=[[1d20+@{selected|${atb}}]]}} {{r2=[[1d20+@{selected|${atb}}]]}}`;
-												}
-											}
-										} 
-										else if (d20plus.sheet === "shaped"){
-											doRoll = (atb = abil) => {
-												return `@{selected|output_option} &{template:5e-shaped} {{ability=1}} {{character_name=@{selected|token_name}}} {{title=${val}}} {{mod=@{selected|${atb}}}} {{roll1=[[1d20+@{selected|${atb}}]]}} {{roll2=[[1d20+@{selected|${atb}}]]}}`;
-											}
-										}
-	
-										try {
-											if (token && token.model && token.model.toJSON && token.model.toJSON().represents) {
-												const charIdMaybe = token.model.toJSON().represents;
-												if (!charIdMaybe) return doRoll();
-												const charMaybe = d20.Campaign.characters.get(charIdMaybe);
-												if (charMaybe) {
-													const atbs = charMaybe.attribs.toJSON();
-													const npcAtbMaybe = atbs.find(it => it.name === "npc");
-	
-													if (npcAtbMaybe && npcAtbMaybe.current == 1) {
-														const npcClean = `npc_${clean}`;
-														const bonusMaybe = atbs.find(it => it.name === npcClean);
-														if (bonusMaybe) return doRoll(npcClean);
-														else return doRoll();
-													} else {
-														const pcClean = `${clean}_bonus`;
-														const bonusMaybe = atbs.find(it => it.name === pcClean);
-														if (bonusMaybe) return doRoll(pcClean);
-														else return doRoll();
-													}
-												} else return doRoll();
-											} else return doRoll();
-										} catch (x) {
-											console.error(x);
-											return doRoll();
-										}
-									},
-									options
-								);
-							}
+							showRollOptions(
+								(token, val) => {
+									const clean = val.toLowerCase().replace(/ /g, "_");
+									const abil = `${Parser.attAbvToFull(Parser.skillToAbilityAbv(val.toLowerCase())).toLowerCase()}_mod`;
 
-							
+									let doRoll = '';
+									if (d20plus.sheet === "ogl") {
+										doRoll = (atb = abil) => {
+											if (getTokenType(token) === 1) {
+												const slugged = val.replace(/\s/g, "_").toLowerCase();
+												return `${getTokenWhisperPart()}@{selected|wtype}&{template:npc} @{selected|npc_name_flag} {{type=Skill}} @{selected|rtype} + [[@{selected|npc_${slugged}}]]]]}}; {{rname=${val}}}; {{r1=[[1d20 + [[@{selected|npc_${slugged}}]]]]}}`
+											} else {
+												return `@{selected|wtype} &{template:simple} {{charname=@{selected|token_name}}} {{always=1}} {{rname=${val}}} {{mod=@{selected|${atb}}}} {{r1=[[1d20+@{selected|${atb}}]]}} {{r2=[[1d20+@{selected|${atb}}]]}}`;
+											}
+										}
+									} else if (d20plus.sheet === "shaped"){
+										doRoll = (atb = abil) => {
+											return `@{selected|output_option} &{template:5e-shaped} {{ability=1}} {{character_name=@{selected|token_name}}} {{title=${val}}} {{mod=@{selected|${atb}}}} {{roll1=[[1d20+@{selected|${atb}}]]}} {{roll2=[[1d20+@{selected|${atb}}]]}}`;
+										}
+									}
+
+									try {
+										if (token && token.model && token.model.toJSON && token.model.toJSON().represents) {
+											const charIdMaybe = token.model.toJSON().represents;
+											if (!charIdMaybe) return doRoll();
+											const charMaybe = d20.Campaign.characters.get(charIdMaybe);
+											if (charMaybe) {
+												const atbs = charMaybe.attribs.toJSON();
+												const npcAtbMaybe = atbs.find(it => it.name === "npc");
+
+												if (npcAtbMaybe && npcAtbMaybe.current == 1) {
+													const npcClean = `npc_${clean}`;
+													const bonusMaybe = atbs.find(it => it.name === npcClean);
+													if (bonusMaybe) return doRoll(npcClean);
+													else return doRoll();
+												} else {
+													const pcClean = `${clean}_bonus`;
+													const bonusMaybe = atbs.find(it => it.name === pcClean);
+													if (bonusMaybe) return doRoll(pcClean);
+													else return doRoll();
+												}
+											} else return doRoll();
+										} else return doRoll();
+									} catch (x) {
+										console.error(x);
+										return doRoll();
+									}
+								},
+								options
+							);
 						} else if ("forward-one" === e) {
 							d20plus.engine.forwardOneLayer(n);
 							i();
@@ -1256,8 +1198,8 @@ function baseMenu () {
 		}
 
 		d20.token_editor.showContextMenu = r;
-		d20.token_editor.closeContextMenu = i;
-		$(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
+		// d20.token_editor.closeContextMenu = i;
+		// $(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
 	};// RB20 EXCLUDE START
 
 	d20plus.menu._neatActionsView = (id) => {

@@ -109,9 +109,14 @@ function baseUtil () {
 							if (!isStreamer) {
 								const rawToolsInstallUrl = "https://github.com/redweller/betterR20/raw/run/betteR20-5etools.user.js";
 								const rawCoreInstallUrl = "https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js";
-								d20plus.ut.sendHackerChat(__("msg_b20_version", [scriptName, avail, rawToolsInstallUrl, rawCoreInstallUrl]));
+								const msgVars = [scriptName, avail, rawToolsInstallUrl, rawCoreInstallUrl];
+								d20plus.ut.sendHackerChat(`
+									<div class="userscript-b20intro" style="border: 1px solid; background-color: #582124;">
+									${__("msg_b20_version_update", msgVars)}
+									</div>
+								`);
 							} else {
-								d20plus.ut.sendHackerChat(__("msg_b20_version_stream", [scriptName]));
+								d20plus.ut.sendHackerChat(__("msg_b20_version_update_stream", [scriptName]));
 							}
 						}, 1000);
 					}
@@ -127,10 +132,10 @@ function baseUtil () {
 		if (shownHardDickWarning) return;
 		shownHardDickWarning = true;
 
-		d20plus.ut.sendHackerChat(`
+		/* d20plus.ut.sendHackerChat(`
 			${scriptName} needs VTT Enhancement Suite! Please install it from <a href="${vttesUrl}">here</a>.
 			<br>
-		`, true);
+		`, true); */
 	};
 
 	d20plus.ut.chatTag = () => {
@@ -139,9 +144,10 @@ function baseUtil () {
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const classname = !legacyStyle ? "userscript-b20intro" : "userscript-hackerintro";
 		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
+		const vttesVersion = window.r20es?.hooks?.welcomeScreen?.config?.previousVersion;
 		const data = [
 			d20plus.scriptName,
-			window.r20es?.hooks?.welcomeScreen?.config?.previousVersion,
+			(vttesVersion && `v${vttesVersion}`) || __("msg_welcome_not"),
 			d20plus.ut.WIKI_URL,
 		];
 		const welcomeTemplate = (b20v, vttv, faq) => `
@@ -173,9 +179,9 @@ function baseUtil () {
 			d20plus.ut.showHardDickMessage(scriptName);
 		}
 		d20plus.betaFeaturesEnabled && !isStreamer && d20plus.ut.sendHackerChat(`
-			betteR20 does not support the beta UI preview at this moment!
-			Using it will make some betteR20 or roll20 functionality unavailable.
-			If you experience problems with Page Settings, disable roll20 Beta Features.
+			<div class="userscript-b20intro" style="border: 1px solid; background-color: #582124;">
+			${__("msg_b20_r20beta_warning")}
+			</div>
 		`);
 		$boringProgress
 			.before(`<span><span>&gt;</span>all systems operational</span>`)
@@ -282,9 +288,10 @@ function baseUtil () {
 	d20plus.ut.parseVersionInfo = (raw) => {
 		const info = JSON.parse(decodeURI(atob(raw)));
 		const time = d20plus.ut.timeAgo(info.date);
-		const phdm = info.phdm ? "<br>Detected DarkMode script" : "";
-		const dnd20 = info.dnd20 ? "<br>Detected Beyond20 extension" : "";
-		let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}${dnd20}<br>Info updated ${time}`;
+		const phdm = info.phdm ? `<br>Detected DarkMode script` : "";
+		const vttes = info.vtte ? `<br>Detected VTTES v${info.vtte}` : "";
+		const dnd20 = info.dnd20 ? `<br>Detected Beyond20 extension` : "";
+		let html = `Detected betteR20-${info.b20n} v${info.b20v}${vttes}${phdm}${dnd20}<br>Info updated ${time}`;
 		if (d20plus.ut.cmpVersions(info.b20v, d20plus.version) < 0) html += `<br>Player's betteR20 may be outdated`;
 		if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's VTTES may be outdated`;
 		return html;
@@ -422,9 +429,12 @@ function baseUtil () {
 		}
 	} // RB20 EXCLUDE END
 
-	d20plus.ut.fetchCharAttribs = async (char) => {
+	d20plus.ut.fetchCharAttribs = async (char, keepSync) => {
 		const attribs = char?.attribs;
 		if (!attribs) return false;
+		if (keepSync && !attribs.backboneFirebase) {
+			attribs.backboneFirebase = new BackboneFirebase(attribs)
+		}
 		if (attribs.length) {
 			return char;
 		}

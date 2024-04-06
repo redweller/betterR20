@@ -6,18 +6,14 @@ function baseBARollTemplates () {
 	const normalizeStyle = `color: inherit;text-decoration: none;cursor: auto;`;
 
 	const getRollMode = () => {
-		const adv = d20plus.ba.$dom.buttons.find(".b20-rolls .mods .advantage input").prop("checked");
-		const dis = d20plus.ba.$dom.buttons.find(".b20-rolls .mods .disadvantage input").prop("checked");
+		const adv = d20plus.ba.$dom.menu.find(".ba-list .mods:visible .advantage input").prop("checked");
+		const dis = d20plus.ba.$dom.menu.find(".ba-list .mods:visible .disadvantage input").prop("checked");
 		return adv ? "advantage" : dis ? "disadvantage" : "normal";
 	}
 
 	const getWMode = () => {
-		const togm = d20plus.ba.$dom.buttons.find(".b20-rolls .mods .togm input").prop("checked");
+		const togm = d20plus.ba.$dom.menu.find(".ba-list .mods:visible .togm input").prop("checked");
 		return togm ? "/w gm " : "";
-	}
-
-	const getDisplayName = (char) => {
-
 	}
 
 	const getTemplatePart = ([tag, val, props], subtree) => {
@@ -62,6 +58,7 @@ function baseBARollTemplates () {
 	}
 
 	const buildAttackTemplate = (v) => {
+		v.targetId = v._onSelf ? v._this.id : v.targetId;
 		const tmplModel = [
 			{tag: `attack`,	 val: "1"},
 			{tag: `crit`,	 val: "1"},
@@ -194,23 +191,13 @@ function baseBARollTemplates () {
 		}[values?._modelType];
 
 		const template = templateModel && templateModel(values);
-		if (!template) return d20plus.ba.rollError();
+		if (!template) return d20plus.ba.rollError(); d20plus.ut.log(values);
 
 		d20.textchat.doChatInput(`${getWMode()}${template}`);
-		console.log(values, template)
 		if (values._expend) d20plus.engine.expendResources(values._expend);
 	}
 
-	const buildRollModifier = (r) => {
-		const char = d20plus.ba.getSingleChar();
-		const r20q = /.*@{(?<attr>[^}]*)}.*/g;
-		return r?.split("+").reduce((res, attr) => {
-			return res + (Number(attr.replace(r20q, (...s) => char.stats[s.last().attr])) || 0);
-		}, 0) || 0;
-	}
-
 	const buildRollModel = (r) => {
-		console.log(r);
 		const critrange = r.critrange && Number(r.critrange) !== 20 ? `cs>${r.critrange}` : "";
 		const base = !r.base ? ""
 			: r.base.toLowerCase().includes("d") ? r.base : `1d${r.base}${critrange}`;
@@ -235,41 +222,44 @@ function baseBARollTemplates () {
 		const mods = r.mods?.reduce((s, m) => {
 			if (!m) return s;
 			return s + (Number(m[0]) || 0);
-		}, 0) || 0;
+		}, 0) || 0; d20plus.ut.log("Building modifier", mods, r)
 		const sign = mods < 0 || !r.base ? "" : "+";
 		return `${base}${sign}${mods}`;
 	}
 
-	const getAbilityVals = (spec, attr, dc) => {
-		const char = d20plus.ba.getSingleChar();
-		if (!dc) [attr, dc] = (attr).split("|");
+	const getAbilityVals = (q) => { // spec, attr, dc
+		const [attr, dcTmp] = String(q.flags).split("|");
+		const dc = q.dc || dcTmp;
+		const spec = q.id;
 
 		const abbr = attr.slice(0, 3).toUpperCase();
 		const attrBase = attr.replaceAll(" ", "_").replaceAll("-", "_");
-		const attrId = spec === "save" ? `${attrBase}_save_bonus` : (spec === "ability" ? `${attrBase}_mod` : `${attrBase}_bonus`);
-		const attrIdNpc = spec === "save" ? `${abbr.toLowerCase()}_save` : (spec === "skill" ? attrBase : "");
-		const attrVal = (char.isNpc && char.npcStats[attrIdNpc]) || char.stats[attrId];
+		const attrId = spec === "save" ? `${attrBase}_save` : `${attrBase}_mod`;
+		const attrMod = q.token.get(attrId);
 
 		const roll = {
-			base: attr !== "hit dice" ? `20` : `${char.stats.hitdietype}`,
+			base: attr !== "hit dice" ? `20` : `${q.token.get("hitdietype")}`,
 			// type: spec === "hit dice" ? `heal` : null,
 			// target: spec === "hit dice" ? token.id : null,
 			mods: [
-				attr === "hit dice" || attr === "concentration" ? [char.stats.constitution_mod, "CON"] : [attrVal, abbr],
-				attr === "initiative" ? [` `, `init${char.lastTokenId}`] : null,
-				spec === "ability" && !char.isNpc ? [`${char.stats.jack_bonus}`, "JACK"] : null,
+				[attrMod, abbr],
+				attr === "initiative" ? [` `, `init${q.token.id}`] : null,
+				spec === "ability" && !q.token.get("npc") ? [`${q.token.get("jack_bonus")}`, "JACK"] : null,
 			],
 		}
 
+		if (attr === "hit dice") roll.mods[0] = [q.token.get("constitution_mod"), "CON"];
+		if (attr === "concentration") roll.mods[0] = [q.token.get("constitution_save"), "CON"];
+
 		const tmplVals = {
-			_thisId: char.id,
-			_isNpc: char.isNpc,
-			_modelType: attr !== "hit dice" ? "ability" : "attack",
+			_this: q.token,
+			_thisId: q.token.character.id,
+			_isNpc: q.token.get("npc"),
+			_modelType: !["hit dice", "fall"].includes(attr) ? "ability" : "attack",
 			_onSelf: true,
 			dc,
-			chId: char.id,
 			rMode: getRollMode(),
-			title: attr !== "hit dice" ? char.name.tk : `^{hit-dice-u}`,
+			title: attr !== "hit dice" ? q.token.get("name") : `^{hit-dice-u}`,
 			subTitle: `^{${spec === "ability" ? "abilities" : ["skill", "save", "roll"].includes(spec) ? spec : attr}}`,
 			attrName: `^{${spec === "save" ? `${attrBase}-save` : (["death save", "hit dice"].includes(attr) ? attr.split(" ").concat("u").join("-") : attrBase)}}`,
 			mod: buildDisplayMod(roll),
@@ -280,180 +270,150 @@ function baseBARollTemplates () {
 			dmg1tag: "heal",
 			dmg1type: `^{hp}`,
 			dmg1roll: buildRollModel(roll),
-			charName: char.name.tk,
-			targetId: char.lastTokenId,
+			charName: q.token.get("name"),
+			targetId: q.token.id,
 		}
 
 		return tmplVals;
 	};
 
-	const getAbilityTemplateOld = (token, spec, attr) => {
-		const char = getSingleChar(token);
-		const type = attr || "roll"
-		// const roll = spec !== "hit dice" ? `d20` : `1d${char.stats.hitdietype}`;
-		const typeName = spec === "ability" ? "abilities" : ["skill", "save"].includes(spec) ? spec : type;
-
-		attr = attr || spec;
-		const attrBase = attr.replaceAll(" ", "_").replaceAll("-", "_");
-		const attrId = spec === "save" ? `${attrBase}_save_bonus` : (spec === "ability" ? `${attrBase}_mod` : `${attrBase}_bonus`);
-		const attrName = spec === "save" ? `${attrBase}-save` : (["death save", "hit dice"].includes(spec) ? attr.split(" ").concat("u").join("-") : attrBase);
-		const abbr = attr.slice(0, 3).toUpperCase();
-
-		const roll = {
-			base: spec !== "hit dice" ? `d20` : `1d${char.stats.hitdietype || 20}`,
-			type: spec !== "hit dice" ? `heal` : undefined,
-			self: spec !== "hit dice" ? true : undefined,
-			mods: [
-				spec === "hit dice" ? [`${char.stats.constitution_mod}`, "CON"] : [`${char.stats[attrId]}`, abbr],
-				type === "ability" && "!isNpc" ? [`${char.stats.jack_bonus}`, "JACK"] : null,
-			],
-		}
-		const mods = {base: [
-			spec === "hit dice" ? [`${char.stats.constitution_mod}`, "CON"] : [`${char.stats[attrId]}`, abbr],
-			type === "ability" && "!isNpc" ? [`${char.stats.jack_bonus}`, "JACK"] : null,
-		]};
-		mods.r1 = mods.base.concat([
-			spec === "initiative" ? ["&{tracker}"] : null,	// should be the last one
-		]).filter(s => !!s).map(s => `${s[0]}${s[1] ? `[${s[1]}]` : ""}`).join(" ");		// TODO proper Initiative adding and NPCs
-		mods.r2 = mods.base.concat([])
-			.filter(s => !!s).map(s => `${s[0]}${s[1] ? `[${s[1]}]` : ""}`).join(" ");
-		mods.title = mods.base.concat([
-			spec === "hit dice" ? [`+ D${char.stats.hitdietype}`] : null,
-		]).filter(s => !!s).map(s => s[0]).join(" ");
-
-		const hiddenVars = [
-			`${char.stats.global_skill_mod}`,
-		].filter(s => !!s).join(" ");
-
-		const tmplVars = {
-			chId: char.id,
-			rMode: getRollMode(),
-			title: char.name,
-			subTitle: `^{${typeName}} (${mods.title})`,
-			attrName: `^{${attrName}}`,
-			r1: `[[${roll}+${mods.r1}]]`, // +$[[0]]`,
-			r2: `[[${roll}+${mods.r2}]]`, // +$[[0]]`,
-			hidden: hiddenVars,
-			isNpc: char.isNpc,
-		}
-
-		return d20plus.ba.templateModel("ability", tmplVars);
-	};
-
-	const getAttackVals = (id, flags) => {
-		const char = d20plus.ba.getSingleChar();
-		const atk = char?.attacks[id];
-		const ammo = atk.ammo;
-		const dmg = atk.rollbase_crit?.match(/{{dmg1=\[\[(?<dmg1>[^}]*)\]\]}}(?:.*?){{dmg2=\[\[(?<dmg2>[^}]*)\]\]}}(?:.*?){{crit1=\[\[(?<crit1>[^}]*)\]\]}}(?:.*?){{crit2=\[\[(?<crit2>[^}]*)\]\]}}/)?.groups || {};
-		const atkattr = atk.atkattr_base?.replace(/@{(.*?)}/, "$1");
+	const getAttackVals = (q) => {
+		const atk = q.token.get(q.id);
+		const dmg = atk._get("rollbase_crit")?.match(/{{dmg1=\[\[(?<dmg1>[^}]*)\]\]}}(?:.*?){{dmg2=\[\[(?<dmg2>[^}]*)\]\]}}(?:.*?){{crit1=\[\[(?<crit1>[^}]*)\]\]}}(?:.*?){{crit2=\[\[(?<crit2>[^}]*)\]\]}}/)?.groups || {};
+		const atkattr = atk._get("attr");
+		const isNpc = q.token.get("npc");
 
 		const atkRoll = {
 			base: `20`,
-			critrange: atk.atkcritrange || char.stats.default_critical_range || "20",
+			critrange: atk._get("atkcritrange") || q.token.get("default_critical_range") || "20",
 			mods: [
-				char.isNpc ? [atk.attack_tohit, "MOD"] : undefined,
-				atk.atkattr_base ? [char.stats[atkattr], atkattr?.slice(0, 3).toUpperCase()] : undefined,
-				atk._getVar("profbonus") && !char.isNpc ? [char.stats.pb, "PB"] : undefined,
+				isNpc ? [atk._get("attack_tohit"), "MOD"] : undefined,
+				!isNpc ? [atk._get("atkmod"), "MOD"] : undefined,
+				!isNpc ? [atk._get("atkmagic"), "MB"] : undefined,
+				atkattr ? [q.token.get(atkattr), atkattr?.slice(0, 3).toUpperCase()] : undefined,
+				atk._has("pb") && !isNpc ? [q.token.get("pb"), "PB"] : undefined,
 			],
 		}
 
 		const tmplVals = {
-			_thisId: char.id,
-			_isNpc: char.isNpc,
-			_onSelf: atk._getVar("range")?.includes("[S]"),
-			_targeted: !!atk._getVar("hasattack") || !!atk._getVar("hasdamage") || !!atk._getVar("hasdamage2") || !!atk.savedc,
-			_modelType: atk._getVar("hasattack") ? "attack" : atk.savedc && atk._getVar("hasdamage") ? "cast" : "action",
-			_expend: atk.ammo ? {type: "item", name: atk.ammo, charID: char.id} : undefined,
+			_this: q.token,
+			_thisId: q.token.character.id,
+			_isNpc: isNpc,
+			_onSelf: atk._get("range")?.includes("[S]"),
+			_targeted: atk._has("atk") || atk._has("dmg1") || atk._has("dmg2") || atk._has("save"),
+			_modelType: atk._has("atk") ? "attack" : atk._has("save") && atk._has("dmg1") ? "cast" : "action",
+			_expend: atk._get("ammo") ? {type: "item", name: atk._get("ammo"), charID: q.token.character.id} : undefined,
 
-			chId: char.id, // !
-			title: atk._getVar("name") || "^{attack-u}",
-			subTitle: [atk._getVar("range")?.replace(/\[\w\]/g, "").replaceAll("]", "&#93;"), i18n(atk.attack_type?.toLowerCase(), "")]
+			title: atk._get("name") || "^{attack-u}",
+			subTitle: [atk._get("range")?.replace(/\[\w\]/g, "").replaceAll("]", "&#93;"), i18n(atk._get("attack_type")?.toLowerCase(), "")]
 				.reduce((t, v) => v && (!t || `${t}, ${v}`.length < 27) ? `${t}${v && t ? ", " : ""}${v}` : t, ""),
-			charName: char.name.tk,
-			description: atk.description,
+			charName: q.token.get("name"),
+			description: atk._get("description"),
 
-			dmg2on: atk._getVar("hasdamage2"),
-			dmg1tag:	atk._getVar("damagetype")?.includes("Healing") ? "heal" : "dmg",
-			dmg2tag:	atk._getVar("damagetype2")?.includes("Healing") ? "heal" : "dmg",
-			dmg1type:	atk._getVar("damagetype") || "",
-			dmg2type:	atk._getVar("damagetype2") || "",
-			dmg1roll:	atk.attack_damage || dmg.dmg1 || 0,
-			dmg2roll:	atk.attack_damage2 || dmg.dmg2 || 0,
+			dmg2on:	atk._has("dmg2"),
+			dmg1tag:	atk._get("dmg1type")?.includes("Healing") ? "heal" : "dmg",
+			dmg2tag:	atk._get("dmg2type")?.includes("Healing") ? "heal" : "dmg",
+			dmg1type:	atk._get("dmg1type") || "",
+			dmg2type:	atk._get("dmg2type") || "",
+			dmg1roll:	atk._get("attack_damage") || dmg.dmg1 || 0,
+			dmg2roll:	atk._get("attack_damage2") || dmg.dmg2 || 0,
 			rMode: getRollMode(),
-			crit1roll:	atk.attack_crit || dmg.crit1 || 0,
-			crit2roll:	atk.attack_crit2 || dmg.crit2 || 0,
+			crit1roll:	atk._get("attack_crit") || dmg.crit1 || 0,
+			crit2roll:	atk._get("attack_crit2") || dmg.crit2 || 0,
 			atk1: buildRollModel(atkRoll),
 			atkMod:	buildDisplayMod(atkRoll),
-			saveAttr: atk.saveattr?.toLowerCase() || "",
-			dc: atk.savedc && buildRollModifier(atk.savedc),
+			saveAttr: atk._get("saveattr")?.toLowerCase() || "",
+			dc: q.token.character.sheet.getRollModifier(atk._get("savedc")),
 		}
 		return tmplVals;
 	}
 
-	const getSpellVals = (id, flags) => {
+	const getSpellVals = (q) => { // id, flags
 		const expendCfg = d20plus.cfg.getOrDefault("chat", "autoExpend");
-		const char = d20plus.ba.getSingleChar();
-		const [lvl, upcast] = String(flags).split("|");
-		const spell = char.spells[id];
-		const spellAbility = spell.spell_ability && spell.spell_ability?.length > 2
-			? (spell.spell_ability !== "spell" ? spell.spell_ability : char.stats.spellcasting_ability)?.replace(/@{(.*?)(_mod|)}(\+|)/, "$1") || ""
+		const lvls = String(q.flags).split(",");
+		const spell = q.token.get(q.id);
+		const spell_ability = spell._get("spell_ability");
+		const spellAbility = spell_ability && spell_ability?.length > 2
+			? (spell_ability !== "spell" ? spell_ability : q.token.get("spellcasting_ability"))?.replace(/@{(.*?)(_mod|)}(\+|)/, "$1") || ""
 			: "";
 		const subTitle = [spell.spellrange, spell.spellduration, spell.spelltarget, i18n(spell.spellattack?.toLowerCase(), "")]
 			.reduce((t, v) => v && (!t || `${t}, ${v}`.length < 27) ? `${t}${v && t ? ", " : ""}${v}` : t, "");
 		const onSelf = spell.spellrange?.includes("[S]") || spell.spelltarget?.includes("Self");
-		const spelldmgmod = spell.spelldmgmod === "Yes" ? char.stats[`${spellAbility}_mod`] || 0 : "";
+		const spelldmgmod = spell._get("spelldmgmod") === "Yes" ? q.token.get(`${spellAbility}_mod`) || 0 : "";
+
+		const expend = (spell.lvl === undefined || !!spell._get("innate"))
+			? (spell._has("uses") ? {type: spell._resource.type, res: spell._resource.side, name: spell._resource.name, charID: q.token.character.id} : undefined)
+			: (spell.lvl !== "cantrip" ? {type: "spell", lvl: spell.lvl, charID: q.token.character.id} : undefined);
 
 		const atkRoll = {
 			base: `20`,
 			// type: `atk`,
 			// target: targetTag,
-			critrange: char.stats.default_critical_range || "20",
+			critrange: q.token.get("default_critical_range") || "20",
 			mods: [
-				spell.spell_ability === "spell" && [char.stats.spell_attack_bonus, "SPELL"], // `@{${char.id}|spell_attack_mod}[MOD]+${spellAbility}@{${char.id}|pb}[PB]`
-				spell.spell_ability !== "spell" && [char.stats.spell_attack_mod, "MOD"],
-				spell.spell_ability !== "spell" && [char.stats[`${spellAbility}_mod`], spellAbility.slice(0, 3).toUpperCase()],
-				spell.spell_ability !== "spell" && [char.stats.pb, "PB"],
+				spell_ability === "spell" && [q.token.get("spell_attack_bonus"), "SPELL"], // `@{${char.id}|spell_attack_mod}[MOD]+${spellAbility}@{${char.id}|pb}[PB]`
+				spell_ability !== "spell" && [q.token.get("spell_attack_mod"), "MOD"],
+				spell_ability !== "spell" && [q.token.get(`${spellAbility}_mod`), spellAbility.slice(0, 3).toUpperCase()],
+				spell_ability !== "spell" && [q.token.get("pb"), "PB"],
 			],
 		}
 
-		const tmplVals = {
-			_thisId: char.id,
-			_isNpc:	char.isNpc,
-			_isSpell: spell.spell_ability === "spell",
-			_save: spell.spellsave?.toLowerCase() || false,
-			_expend: spell.lvl !== "cantrip" ? {type: "spell", lvl: spell.lvl, charID: char.id} : undefined,
-			_onSelf: spell.spellrange?.includes("[S]"),
-			_targeted: !!spell._getVar("hasattack") || !!spell._getVar("hasdamageorhealing") || !!spell._getVar("hassave"),
-			_modelType: spell._getVar("hasattack") || (!spell._getVar("hassave") && spell._getVar("hasdamageorhealing")) ? "attack" : (spell._getVar("hassave") && spell._getVar("hasdamage") ? "cast" : "action"),
+		const upcast = lvls.reduce((vars, lvl) => {
+			lvl = Number(lvl);
+			if (!lvl) return vars;
+			const splvl = spell.lvl !== "cantrip" ? Number(spell.lvl) : 0;
+			const base = spell._get("spelldamage") ? spell._get("spelldamage") : (spell._get("spellhealing") && !spell._get("spellsave") ? spell._get("spellhealing") : "");
+			const diff = lvl - splvl;
+			const mult = diff * (spell._get("spellhldie") || 1);
+			const addBonus = spell._get("spellhlbonus") && !isNaN(spell._get("spellhlbonus")) ? `+${Number(spell._get("spellhlbonus"))}` : "";
+			const addDice = spell._get("spellhldietype") ? `${mult}${spell._get("spellhldietype")}${addBonus}` : "";
 
-			rMode: spell._getVar("hasattack") ? getRollMode() : /* spell._getVar("hassave") || !!spell.spelldamage2 ? "always" : */ "",
-			chId: char.id,
-			charName: char.name.tk,
-			title:	spell.spellname,
+			vars[lvl] = {
+				dmg1roll: base ? buildRollModel({base, mods: [[spelldmgmod], [addDice, `LVL${lvl}`]]}) : "",
+				crit1roll: base ? buildRollModel({base, mods: [[`${mult}${spell._get("spellhldietype")}`, `LVL${lvl}`]]}) : "",
+			}
+			return vars;
+		}, []);
+
+		const tmplVals = {
+			_this: q.token,
+			_thisId: q.token.character.id,
+			_isNpc: q.token.get("npc"),
+			_isSpell: spell._get("spell_ability") === "spell",
+			_upcast: upcast,
+			_save: spell._get("spellsave")?.toLowerCase() || false,
+			_expend: expend,
+			_onSelf: spell._get("spellrange")?.includes("[S]") || spell._get("spelltarget") === "self",
+			_targeted: !!spell._has("atk") || !!spell._has("dmgorheal") || !!spell._has("save"),
+			_modelType: spell._has("atk") || (!spell._has("save") && spell._has("dmgorheal")) ? "attack" : (spell._has("save") && spell._has("dmg") ? "cast" : "action"),
+
+			rMode: spell._has("atk") ? getRollMode() : /* spell._getVar("hassave") || !!spell.spelldamage2 ? "always" : */ "",
+			charName: q.token.get("name"),
+			title:	spell._get("name"),
 			subTitle,
 
-			dmg1on: !!spell.spelldamage || !!spell.spellhealing,
-			dmg2on: !!spell.spelldamage2,
-			dmg1tag:	spell.spelldamage || spell.spelldamage2 ? "dmg" : spell.spellhealing ? "heal" : "",
-			dmg2tag:	spell.spelldamage2 ? "dmg" : spell.spelldamage && spell.spellhealing ? "heal" : "",
-			dmg1type:	spell.spelldamagetype || (spell.spellhealing ? "healing" : ""),
-			dmg2type:	spell.spelldamagetype2 || (spell.spelldamage && spell.spellhealing ? "healing" : ""),
-			dmg1roll:	spell.spelldamage ? buildRollModel({base: spell.spelldamage, mods: [[spelldmgmod]]})
-				: spell.spellhealing && !spell.spellsave ? buildRollModel({base: spell.spellhealing, mods: [[spelldmgmod]]}) : "",
-			dmg2roll:	spell.spelldamage2 ? buildRollModel({base: spell.spelldamage2, mods: [[spelldmgmod]]})
-				: spell.spelldamage && spell.spellhealing && !spell.spellsave ? buildRollModel({base: spell.spellhealing, mods: [[spelldmgmod]]}) : "",
+			dmg1on: !!spell._get("spelldamage") || !!spell._get("spellhealing"),
+			dmg2on: !!spell._get("spelldamage2"),
+			dmg1tag:	spell._get("spelldamage") || spell._get("spelldamage2") ? "dmg" : spell._get("spellhealing") ? "heal" : "",
+			dmg2tag:	spell._get("spelldamage2") ? "dmg" : spell._get("spelldamage") && spell._get("spellhealing") ? "heal" : "",
+			dmg1type:	spell._get("spelldamagetype") || (spell._get("spellhealing") ? "healing" : ""),
+			dmg2type:	spell._get("spelldamagetype2") || (spell._get("spelldamage") && spell._get("spellhealing") ? "healing" : ""),
+			dmg1roll:	spell._get("spelldamage") ? buildRollModel({base: spell._get("spelldamage"), mods: [[spelldmgmod]]})
+				: spell._get("spellhealing") && !spell._get("spellsave") ? buildRollModel({base: spell._get("spellhealing"), mods: [[spelldmgmod]]}) : "",
+			dmg2roll:	spell._get("spelldamage2") ? buildRollModel({base: spell._get("spelldamage2"), mods: [[spelldmgmod]]})
+				: spell._get("spelldamage") && spell._get("spellhealing") && !spell._get("spellsave") ? buildRollModel({base: spell._get("spellhealing"), mods: [[spelldmgmod]]}) : "",
 
-			crit1roll:	spell.spelldamage,
-			crit2roll:	spell.spelldamage2,
+			crit1roll:	spell._get("spelldamage"),
+			crit2roll:	spell._get("spelldamage2"),
 			atk1: buildRollModel(atkRoll),
 			atkMod:	buildDisplayMod(atkRoll),
-			description: spell.spelldescription,
+			description: spell._get("description"),
+			hldescription: spell._get("spellathigherlevels"),
 
-			dc: spell.spell_ability !== "spell"
-				? buildDisplayMod({mods: [[8], [char.stats.spell_dc_mod], [char.stats[`${spellAbility}_mod`]], [char.stats.pb]]})
-				: (char.stats.spell_save_dc || "10"),
-			saveAttr: spell.spellsave?.toLowerCase() || "",
-			// dmgType: spell.spelldamagetype ? `${spell.spelldamagetype} ${spell.spelldamagetype2 || ""}` : "",
+			dc: spell._get("spell_ability") !== "spell"
+				? buildDisplayMod({mods: [[8], [q.token.get("spell_dc_mod")], [q.token.get(`${spellAbility}_mod`)], [q.token.get("pb")]]})
+				: (q.token.get("spell_save_dc") || "10"),
+			saveAttr: spell._get("spellsave")?.toLowerCase() || "",
 			dmgOnFail: `$[[0]]`,
 			dmgOnSuccess: spell.lvl === "cantrip" ? "[[0]]" : `$[[1]]`,
 		}
@@ -473,33 +433,42 @@ function baseBARollTemplates () {
 			switchTargeting("off");
 			return d20.engine.nextTargetCallback = false;
 		} else if (!target) {
-			console.log("START TARGETING", vals);
+			// d20plus.ut.log("START TARGETING", vals);
 			switchTargeting("on");
 			d20.engine.nextTargetCallback = (t) => { d20plus.ba.getTarget(vals, t); };
 		} else if (vals._aoe) {
 			// console.log(target);
 		} else {
 			if (!target._model?.character) return d20plus.ut.sendHackerChat("Target the token that represents a PC or NPC", true);
-			const targetChar = await d20plus.ba.fetchChar(target._model);
-			const thisToken = d20plus.ut.getTokenById(d20plus.ba.chars[vals._thisId].lastTokenId);
-			const distance = d20plus.ut.getTokensDistanceText(target._model, thisToken);
+			const targetToken = d20plus.ba.tokens.ready(target);
+			const distance = d20plus.ut.getTokensDistanceText(target._model, vals._this._ref);
+			await targetToken.ready();
+			await targetToken.character.sheet.fetch();
 
-			console.log("Getting target", vals);
+			// const targetChar = await d20plus.ba.fetchChar(target._model);
+			// const thisToken = d20plus.ut.getTokenById(d20plus.ba.chars[vals._thisId].lastTokenId);
+
+			d20plus.ut.log("Getting target", vals);
 			switchTargeting("off");
 			d20.engine.nextTargetCallback = false;
 
 			if (vals._save) {
-				d20plus.ba.currentToken = target._model;
-				d20plus.ba.singleSelected = target._model;
-				outputTemplate(getAbilityVals("save", vals._save, vals.dc));
+				// d20plus.ba.currentToken = target._model;
+				// d20plus.ba.singleSelected = target._model;
+				outputTemplate(getAbilityVals({ // "save", vals._save, vals.dc
+					id: "save",					// spec, attr, dc
+					flags: vals._save,
+					dc: vals.dc,
+					token: targetToken,
+				}));
 			}
 
 			vals.targetId = target._model.id;
 			vals.targetName = target._model.attributes.name;
-			vals.targetAc = targetChar.isNpc ? targetChar.npcStats.ac : targetChar.stats.ac;
+			vals.targetAc = targetToken.get("ac"); // targetChar.isNpc ? targetChar.npcStats.ac : targetChar.stats.ac;
 			vals.distance = distance;
-			outputTemplate(vals);
-			console.log("END TARGETING", vals);
+			setTimeout(i => { outputTemplate(vals) }, 500);
+			// d20plus.ut.log("END TARGETING", vals);
 		}
 	}
 
@@ -528,29 +497,103 @@ function baseBARollTemplates () {
 		})
 	}
 
-	d20plus.ba.makeRoll = (action, spec, flags) => {
+	d20plus.ba.getFallHeight = (vals) => {
+		const $fd = $(`
+			<div>
+				Enter fall height, ft.
+				<input type="number" style="width:45px;">
+			</div>
+		`).dialog({
+			title: "Fall damage",
+			autoopen: true,
+			close: () => { $fd.off(); $fd.dialog("destroy").remove() },
+			buttons: {
+				"Cancel": () => { $fd.off(); $fd.dialog("destroy").remove() },
+				"Roll": () => {
+					const $input = $fd.find("input");
+					const height = $input.val();
+					if (!isNaN(height)) {
+						const dmgRoll = Math.min(Math.abs(Math.floor(height / 10)), 20);
+						vals.dmg1roll = `${dmgRoll}d6[dmg${vals._thisId}]`;
+						vals.title = "Fall";
+						vals.subTitle = __("ba_roll_falldamage");
+						vals.dmg1tag = "dmg";
+						vals.dmg1type = `bludgeoning`;
+						vals.mod = `${height} ft.`;
+						outputTemplate(vals);
+					}
+					$fd.off(); $fd.dialog("destroy").remove();
+				},
+			},
+		})
+	}
+
+	d20plus.ba.getUpcastSpell = (vals, flags) => {
+		const lvls = String(flags).split(",");
+		const options = lvls.reduce((html, lvl) => {
+			const name = lvl === "0" ? "As ritual" : `Level ${lvl}`;
+			return `${html}<option value="${lvl}">${name}</option>`;
+		}, "")
+		const $uc = $(`
+			<div>
+				<h3>${vals.title}</h3>
+				${vals.hldescription ? `<p>${vals.hldescription}</p>` : ""}
+				Select spell slot to expend:
+				<select style="width:90px;">${options}</select>
+			</div>
+		`).dialog({
+			title: "Upcast spell",
+			autoopen: true,
+			close: () => { $fd.off(); $uc.dialog("destroy").remove() },
+			buttons: {
+				"Cancel": () => { $uc.off(); $uc.dialog("destroy").remove() },
+				"Roll": () => {
+					const $input = $uc.find("select");
+					const level = $input.val();
+					if (level === "0") {
+						vals._expend = false;
+					} else {
+						vals._expend.lvl = level;
+						if (vals._upcast && vals._upcast[level]?.dmg1roll) {
+							vals.dmg1roll = vals._upcast[level]?.dmg1roll;
+							if (vals._upcast[level]?.crit1roll) vals.crit1roll = vals._upcast[level]?.crit1roll;
+						}
+					}
+					if (vals._targeted && !vals._onSelf) d20plus.ba.getTarget(vals);
+					else outputTemplate(vals);
+					$uc.off(); $uc.dialog("destroy").remove();
+				},
+			},
+		})
+	}
+
+	d20plus.ba.makeRoll = (q) => { // action, spec, flags
 		const getTmplVals = {
 			roll: getAbilityVals,
 			attack: getAttackVals,
 			cast: getSpellVals,
-		}[action];
+			upcast: getSpellVals,
+		}[q.action];
 
-		const tmplVals = getTmplVals && getTmplVals(spec, flags);
+		const tmplVals = getTmplVals && getTmplVals(q); // spec, flags
 		if (!tmplVals) return d20plus.ba.rollError();
-		else if (flags === "concentration") d20plus.ba.getConcentrationDC(tmplVals);
-		else if (tmplVals._targeted) d20plus.ba.getTarget(tmplVals);
+		else if (q.flags === "concentration") d20plus.ba.getConcentrationDC(tmplVals);
+		else if (q.flags === "fall") d20plus.ba.getFallHeight(tmplVals);
+		else if (q.action === "upcast") d20plus.ba.getUpcastSpell(tmplVals, q.flags);
+		else if (tmplVals._targeted && !tmplVals._onSelf) d20plus.ba.getTarget(tmplVals);
 		else outputTemplate(tmplVals);
 	}
 
-	d20plus.ba.makeInfo = (action, spec, flags) => {
+	d20plus.ba.makeInfo = (q) => {
 		const getTmplVals = {
 			spell: getSpellVals,
 			attack: getAttackVals,
-		}[action];
+		}[q.action];
 
-		const tmplVals = getTmplVals && getTmplVals(spec, flags);
+		const tmplVals = getTmplVals && getTmplVals(q);
 		if (!tmplVals) return d20plus.ba.rollError();
 		tmplVals._modelType = "description";
+		tmplVals._expend = false; d20plus.ut.log("Outputting template", tmplVals);
 		outputTemplate(tmplVals);
 	}
 }

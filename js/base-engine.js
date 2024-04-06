@@ -194,7 +194,7 @@ function d20plusEngine () {
 		}).on("click", ".weather input[type=range]", (evt) => {
 			const {currentTarget: target} = evt;
 			if (target.name) $(`.${target.name}`).val(target.value);
-		}).on("click", ".chooseablepage .js__settings-page", () => {
+		}).on("mouseup", ".chooseablepage .js__settings-page, .page-container .settings-menu-trigger-container", () => {
 			setTimeout(() => d20plus.engine.enhancePageSettings(), 50);
 		}).on("click", ".pagedetails_navigation .nav-tabs--beta", () => {
 			d20plus.engine._populatePageCustomOptions();
@@ -291,8 +291,11 @@ function d20plusEngine () {
 	}
 
 	d20plus.engine.enhancePageSettings = () => {
-		if (!d20plus.engine._lastSettingsPageId) return;
-		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		const page = !d20plus.betaFeaturesEnabled
+			? d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId)
+			: d20.Campaign.pages.find(p => $(p.view.el).is(":visible"));
+		d20plus.engine._lastSettingsPageId = page.id;
+		d20plus.ut.log("Enhancing page", page);
 		if (page && page.get) {
 			const $dialog = $(`.pagedetails_navigation:visible`).closest(`.ui-dialog`);
 			const $saveBtn = $dialog.find(`.btn-primary:visible`);
@@ -441,7 +444,7 @@ function d20plusEngine () {
 	d20plus.engine._populatePageCustomOptions = (page, dialog) => {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
-		if (!d20plus.engine._customPageOptions[page.id]) return;
+		if (!d20plus.engine._customPageOptions[page?.id]) return;
 		Object.entries(d20plus.engine._customPageOptions[page.id]).forEach(([name, val]) => {
 			dialog.find(`[name="${name}"]`).each((i, e) => {
 				const $e = $(e);
@@ -682,12 +685,12 @@ function d20plusEngine () {
 		d20plus.ut.log(attrib);
 		if (isNaN(attrib._cur)) return;
 		if (expend.restore !== undefined) {
-			attrib._ref[refs.cur].save({current: expend.restore});
+			attrib._ref[refs.cur].save({current: String(expend.restore)});
 			attrib._msg = `/w "${characterName}" ${characterName} has ${expend.restore} ${getMsgText()} again`;
 			syncSheet();
 		} else if (attrib._cur - expend.amt >= 0) {
 			attrib._new = attrib._cur - expend.amt;
-			attrib._ref[refs.cur].save({current: attrib._new});
+			attrib._ref[refs.cur].save({current: String(attrib._new)});
 			attrib._undo = {...expend}; attrib._undo.restore = attrib._cur;
 			attrib._msg = `/w "${characterName}" ${characterName} now has ${attrib._new} ${getMsgText()} left`;
 			syncSheet();
@@ -1082,7 +1085,21 @@ function d20plusEngine () {
 		d20.engine.canvas.drawTokensWithoutAuras = _.bind(d20plus.mod.drawTokensWithoutAuras, d20.engine.canvas);// RB20 EXCLUDE START
 		// d20.engine.canvas._renderAll = _.bind(d20plus.mod.legacy_renderAll, d20.engine.canvas);
 		// d20.engine.canvas._layerIteratorGenerator = d20plus.mod.legacy_layerIteratorGenerator;// RB20 EXCLUDE END
+
+		if (window.is_gm) {
+			$(document).on("d20:new_page_fully_loaded", d20plus.engine.checkPageSettings);
+			d20plus.engine.checkPageSettings();
+		}
 	};
+
+	d20plus.engine.checkPageSettings = () => {
+		if (!d20.Campaign.activePage() || !d20.Campaign.activePage().get) {
+			setTimeout(d20plus.engine.checkPageSettings, 50);
+		} else {
+			d20plus.engine.layersVisibilityCheck();
+			d20plus.views.populateMenu();
+		}
+	}
 
 	d20plus.engine.removeLinkConfirmation = function () {
 		d20.utils.handleURL = d20plus.mod.handleURL;

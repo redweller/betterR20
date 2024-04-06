@@ -193,17 +193,28 @@ module.exports = {
 
 	ba_title_rolls: ["Rolls"],
 	ba_title_stats: ["Stats"],
-	ba_title_animations: ["Animations"],
 
+	ba_group_general: ["General"],
 	ba_group_abilities: ["Abilities"],
 	ba_group_skills: ["Skills"],
 	ba_group_attacks: ["Attacks"],
+	ba_group_traits: ["Traits"],
 	ba_group_spells: ["Spells"],
+	ba_group_items: ["Items"],
+	ba_group_effects: ["Effects"],
+	ba_group_animations: ["Animations"],
 
 	ba_roll_initiative: ["Initiative"],
 	ba_roll_concentration: ["Concentration"],
+	ba_roll_falldamage: ["Fall damage"],
 	ba_roll_deathsave: ["Death save"],
 	ba_roll_hitdice: ["Hit dice"],
+	ba_roll_save: ["Save"],
+	ba_roll_check: ["Check"],
+
+	ba_spells_cantrips: ["Cantrips"],
+	ba_spells_lvl: ["Level"],
+	ba_nothing_selected: ["You don't seem to have controllable tokens on this map. Please select something to begin"],
 
 	lang_common: ["Common"],
 	lang_dwarvish: ["Dwarvish"],
@@ -272,10 +283,12 @@ module.exports = {
 	msg_b20_chat_help_title: [`<strong>List of chat commands:</strong><br>betteR20 commands marked with &#42;`],
 
 	msg_b20_vtte_init: [`VTTE detected and $0 successfully loaded.<br>`],
-	msg_b20_version_stream: [`<br>A newer version of $0 is available.<br><br>`],
-	msg_b20_version: [`<br>A newer version of $0 is available.<br>Get $1 <a href="$2">5etools</a> OR <a href="$3">core</a>.<br><br>`],
+	msg_b20_version_update_stream: [`<br>A newer version of $0 is available.<br><br>`],
+	msg_b20_version_update: [`<br>A newer version of $0 is available.<br>Get $1 <a href="$2">5etools</a> OR <a href="$3">core</a>.<br><br>`],
+	msg_b20_r20beta_warning: [`betteR20 does not support the beta UI preview at this moment! Using it MAY OR MAY NOT make some betteR20 or roll20 functionality unavailable. If you experience problems, try disabling roll20 Beta Features.`],
 
-	msg_welcome_versions: ["VTTES v$1 detected<br>$0 loaded"],
+	msg_welcome_not: "not",
+	msg_welcome_versions: ["VTTES $1 detected<br>$0 loaded"],
 	msg_welcome_faq: ["Need help? Visit our <a href=\"$0/index.php/BetteR20_FAQ\"><strong>wiki</strong></a> or join our"],
 	msg_welcome_sarcasm: ["You'd think this would be obvious."],
 	msg_welcome_p1: ["Please DO NOT post about this script or any related content in official channels, including the Roll20 forums."],

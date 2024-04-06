@@ -152,22 +152,11 @@ function baseViews () {
 		$(`#editinglayer .choose${window.currentEditingLayer}`).click();
 	}
 
-	d20plus.views.checkPageSettings = () => {
-		if (!d20.Campaign.activePage() || !d20.Campaign.activePage().get) {
-			setTimeout(d20plus.views.checkPageSettings, 50);
-		} else {
-			d20plus.engine.layersVisibilityCheck();
-			d20plus.views.populateMenu();
-		}
-	}
-
 	d20plus.views.addViews = () => {
 		if (window.is_gm) {
 			d20plus.views._initViewsCss();
 			d20plus.views._initLayerMenu();
 			d20plus.views._initMenuActions();
-			document.addEventListener("VePageChange", d20plus.views.checkPageSettings);
-			d20plus.views.checkPageSettings();
 		}
 	}
 }

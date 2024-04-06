@@ -70,9 +70,9 @@ const betteR205etools = function () {
 			// d20plus.engine.addLineCutterTool();
 			d20plus.engine.enhancePathWidths();
 			// d20plus.ut.fix3dDice(); // FIXME(165) re-enable when we have a better solution
+			d20plus.views.addViews();
 			d20plus.engine.addLayers();
 			d20plus.weather.addWeather();
-			d20plus.views.addViews();
 			d20plus.engine.repairPrototypeMethods();
 			d20plus.engine.disableFrameRecorder();
 			d20plus.engine.fixPolygonTool();
