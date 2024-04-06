@@ -2,7 +2,7 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.184.6
+// @version      1.35.184.7
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -259,7 +259,7 @@ function baseUtil () {
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- Beta features overview:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Layers</strong><br>⦁ add new Extra Layers toolbar as part of r20 newUI<br>⦁ add show/hide layers toggles to b20 layers<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br>⦁ removed VTTES dependency<br>⦁ fixed Page Toolbar malfunctioning with the NewUI<br>⦁ fixed context menu appearing on left click<br><strong>Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ a better Random Side randomizer (for seemingly more random results)<br>⦁ edit token images directly from roll20 Token Editor<br><strong>Better token Actions & Automation</strong><br>⦁ new character menu in left top corner of the screen<br>- new design, the menu works even when no character is selected<br>- browse stats and actions for last selected token<br>⦁ use available actions with custom roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots, items and resources are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>- view descriptions before you use a spell or a trait<br>- upcast or use spells as ritual<br><code>-- v.184.6 changes:</code><br>- fix attack bonus and magic attack bonus calculation<br>- fix target AC calculations for players' attacks<br>- fix failure if no controllable tokens are present on player login<br></p>
+					<p>This version contains following changes<br><code>-- Beta features overview:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Layers</strong><br>⦁ add new Extra Layers toolbar as part of r20 newUI<br>⦁ add show/hide layers toggles to b20 layers<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br>⦁ removed VTTES dependency<br>⦁ fixed Page Toolbar malfunctioning with the NewUI<br>⦁ fixed context menu appearing on left click<br><strong>Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ a better Random Side randomizer (for seemingly more random results)<br>⦁ edit token images directly from roll20 Token Editor<br><strong>Better token Actions & Automation</strong><br>⦁ new character menu in left top corner of the screen<br>- new design, the menu works even when no character is selected<br>- browse stats and actions for last selected token<br>⦁ use available actions with custom roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots, items and resources are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>- view descriptions before you use a spell or a trait<br>- filter prepared spells/useable traits etc.<br>- upcast or use spells as ritual<br><code>-- v.184.7 changes:</code><br>- fix BA upcasting at highest available levels<br>- fix BA detectiing ritual spells<br>- page settings now work with beta UI<br>- art repo is functional again<br></p>
 				</div>
 			`);
 			if (d20plus.ut.cmpVersions("1.35.8.57", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
@@ -8096,7 +8096,7 @@ function d20plusArtBrowser () {
 			];
 
 			const start = (new Date()).getTime();
-			const GH_PATH = `https://raw.githubusercontent.com/DMsGuild201/Roll20_resources/master/ExternalArt/dist/`;
+			const GH_PATH = `https://raw.githubusercontent.com/5etools-mirror-1/pab-index/main/`;
 			const [enums, index] = await Promise.all([pGetJson(`${GH_PATH}_meta_enums.json`), pGetJson(`${GH_PATH}_meta_index.json`)]);
 			d20plus.ut.log(`Loaded metadata in ${((new Date()).getTime() - start) / 1000} secs.`);
 
@@ -12533,7 +12533,7 @@ function d20plusEngine () {
 		}).on("click", ".weather input[type=range]", (evt) => {
 			const {currentTarget: target} = evt;
 			if (target.name) $(`.${target.name}`).val(target.value);
-		}).on("click", ".chooseablepage .js__settings-page", () => {
+		}).on("mouseup", ".chooseablepage .js__settings-page, .page-container .settings-menu-trigger-container", () => {
 			setTimeout(() => d20plus.engine.enhancePageSettings(), 50);
 		}).on("click", ".pagedetails_navigation .nav-tabs--beta", () => {
 			d20plus.engine._populatePageCustomOptions();
@@ -12630,8 +12630,11 @@ function d20plusEngine () {
 	}
 
 	d20plus.engine.enhancePageSettings = () => {
-		if (!d20plus.engine._lastSettingsPageId) return;
-		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		const page = !d20plus.betaFeaturesEnabled
+			? d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId)
+			: d20.Campaign.pages.find(p => $(p.view.el).is(":visible"));
+		d20plus.engine._lastSettingsPageId = page.id;
+		d20plus.ut.log("Enhancing page", page);
 		if (page && page.get) {
 			const $dialog = $(`.pagedetails_navigation:visible`).closest(`.ui-dialog`);
 			const $saveBtn = $dialog.find(`.btn-primary:visible`);
@@ -12779,7 +12782,7 @@ function d20plusEngine () {
 	d20plus.engine._populatePageCustomOptions = (page, dialog) => {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
-		if (!d20plus.engine._customPageOptions[page.id]) return;
+		if (!d20plus.engine._customPageOptions[page?.id]) return;
 		Object.entries(d20plus.engine._customPageOptions[page.id]).forEach(([name, val]) => {
 			dialog.find(`[name="${name}"]`).each((i, e) => {
 				const $e = $(e);
@@ -13391,7 +13394,20 @@ function d20plusEngine () {
 		d20.engine.canvas.sortTokens = _.bind(d20plus.mod.sortTokens, d20.engine.canvas);
 		d20.engine.canvas.drawAnyLayer = _.bind(d20plus.mod.drawAnyLayer, d20.engine.canvas);
 		d20.engine.canvas.drawTokensWithoutAuras = _.bind(d20plus.mod.drawTokensWithoutAuras, d20.engine.canvas);
+
+		if (window.is_gm) {
+			$(document).on("d20:new_page_fully_loaded", d20plus.engine.checkPageSettings);
+			d20plus.engine.checkPageSettings();
+		}
 	};
+
+	d20plus.engine.checkPageSettings = () => {
+		if (!d20.Campaign.activePage() || !d20.Campaign.activePage().get) {
+			setTimeout(d20plus.engine.checkPageSettings, 50);
+		} else {
+			d20plus.engine.layersVisibilityCheck();
+		}
+	}
 
 	d20plus.engine.removeLinkConfirmation = function () {
 		d20.utils.handleURL = d20plus.mod.handleURL;
@@ -23835,7 +23851,7 @@ function baseBACharacters () {
 
 		const prepareRawStats = (lvls, attrib, id, val) => {
 			if (!Array.isArray(lvls)) lvls = [lvls];
-			const max = attrib.attributes.max;
+			const max = attrib?.attributes.max;
 			let obj = this.sheet.data;
 			lvls.forEach(lvl => {
 				obj[lvl] = obj[lvl] || {};
@@ -23909,14 +23925,15 @@ function baseBACharacters () {
 						prepareRawStats(["attacks", id], prop, attr);
 					} else if (type === "inventory") {
 						prepareRawStats(["items", id], prop, attr);
-					} else if (["proficiencies", "tool", "resource", "traits"].includes(type)) {
+					} else if (["proficiencies", "tool", "resource"].includes(type)) {
 						const stype = type.last() === "s" ? type : `${type}s`;
 						prepareRawStats([stype, id], prop, attr);
 					} else if (["acmod", "damagemod", "savemod", "skillmod", "tohitmod"].includes(type)) {
 						const stype = type.split("mod")[0].replace("tohit", "attack");
 						prepareRawStats(["mods", stype, id], prop, attr);
-					} else if (type === "npctrait" || type === "trait") {
+					} else if (type === "npctrait" || type === "traits") {
 						prepareRawStats(["traits", id], prop, attr);
+						prepareRawStats(["traits", id], undefined, "isTrait", true);
 					}
 				} else if (type === "reporder") {
 					prepareRawStats("order", prop, attr, current.split(","));
@@ -23981,8 +23998,8 @@ function baseBACharacters () {
 			} else return (this.isNpc && filterVal(npc[q]?.attributes.current)) || char[q]?.attributes.current;
 		}
 
-		const types = [
-			{
+		const types = {
+			spells: {
 				id: "spells",
 				utils: {
 					_char: () => this,
@@ -24038,14 +24055,17 @@ function baseBACharacters () {
 									return false;
 								}
 							}
+							case "ritual": return (
+								this._ref.spellritual?.attributes.current !== "0"
+								&& this._ref.spellritual?.attributes.current
+							);
 							case "active": return this._ref.spellprepared?.attributes.current === "1"
-							case "ritual": return this._ref.spellritual?.attributes.current !== "0";
 							case "save": return !!this._ref.spellsave?.attributes.current;
 						}
 					},
 				},
 			},
-			{
+			attacks: {
 				id: "attacks",
 				utils: {
 					_char: () => this,
@@ -24080,7 +24100,7 @@ function baseBACharacters () {
 					},
 				},
 			},
-			{
+			actions: {
 				id: "actions", // npc's attack are stored here
 				utils: {
 					_char: () => this,
@@ -24111,7 +24131,7 @@ function baseBACharacters () {
 					},
 				},
 			},
-			{
+			traits: {
 				id: "traits",
 				utils: {
 					_char: () => this,
@@ -24160,7 +24180,7 @@ function baseBACharacters () {
 					},
 				},
 			},
-			{
+			items: {
 				id: "items",
 				utils: {
 					_char: () => this,
@@ -24197,6 +24217,7 @@ function baseBACharacters () {
 					},
 				},
 			},
+			/*
 			function (param) {
 				const char = d20plus.ba.getSingleChar();
 				const attr = {
@@ -24227,13 +24248,14 @@ function baseBACharacters () {
 				else if (!attr.q) return val;
 				else return attr.q.true?.includes(val) || (attr.q.false && !attr.q.false.includes(val));
 			},
-		]
+			*/
+		}
 
 		this.sheet = {
 			get: (q) => {
-				for (let i = 0; i < types.length; i++) {
-					const list = this.sheet.data[types[i].id];
-					if (list && list[q]) return Object.assign({_id: q}, types[i].utils || {}, list[q]);
+				for (let i = 0; i < Object.keys(types).length; i++) {
+					const list = this.sheet.data[types[Object.keys(types)[i]].id];
+					if (list && list[q]) return Object.assign({_id: q}, types[Object.keys(types)[i]].utils || {}, list[q]);
 				}
 				return this.sheet.data.stats?._ref && getStats(q);
 			},
@@ -24244,7 +24266,7 @@ function baseBACharacters () {
 						(lvl && all[id].lvl !== lvl)
 						|| all[id]._ref.innate?.attributes.current
 					) return spls;
-					spls.push(Object.assign({}, types[0].utils || {}, all[id]));
+					spls.push(Object.assign({}, types.spells.utils || {}, all[id]));
 					return spls;
 				}, []);
 			},
@@ -24252,13 +24274,17 @@ function baseBACharacters () {
 				const all = Object.assign({},
 					this.sheet.data.traits || {},
 					this.sheet.data.spells || {},
+					(this.isNpc && this.sheet.data.actions) || {},
 				);
 				return Object.keys(all).reduce((trts, id) => {
-					if (all[id]._ref.source_type?.attributes.current
-						|| all[id]._ref.description?.attributes.current) {
-						trts.push(Object.assign({}, types[3].utils || {}, all[id]));
+					if (all[id].isTrait) {
+						trts.push(Object.assign({}, types.traits.utils || {}, all[id]));
 					} else if (all[id]._ref.innate?.attributes.current) {
-						trts.push(Object.assign({}, types[0].utils || {}, all[id]));
+						trts.push(Object.assign({}, types.spells.utils || {}, all[id]));
+					} else if (this.isNpc
+							&& all[id]._ref.attack_flag
+							&& all[id]._ref.attack_flag.attributes.current !== "on") {
+						trts.push(Object.assign({}, types.actions.utils || {}, all[id]));
 					}
 					return trts;
 				}, []);
@@ -24268,11 +24294,11 @@ function baseBACharacters () {
 					? this.sheet.data.actions || {}
 					: this.sheet.data.attacks || {};
 				const utils = this.isNpc
-					? types[2].utils || {}
-					: types[1].utils || {};
+					? types.actions.utils || {}
+					: types.attacks.utils || {};
 				return Object.keys(all).reduce((atks, id) => {
 					if (
-						(this.isNpc && all[id].attack_flag === "on")
+						(this.isNpc && all[id]._ref.attack_flag?.attributes.current === "on")
 						|| (!this.isNpc && !all[id].spellid)
 					) atks.push(Object.assign({}, utils || {}, all[id]));
 					return atks;
@@ -24282,7 +24308,7 @@ function baseBACharacters () {
 				const all = this.isNpc
 					? {}
 					: this.sheet.data.items || {};
-				const utils = types[4].utils || {};
+				const utils = types.items.utils || {};
 				return Object.keys(all).reduce((atks, id) => {
 					if (
 						(this.isNpc && all[id].attack_flag === "on")
@@ -24811,7 +24837,7 @@ function baseBARollTemplates () {
 	}
 
 	const getAbilityVals = (q) => { // spec, attr, dc
-		const [attr, dcTmp] = (q.flags).split("|");
+		const [attr, dcTmp] = String(q.flags).split("|");
 		const dc = q.dc || dcTmp;
 		const spec = q.id;
 
@@ -25112,7 +25138,7 @@ function baseBARollTemplates () {
 	}
 
 	d20plus.ba.getUpcastSpell = (vals, flags) => {
-		const lvls = flags.split(",");
+		const lvls = String(flags).split(",");
 		const options = lvls.reduce((html, lvl) => {
 			const name = lvl === "0" ? "As ritual" : `Level ${lvl}`;
 			return `${html}<option value="${lvl}">${name}</option>`;
@@ -25259,7 +25285,7 @@ function baseBetterActions () {
 
 	const buildSpellVariants = (spell, token) => {
 		const items = [];
-		const ritual = spell?._get("spellritual");
+		const ritual = spell?._has("ritual");
 		const lvl = Number(spell.lvl);
 		const upcast = !isNaN(spell.lvl);
 		ritual && items.push(0);
@@ -26001,6 +26027,7 @@ function remoteLibre () {
 			return fetch("https://api.github.com/repos/DMsGuild201/Roll20_resources/contents/playlist")
 				.then(response => response.json())
 				.then(data => {
+					if (!data.filter) return;
 					const promises = data.filter(file => file.download_url.toLowerCase().endsWith(".json"))
 						.map(file => d20plus.remoteLibre.downloadPlaylist(file.download_url));
 					return Promise.all(promises).then(res => d20plus.remoteLibre.processRemotePlaylists(res));
