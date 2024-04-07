@@ -2,7 +2,7 @@
 // @name         betteR20-alpha-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.185a
+// @version      1.35.185.1a
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -13402,6 +13402,7 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.checkPageSettings = () => {
+		if (!d20plus.cfg.getOrDefault("canvas", "extraLayerButtons")) return;
 		if (!d20.Campaign.activePage() || !d20.Campaign.activePage().get) {
 			setTimeout(d20plus.engine.checkPageSettings, 50);
 		} else {
@@ -17959,7 +17960,7 @@ function baseUi () {
 	};
 
 	d20plus.ui.layerVisibilityIcon = (layer, state) => {
-		const $layerIcon = d20plus.ui.$secondaryPanel.find(`[data-layer=${layer}]`);
+		const $layerIcon = d20plus.ui.$secondaryPanel?.find(`[data-layer=${layer}]`);
 		$layerIcon.toggleClass("layer-off", !state);
 	}
 

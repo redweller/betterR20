@@ -2,7 +2,7 @@
 // @name         betteR20-alpha-5etools
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.185a
+// @version      1.35.185.1a
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-5etools.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-5etools.user.js
 // @description  Enhance your Roll20 experience

@@ -2,7 +2,7 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.184.7
+// @version      1.35.184.8
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -259,7 +259,7 @@ function baseUtil () {
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- Beta features overview:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Layers</strong><br>⦁ add new Extra Layers toolbar as part of r20 newUI<br>⦁ add show/hide layers toggles to b20 layers<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br>⦁ removed VTTES dependency<br>⦁ fixed Page Toolbar malfunctioning with the NewUI<br>⦁ fixed context menu appearing on left click<br><strong>Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ a better Random Side randomizer (for seemingly more random results)<br>⦁ edit token images directly from roll20 Token Editor<br><strong>Better token Actions & Automation</strong><br>⦁ new character menu in left top corner of the screen<br>- new design, the menu works even when no character is selected<br>- browse stats and actions for last selected token<br>⦁ use available actions with custom roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots, items and resources are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>- view descriptions before you use a spell or a trait<br>- filter prepared spells/useable traits etc.<br>- upcast or use spells as ritual<br><code>-- v.184.7 changes:</code><br>- fix BA upcasting at highest available levels<br>- fix BA detectiing ritual spells<br>- page settings now work with beta UI<br>- art repo is functional again<br></p>
+					<p>This version contains following changes<br><code>-- Beta features overview:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Layers</strong><br>⦁ add new Extra Layers toolbar as part of r20 newUI<br>⦁ add show/hide layers toggles to b20 layers<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br>⦁ removed VTTES dependency<br>⦁ fixed Page Toolbar malfunctioning with the NewUI<br>⦁ fixed context menu appearing on left click<br><strong>Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ a better Random Side randomizer (for seemingly more random results)<br>⦁ edit token images directly from roll20 Token Editor<br><strong>Better token Actions & Automation</strong><br>⦁ new character menu in left top corner of the screen<br>- new design, the menu works even when no character is selected<br>- browse stats and actions for last selected token<br>⦁ use available actions with custom roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots, items and resources are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>- view descriptions before you use a spell or a trait<br>- filter prepared spells/useable traits etc.<br>- upcast or use spells as ritual<br><code>-- v.184.7 changes:</code><br>- fix BA upcasting at highest available levels<br>- fix BA detectiing ritual spells<br>- page settings now work with beta UI<br>- art repo is functional again<br><code>-- v.184.8 changes:</code><br>- layer settings hotfix<br></p>
 				</div>
 			`);
 			if (d20plus.ut.cmpVersions("1.35.8.57", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
@@ -13402,6 +13402,7 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.checkPageSettings = () => {
+		if (!d20plus.cfg.getOrDefault("canvas", "extraLayerButtons")) return;
 		if (!d20.Campaign.activePage() || !d20.Campaign.activePage().get) {
 			setTimeout(d20plus.engine.checkPageSettings, 50);
 		} else {
@@ -17959,7 +17960,7 @@ function baseUi () {
 	};
 
 	d20plus.ui.layerVisibilityIcon = (layer, state) => {
-		const $layerIcon = d20plus.ui.$secondaryPanel.find(`[data-layer=${layer}]`);
+		const $layerIcon = d20plus.ui.$secondaryPanel?.find(`[data-layer=${layer}]`);
 		$layerIcon.toggleClass("layer-off", !state);
 	}
 
