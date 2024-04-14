@@ -2,7 +2,7 @@
 // @name         betteR20-alpha-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.185.1a
+// @version      1.35.185.2a
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -32,6 +32,7 @@ CONFIG_HANDOUT = "betteR20-config";
 // TODO automate to use mirror if main site is unavailable
 // BASE_SITE_URL = "https://5e.tools/";
 BASE_SITE_URL = "https://5etools-mirror-2.github.io/";
+BASE_IMG_REPO_URL = "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/";
 
 SITE_JS_URL = `${BASE_SITE_URL}js/`;
 DATA_URL = `${BASE_SITE_URL}data/`;
@@ -259,10 +260,10 @@ function baseUtil () {
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- Beta features overview:</code><br>⦁ Mouseover hints on Conditions<br>⦁ Filter Imports by List<br>⦁ Extra Layers functionality<br>⦁ Token Images Editor<br>⦁ Better token Actions & Automation<br>⦁ Some fixes related to roll20 newUI<br>⦁ ArtRepo is restored from backup repo<br><code>-- Pre-release 185a:</code><br>⦁ Update libs and data to latest 5etools versions<br></p>
+					<p>This version contains following changes<br><code>-- Beta features overview:</code><br>⦁ Mouseover hints on Conditions<br>⦁ Filter Imports by List<br>⦁ Extra Layers functionality<br>⦁ Token Images Editor<br>⦁ Better token Actions & Automation<br>⦁ Some fixes related to roll20 newUI<br>⦁ ArtRepo is restored from backup repo<br><code>-- Pre-release 185a:</code><br>⦁ Update libs and data to latest 5etools versions<br><code>-- v.185.2a:</code><br>⦁ Image URLs now point to the new repo<br></p>
 				</div>
 			`);
-			if (d20plus.ut.cmpVersions("1.35.8.57", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
+			if (d20plus.ut.cmpVersions("1.35.8.58", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
 			<div class="userscript-b20intro">
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					New release detected
@@ -17961,7 +17962,7 @@ function baseUi () {
 
 	d20plus.ui.layerVisibilityIcon = (layer, state) => {
 		const $layerIcon = d20plus.ui.$secondaryPanel?.find(`[data-layer=${layer}]`);
-		$layerIcon.toggleClass("layer-off", !state);
+		$layerIcon?.toggleClass("layer-off", !state);
 	}
 
 	/**
