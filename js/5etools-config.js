@@ -118,7 +118,7 @@ function tools5eConfig () {
 		"_name": "Import",
 		"baseSiteUrl": {
 			"name": "5e Tools Website (reload to apply changes)",
-			"default": "https://5etools-mirror-1.github.io/",
+			"default": "https://5e.tools/",
 			"_type": "String",
 			"_player": true,
 		},
