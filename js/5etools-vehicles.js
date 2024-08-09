@@ -25,7 +25,7 @@ function d20plusVehicles () {
 
 	// Sets the image, mostly stolen from Giddy
 	d20plus.vehicles._setFluffImage = function (character, data, fluff) {
-		const tokenUrl = `${IMG_URL}vehicles/tokens/${data.source}/${data.name}.png`;
+		const tokenUrl = `${IMG_URL}vehicles/tokens/${data.source}/${data.name}.webp`;
 		const avatar = data.tokenUrl || Parser.nameToTokenName(tokenUrl);
 		const firstFluffImage = d20plus.cfg.getOrDefault("import", "importCharAvatar") === "Portrait (where available)" && fluff && fluff.images
 			? (() => {
@@ -36,7 +36,7 @@ function d20plusVehicles () {
 			url: avatar,
 			type: "HEAD",
 			error: function () {
-				d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.png`, firstFluffImage);
+				d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.webp`, firstFluffImage);
 			},
 			success: function () {
 				d20plus.importer.getSetAvatarImage(character, avatar, firstFluffImage);
