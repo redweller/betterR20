@@ -65,6 +65,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The abjurer casts one of the following spells, using Intelligence as the spellcasting ability (spell save {@dc 16}):"
 					],
@@ -102,7 +103,7 @@
 				{
 					"name": "Arcane Burst",
 					"entries": [
-						"{@atk ms,rs} {@hit 8} to hit, reach 5 ft. or range 120 ft., one target. {@h}20 ({@damage 3d10 + 4}) force damage."
+						"{@atk ms,rs} {@hit 6} to hit, reach 5 ft. or range 120 ft., one target. {@h}20 ({@damage 3d10 + 4}) force damage."
 					]
 				},
 				{
@@ -351,6 +352,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The oblex casts one of the following spells, requiring no spell components and using Intelligence as the spellcasting ability (spell save {@dc 15}):"
 					],
@@ -395,7 +397,7 @@
 				{
 					"name": "Pseudopod",
 					"entries": [
-						"{@atk mw} {@hit 7} to hit, reach 5 ft., one target. {@h}7 ({@damage 2d6 + 4}) bludgeoning damage plus 7 ({@damage 2d6}) psychic damage."
+						"{@atk mw} {@hit 7} to hit, reach 5 ft., one target. {@h}11 ({@damage 2d6 + 4}) bludgeoning damage plus 7 ({@damage 2d6}) psychic damage."
 					]
 				},
 				{
@@ -689,6 +691,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The alhoon casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save {@dc 16}):"
 					],
@@ -1241,6 +1244,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The amnizu casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save {@dc 19}):"
 					],
@@ -1568,6 +1572,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The hag casts one of the following spells, using Charisma as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -1699,6 +1704,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The apprentice casts one of the following spells, using Intelligence as the spellcasting ability (spell save {@dc 12})"
 					],
@@ -1812,6 +1818,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The archdruid casts one of the following spells, using Wisdom as the spellcasting ability (spell save {@dc 17}):"
 					],
@@ -2501,6 +2508,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The eladrin casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 16}):"
 					],
@@ -2707,6 +2715,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The babau casts one of the following spells, requiring no material components and using Wisdom as the spellcasting ability (spell save {@dc 11}):"
 					],
@@ -2875,6 +2884,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Bael casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 21}):"
 					],
@@ -3417,6 +3427,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Baphomet casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 18}):"
 					],
@@ -3609,6 +3620,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The bard casts one of the following spells, using Charisma as the spellcasting ability (spell save {@dc 12}):"
 					],
@@ -3794,6 +3806,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The barghest casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 12}):"
 					],
@@ -3971,6 +3984,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The berbalang casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability:"
 					],
@@ -4123,6 +4137,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"While holding or riding the graystaff, the hag casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 14}):"
 					],
@@ -4324,6 +4339,7 @@
 			"spellcasting": [
 				{
 					"name": "Creeping Darkness {@recharge}",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The abishai casts {@spell darkness} at a point within 120 feet of it, requiring no spell components or {@status concentration}. Wisdom is its spellcasting ability for this spell. While the spell persists, the abishai can move the area of darkness up to 60 feet as a bonus action."
 					],
@@ -4481,6 +4497,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The blackguard casts one of the following spells, using Charisma as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -4681,6 +4698,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The abishai casts one of the following spells, using Intelligence as the spellcasting ability (spell save {@dc 20}):"
 					],
@@ -6443,6 +6461,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The choldrith casts one of the following spells, using Wisdom as the spellcasting ability (spell save {@dc 12}):"
 					],
@@ -7177,6 +7196,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The giant casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 15}):"
 					],
@@ -7338,6 +7358,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The conjurer casts one of the following spells, using Intelligence as the spellcasting ability (spell save {@dc 14}):"
 					],
@@ -7832,6 +7853,7 @@
 			"spellcasting": [
 				{
 					"name": "Darkness (Recharges after a Short or Long Rest)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The darkling elder casts {@spell darkness}, requiring no spell components and using Wisdom as the spellcasting ability."
 					],
@@ -8061,6 +8083,9 @@
 				},
 				{
 					"source": "AATM"
+				},
+				{
+					"source": "BMT"
 				}
 			],
 			"size": [
@@ -8131,6 +8156,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The deathlock casts one of the following spells, using Charisma as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -8312,6 +8338,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The deathlock casts one of the following spells, using Charisma as the spellcasting ability (spell save {@dc 14}):"
 					],
@@ -8497,6 +8524,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The deathlock casts one of the following spells, using Charisma as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -8637,6 +8665,7 @@
 			"spellcasting": [
 				{
 					"name": "Dancing Lights",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The rothé casts {@spell dancing lights}, requiring no spell components and using Wisdom as the spellcasting ability."
 					],
@@ -8673,6 +8702,9 @@
 				"type": "internal",
 				"path": "bestiary/rothe.mp3"
 			},
+			"traitTags": [
+				"Beast of Burden"
+			],
 			"senseTags": [
 				"D"
 			],
@@ -9034,6 +9066,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Demogorgon casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 23}):"
 					],
@@ -9379,6 +9412,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The derro casts one of the following spells, using Charisma as the spellcasting ability (spell save {@dc 12}):"
 					],
@@ -9684,6 +9718,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The dhergoloth casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 10}):"
 					],
@@ -10049,6 +10084,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The diviner casts one of the following spells, using Intelligence as the spellcasting ability (spell save {@dc 15}):"
 					],
@@ -10424,6 +10460,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The draegloth casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 11}):"
 					],
@@ -10583,6 +10620,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The drow casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save {@dc 17}):"
 					],
@@ -10786,6 +10824,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The drow casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save {@dc 18}):"
 					],
@@ -10968,6 +11007,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The drow casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -11170,6 +11210,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The drow's casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 18}):"
 					],
@@ -11373,6 +11414,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The drow casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 20}):"
 					],
@@ -11623,6 +11665,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The drow casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -11823,6 +11866,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The duergar casts one of the following spells, requiring no spell components and using Intelligence as the spellcasting ability (spell save {@dc 12}):"
 					],
@@ -13140,6 +13184,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The dybbuk casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 12}):"
 					],
@@ -13591,6 +13636,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The elder brain casts one of the following spells, requiring no spell components and using Intelligence as the spellcasting ability (spell save {@dc 18}):"
 					],
@@ -13820,6 +13866,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The oblex casts one of the following spells, requiring no spell components and using Intelligence as the spellcasting ability (spell save {@dc 18}):"
 					],
@@ -14191,6 +14238,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The enchanter casts one of the following spells, using Intelligence as the spellcasting ability (spell save {@dc 14}):"
 					],
@@ -14324,6 +14372,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The evoker casts one of the following spells, using Intelligence as the spellcasting ability (spell save {@dc 15}):"
 					],
@@ -14519,6 +14568,9 @@
 				{
 					"source": "MTF",
 					"page": 203
+				},
+				{
+					"source": "BMT"
 				}
 			],
 			"size": [
@@ -14822,6 +14874,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The firenewt casts one of the following spells, using Charisma as the spellcasting ability (spell save {@dc 12}):"
 					],
@@ -15395,6 +15448,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Fraz-Urb'luu casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 23}):"
 					],
@@ -16418,6 +16472,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Geryon casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 21}):"
 					],
@@ -16929,6 +16984,9 @@
 				{
 					"source": "MTF",
 					"page": 205
+				},
+				{
+					"source": "BMT"
 				}
 			],
 			"size": [
@@ -16983,6 +17041,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The githyanki casts one of the following spells, requiring no spell components and using Intelligence as the spellcasting ability (spell save {@dc 15}):"
 					],
@@ -17141,6 +17200,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The githyanki casts one of the following spells, requiring no spell components and using Intelligence as the spellcasting ability (spell save {@dc 15}):"
 					],
@@ -17297,6 +17357,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The githyanki casts one of the following spells, requiring no spell components and using Intelligence as the spellcasting ability (spell save {@dc 16}):"
 					],
@@ -17487,6 +17548,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The githzerai casts one of the following spells, requiring no spell components and using Wisdom as the spellcasting ability (spell save {@dc 18}):"
 					],
@@ -17655,6 +17717,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The githzerai casts one of the following spells, requiring no spell components and using Wisdom as the spellcasting ability (spell save {@dc 16}):"
 					],
@@ -18322,6 +18385,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Graz'zt casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 23}):"
 					],
@@ -18548,6 +18612,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The abishai casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 17}):"
 					],
@@ -19293,6 +19358,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The grung casts one of the following spells, using Wisdom as the spellcasting ability (spell save {@dc 12}):"
 					],
@@ -20098,6 +20164,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The hobgoblin casts one of the following spells, using Intelligence as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -20256,6 +20323,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The hobgoblin casts one of the following spells, using Intelligence as the spellcasting ability (spell save {@dc 12}):"
 					],
@@ -20698,6 +20766,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Hutijin casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 22}):"
 					],
@@ -20961,6 +21030,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The hydroloth casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save {@dc 16}):"
 					],
@@ -21146,6 +21216,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The illusionist casts one of the following spells, using Intelligence as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -21324,6 +21395,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Juiblex casts one of the following spells, requiring no material components and using Wisdom as the spellcasting ability (spell save {@dc 20}):"
 					],
@@ -21537,6 +21609,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The ki-rin casts one of the following spells, requiring no material components and using Wisdom as the spellcasting ability (spell save {@dc 17}):"
 					],
@@ -22050,6 +22123,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The kobold casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 12}):"
 					],
@@ -22226,6 +22300,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The korred casts one of the following spells, requiring no spell components and using Wisdom as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -22387,6 +22462,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The priest casts one of the following spells, requiring no material components and using Wisdom as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -23522,6 +23598,7 @@
 			"spellcasting": [
 				{
 					"name": "Plane Shift (3/Day)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The marut casts {@spell plane shift}, requiring no material components and using Intelligence as the spellcasting ability. The marut can cast the spell normally, or it can cast the spell on an unwilling creature it can see within 60 feet of it. If it uses the latter option, the targeted creature must succeed on a {@dc 20} Charisma saving throw or be banished to a teleportation circle in the Hall of Concordance in Sigil."
 					],
@@ -23922,6 +23999,9 @@
 				{
 					"source": "VGM",
 					"page": 137
+				},
+				{
+					"source": "BMT"
 				}
 			],
 			"size": [
@@ -24503,6 +24583,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The merrenoloth casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -24902,6 +24983,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Moloch casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 21}):"
 					],
@@ -25147,6 +25229,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The molydeus casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 22}):"
 					],
@@ -25360,6 +25443,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The morkoth casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save {@dc 17}):"
 					],
@@ -25846,6 +25930,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The nagpa casts one of the following spells, using Intelligence as the spellcasting ability (spell save {@dc 20}):"
 					],
@@ -26105,9 +26190,6 @@
 				"type": "internal",
 				"path": "bestiary/narzugon.mp3"
 			},
-			"attachedItems": [
-				"hellfire lance|bgdia"
-			],
 			"traitTags": [
 				"Magic Resistance"
 			],
@@ -26201,6 +26283,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The necromancer casts one of the following spells, using Intelligence as the spellcasting ability (spell save {@dc 15}):"
 					],
@@ -26597,6 +26680,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The neogi casts one of the following spells, using Charisma as the spellcasting ability (spell save {@dc 14}):"
 					],
@@ -26783,6 +26867,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The neothelid casts one of the following spells, requiring no spell components and using Wisdom as the spellcasting ability (spell save {@dc 16}):"
 					],
@@ -26825,7 +26910,7 @@
 				{
 					"name": "Acid Breath {@recharge 5}",
 					"entries": [
-						"The neothelid exhales acid in a 60- foot cone. Each creature in that area must make a {@dc 18} Dexterity saving throw, taking 35 ({@damage 10d6}) acid damage on a failed save, or half as much damage on a successful one."
+						"The neothelid exhales acid in a 60-foot cone. Each creature in that area must make a {@dc 18} Dexterity saving throw, taking 35 ({@damage 10d6}) acid damage on a failed save, or half as much damage on a successful one."
 					]
 				}
 			],
@@ -27096,6 +27181,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The nilbog casts one of the following spells, using Charisma as the spellcasting ability (spell save {@dc 12}):"
 					],
@@ -27897,6 +27983,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The oinoloth casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 16}):"
 					],
@@ -28116,6 +28203,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Orcus casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 23}):"
 					],
@@ -28135,6 +28223,7 @@
 				},
 				{
 					"name": "Wand Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"While holding the {@item Wand of Orcus}, Orcus casts one of the following spells (spell save {@dc 18}), some of which require charges; the wand has 7 charges to fuel these spells, and it regains {@dice 1d4 + 3} charges daily at dawn:"
 					],
@@ -28550,6 +28639,9 @@
 				"type": "internal",
 				"path": "bestiary/ox.mp3"
 			},
+			"traitTags": [
+				"Beast of Burden"
+			],
 			"damageTags": [
 				"P"
 			],
@@ -29332,6 +29424,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The retriever casts one of the following spells, requiring no material components and using Wisdom as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -30013,6 +30106,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The shadar-kai casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 16}):"
 					],
@@ -30359,6 +30453,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The shadar-kai casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save {@dc 16}):"
 					],
@@ -30716,6 +30811,9 @@
 				{
 					"source": "VGM",
 					"page": 137
+				},
+				{
+					"source": "BMT"
 				}
 			],
 			"size": [
@@ -30939,6 +31037,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The sibriex casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 21}):"
 					],
@@ -31058,7 +31157,7 @@
 								],
 								[
 									"21\u201325",
-									"The target's eyes become beacons, filling a 15- foot cone with dim light when they are open."
+									"The target's eyes become beacons, filling a 15-foot cone with dim light when they are open."
 								],
 								[
 									"26\u201330",
@@ -31410,6 +31509,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The skull, lord casts one of the following spells, using Charisma as the spellcasting ability (spell save {@dc 18}):"
 					],
@@ -32047,6 +32147,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The eladrin casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 16}):"
 					],
@@ -32171,6 +32272,9 @@
 				{
 					"source": "MTF",
 					"page": 234
+				},
+				{
+					"source": "BMT"
 				}
 			],
 			"size": [
@@ -32260,6 +32364,9 @@
 				{
 					"source": "MTF",
 					"page": 234
+				},
+				{
+					"source": "BMT"
 				}
 			],
 			"size": [
@@ -32392,6 +32499,9 @@
 				{
 					"source": "MTF",
 					"page": 235
+				},
+				{
+					"source": "BMT"
 				}
 			],
 			"size": [
@@ -32466,6 +32576,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The mage casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 16}):"
 					],
@@ -32600,6 +32711,9 @@
 				{
 					"source": "MTF",
 					"page": 236
+				},
+				{
+					"source": "BMT"
 				}
 			],
 			"size": [
@@ -32726,6 +32840,9 @@
 				{
 					"source": "MTF",
 					"page": 236
+				},
+				{
+					"source": "BMT"
 				}
 			],
 			"size": [
@@ -32965,6 +33082,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The steel predator casts one of the following spells, requiring no spell components and using Wisdom as the spellcasting ability:"
 					],
@@ -33076,6 +33194,9 @@
 				{
 					"source": "VGM",
 					"page": 140
+				},
+				{
+					"source": "BMT"
 				}
 			],
 			"size": [
@@ -33898,6 +34019,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"As long as it has more than half of its hit points remaining, the swarm casts one of the following spells, requiring no spell components and using Intelligence as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -34840,6 +34962,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Titivilus casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 21}):"
 					],
@@ -34942,9 +35065,6 @@
 				"type": "internal",
 				"path": "bestiary/titivilus.mp3"
 			},
-			"attachedItems": [
-				"silver sword|mtf"
-			],
 			"traitTags": [
 				"Legendary Resistances",
 				"Magic Resistance",
@@ -35286,6 +35406,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The tortle casts one of the following spells, using Wisdom as the spellcasting ability (spell save {@dc 12}):"
 					],
@@ -35317,7 +35438,7 @@
 				{
 					"name": "Multiattack",
 					"entries": [
-						"The tortle makes four Claw attacks or two Nature's Wrath attacks."
+						"The tortle makes four Claw attacks or two {@skill Nature}'s Wrath attacks."
 					]
 				},
 				{
@@ -35434,6 +35555,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The transmuter casts one of the following spells, using Intelligence as the spellcasting ability (spell save {@dc 14}):"
 					],
@@ -35718,6 +35840,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The ulitharid casts one of the following spells, requiring no spell components and using Intelligence as the spellcasting ability (spell save {@dc 17}):"
 					],
@@ -35852,6 +35975,9 @@
 				},
 				{
 					"source": "AATM"
+				},
+				{
+					"source": "BMT"
 				}
 			],
 			"size": [
@@ -36669,6 +36795,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The war priest casts one of the following spells, using Wisdom as the spellcasting ability (spell save {@dc 15}):"
 					],
@@ -36834,6 +36961,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The warlock casts one of the following spells, using Charisma as the spellcasting ability (spell save {@dc 14}): "
 					],
@@ -36996,6 +37124,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The warlock casts one of the following spells, using Charisma as the spellcasting ability (spell save {@dc 15}): "
 					],
@@ -37114,6 +37243,9 @@
 				{
 					"source": "VGM",
 					"page": 220
+				},
+				{
+					"source": "BMT"
 				}
 			],
 			"size": [
@@ -37167,6 +37299,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The warlock casts one of the following spells, using Charisma as the spellcasting ability (spell save {@dc 15}): "
 					],
@@ -37955,6 +38088,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The eladrin casts one of the following spells, requiring no material components and using Intelligence as the spellcasting ability (spell save {@dc 16}):"
 					],
@@ -38468,6 +38602,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The xvart casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 11}):"
 					],
@@ -38665,6 +38800,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The yagnoloth casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 16}):"
 					],
@@ -38877,6 +39013,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Yeenoghu casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 17}):"
 					],
@@ -39057,6 +39194,9 @@
 				{
 					"source": "VGM",
 					"page": 201
+				},
+				{
+					"source": "BMT"
 				}
 			],
 			"size": [
@@ -39359,6 +39499,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Anathema Form Only)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The anathema casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 17}):"
 					],
@@ -39692,6 +39833,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Yuan-ti Form Only)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The yuan-ti casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -39890,6 +40032,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Yuan-ti Form Only)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The yuan-ti casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -40099,6 +40242,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Yuan-ti Form Only)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The yuan-ti casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 14}):"
 					],
@@ -40525,6 +40669,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Zariel casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 26}):"
 					],
@@ -40784,6 +40929,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Zuggtmoy casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 22}):"
 					],

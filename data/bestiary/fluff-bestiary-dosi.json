@@ -33,6 +33,20 @@
 			]
 		},
 		{
+			"name": "Merrow Extortionist",
+			"source": "DoSI",
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "bestiary/DoSI/Merrow Extortionist.webp"
+					},
+					"credit": "Linda Lithén"
+				}
+			]
+		},
+		{
 			"name": "Runara",
 			"source": "DoSI",
 			"entries": [
@@ -97,7 +111,7 @@
 						"type": "internal",
 						"path": "bestiary/DoSI/Spore Servant Octopus.webp"
 					},
-					"credit": "Linda Lithen"
+					"credit": "Linda Lithén"
 				}
 			]
 		},

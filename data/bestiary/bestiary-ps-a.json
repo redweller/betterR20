@@ -301,7 +301,7 @@
 				{
 					"name": "Inscrutable",
 					"entries": [
-						"The sphinx is immune to any effect that would sense its emotions or read its thoughts, as well as any divination spell that it refuses. Wisdom (Insight) checks made to ascertain the sphinx's intentions or sincerity have disadvantage."
+						"The sphinx is immune to any effect that would sense its emotions or read its thoughts, as well as any divination spell that it refuses. Wisdom ({@skill Insight}) checks made to ascertain the sphinx's intentions or sincerity have disadvantage."
 					]
 				},
 				{
@@ -435,15 +435,27 @@
 						"replace": "elephant",
 						"with": "hippopotamus"
 					},
-					"trait": {
-						"mode": "appendArr",
-						"items": {
-							"name": "Hold Breath",
-							"entries": [
-								"The hippopotamus can hold its breath for 30 minutes."
-							]
+					"trait": [
+						{
+							"mode": "appendArr",
+							"items": {
+								"name": "Hold Breath",
+								"entries": [
+									"The hippopotamus can hold its breath for 30 minutes."
+								]
+							}
+						},
+						{
+							"mode": "replaceArr",
+							"replace": "Trampling Charge",
+							"items": {
+								"name": "Trampling Charge",
+								"entries": [
+									"If the hippopotamus moves at least 20 feet straight toward a creature and then hits it with a bite attack on the same turn, that target must succeed on a {@dc 12} Strength saving throw or be knocked {@condition prone}. If the target is {@condition prone}, the hippopotamus can make one stomp attack against it as a bonus action."
+								]
+							}
 						}
-					},
+					],
 					"action": {
 						"mode": "replaceArr",
 						"replace": "Gore",
