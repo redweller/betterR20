@@ -411,5 +411,15 @@
 		"ver": "1.35.7",
 		"date": "2023-11-26",
 		"txt": "- Fixed crash/added warning when UI Redesign is enabled (thanks @ Redweller)\n- Fixed polygon tool when UI Redesign is disabled (thanks @ Redweller)"
+	},
+	{
+		"ver": "1.35.8",
+		"date": "2024-01-18",
+		"txt": "- Improved handling of UI Redesign/Beta Features (thanks @ redweller)\n  - Fixed page toolbar failing to display\n  - Fixed Beta UI chat notification being un-dismissible"
+	},
+	{
+		"ver": "1.35.9",
+		"date": "2024-09-08",
+		"txt": "- Update main site URL"
 	}
 ]

@@ -258,7 +258,7 @@ function tools5eTool () {
 							const item = table.tableitems.create();
 							item.set("name", m.name);
 							// encode size info into the URL, which will get baked into the token
-							const avatar = m.tokenUrl || `${IMG_URL}${Parser.sourceJsonToAbv(m.source)}/${m.name.replace(/"/g, "")}.png?roll20_token_size=${getSizeInTiles(m.size)}`;
+							const avatar = m.tokenUrl || `${IMG_URL}bestiary/tokens/${Parser.sourceJsonToAbv(m.source)}/${m.name.replace(/"/g, "")}.webp?roll20_token_size=${getSizeInTiles(m.size)}`;
 							item.set("avatar", avatar);
 							item.set("token_size", getSizeInTiles(m.size));
 							item.save();
