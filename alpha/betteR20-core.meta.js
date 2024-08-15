@@ -2,7 +2,7 @@
 // @name         betteR20-alpha-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.185.2a
+// @version      1.35.185.5a
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-core.user.js
 // @description  Enhance your Roll20 experience

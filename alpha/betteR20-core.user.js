@@ -2,7 +2,7 @@
 // @name         betteR20-alpha-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.185.2a
+// @version      1.35.185.5a
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -30,8 +30,8 @@ ART_HANDOUT = "betteR20-art";
 CONFIG_HANDOUT = "betteR20-config";
 
 // TODO automate to use mirror if main site is unavailable
-// BASE_SITE_URL = "https://5e.tools/";
-BASE_SITE_URL = "https://5etools-mirror-2.github.io/";
+BASE_SITE_URL = "https://5e.tools/";
+// BASE_SITE_URL = "https://5etools-mirror-2.github.io/";
 BASE_IMG_REPO_URL = "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/";
 
 SITE_JS_URL = `${BASE_SITE_URL}js/`;
@@ -253,17 +253,17 @@ function baseUtil () {
 			d20plus.ut.sendHackerChat(`
 				<div class="userscript-b20intro">
 					<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
-						Notes on b20 beta
+						Notes on b20 alpha
 						<p style="font-size: 11px;line-height: 15px;color: rgb(32, 194, 14);">
 							<span style="color: rgb(194, 32, 14)">You are using preview version of betteR20</span><br>
 							Please read this carefully and give feedback in official betteR20 Discord server, 
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- Beta features overview:</code><br>⦁ Mouseover hints on Conditions<br>⦁ Filter Imports by List<br>⦁ Extra Layers functionality<br>⦁ Token Images Editor<br>⦁ Better token Actions & Automation<br>⦁ Some fixes related to roll20 newUI<br>⦁ ArtRepo is restored from backup repo<br><code>-- Pre-release 185a:</code><br>⦁ Update libs and data to latest 5etools versions<br><code>-- v.185.2a:</code><br>⦁ Image URLs now point to the new repo<br></p>
+					<p>This version contains following changes<br><code>-- Beta features overview:</code><br>⦁ Mouseover hints on Conditions<br>⦁ Filter Imports by List<br>⦁ Extra Layers functionality<br>⦁ Token Images Editor<br>⦁ Better token Actions & Automation<br>⦁ Some fixes related to roll20 newUI<br>⦁ ArtRepo is restored from backup repo<br><code>-- Pre-release 185a:</code><br>⦁ Update libs and data to latest 5etools versions<br><code>-- v.185.5a:</code><br>⦁ URLs now point to the main site<br></p>
 				</div>
 			`);
-			if (d20plus.ut.cmpVersions("1.35.8.58", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
+			if (d20plus.ut.cmpVersions("1.35.10.59", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
 			<div class="userscript-b20intro">
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					New release detected
@@ -12494,7 +12494,7 @@ function d20plusEngine () {
 			}).addTouch();
 		}
 
-		if (!d20plus.betaFeaturesEnabled) { // Jan 2024 beta features include the new Page Toolbar
+		if (!d20plus) { // Aug 2024 the New Page Toolbar is non-optional
 			// this should be executed only for the old Page Toolbar
 			overwriteDraggables();
 			$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
@@ -12513,6 +12513,7 @@ function d20plusEngine () {
 				debouncedOverwrite();
 			}
 		} else {
+			// #TODO Remove the old styling
 			$(`#page-toolbar`).hide(); // hide the old Page Toolbar that pops with b20 styling
 		}
 
@@ -12528,9 +12529,6 @@ function d20plusEngine () {
 			}
 			if ($isTabAnchor.data("tab") === "lighting") $dynLightTab.removeClass("legacy");
 			if ($isTabAnchor.data("tab") === "legacy-lighting") $dynLightTab.addClass("legacy");
-		}).on("mousedown", ".chooseablepage .js__settings-page", (evt) => {
-			const {currentTarget: target} = evt;
-			d20plus.engine._lastSettingsPageId = $(target).closest(`[data-pageid]`).data("pageid");
 		}).on("click", ".weather input[type=range]", (evt) => {
 			const {currentTarget: target} = evt;
 			if (target.name) $(`.${target.name}`).val(target.value);
@@ -12631,10 +12629,8 @@ function d20plusEngine () {
 	}
 
 	d20plus.engine.enhancePageSettings = () => {
-		const page = !d20plus.betaFeaturesEnabled
-			? d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId)
-			: d20.Campaign.pages.find(p => $(p.view.el).is(":visible"));
-		d20plus.engine._lastSettingsPageId = page.id;
+		const page = d20.Campaign.pages.find(p => $(p.view.el).is(":visible")); // #TODO get rid of _lastsettingsPageId
+		d20plus.engine._lastSettingsPageId = page.id;							// it used to capture d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId)
 		d20plus.ut.log("Enhancing page", page);
 		if (page && page.get) {
 			const $dialog = $(`.pagedetails_navigation:visible`).closest(`.ui-dialog`);
@@ -12783,6 +12779,7 @@ function d20plusEngine () {
 	d20plus.engine._populatePageCustomOptions = (page, dialog) => {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		d20plus.engine._customPageOptions = d20plus.engine._customPageOptions || {};
 		if (!d20plus.engine._customPageOptions[page?.id]) return;
 		Object.entries(d20plus.engine._customPageOptions[page.id]).forEach(([name, val]) => {
 			dialog.find(`[name="${name}"]`).each((i, e) => {
@@ -24499,7 +24496,7 @@ function baseBACharacters () {
 			return new Promise(resolve => {
 				let inProgress = 0;
 				const wait = setInterval(() => {
-					const statsFetched = Object.keys(this.character?.sheet?.data.stats).length > 1;
+					const statsFetched = Object.keys(this.character?.sheet?.data.stats || {}).length > 1;
 					inProgress++;
 					if (statsFetched) resolve(true);
 					if (statsFetched || inProgress > 120) {
@@ -26427,7 +26424,7 @@ const D20plus = function (version) {
 				window.d20plus = d20plus;
 				d20plus.ut.log("Injection successful...");
 			} else {
-				if (timeWaitedForEnhancementSuiteMs > 2 * 5000) {
+				if (timeWaitedForEnhancementSuiteMs > 4 * 5000) {
 					alert("betteR20 may require the VTTES (R20ES) extension to be installed!\nPlease install it from https://ssstormy.github.io/roll20-enhancement-suite/\nClicking ok will take you there.");
 					window.open("https://ssstormy.github.io/roll20-enhancement-suite/", "_blank");
 				} else {

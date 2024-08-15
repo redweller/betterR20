@@ -2,7 +2,7 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.184.9
+// @version      1.35.184.10
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -30,8 +30,9 @@ ART_HANDOUT = "betteR20-art";
 CONFIG_HANDOUT = "betteR20-config";
 
 // TODO automate to use mirror if main site is unavailable
-// BASE_SITE_URL = "https://5e.tools/";
-BASE_SITE_URL = "https://5etools-mirror-1.github.io/";
+BASE_SITE_URL = "https://5e.tools/";
+// BASE_SITE_URL = "https://5etools-mirror-2.github.io/";
+BASE_IMG_REPO_URL = "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/";
 
 SITE_JS_URL = `${BASE_SITE_URL}js/`;
 DATA_URL = `${BASE_SITE_URL}data/`;
@@ -259,10 +260,10 @@ function baseUtil () {
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- Beta features overview:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Layers</strong><br>⦁ add new Extra Layers toolbar as part of r20 newUI<br>⦁ add show/hide layers toggles to b20 layers<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br>⦁ removed VTTES dependency<br>⦁ fixed Page Toolbar malfunctioning with the NewUI<br>⦁ fixed context menu appearing on left click<br><strong>Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ a better Random Side randomizer (for seemingly more random results)<br>⦁ edit token images directly from roll20 Token Editor<br><strong>Better token Actions & Automation</strong><br>⦁ new character menu in left top corner of the screen<br>- new design, the menu works even when no character is selected<br>- browse stats and actions for last selected token<br>⦁ use available actions with custom roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots, items and resources are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>- view descriptions before you use a spell or a trait<br>- filter prepared spells/useable traits etc.<br>- upcast or use spells as ritual<br><code>-- v.184.7 changes:</code><br>- fix BA upcasting at highest available levels<br>- fix BA detectiing ritual spells<br>- page settings now work with beta UI<br>- art repo is functional again<br><code>-- v.184.9 changes:</code><br>- layer settings hotfix<br></p>
+					<p>This version contains following changes<br><code>-- Beta features overview:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Layers</strong><br>⦁ add new Extra Layers toolbar as part of r20 newUI<br>⦁ add show/hide layers toggles to b20 layers<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br>⦁ removed VTTES dependency<br>⦁ fixed Page Toolbar malfunctioning with the NewUI<br>⦁ fixed context menu appearing on left click<br><strong>Edit Token Images dialog</strong><br>⦁ manage token images at any moment via context menu<br>⦁ a better Random Side randomizer (for seemingly more random results)<br>⦁ edit token images directly from roll20 Token Editor<br><strong>Better token Actions & Automation</strong><br>⦁ new character menu in left top corner of the screen<br>- new design, the menu works even when no character is selected<br>- browse stats and actions for last selected token<br>⦁ use available actions with custom roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots, items and resources are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>- view descriptions before you use a spell or a trait<br>- filter prepared spells/useable traits etc.<br>- upcast or use spells as ritual<br><code>-- v.184.7 changes:</code><br>- fix BA upcasting at highest available levels<br>- fix BA detectiing ritual spells<br>- page settings now work with beta UI<br>- art repo is functional again<br><code>-- v.184.9 changes:</code><br>- layer settings hotfix<br><code>-- v.184.10 changes:</code><br>- new r20 Page Menu hotfix<br></p>
 				</div>
 			`);
-			if (d20plus.ut.cmpVersions("1.35.8.58", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
+			if (d20plus.ut.cmpVersions("1.35.10.59", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
 			<div class="userscript-b20intro">
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					New release detected
@@ -12493,7 +12494,7 @@ function d20plusEngine () {
 			}).addTouch();
 		}
 
-		if (!d20plus.betaFeaturesEnabled) { // Jan 2024 beta features include the new Page Toolbar
+		if (!d20plus) { // Aug 2024 the New Page Toolbar is non-optional
 			// this should be executed only for the old Page Toolbar
 			overwriteDraggables();
 			$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
@@ -12512,6 +12513,7 @@ function d20plusEngine () {
 				debouncedOverwrite();
 			}
 		} else {
+			// #TODO Remove the old styling
 			$(`#page-toolbar`).hide(); // hide the old Page Toolbar that pops with b20 styling
 		}
 
@@ -12527,9 +12529,6 @@ function d20plusEngine () {
 			}
 			if ($isTabAnchor.data("tab") === "lighting") $dynLightTab.removeClass("legacy");
 			if ($isTabAnchor.data("tab") === "legacy-lighting") $dynLightTab.addClass("legacy");
-		}).on("mousedown", ".chooseablepage .js__settings-page", (evt) => {
-			const {currentTarget: target} = evt;
-			d20plus.engine._lastSettingsPageId = $(target).closest(`[data-pageid]`).data("pageid");
 		}).on("click", ".weather input[type=range]", (evt) => {
 			const {currentTarget: target} = evt;
 			if (target.name) $(`.${target.name}`).val(target.value);
@@ -12630,10 +12629,8 @@ function d20plusEngine () {
 	}
 
 	d20plus.engine.enhancePageSettings = () => {
-		const page = !d20plus.betaFeaturesEnabled
-			? d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId)
-			: d20.Campaign.pages.find(p => $(p.view.el).is(":visible"));
-		d20plus.engine._lastSettingsPageId = page.id;
+		const page = d20.Campaign.pages.find(p => $(p.view.el).is(":visible")); // #TODO get rid of _lastsettingsPageId
+		d20plus.engine._lastSettingsPageId = page.id;							// it used to capture d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId)
 		d20plus.ut.log("Enhancing page", page);
 		if (page && page.get) {
 			const $dialog = $(`.pagedetails_navigation:visible`).closest(`.ui-dialog`);
@@ -24498,7 +24495,7 @@ function baseBACharacters () {
 			return new Promise(resolve => {
 				let inProgress = 0;
 				const wait = setInterval(() => {
-					const statsFetched = Object.keys(this.character?.sheet?.data.stats).length > 1;
+					const statsFetched = Object.keys(this.character?.sheet?.data.stats || {}).length > 1;
 					inProgress++;
 					if (statsFetched) resolve(true);
 					if (statsFetched || inProgress > 120) {
@@ -26426,7 +26423,7 @@ const D20plus = function (version) {
 				window.d20plus = d20plus;
 				d20plus.ut.log("Injection successful...");
 			} else {
-				if (timeWaitedForEnhancementSuiteMs > 2 * 5000) {
+				if (timeWaitedForEnhancementSuiteMs > 4 * 5000) {
 					alert("betteR20 may require the VTTES (R20ES) extension to be installed!\nPlease install it from https://ssstormy.github.io/roll20-enhancement-suite/\nClicking ok will take you there.");
 					window.open("https://ssstormy.github.io/roll20-enhancement-suite/", "_blank");
 				} else {
