@@ -977,6 +977,7 @@
 				"Multiattack",
 				"Tentacles"
 			],
+			"languageTags": [],
 			"damageTags": [
 				"I",
 				"P"
@@ -5583,6 +5584,7 @@
 				"S"
 			],
 			"miscTags": [
+				"CUR",
 				"MLW",
 				"MW",
 				"RNG",

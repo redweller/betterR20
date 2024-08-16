@@ -1326,6 +1326,7 @@
 			],
 			"miscTags": [
 				"OBS",
+				"PIR",
 				"PRM",
 				"SMN"
 			],
@@ -3325,6 +3326,7 @@
 				"psychic"
 			],
 			"miscTags": [
+				"PIR",
 				"PRM",
 				"SGT"
 			],
@@ -4681,6 +4683,7 @@
 			"miscTags": [
 				"HL",
 				"LGT",
+				"PIR",
 				"PRM",
 				"SGT"
 			]

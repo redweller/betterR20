@@ -65,7 +65,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from non-magical attacks"
+					"note": "from non-magical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -644,6 +645,12 @@
 					"name": "Sentinel",
 					"entries": [
 						"When a creature within 5 feet of the stoneguard attacks a target other than the stoneguard, the stoneguard can make one attack against that creature."
+					]
+				},
+				{
+					"name": "Skin to Stone",
+					"entries": [
+						"When the stoneguard is attacked, it gains resistance to bludgeoning, piercing, and slashing damage from nonmagical attacks until the end of the attacker's turn"
 					]
 				}
 			],
@@ -1415,7 +1422,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from non-magical attacks"
+					"note": "from non-magical attacks",
+					"cond": true
 				}
 			],
 			"immune": [
@@ -3043,7 +3051,8 @@
 						"lightning",
 						"thunder"
 					],
-					"note": "while enlarged"
+					"note": "while enlarged",
+					"cond": true
 				},
 				{
 					"resist": [
@@ -3051,7 +3060,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "while raging"
+					"note": "while raging",
+					"cond": true
 				}
 			],
 			"conditionImmune": [
@@ -3060,7 +3070,8 @@
 						"charmed",
 						"frightened"
 					],
-					"note": "while raging"
+					"note": "while raging",
+					"cond": true
 				}
 			],
 			"languages": [
@@ -3730,6 +3741,9 @@
 			"resist": [
 				"poison"
 			],
+			"conditionImmune": [
+				"disease"
+			],
 			"languages": [
 				"Common",
 				"Dwarvish"
@@ -4168,7 +4182,8 @@
 						"piercing",
 						"slashing"
 					],
-					"note": "from non-magical attacks"
+					"note": "from non-magical attacks",
+					"cond": true
 				}
 			],
 			"conditionImmune": [

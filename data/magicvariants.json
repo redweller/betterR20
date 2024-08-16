@@ -1122,7 +1122,7 @@
 				"page": 66,
 				"rarity": "very rare",
 				"entries": [
-					"Ranged attack rolls made with this ammunition have advantage against any creature doesn't have all its hit points."
+					"Ranged attack rolls made with this ammunition have advantage against any creature that doesn't have all its hit points."
 				]
 			}
 		},
@@ -1413,6 +1413,7 @@
 				],
 				"rarity": "rare",
 				"reqAttune": true,
+				"stealth": false,
 				"entries": [
 					"This magic armor appears as a pot of bubbling black ichor. When you attune to it, the ichor adheres to and contours to your skin, and the pot disappears. The armor can be worn under normal clothes, and it doesn't impede bodily functions. Once you put it on, it can't be removed unless you choose to do so or you die, at which point the pot reappears and the ichor flows back into it.",
 					"While wearing the armor, you have resistance to poison damage. The armor also doesn't impose disadvantage on Dexterity ({@skill Stealth}) checks."
@@ -3778,7 +3779,7 @@
 				"rarity": "uncommon",
 				"reqAttune": true,
 				"entries": [
-					"This magic weapon warns you of danger. While the weapon is on your person, you have advantage on initiative rolls. In addition, you and any of your companions within 30 feet of you can't be {@quickref Surprise|PHB|3|0|surprised}, except when {@condition incapacitated} by something other than nonmagical sleep. The weapon magically awakens you and your companions within range if any of you are sleeping naturally when combat begins."
+					"This magic weapon warns you of danger. While the weapon is on your person, you have advantage on initiative rolls. In addition, you and any of your companions within 30 feet of you can't be {@status surprised}, except when {@condition incapacitated} by something other than nonmagical sleep. The weapon magically awakens you and your companions within range if any of you are sleeping naturally when combat begins."
 				],
 				"lootTables": [
 					"Magic Item Table F"

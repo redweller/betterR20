@@ -806,6 +806,14 @@
 			]
 		},
 		{
+			"name": "Charm of the Creeping Hand",
+			"source": "VNotEE",
+			"type": "Charm",
+			"entries": [
+				"Once per turn, when you hit a creature with an attack roll using a weapon or an unarmed strike, you can infuse your strike with life-stealing energy. Your attack then deals an extra {@dice 1d10} necrotic damage, and you gain 5 {@book temporary hit points|PHB|9|Temporary Hit Points}. Once used five times, the charm vanishes."
+			]
+		},
+		{
 			"name": "Charm of the Crystal Heart",
 			"source": "ToA",
 			"page": 167,
@@ -821,6 +829,14 @@
 			"type": "Charm",
 			"entries": [
 				"You can cast {@spell Otiluke's Resilient Sphere}, requiring no spell components and using your Intelligence, Wisdom, or Charisma as the spellcasting ability (your choice). Once used three times, the charm vanishes from you."
+			]
+		},
+		{
+			"name": "Charm of the Eldritch Eye",
+			"source": "VNotEE",
+			"type": "Charm",
+			"entries": [
+				"You can cast {@spell Clairvoyance} as an action, without using a spell slot and requiring no material components. Once used three times, the charm vanishes."
 			]
 		},
 		{
@@ -2325,7 +2341,7 @@
 						{
 							"type": "item",
 							"name": "Power:",
-							"entry": "The host can't be {@quickref Surprise|PHB|3|0|surprised}, gains advantage on all Wisdom checks, and never takes damage from falling."
+							"entry": "The host can't be {@status surprised}, gains advantage on all Wisdom checks, and never takes damage from falling."
 						}
 					]
 				}

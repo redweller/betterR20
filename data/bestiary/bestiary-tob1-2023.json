@@ -118,6 +118,7 @@
 				"charisma",
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -245,6 +246,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -448,6 +450,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -643,6 +646,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -833,6 +837,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -1019,6 +1024,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -1236,6 +1242,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -1436,6 +1443,7 @@
 				"strength",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -1609,6 +1617,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -1743,6 +1752,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -1874,6 +1884,7 @@
 				"charisma",
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -2050,6 +2061,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -2148,6 +2160,7 @@
 				"RW",
 				"THW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -2254,6 +2267,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -2457,6 +2471,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -2652,6 +2667,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -2842,6 +2858,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -3028,6 +3045,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -3177,6 +3195,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -3404,6 +3423,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -3604,6 +3624,7 @@
 				"strength",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -3733,6 +3754,7 @@
 				"charisma",
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -3869,6 +3891,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -4014,6 +4037,7 @@
 				"dexterity",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -4161,6 +4185,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -4309,6 +4334,7 @@
 			],
 			"miscTags": [
 				"AOE",
+				"DIS",
 				"MW"
 			],
 			"conditionInflict": [
@@ -4318,6 +4344,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -4429,6 +4456,7 @@
 				"grappled",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -4599,6 +4627,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -4831,6 +4860,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -5032,6 +5062,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -5184,6 +5215,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -5291,6 +5323,7 @@
 				"P"
 			],
 			"miscTags": [
+				"DIS",
 				"MW",
 				"RCH"
 			],
@@ -5302,6 +5335,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -5429,6 +5463,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -5537,6 +5572,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -5713,6 +5749,7 @@
 				"strength",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -5801,6 +5838,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -6017,6 +6055,7 @@
 			"savingThrowForcedSpell": [
 				"charisma"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -6119,6 +6158,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -6264,6 +6304,7 @@
 				"RW",
 				"THW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -6411,6 +6452,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -6628,6 +6670,7 @@
 				"strength",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -6753,6 +6796,7 @@
 				"MLW",
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -6860,6 +6904,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -6998,6 +7043,7 @@
 				"charisma",
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -7125,6 +7171,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -7255,6 +7302,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -7362,6 +7410,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -7534,6 +7583,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -7671,6 +7721,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -7787,6 +7838,7 @@
 				"constitution",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -7960,6 +8012,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -8128,6 +8181,7 @@
 			"savingThrowForcedSpell": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -8320,6 +8374,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -8428,11 +8483,13 @@
 				"S"
 			],
 			"miscTags": [
+				"DIS",
 				"MW"
 			],
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -8578,6 +8635,7 @@
 				"grappled",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -8769,6 +8827,7 @@
 			],
 			"miscTags": [
 				"AOE",
+				"DIS",
 				"MW"
 			],
 			"conditionInflict": [
@@ -8787,6 +8846,7 @@
 				"constitution",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -8946,6 +9006,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -9065,6 +9126,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -9183,6 +9245,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -9318,6 +9381,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -9502,6 +9566,7 @@
 				"charisma",
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -9618,6 +9683,7 @@
 				"MW",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -9730,6 +9796,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -9942,6 +10009,7 @@
 				"charisma",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -10035,6 +10103,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -10147,6 +10216,7 @@
 				"constitution",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -10267,6 +10337,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -10374,6 +10445,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -10523,6 +10595,7 @@
 				"dexterity",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -10715,6 +10788,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -10851,6 +10925,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -10960,6 +11035,7 @@
 			"conditionInflict": [
 				"grappled"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -11159,6 +11235,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -11297,6 +11374,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -11397,6 +11475,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -11505,6 +11584,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -11644,6 +11724,7 @@
 				"MW",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -11813,6 +11894,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -11932,6 +12014,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -12041,6 +12124,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -12176,6 +12260,7 @@
 				"dexterity",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -12336,6 +12421,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -12496,6 +12582,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -12635,6 +12722,7 @@
 			"conditionInflict": [
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -12775,6 +12863,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -12923,6 +13012,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -13033,6 +13123,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -13174,6 +13265,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -13322,6 +13414,7 @@
 				"constitution",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -13474,6 +13567,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -13596,6 +13690,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -13720,6 +13815,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -13892,6 +13988,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -14036,6 +14133,7 @@
 				"S"
 			],
 			"miscTags": [
+				"DIS",
 				"MLW",
 				"MW"
 			],
@@ -14046,6 +14144,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -14199,6 +14298,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -14317,6 +14417,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -14432,6 +14533,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -14603,6 +14705,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -14753,6 +14856,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -14851,6 +14955,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -15031,6 +15136,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -15197,6 +15303,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -15319,6 +15426,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -15559,6 +15667,7 @@
 			"savingThrowForcedSpell": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -15831,6 +15940,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -16076,6 +16186,7 @@
 			],
 			"miscTags": [
 				"AOE",
+				"DIS",
 				"MW",
 				"RCH"
 			],
@@ -16096,6 +16207,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -16342,6 +16454,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -16469,6 +16582,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -16633,6 +16747,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -16740,6 +16855,7 @@
 				"RCH",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -16946,6 +17062,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -17064,6 +17181,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -17191,6 +17309,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -17285,6 +17404,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -17394,6 +17514,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -17535,6 +17656,7 @@
 			"conditionInflict": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -17625,6 +17747,7 @@
 				"P"
 			],
 			"miscTags": [
+				"DIS",
 				"MW"
 			],
 			"conditionInflict": [
@@ -17633,6 +17756,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -17763,6 +17887,7 @@
 				"constitution",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -17909,6 +18034,7 @@
 				"dexterity",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -18022,6 +18148,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -18144,6 +18271,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -18303,6 +18431,7 @@
 				"charisma",
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -18435,6 +18564,7 @@
 			"savingThrowForced": [
 				"charisma"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -18594,6 +18724,7 @@
 				"constitution",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -18729,6 +18860,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -18900,6 +19032,7 @@
 				"strength",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -19008,6 +19141,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -19193,6 +19327,7 @@
 			"savingThrowForcedSpell": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -19294,6 +19429,7 @@
 				"charisma",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -19444,6 +19580,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -19593,6 +19730,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -19706,6 +19844,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -19855,6 +19994,7 @@
 				"MLW",
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -19996,6 +20136,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -20171,6 +20312,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -20308,6 +20450,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -20454,6 +20597,7 @@
 			"savingThrowForced": [
 				"charisma"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -20625,6 +20769,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -20771,6 +20916,7 @@
 				"grappled",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -20865,6 +21011,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -20979,6 +21126,7 @@
 				"MW",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -21112,6 +21260,7 @@
 				"MW",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -21270,6 +21419,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -21395,6 +21545,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -21546,6 +21697,7 @@
 				"charisma",
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -21720,6 +21872,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -21858,6 +22011,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -22013,6 +22167,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -22181,6 +22336,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -22409,6 +22565,7 @@
 				"MLW",
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -22585,6 +22742,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -22712,6 +22870,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -22819,6 +22978,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -22933,6 +23093,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -23105,6 +23266,7 @@
 				"constitution",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -23279,6 +23441,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -23404,6 +23567,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -23508,6 +23672,7 @@
 				"RW",
 				"THW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -23663,6 +23828,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -23750,6 +23916,7 @@
 			"conditionInflict": [
 				"grappled"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -23837,6 +24004,7 @@
 				"grappled",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -23988,6 +24156,7 @@
 				"dexterity",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -24090,6 +24259,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -24242,6 +24412,7 @@
 			"conditionInflict": [
 				"prone"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -24386,6 +24557,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -24482,6 +24654,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -24585,6 +24758,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -24791,6 +24965,7 @@
 				"O"
 			],
 			"miscTags": [
+				"CUR",
 				"MLW",
 				"MW"
 			],
@@ -24804,6 +24979,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -24925,6 +25101,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -25064,6 +25241,7 @@
 				"prone",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -25186,6 +25364,7 @@
 				"MLW",
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -25305,6 +25484,7 @@
 				"constitution",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -25426,6 +25606,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -25533,6 +25714,7 @@
 				"forest",
 				"urban"
 			],
+			"tokenCredit": "ZombiOctopi",
 			"senseTags": [
 				"D"
 			],
@@ -25553,6 +25735,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -25680,6 +25863,7 @@
 			"savingThrowForcedSpell": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -25884,6 +26068,7 @@
 				"charisma",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -26025,6 +26210,7 @@
 				"dexterity",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -26236,6 +26422,7 @@
 				"constitution",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -26438,6 +26625,7 @@
 			"savingThrowForcedSpell": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -26591,6 +26779,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -26748,6 +26937,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -26901,6 +27091,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -27021,6 +27212,7 @@
 			"conditionInflict": [
 				"blinded"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -27145,6 +27337,7 @@
 				"dexterity",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -27366,6 +27559,7 @@
 				"constitution",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -27488,6 +27682,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -27709,6 +27904,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -27880,6 +28076,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -28047,6 +28244,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -28166,6 +28364,7 @@
 				"S"
 			],
 			"miscTags": [
+				"DIS",
 				"MW",
 				"RW"
 			],
@@ -28175,6 +28374,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -28364,6 +28564,7 @@
 			"savingThrowForcedSpell": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -28490,6 +28691,7 @@
 				"S"
 			],
 			"miscTags": [
+				"DIS",
 				"MLW",
 				"MW",
 				"RCH",
@@ -28501,6 +28703,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -28648,6 +28851,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -28774,6 +28978,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -28896,6 +29101,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -29115,6 +29321,7 @@
 				"strength",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -29231,6 +29438,7 @@
 			"savingThrowForced": [
 				"intelligence"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -29372,6 +29580,7 @@
 			"conditionInflict": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -29570,6 +29779,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -29718,6 +29928,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -29883,6 +30094,7 @@
 				"constitution",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -30048,6 +30260,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -30161,6 +30374,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -30326,6 +30540,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -30401,6 +30616,19 @@
 					"entries": [
 						"The kot bayun magically turns {@condition invisible} until it attacks or uses Slumbering Song, or until its {@status concentration} ends (as if {@status concentration||concentrating} on a spell). Any equipment the kot bayun wears or carries is {@condition invisible} with it."
 					]
+				},
+				{
+					"name": "Slumbering Song",
+					"entries": [
+						"The kot bayun sings a magical song to one creature it can see within 60 feet of it. The target must succeed on a {@dc 13} Charisma saving throw on fall {@condition unconscious} for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. If the kot bayun uses a bonus action on its subsequent turns to continue singing, the target has disadvantage on this saving throw. Otherwise, the effect ends for a target if the target takes damage while below half its hp maximum.",
+						"If a creature's saving throw is successful or the effect ends for it, the creature is immune to the kot bayun's Slumbering Song for the next 24 hours. The kot bayun can have up to two creatures {@condition unconscious} from its song at a time."
+					]
+				},
+				{
+					"name": "Healing Purr (2/Day)",
+					"entries": [
+						"The kot bayun purrs at a creature it can see within 15 feet of it. The target magically regains 10 ({@dice 3d6}) hp and is freed from any disease, poison, blindness, or deafness."
+					]
 				}
 			],
 			"environment": [
@@ -30427,6 +30655,7 @@
 			"conditionInflict": [
 				"invisible"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -30587,6 +30816,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -30707,6 +30937,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -30827,6 +31058,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -30925,6 +31157,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -31041,6 +31274,9 @@
 			"attachedItems": [
 				"club|phb"
 			],
+			"traitTags": [
+				"Mimicry"
+			],
 			"senseTags": [
 				"D"
 			],
@@ -31064,6 +31300,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -31185,6 +31422,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -31336,6 +31574,7 @@
 				"strength",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -31462,6 +31701,7 @@
 				"charisma",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -31584,6 +31824,7 @@
 				"S"
 			],
 			"miscTags": [
+				"DIS",
 				"MW",
 				"RCH"
 			],
@@ -31594,6 +31835,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -31764,6 +32006,7 @@
 				"constitution",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -31867,6 +32110,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -32074,6 +32318,7 @@
 			"savingThrowForced": [
 				"charisma"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -32199,6 +32444,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -32313,6 +32559,7 @@
 				"dexterity",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -32531,6 +32778,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -32643,6 +32891,7 @@
 				"strength",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -32799,6 +33048,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -32978,6 +33228,7 @@
 			"savingThrowForcedSpell": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -33109,6 +33360,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -33265,6 +33517,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -33370,6 +33623,7 @@
 			"conditionInflict": [
 				"blinded"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -33537,6 +33791,7 @@
 				"strength",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -33736,6 +33991,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -33836,6 +34092,7 @@
 				"constitution",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -33969,6 +34226,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -34085,6 +34343,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -34195,12 +34454,14 @@
 			],
 			"miscTags": [
 				"AOE",
+				"DIS",
 				"MW"
 			],
 			"savingThrowForced": [
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -34353,6 +34614,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -34474,6 +34736,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -34639,6 +34902,7 @@
 				"O"
 			],
 			"miscTags": [
+				"CUR",
 				"MW"
 			],
 			"conditionInflict": [
@@ -34651,6 +34915,7 @@
 			"savingThrowForcedSpell": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -34743,6 +35008,7 @@
 				"mountain"
 			],
 			"dragonAge": "wyrmling",
+			"tokenCredit": "Cory Trego-Erdner",
 			"traitTags": [
 				"Magic Resistance"
 			],
@@ -34768,6 +35034,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -34914,6 +35181,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -35044,6 +35312,7 @@
 			"savingThrowForced": [
 				"charisma"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -35178,6 +35447,7 @@
 				"charisma",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -35437,6 +35707,7 @@
 				"charisma",
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -35586,6 +35857,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -35697,6 +35969,7 @@
 				"RW",
 				"THW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -35821,6 +36094,7 @@
 				"constitution",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -35945,6 +36219,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -36167,6 +36442,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -36232,7 +36508,7 @@
 				{
 					"name": "Multiple Heads",
 					"entries": [
-						"The necrohydra has five fleshy heads. While it has more than one head, the necrohydra has advantage on saving throws against being {@condition blinded}, {@condition charmed}, {@condition deafened}, {@condition frightened}, {@condition stunned}, and knocked {@condition unconscious}. Whenever the necrohydra takes 25 or more damage in a single turn, one of its fleshy heads dies. If all its fleshy heads die, the necrohydra can't use Unnerving Faces and can't use or maintain Dreadful Dirge. At the end of its turn, it grows two skeletal heads for each of its fleshy heads that died since its last turn, unless it has taken radiant damage since its last turn. The necrohydra regains 10 hp for each skeletal head regrown in this way."
+						"The necrohydra has five fleshy heads. While it has more than one head, the necrohydra has advantage on saving throws against being {@condition blinded}, {@condition charmed}, {@condition deafened}, {@condition frightened}, {@condition stunned}, and knocked {@condition unconscious}. Whenever the necrohydra takes 25 or more damage in a single turn, one of its fleshy heads dies. If all its fleshy heads die, the necrohydra can't use or maintain Dreadful Dirge. At the end of its turn, it grows two skeletal heads for each of its fleshy heads that died since its last turn, unless it has taken radiant damage since its last turn. The necrohydra regains 10 hp for each skeletal head regrown in this way."
 					]
 				},
 				{
@@ -36303,6 +36579,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -36404,6 +36681,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -36562,6 +36840,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -36648,6 +36927,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -36781,6 +37061,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -36998,6 +37279,7 @@
 				"Y"
 			],
 			"miscTags": [
+				"DIS",
 				"MW",
 				"RCH"
 			],
@@ -37005,6 +37287,7 @@
 				"constitution",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -37119,6 +37402,7 @@
 				"underdark",
 				"underwater"
 			],
+			"tokenCredit": "Donghyeok Lee",
 			"traitTags": [
 				"Undead Fortitude"
 			],
@@ -37148,6 +37432,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -37277,6 +37562,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -37401,6 +37687,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -37545,6 +37832,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -37645,6 +37933,7 @@
 				"MLW",
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -37776,6 +38065,7 @@
 				"charisma",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -37916,6 +38206,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -38074,6 +38365,7 @@
 				"constitution",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -38305,6 +38597,7 @@
 				"intelligence",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -38463,6 +38756,7 @@
 				"charisma",
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -38598,6 +38892,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -38815,6 +39110,7 @@
 				"constitution",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -38941,6 +39237,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -39108,6 +39405,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -39228,6 +39526,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -39371,6 +39670,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -39528,6 +39828,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -39653,6 +39954,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -39926,6 +40228,7 @@
 				"constitution",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -40185,6 +40488,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -40361,6 +40665,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -40496,6 +40801,7 @@
 				"constitution",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -40602,6 +40908,7 @@
 			"savingThrowForced": [
 				"intelligence"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -40737,12 +41044,14 @@
 				"P"
 			],
 			"miscTags": [
+				"DIS",
 				"MW"
 			],
 			"savingThrowForced": [
 				"charisma",
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -40913,6 +41222,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -41018,6 +41328,7 @@
 				"RW",
 				"THW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -41112,6 +41423,7 @@
 			"environment": [
 				"urban"
 			],
+			"tokenCredit": "Targete",
 			"attachedItems": [
 				"dagger|phb",
 				"light crossbow|phb"
@@ -41136,6 +41448,7 @@
 				"RW",
 				"THW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -41280,6 +41593,7 @@
 				"charisma",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -41408,7 +41722,8 @@
 				"arctic"
 			],
 			"traitTags": [
-				"Magic Resistance"
+				"Magic Resistance",
+				"Mimicry"
 			],
 			"senseTags": [
 				"SD"
@@ -41435,6 +41750,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -41534,6 +41850,9 @@
 				"longbow|phb",
 				"rapier|phb"
 			],
+			"traitTags": [
+				"Mimicry"
+			],
 			"senseTags": [
 				"SD"
 			],
@@ -41555,6 +41874,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -41675,6 +41995,9 @@
 			"attachedItems": [
 				"longbow|phb"
 			],
+			"traitTags": [
+				"Mimicry"
+			],
 			"senseTags": [
 				"SD"
 			],
@@ -41700,6 +42023,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -41886,6 +42210,7 @@
 				"strength",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -41993,6 +42318,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -42130,6 +42456,7 @@
 				"constitution",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -42279,6 +42606,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -42407,6 +42735,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -42505,6 +42834,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -42619,6 +42949,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -42854,6 +43185,7 @@
 			"savingThrowForcedSpell": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -42971,6 +43303,7 @@
 				"MW",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -43081,6 +43414,7 @@
 				"MW",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -43199,6 +43533,7 @@
 				"N"
 			],
 			"miscTags": [
+				"DIS",
 				"MW"
 			],
 			"conditionInflict": [
@@ -43207,6 +43542,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -43408,6 +43744,7 @@
 				"dexterity",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -43539,6 +43876,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -43653,6 +43991,7 @@
 			],
 			"miscTags": [
 				"AOE",
+				"DIS",
 				"MW"
 			],
 			"conditionInflict": [
@@ -43662,6 +44001,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -43827,6 +44167,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -43974,6 +44315,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -44098,7 +44440,8 @@
 				"desert"
 			],
 			"traitTags": [
-				"Magic Resistance"
+				"Magic Resistance",
+				"Mimicry"
 			],
 			"senseTags": [
 				"SD"
@@ -44130,6 +44473,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -44286,6 +44630,7 @@
 				"constitution",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -44395,6 +44740,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -44529,6 +44875,7 @@
 			],
 			"miscTags": [
 				"AOE",
+				"CUR",
 				"MW"
 			],
 			"conditionInflict": [
@@ -44540,6 +44887,7 @@
 				"charisma",
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -44647,6 +44995,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -44778,6 +45127,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -44903,6 +45253,7 @@
 				"constitution",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -45064,6 +45415,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -45181,6 +45533,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -45354,6 +45707,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -45461,6 +45815,7 @@
 				"MW",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -45579,6 +45934,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -45757,6 +46113,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -45874,6 +46231,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -45997,6 +46355,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -46160,6 +46519,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -46278,6 +46638,7 @@
 				"MW",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -46435,6 +46796,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -46643,6 +47005,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -46796,6 +47159,7 @@
 				"RW",
 				"THW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -46947,89 +47311,9 @@
 				"RW",
 				"THW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
-		},
-		{
-			"name": "Shambling Pile",
-			"source": "ToB1-2023",
-			"page": 225,
-			"size": [
-				"M"
-			],
-			"type": {
-				"type": "plant",
-				"tags": [
-					"minion"
-				]
-			},
-			"alignment": [
-				"U"
-			],
-			"ac": [
-				{
-					"ac": 13,
-					"from": [
-						"natural armor"
-					]
-				}
-			],
-			"hp": {
-				"average": 12,
-				"formula": "1d4"
-			},
-			"speed": {
-				"walk": 20
-			},
-			"str": 16,
-			"dex": 7,
-			"con": 16,
-			"int": 5,
-			"wis": 10,
-			"cha": 5,
-			"senses": [
-				"blindsight 60 ft. (blind beyond this radius)"
-			],
-			"passive": 10,
-			"immune": [
-				"poison"
-			],
-			"conditionImmune": [
-				"blinded",
-				"charmed",
-				"deafened",
-				"frightened",
-				"poisoned",
-				"prone"
-			],
-			"trait": [
-				{
-					"name": "False Appearance",
-					"entries": [
-						"While the pile remains motionless, they are indistinguishable from an ordinary mass of vegetation."
-					]
-				},
-				{
-					"name": "Hungry Grab",
-					"entries": [
-						"If an enemy starts their turn within 5 feet of three or more piles, the creature must succeed on a Dexterity saving throw or be {@condition grappled}. While {@condition grappled} in this way, the target is {@condition restrained}, and at the start of each of the target's turns, they take poison damage equal to the number of piles within 5 feet of them. The saving throw and (escape DC equal 10 plus the number of piles within 5 feet of the creature. The grapple ends if fewer than three piles are within 5 feet of the creature. Minion. If the pile takes damage from an attack or as the result of a failed saving throw, their hit points are reduced to 0. If the pile takes damage from another effect, they die if the damage equals or exceeds their hit point maximum; otherwise they take no damage. Actions Vine Lash (Group Attack). Melee Weapon Attack: {@hit 6} to hit, reach 5 ft., one target. {@h}4 piercing damage."
-					]
-				}
-			],
-			"traitTags": [
-				"False Appearance"
-			],
-			"senseTags": [
-				"B"
-			],
-			"damageTags": [
-				"P"
-			],
-			"conditionInflict": [
-				"grappled",
-				"restrained"
-			],
-			"hasFluff": true
 		},
 		{
 			"name": "Sharkjaw Skeleton",
@@ -47132,6 +47416,7 @@
 				"grappled",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -47288,6 +47573,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -47445,6 +47731,7 @@
 				"strength",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -47585,6 +47872,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -47732,6 +48020,7 @@
 				"constitution",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -47835,6 +48124,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -47966,6 +48256,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -48116,6 +48407,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -48270,6 +48562,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -48471,6 +48764,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -48634,6 +48928,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -48786,6 +49081,7 @@
 				"charisma",
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -48913,6 +49209,7 @@
 				"charisma",
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -49045,6 +49342,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -49205,6 +49503,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -49352,6 +49651,7 @@
 				"constitution",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -49538,6 +49838,7 @@
 			"savingThrowForcedSpell": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -49673,6 +49974,7 @@
 				"MW",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -49815,6 +50117,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -49924,6 +50227,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -50104,6 +50408,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -50262,6 +50567,7 @@
 				"charisma",
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -50422,6 +50728,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -50519,6 +50826,9 @@
 				"planar",
 				"urban"
 			],
+			"traitTags": [
+				"Mimicry"
+			],
 			"senseTags": [
 				"D"
 			],
@@ -50542,6 +50852,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -50658,6 +50969,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -50805,6 +51117,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -50890,6 +51203,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -51005,6 +51319,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -51085,6 +51400,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -51155,6 +51471,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -51305,6 +51622,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -51422,6 +51740,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -51526,6 +51845,7 @@
 				"constitution",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -51644,6 +51964,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -51750,6 +52071,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -51906,6 +52228,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -52051,6 +52374,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -52166,6 +52490,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -52317,6 +52642,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -52428,6 +52754,7 @@
 				"RCH",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -52547,6 +52874,7 @@
 				"constitution",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -52688,6 +53016,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -52773,6 +53102,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -52896,6 +53226,7 @@
 				"MW",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -53048,6 +53379,7 @@
 				"S"
 			],
 			"miscTags": [
+				"DIS",
 				"MLW",
 				"MW"
 			],
@@ -53060,6 +53392,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -53169,6 +53502,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -53244,7 +53578,8 @@
 				"urban"
 			],
 			"traitTags": [
-				"Amorphous"
+				"Amorphous",
+				"Mimicry"
 			],
 			"senseTags": [
 				"B"
@@ -53252,6 +53587,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -53389,6 +53725,7 @@
 				"RW",
 				"THW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -53507,6 +53844,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -53667,6 +54005,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -53824,6 +54163,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -53988,6 +54328,7 @@
 				"strength",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -54142,6 +54483,7 @@
 				"N"
 			],
 			"miscTags": [
+				"CUR",
 				"MW"
 			],
 			"conditionInflict": [
@@ -54151,6 +54493,7 @@
 				"constitution",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -54368,6 +54711,7 @@
 				"constitution",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -54556,6 +54900,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -54690,6 +55035,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -54805,6 +55151,7 @@
 			],
 			"miscTags": [
 				"AOE",
+				"CUR",
 				"MW"
 			],
 			"conditionInflict": [
@@ -54813,6 +55160,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -54945,6 +55293,7 @@
 				"constitution",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -55118,6 +55467,7 @@
 			"savingThrowForced": [
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -55232,6 +55582,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -55372,12 +55723,14 @@
 				"S"
 			],
 			"miscTags": [
+				"DIS",
 				"MW",
 				"RCH"
 			],
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -55514,6 +55867,7 @@
 				"MW",
 				"RW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -55669,6 +56023,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -55811,6 +56166,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -55967,6 +56323,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -56118,6 +56475,7 @@
 				"charisma",
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -56228,6 +56586,7 @@
 				"charisma",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -56319,6 +56678,7 @@
 				"strength",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -56435,6 +56795,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -56561,6 +56922,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -56634,6 +56996,7 @@
 			"miscTags": [
 				"MW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -56752,12 +57115,14 @@
 			],
 			"miscTags": [
 				"AOE",
+				"DIS",
 				"MW"
 			],
 			"savingThrowForced": [
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -56881,6 +57246,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -57000,6 +57366,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -57142,6 +57509,7 @@
 				"RW",
 				"THW"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -57261,6 +57629,7 @@
 				"N"
 			],
 			"miscTags": [
+				"DIS",
 				"MW"
 			],
 			"conditionInflict": [
@@ -57269,6 +57638,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -57378,6 +57748,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -57511,6 +57882,7 @@
 			"savingThrowForced": [
 				"charisma"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -57623,6 +57995,7 @@
 				"dexterity",
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -57777,6 +58150,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -57912,6 +58286,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -57936,7 +58311,7 @@
 			],
 			"hp": {
 				"average": 170,
-				"formula": "20d20 + 60"
+				"formula": "20d10 + 60"
 			},
 			"speed": {
 				"walk": 40,
@@ -58045,6 +58420,7 @@
 				"constitution",
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -58185,6 +58561,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -58282,6 +58659,7 @@
 				"grappled",
 				"restrained"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -58453,6 +58831,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -58597,6 +58976,7 @@
 			"savingThrowForced": [
 				"strength"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -58667,6 +59047,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -58778,6 +59159,7 @@
 			"savingThrowForced": [
 				"constitution"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -58962,6 +59344,7 @@
 				"dexterity",
 				"wisdom"
 			],
+			"hasToken": true,
 			"hasFluff": true,
 			"hasFluffImages": true
 		},
@@ -59089,6 +59472,7 @@
 			"savingThrowForced": [
 				"dexterity"
 			],
+			"hasToken": true,
 			"hasFluff": true
 		}
 	]

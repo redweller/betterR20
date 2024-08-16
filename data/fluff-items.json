@@ -198,6 +198,14 @@
 			]
 		},
 		{
+			"name": "Antigravity Belt",
+			"source": "QftIS",
+			"_copy": {
+				"name": "Technology",
+				"source": "QftIS"
+			}
+		},
+		{
 			"name": "Apparatus of Kwalish",
 			"source": "DMG",
 			"images": [
@@ -1001,6 +1009,20 @@
 			]
 		},
 		{
+			"name": "Chime of Exile",
+			"source": "VEoR",
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "items/VEoR/Chime of Exile.webp"
+					},
+					"credit": "Irina Nordsol"
+				}
+			]
+		},
+		{
 			"name": "Chime of Opening",
 			"source": "DMG",
 			"images": [
@@ -1186,6 +1208,14 @@
 			]
 		},
 		{
+			"name": "Concussion Grenade",
+			"source": "QftIS",
+			"_copy": {
+				"name": "Technology",
+				"source": "QftIS"
+			}
+		},
+		{
 			"name": "Condemner",
 			"source": "TDCSR",
 			"images": [
@@ -1262,6 +1292,20 @@
 						"path": "items/TCE/Crook of Rao.webp"
 					},
 					"credit": "Robson Michel"
+				}
+			]
+		},
+		{
+			"name": "Crown of Lies",
+			"source": "VEoR",
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "items/VEoR/Crown of Lies.webp"
+					},
+					"credit": "Lauren Walsh"
 				}
 			]
 		},
@@ -1409,6 +1453,19 @@
 				"name": "Danoth's Visor",
 				"source": "EGW"
 			}
+		},
+		{
+			"name": "Daoud's Wondrous Lanthorn",
+			"source": "QftIS",
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "items/QftIS/Daouds Wondrous Lanthorn.webp"
+					}
+				}
+			]
 		},
 		{
 			"name": "Dawnbringer",
@@ -2027,17 +2084,25 @@
 			]
 		},
 		{
-			"name": "Eye of Vecna",
+			"name": "Eye and Hand of Vecna",
 			"source": "DMG",
 			"images": [
 				{
 					"type": "image",
 					"href": {
 						"type": "internal",
-						"path": "items/DMG/Eye of Vecna.webp"
+						"path": "items/DMG/Eye and Hand of Vecna.webp"
 					}
 				}
 			]
+		},
+		{
+			"name": "Eye of Vecna",
+			"source": "DMG",
+			"_copy": {
+				"name": "Eye and Hand of Vecna",
+				"source": "DMG"
+			}
 		},
 		{
 			"name": "Eyes of Charming",
@@ -2673,15 +2738,10 @@
 		{
 			"name": "Hand of Vecna",
 			"source": "DMG",
-			"images": [
-				{
-					"type": "image",
-					"href": {
-						"type": "internal",
-						"path": "items/DMG/Hand of Vecna.webp"
-					}
-				}
-			]
+			"_copy": {
+				"name": "Eye and Hand of Vecna",
+				"source": "DMG"
+			}
 		},
 		{
 			"name": "Hardened Delerium-tipped Arrows",
@@ -4222,6 +4282,14 @@
 			]
 		},
 		{
+			"name": "Needler Pistol",
+			"source": "QftIS",
+			"_copy": {
+				"name": "Technology",
+				"source": "QftIS"
+			}
+		},
+		{
 			"name": "Nepenthe",
 			"source": "VRGR",
 			"images": [
@@ -4409,6 +4477,14 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Paralysis Pistol",
+			"source": "QftIS",
+			"_copy": {
+				"name": "Technology",
+				"source": "QftIS"
+			}
 		},
 		{
 			"name": "Pariah's Shield",
@@ -5268,6 +5344,14 @@
 			]
 		},
 		{
+			"name": "Robot Controller",
+			"source": "QftIS",
+			"_copy": {
+				"name": "Technology",
+				"source": "QftIS"
+			}
+		},
+		{
 			"name": "Rod of Absorption",
 			"source": "DMG",
 			"images": [
@@ -5316,6 +5400,29 @@
 						"type": "internal",
 						"path": "items/DMG/Rod of Rulership.webp"
 					}
+				}
+			]
+		},
+		{
+			"name": "Rod of Seven Parts",
+			"source": "VEoR",
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "items/VEoR/Rod of Seven Parts.webp"
+					},
+					"credit": "CoupleofKooks"
+				},
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "items/VEoR/Rod of Seven Parts Piece.webp"
+					},
+					"title": "A piece of the Rod of Seven Parts",
+					"credit": "CoupleofKooks"
 				}
 			]
 		},
@@ -5821,6 +5928,14 @@
 			]
 		},
 		{
+			"name": "Sleep Grenade",
+			"source": "QftIS",
+			"_copy": {
+				"name": "Technology",
+				"source": "QftIS"
+			}
+		},
+		{
 			"name": "Slippers of Spider Climbing",
 			"source": "DMG",
 			"images": [
@@ -6051,6 +6166,19 @@
 					"href": {
 						"type": "internal",
 						"path": "items/DMG/Staff of Power.webp"
+					}
+				}
+			]
+		},
+		{
+			"name": "Staff of Ruling",
+			"source": "QftIS",
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "items/QftIS/Staff of Ruling.webp"
 					}
 				}
 			]
@@ -6491,6 +6619,21 @@
 						"type": "internal",
 						"path": "items/DitLCoT/Tashas Creeping Keelboat.webp"
 					}
+				}
+			]
+		},
+		{
+			"name": "Technology",
+			"source": "QftIS",
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "items/QftIS/Technology.webp"
+					},
+					"title": "Left (Top to Bottom): Needler Pistol, Paralysis Pistol, Bandolier of Grenades. Middle: Antigravity Belt. Right (Top to Bottom): Laser Pistol, Robot Controller, Laser Rifle",
+					"credit": "Dave Melvin"
 				}
 			]
 		},

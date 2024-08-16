@@ -2757,6 +2757,7 @@
 			],
 			"miscTags": [
 				"AOE",
+				"DIS",
 				"MW"
 			],
 			"savingThrowForced": [
@@ -6954,6 +6955,11 @@
 			"isNamedCreature": true,
 			"source": "DSotDQ",
 			"page": 206,
+			"otherSources": [
+				{
+					"source": "VEoR"
+				}
+			],
 			"size": [
 				"M"
 			],
@@ -7106,6 +7112,12 @@
 					"entries": [
 						"Soth uses Spellcasting."
 					]
+				}
+			],
+			"altArt": [
+				{
+					"name": "Lord Soth",
+					"source": "VEoR"
 				}
 			],
 			"traitTags": [
@@ -8938,6 +8950,7 @@
 				"O"
 			],
 			"miscTags": [
+				"CUR",
 				"MLW",
 				"MW"
 			],
