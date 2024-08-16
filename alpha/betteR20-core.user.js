@@ -2,7 +2,7 @@
 // @name         betteR20-alpha-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.185.6a
+// @version      1.35.185.7a
 // @updateURL    https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-core.meta.js
 // @downloadURL  https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -260,7 +260,7 @@ function baseUtil () {
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- Beta features overview:</code><br>⦁ Mouseover hints on Conditions<br>⦁ Filter Imports by List<br>⦁ Extra Layers functionality<br>⦁ Token Images Editor<br>⦁ Better token Actions & Automation<br>⦁ Some fixes related to roll20 newUI<br>⦁ ArtRepo is restored from backup repo<br><code>-- Pre-release 185a:</code><br>⦁ Update libs and data to latest 5etools versions<br><code>-- v.185.5a:</code><br>⦁ URLs now point to the main site<br><code>-- v.185.6a:</code><br>⦁ Fix class import<br></p>
+					<p>This version contains following changes<br><code>-- Beta features overview:</code><br>⦁ Mouseover hints on Conditions<br>⦁ Filter Imports by List<br>⦁ Extra Layers functionality<br>⦁ Token Images Editor<br>⦁ Better token Actions & Automation<br>⦁ Some fixes related to roll20 newUI<br>⦁ ArtRepo is restored from backup repo<br><code>-- Pre-release 185a:</code><br>⦁ Update libs and data to latest 5etools versions<br><code>-- v.185.5a:</code><br>⦁ URLs now point to the main site<br><code>-- v.185.6a:</code><br>⦁ Fix class import<br><code>-- v.185.7a:</code><br>⦁ Major 5etools data update<br></p>
 				</div>
 			`);
 			if (d20plus.ut.cmpVersions("1.35.10", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
@@ -26502,8 +26502,6 @@ EXT_LIB_SCRIPTS.push((function lib_script_2 () {
 
 
 EXT_LIB_SCRIPTS.push((function lib_script_3 () {
-"use strict";
-
 // PARSING =============================================================================================================
 globalThis.Parser = {};
 
@@ -27147,9 +27145,17 @@ Parser.sourceJsonToDate = function (source) {
 	if (typeof BrewUtil2 !== "undefined" && BrewUtil2.hasSourceJson(source)) return BrewUtil2.sourceJsonToDate(source);
 	return Parser._parse_aToB(Parser.SOURCE_JSON_TO_DATE, source, null);
 };
-
 Parser.sourceJsonToColor = function (source) {
-	return `source__${source}`;
+	source = Parser._getSourceStringFromSource(source);
+	if (Parser.hasSourceAbv(source)) return "";
+	if (typeof PrereleaseUtil !== "undefined" && PrereleaseUtil.hasSourceJson(source)) return PrereleaseUtil.sourceJsonToColor(source);
+	if (typeof BrewUtil2 !== "undefined" && BrewUtil2.hasSourceJson(source)) return BrewUtil2.sourceJsonToColor(source);
+	return "";
+};
+
+Parser.sourceJsonToSourceClassname = function (source) {
+	const sourceCased = Parser.sourceJsonToJson(source);
+	return `source__${sourceCased}`;
 };
 
 Parser.sourceJsonToStyle = function (source) {
@@ -27375,6 +27381,7 @@ Parser.itemRechargeToFull = function (recharge) {
 
 Parser.ITEM_MISC_TAG_TO_FULL = {
 	"CF/W": "Creates Food/Water",
+	"CNS": "Consumable",
 	"TT": "Trinket Table",
 };
 Parser.itemMiscTagToFull = function (type) {
@@ -27494,7 +27501,7 @@ Parser._spSchoolAbvToStylePart_prereleaseBrew = function ({school, brewUtil}) {
 	const rawColor = brewUtil.getMetaLookup("spellSchools")?.[school]?.color;
 	if (!rawColor || !rawColor.trim()) return "";
 	const validColor = BrewUtilShared.getValidColor(rawColor);
-	if (validColor.length) return `color: #${validColor};`;
+	if (validColor.length) return MiscUtil.getColorStylePart(validColor);
 };
 
 Parser.getOrdinalForm = function (i) {
@@ -27615,6 +27622,10 @@ Parser.SP_RANGE_TYPE_TO_FULL = {
 Parser.spRangeTypeToFull = function (range) {
 	return Parser._parse_aToB(Parser.SP_RANGE_TYPE_TO_FULL, range);
 };
+
+Parser.UNT_LBS = "lbs";
+Parser.UNT_TONS_IMPERIAL = "tns";
+Parser.UNT_TONS_METRIC = "Mg";
 
 Parser.UNT_FEET = "feet";
 Parser.UNT_YARDS = "yards";
@@ -27957,6 +27968,7 @@ Parser.SP_MISC_TAG_TO_FULL = {
 	AAD: "Additional Attack Damage",
 	OBJ: "Affects Objects",
 	ADV: "Grants Advantage",
+	PIR: "Permanent If Repeated",
 };
 Parser.spMiscTagToFull = function (type) {
 	return Parser._parse_aToB(Parser.SP_MISC_TAG_TO_FULL, type);
@@ -28181,6 +28193,8 @@ Parser.monSpellcastingTagToFull = function (tag) {
 
 Parser.MON_MISC_TAG_TO_FULL = {
 	"AOE": "Has Areas of Effect",
+	"CUR": "Inflicts Curse",
+	"DIS": "Inflicts Disease",
 	"HPR": "Has HP Reduction",
 	"MW": "Has Weapon Attacks, Melee",
 	"RW": "Has Weapon Attacks, Ranged",
@@ -29149,6 +29163,7 @@ Parser.SRC_MPP = "MPP";
 Parser.SRC_BMT = "BMT";
 Parser.SRC_DMTCRG = "DMTCRG";
 Parser.SRC_QftIS = "QftIS";
+Parser.SRC_VEoR = "VEoR";
 Parser.SRC_GHLoE = "GHLoE";
 Parser.SRC_DoDk = "DoDk";
 Parser.SRC_HWCS = "HWCS";
@@ -29181,6 +29196,7 @@ Parser.SRC_LK = "LK";
 Parser.SRC_CoA = "CoA";
 Parser.SRC_PiP = "PiP";
 Parser.SRC_DitLCoT = "DitLCoT";
+Parser.SRC_VNotEE = "VNotEE";
 Parser.SRC_LRDT = "LRDT";
 
 Parser.SRC_AL_PREFIX = "AL";
@@ -29329,6 +29345,7 @@ Parser.SOURCE_JSON_TO_FULL[Parser.SRC_MPP] = "Morte's Planar Parade";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_BMT] = "The Book of Many Things";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_DMTCRG] = "The Deck of Many Things: Card Reference Guide";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_QftIS] = "Quests from the Infinite Staircase";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_VEoR] = "Vecna: Eve of Ruin";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_GHLoE] = "Grim Hollow: Lairs of Etharis";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_DoDk] = "Dungeons of Drakkenheim";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HWCS] = "Humblewood Campaign Setting";
@@ -29361,6 +29378,7 @@ Parser.SOURCE_JSON_TO_FULL[Parser.SRC_LK] = "Lightning Keep";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_CoA] = "Chains of Asmodeus";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PiP] = "Peril in Pinebrook";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_DitLCoT] = "Descent into the Lost Caverns of Tsojcanth";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_VNotEE] = "Vecna: Nest of the Eldritch Eye";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_LRDT] = "Red Dragon's Tale: A LEGO Adventure";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_ALCoS] = `${Parser.AL_PREFIX}Curse of Strahd`;
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_ALEE] = `${Parser.AL_PREFIX}Elemental Evil`;
@@ -29484,6 +29502,7 @@ Parser.SOURCE_JSON_TO_ABV[Parser.SRC_MPP] = "MPP";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_BMT] = "BMT";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_DMTCRG] = "DMTCRG";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_QftIS] = "QftIS";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_VEoR] = "VEoR";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_GHLoE] = "GHLoE";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_DoDk] = "DoDk";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HWCS] = "HWCS";
@@ -29516,6 +29535,7 @@ Parser.SOURCE_JSON_TO_ABV[Parser.SRC_LK] = "LK";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_CoA] = "CoA";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PiP] = "PiP";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_DitLCoT] = "DitLCoT";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_VNotEE] = "VNotEE";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_LRDT] = "LRDT";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_ALCoS] = "ALCoS";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_ALEE] = "ALEE";
@@ -29638,6 +29658,7 @@ Parser.SOURCE_JSON_TO_DATE[Parser.SRC_MPP] = "2023-10-17";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_BMT] = "2023-11-14";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_DMTCRG] = "2023-11-14";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_QftIS] = "2024-07-16";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_VEoR] = "2024-05-21";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_GHLoE] = "2023-11-30";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_DoDk] = "2023-12-21";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HWCS] = "2019-06-17";
@@ -29670,6 +29691,7 @@ Parser.SOURCE_JSON_TO_DATE[Parser.SRC_LK] = "2023-09-26";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_CoA] = "2023-10-30";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PiP] = "2023-11-20";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_DitLCoT] = "2024-03-26";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_VNotEE] = "2024-04-16";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_LRDT] = "2024-04-01";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_ALCoS] = "2016-03-15";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_ALEE] = "2015-04-07";
@@ -29689,6 +29711,7 @@ Parser.SOURCE_JSON_TO_DATE[Parser.SRC_MCV4EC] = "2023-09-21";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_MisMV1] = "2023-05-03";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_AATM] = "2023-10-17";
 
+// region Source categories
 Parser.SOURCES_ADVENTURES = new Set([
 	Parser.SRC_LMoP,
 	Parser.SRC_HotDQ,
@@ -29768,6 +29791,7 @@ Parser.SOURCES_ADVENTURES = new Set([
 	Parser.SRC_CoA,
 	Parser.SRC_PiP,
 	Parser.SRC_DitLCoT,
+	Parser.SRC_VNotEE,
 	Parser.SRC_LRDT,
 	Parser.SRC_HFStCM,
 	Parser.SRC_GHLoE,
@@ -29840,7 +29864,11 @@ Parser.SOURCES_PARTNERED_WOTC = new Set([
 	Parser.SRC_TD,
 	Parser.SRC_LRDT,
 ]);
-// region Source categories
+Parser.SOURCES_LEGACY_WOTC = new Set([
+	Parser.SRC_EEPC,
+	Parser.SRC_VGM,
+	Parser.SRC_MTF,
+]);
 
 // An opinionated set of source that could be considered "core-core"
 Parser.SOURCES_VANILLA = new Set([
@@ -30068,6 +30096,8 @@ Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE = {};
 	Parser.SRC_HWAitW,
 	Parser.SRC_QftIS,
 	Parser.SRC_LRDT,
+	Parser.SRC_VEoR,
+	Parser.SRC_VNotEE,
 ].forEach(src => {
 	Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[src] = src;
 	Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[src.toLowerCase()] = src;
@@ -30092,6 +30122,7 @@ Parser.PROP_TO_TAG = {
 	"baseitem": "item",
 	"itemGroup": "item",
 	"magicvariant": "item",
+	"subclass": "class",
 };
 Parser.getPropTag = function (prop) {
 	if (Parser.PROP_TO_TAG[prop]) return Parser.PROP_TO_TAG[prop];
@@ -30218,7 +30249,7 @@ Parser.metric = {
 			case "ft.": case "ft": case Parser.UNT_FEET: out = originalValue * Parser.metric.FEET_TO_METRES; break;
 			case "yd.": case "yd": case Parser.UNT_YARDS: out = originalValue * Parser.metric.YARDS_TO_METRES; break;
 			case "mi.": case "mi": case Parser.UNT_MILES: out = originalValue * Parser.metric.MILES_TO_KILOMETRES; break;
-			case "lb.": case "lb": case "lbs": out = originalValue * Parser.metric.POUNDS_TO_KILOGRAMS; break;
+			case "lb.": case "lb": case Parser.UNT_LBS: out = originalValue * Parser.metric.POUNDS_TO_KILOGRAMS; break;
 			default: return originalValue;
 		}
 		if (toFixed != null) return NumberUtil.toFixedNumber(out, toFixed);
@@ -30230,7 +30261,7 @@ Parser.metric = {
 			case "ft.": case "ft": case Parser.UNT_FEET: return isShortForm ? "m" : `meter`[isPlural ? "toPlural" : "toString"]();
 			case "yd.": case "yd": case Parser.UNT_YARDS: return isShortForm ? "m" : `meter`[isPlural ? "toPlural" : "toString"]();
 			case "mi.": case "mi": case Parser.UNT_MILES: return isShortForm ? "km" : `kilometre`[isPlural ? "toPlural" : "toString"]();
-			case "lb.": case "lb": case "lbs": return isShortForm ? "kg" : `kilogram`[isPlural ? "toPlural" : "toString"]();
+			case "lb.": case "lb": case Parser.UNT_LBS: return isShortForm ? "kg" : `kilogram`[isPlural ? "toPlural" : "toString"]();
 			default: return originalUnit;
 		}
 	},
@@ -30256,11 +30287,9 @@ Parser.mapGridTypeToFull = function (gridType) {
 
 
 EXT_LIB_SCRIPTS.push((function lib_script_4 () {
-"use strict";
-
 // in deployment, `IS_DEPLOYED = "<version number>";` should be set below.
 globalThis.IS_DEPLOYED = undefined;
-globalThis.VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.204.0"/* 5ETOOLS_VERSION__CLOSE */;
+globalThis.VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.209.3"/* 5ETOOLS_VERSION__CLOSE */;
 globalThis.DEPLOYED_IMG_ROOT = undefined;
 // for the roll20 script to set
 globalThis.IS_VTT = false;
@@ -30313,6 +30342,7 @@ globalThis.VeCt = {
 
 	URL_BREW: `https://github.com/TheGiddyLimit/homebrew`,
 	URL_ROOT_BREW: `https://raw.githubusercontent.com/TheGiddyLimit/homebrew/master/`, // N.b. must end with a slash
+	URL_ROOT_BREW_IMG: `https://raw.githubusercontent.com/TheGiddyLimit/homebrew-img/main/`, // N.b. must end with a slash
 	URL_PRERELEASE: `https://github.com/TheGiddyLimit/unearthed-arcana`,
 	URL_ROOT_PRERELEASE: `https://raw.githubusercontent.com/TheGiddyLimit/unearthed-arcana/master/`, // As above
 
@@ -30759,12 +30789,15 @@ globalThis.SourceUtil = class {
 
 	static isPartneredSourceWotc (source) {
 		if (source == null) return false;
-		return Parser.SOURCES_PARTNERED_WOTC.has(source);
+		if (Parser.SOURCES_PARTNERED_WOTC.has(source)) return true;
+		if (typeof PrereleaseUtil !== "undefined" && PrereleaseUtil.hasSourceJson(source)) return !!PrereleaseUtil.sourceJsonToSource(source).partnered;
+		if (typeof BrewUtil2 !== "undefined" && BrewUtil2.hasSourceJson(source)) return !!BrewUtil2.sourceJsonToSource(source).partnered;
+		return false;
 	}
 
 	static isLegacySourceWotc (source) {
 		if (source == null) return false;
-		return source === Parser.SRC_VGM || source === Parser.SRC_MTF;
+		return Parser.SOURCES_LEGACY_WOTC.has(source);
 	}
 
 	// TODO(Future) remove this in favor of simply checking existence in `PrereleaseUtil`
@@ -30787,22 +30820,22 @@ globalThis.SourceUtil = class {
 	static FILTER_GROUP_STANDARD = 0;
 	static FILTER_GROUP_PARTNERED = 1;
 	static FILTER_GROUP_NON_STANDARD = 2;
-	static FILTER_GROUP_HOMEBREW = 3;
+	static FILTER_GROUP_PRERELEASE = 3;
+	static FILTER_GROUP_HOMEBREW = 4;
 
 	static getFilterGroup (source) {
 		if (source instanceof FilterItem) source = source.item;
-		if (
-			(typeof PrereleaseUtil !== "undefined" && PrereleaseUtil.hasSourceJson(source))
-			|| SourceUtil.isNonstandardSource(source)
-		) return SourceUtil.FILTER_GROUP_NON_STANDARD;
-		if (typeof BrewUtil2 !== "undefined" && BrewUtil2.hasSourceJson(source)) return SourceUtil.FILTER_GROUP_HOMEBREW;
 		if (SourceUtil.isPartneredSourceWotc(source)) return SourceUtil.FILTER_GROUP_PARTNERED;
+		if (typeof PrereleaseUtil !== "undefined" && PrereleaseUtil.hasSourceJson(source)) return SourceUtil.FILTER_GROUP_PRERELEASE;
+		if (typeof BrewUtil2 !== "undefined" && BrewUtil2.hasSourceJson(source)) return SourceUtil.FILTER_GROUP_HOMEBREW;
+		if (SourceUtil.isNonstandardSourceWotc(source)) return SourceUtil.FILTER_GROUP_NON_STANDARD;
 		return SourceUtil.FILTER_GROUP_STANDARD;
 	}
 
 	static getFilterGroupName (group) {
 		switch (group) {
-			case SourceUtil.FILTER_GROUP_NON_STANDARD: return "Other/Prerelease";
+			case SourceUtil.FILTER_GROUP_NON_STANDARD: return "Other";
+			case SourceUtil.FILTER_GROUP_PRERELEASE: return "Prerelease";
 			case SourceUtil.FILTER_GROUP_HOMEBREW: return "Homebrew";
 			case SourceUtil.FILTER_GROUP_PARTNERED: return "Partnered";
 			case SourceUtil.FILTER_GROUP_STANDARD: return null;
@@ -30988,6 +31021,112 @@ Math.seed = Math.seed || function (s) {
 	};
 };
 
+class TemplateUtil {
+	static initJquery () {
+		/**
+		 * Template strings which can contain jQuery objects.
+		 * Usage: $$`<div>Press this button: ${$btn}</div>`
+		 * or:    $$($ele)`<div>Press this button: ${$btn}</div>`
+		 * @return {jQuery}
+		 */
+		globalThis.$$ = (parts, ...args) => {
+			if (parts instanceof jQuery || parts instanceof Node) {
+				return (...passed) => {
+					const parts2 = [...passed[0]];
+					const args2 = passed.slice(1);
+					parts2[0] = `<div>${parts2[0]}`;
+					parts2.last(`${parts2.last()}</div>`);
+
+					const eleParts = parts instanceof jQuery ? parts[0] : parts;
+					const $temp = $$(parts2, ...args2);
+					$temp.children().each((i, e) => eleParts.appendChild(e));
+					return $(eleParts);
+				};
+			}
+
+			// Note that passing in a jQuery collection of multiple elements is not supported
+			const partsNxt = parts instanceof jQuery ? parts[0] : parts;
+			const argsNxt = args
+				.map(arg => {
+					if (arg instanceof Array) return arg.flatMap(argSub => argSub instanceof jQuery ? argSub.get() : argSub);
+					return arg instanceof jQuery ? arg.get() : arg;
+				});
+			return $(ee(partsNxt, ...argsNxt));
+		};
+	}
+
+	/* -------------------------------------------- */
+
+	static initVanilla () {
+		/**
+		 * Template strings which can contain DOM elements.
+		 * Usage: ee`<div>Press this button: ${btn}</div>`
+		 * or:    ee(ele)`<div>Press this button: ${btn}</div>`
+		 * @return {HTMLElementModified}
+		 */
+		globalThis.ee = (parts, ...args) => {
+			if (parts instanceof Node) {
+				return (...passed) => {
+					const parts2 = [...passed[0]];
+					const args2 = passed.slice(1);
+					parts2[0] = `<div>${parts2[0]}`;
+					parts2.last(`${parts2.last()}</div>`);
+
+					const eleTmp = ee(parts2, ...args2);
+					Array.from(eleTmp.childNodes).forEach(node => parts.appendChild(node));
+
+					return e_({ele: parts});
+				};
+			}
+
+			const eles = [];
+			let ixArg = 0;
+			const ixEnd = parts.length - 1;
+
+			const raw = parts
+				.reduce((html, p, ix) => {
+					if (ix === 0) html = html.trimStart();
+					if (ix === ixEnd) html = html.trimEnd();
+
+					const myIxArg = ixArg++;
+					if (args[myIxArg] == null) return `${html}${p}`;
+					if (args[myIxArg] instanceof Array) return `${html}${args[myIxArg].map(arg => TemplateUtil._ee_handleArg(eles, arg)).join("")}${p}`;
+					else return `${html}${TemplateUtil._ee_handleArg(eles, args[myIxArg])}${p}`;
+				});
+
+			const eleTmpTemplate = document.createElement("template");
+			eleTmpTemplate.innerHTML = raw.trim();
+			const {content: eleTmp} = eleTmpTemplate;
+
+			// debugger
+
+			Array.from(eleTmp.querySelectorAll(`[data-r="true"]`))
+				.forEach((node, i) => node.replaceWith(eles[i]));
+
+			const childNodes = Array.from(eleTmp.childNodes);
+			childNodes.forEach(node => document.adoptNode(node));
+
+			// If the caller has passed in a single element, return it
+			if (childNodes.length === 1) return e_({ele: childNodes[0]});
+
+			// If the caller has passed in multiple elements with no wrapper, return an array
+			return childNodes
+				.map(childNode => e_({ele: childNode}));
+		};
+	}
+
+	static _ee_handleArg (eles, arg) {
+		if (arg instanceof Node) {
+			eles.push(arg);
+			return `<${arg.tagName} data-r="true"></${arg.tagName}>`;
+		}
+
+		return arg;
+	}
+}
+
+globalThis.TemplateUtil = TemplateUtil;
+
 globalThis.JqueryUtil = {
 	_isEnhancementsInit: false,
 	initEnhancements () {
@@ -30996,58 +31135,8 @@ globalThis.JqueryUtil = {
 
 		JqueryUtil.addSelectors();
 
-		/**
-		 * Template strings which can contain jQuery objects.
-		 * Usage: $$`<div>Press this button: ${$btn}</div>`
-		 * @return jQuery
-		 */
-		window.$$ = function (parts, ...args) {
-			if (parts instanceof jQuery || parts instanceof HTMLElement) {
-				return (...passed) => {
-					const parts2 = [...passed[0]];
-					const args2 = passed.slice(1);
-					parts2[0] = `<div>${parts2[0]}`;
-					parts2.last(`${parts2.last()}</div>`);
-
-					const $temp = $$(parts2, ...args2);
-					$temp.children().each((i, e) => $(e).appendTo(parts));
-					return parts;
-				};
-			} else {
-				const $eles = [];
-				let ixArg = 0;
-
-				const handleArg = (arg) => {
-					if (arg instanceof $) {
-						$eles.push(arg);
-						return `<${arg.tag()} data-r="true"></${arg.tag()}>`;
-					} else if (arg instanceof HTMLElement) {
-						return handleArg($(arg));
-					} else return arg;
-				};
-
-				const raw = parts.reduce((html, p) => {
-					const myIxArg = ixArg++;
-					if (args[myIxArg] == null) return `${html}${p}`;
-					if (args[myIxArg] instanceof Array) return `${html}${args[myIxArg].map(arg => handleArg(arg)).join("")}${p}`;
-					else return `${html}${handleArg(args[myIxArg])}${p}`;
-				});
-				const $res = $(raw);
-
-				if ($res.length === 1) {
-					if ($res.attr("data-r") === "true") return $eles[0];
-					else $res.find(`[data-r=true]`).replaceWith(i => $eles[i]);
-				} else {
-					// Handle case where user has passed in a bunch of elements with no outer wrapper
-					const $tmp = $(`<div></div>`);
-					$tmp.append($res);
-					$tmp.find(`[data-r=true]`).replaceWith(i => $eles[i]);
-					return $tmp.children();
-				}
-
-				return $res;
-			}
-		};
+		TemplateUtil.initVanilla();
+		TemplateUtil.initJquery();
 
 		$.fn.extend({
 			// avoid setting input type to "search" as it visually offsets the contents of the input
@@ -31280,6 +31369,46 @@ globalThis.ElementUtil = {
 		"disabled",
 	]),
 
+	/**
+	 * @typedef {HTMLElement} HTMLElementModified
+	 * @extends {HTMLElement}
+	 *
+	 * @property {function(HTMLElement): HTMLElementModified} appends
+	 * @property {function(HTMLElement): HTMLElementModified} appendTo
+	 * @property {function(HTMLElement): HTMLElementModified} prependTo
+	 * @property {function(HTMLElement): HTMLElementModified} insertAfter
+	 *
+	 * @property {function(string): HTMLElementModified} addClass
+	 * @property {function(string): HTMLElementModified} removeClass
+	 * @property {function(string, ?boolean): HTMLElementModified} toggleClass
+	 *
+	 * @property {function(): HTMLElementModified} showVe
+	 * @property {function(): HTMLElementModified} hideVe
+	 * @property {function(?boolean): HTMLElementModified} toggleVe
+	 *
+	 * @property {function(): HTMLElementModified} empty
+	 * @property {function(): HTMLElementModified} detach
+	 *
+	 * @property {function(string, string): HTMLElementModified} attr
+	 * @property {function(*=): *} val
+	 *
+	 * @property {function(?string): (HTMLElementModified|string)} html
+	 * @property {function(?string): (HTMLElementModified|string)} txt
+	 *
+	 * @property {function(string): HTMLElementModified} tooltip
+	 * @property {function(): HTMLElementModified} disableSpellcheck
+	 *
+	 * @property {function(string, function): HTMLElementModified} onn
+	 * @property {function(function): HTMLElementModified} onClick
+	 * @property {function(function): HTMLElementModified} onContextmenu
+	 * @property {function(function): HTMLElementModified} onChange
+	 * @property {function(function): HTMLElementModified} onKeydown
+	 * @property {function(function): HTMLElementModified} onKeyup
+	 *
+	 * @property {function(string): HTMLElementModified} first
+	 *
+	 * @return {HTMLElementModified}
+	 */
 	getOrModify ({
 		tag,
 		clazz,
@@ -31312,7 +31441,13 @@ globalThis.ElementUtil = {
 		attrs,
 		data,
 	}) {
-		ele = ele || (outer ? (new DOMParser()).parseFromString(outer, "text/html").body.childNodes[0] : document.createElement(tag));
+		const metaEle = ElementUtil._getOrModify_getEle({
+			ele,
+			outer,
+			tag,
+			id,
+		});
+		ele = metaEle.ele;
 
 		if (clazz) ele.className = clazz;
 		if (style) ele.setAttribute("style", style);
@@ -31327,7 +31462,7 @@ globalThis.ElementUtil = {
 		if (keydown) ele.addEventListener("keydown", keydown);
 		if (html != null) ele.innerHTML = html;
 		if (text != null || txt != null) ele.textContent = text;
-		if (id != null) ele.setAttribute("id", id);
+		if (id != null && metaEle.isSetId) ele.setAttribute("id", id);
 		if (name != null) ele.setAttribute("name", name);
 		if (title != null) ele.setAttribute("title", title);
 		if (href != null) ele.setAttribute("href", href);
@@ -31367,14 +31502,34 @@ globalThis.ElementUtil = {
 		ele.txt = ele.txt || ElementUtil._txt.bind(ele);
 		ele.tooltip = ele.tooltip || ElementUtil._tooltip.bind(ele);
 		ele.disableSpellcheck = ele.disableSpellcheck || ElementUtil._disableSpellcheck.bind(ele);
-		ele.on = ele.on || ElementUtil._onX.bind(ele);
+		ele.onn = ele.onn || ElementUtil._onX.bind(ele);
 		ele.onClick = ele.onClick || ElementUtil._onX.bind(ele, "click");
 		ele.onContextmenu = ele.onContextmenu || ElementUtil._onX.bind(ele, "contextmenu");
 		ele.onChange = ele.onChange || ElementUtil._onX.bind(ele, "change");
 		ele.onKeydown = ele.onKeydown || ElementUtil._onX.bind(ele, "keydown");
 		ele.onKeyup = ele.onKeyup || ElementUtil._onX.bind(ele, "keyup");
+		ele.first = ele.first || ElementUtil._first.bind(ele);
 
 		return ele;
+	},
+
+	_getOrModify_getEle (
+		{
+			ele,
+			outer,
+			tag,
+			id,
+		},
+	) {
+		if (ele) return {ele, isSetId: true};
+		if (outer) return {ele: (new DOMParser()).parseFromString(outer, "text/html").body.childNodes[0], isSetId: true};
+		if (tag) return {ele: document.createElement(tag), isSetId: true};
+		if (id) {
+			const eleId = document.getElementById(id);
+			if (!eleId) throw new Error(`Could not find element with ID "${id}"`);
+			return {ele: eleId, isSetId: false};
+		}
+		throw new Error(`Could not find or create element!`);
 	},
 
 	_appends (child) {
@@ -31499,6 +31654,12 @@ globalThis.ElementUtil = {
 		}
 	},
 
+	_first (selector) {
+		const child = this.querySelector(selector);
+		if (!child) return child;
+		return e_({ele: child});
+	},
+
 	// region "Static"
 	getIndexPathToParent (parent, child) {
 		if (!parent.contains(child)) return null; // Should never occur
@@ -31589,14 +31750,39 @@ globalThis.MiscUtil = class {
 			$iptTemp.remove();
 		}
 
-		if (navigator && navigator.permissions) {
-			try {
-				const access = await navigator.permissions.query({name: "clipboard-write"});
-				if (access.state === "granted" || access.state === "prompt") {
-					await navigator.clipboard.writeText(text);
-				} else doCompatibilityCopy();
-			} catch (e) { doCompatibilityCopy(); }
-		} else doCompatibilityCopy();
+		try {
+			await navigator.clipboard.writeText(text);
+		} catch (e) {
+			doCompatibilityCopy();
+		}
+	}
+
+	static async pCopyBlobToClipboard (blob) {
+		// https://developer.mozilla.org/en-US/docs/Web/API/ClipboardItem#browser_compatibility
+		// TODO(Future) remove when Firefox moves feature from Nightly -> Main
+		if (typeof ClipboardItem === "undefined") {
+			JqueryUtil.doToast({
+				type: "danger",
+				content: `Could not access clipboard! If you are on Firefox, visit <code>about:config</code> and enable </code><code>dom.events.asyncClipboard.clipboardItem</code>.`,
+				isAutoHide: false,
+			});
+			return;
+		}
+
+		try {
+			await navigator.clipboard.write([
+				new ClipboardItem({[blob.type]: blob}),
+			]);
+			return true;
+		} catch (e) {
+			if (e.message.includes("Document is not focused")) {
+				JqueryUtil.doToast({type: "danger", content: `Please focus the window first!`});
+				return false;
+			}
+
+			JqueryUtil.doToast({type: "danger", content: `Failed to copy! ${VeCt.STR_SEE_CONSOLE}`});
+			throw e;
+		}
 	}
 
 	static checkProperty (object, ...path) {
@@ -31608,7 +31794,7 @@ globalThis.MiscUtil = class {
 	}
 
 	static get (object, ...path) {
-		if (object == null) return null;
+		if (object == null) return object;
 		for (let i = 0; i < path.length; ++i) {
 			object = object[path[i]];
 			if (object == null) return object;
@@ -31617,7 +31803,7 @@ globalThis.MiscUtil = class {
 	}
 
 	static set (object, ...pathAndVal) {
-		if (object == null) return null;
+		if (object == null) return object;
 
 		const val = pathAndVal.pop();
 		if (!pathAndVal.length) return null;
@@ -31824,6 +32010,8 @@ globalThis.MiscUtil = class {
 	}
 
 	static findCommonPrefix (strArr, {isRespectWordBoundaries} = {}) {
+		if (!strArr?.length) return "";
+
 		if (isRespectWordBoundaries) {
 			return MiscUtil._findCommonPrefixSuffixWords({strArr});
 		}
@@ -31850,6 +32038,8 @@ globalThis.MiscUtil = class {
 
 	static findCommonSuffix (strArr, {isRespectWordBoundaries} = {}) {
 		if (!isRespectWordBoundaries) throw new Error(`Unimplemented!`);
+
+		if (!strArr?.length) return "";
 
 		return MiscUtil._findCommonPrefixSuffixWords({strArr, isSuffix: true});
 	}
@@ -32324,6 +32514,20 @@ globalThis.MiscUtil = class {
 		if (a != null && b == null) return false;
 		return a === b;
 	}
+
+	static getDatUrl (blob) {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onload = () => resolve(reader.result);
+			reader.onerror = () => reject(reader.error);
+			reader.onabort = () => reject(new Error("Read aborted"));
+			reader.readAsDataURL(blob);
+		});
+	}
+
+	static getColorStylePart (color) {
+		return `color: #${color} !important; border-color: #${color} !important; text-decoration-color: #${color} !important;`;
+	}
 };
 
 // EVENT HANDLERS ======================================================================================================
@@ -32396,6 +32600,8 @@ globalThis.EventUtil = class {
 		if (!isUpperCase && !isLowerCase) return evt.key;
 		return isUpperCase ? evt.key.toLowerCase() : evt.key.toUpperCase();
 	}
+
+	static isMiddleMouse (evt) { return evt.button === 1; }
 
 	/* -------------------------------------------- */
 
@@ -32685,6 +32891,9 @@ globalThis.ContextUtil = {
 					const result = await this.fnAction(evt, {userData: menu.userData});
 					if (menu.resolveResult_) menu.resolveResult_(result);
 				})
+				.on("mousedown", evt => {
+					evt.preventDefault();
+				})
 				.keydown(evt => {
 					if (evt.key !== "Enter") return;
 					$btnAction.click();
@@ -32708,6 +32917,9 @@ globalThis.ContextUtil = {
 
 					const result = await this.fnActionAlt(evt, {userData: menu.userData});
 					if (menu.resolveResult_) menu.resolveResult_(result);
+				})
+				.on("mousedown", evt => {
+					evt.preventDefault();
 				});
 			if (this.titleAlt) $btnActionAlt.title(this.titleAlt);
 
@@ -32842,6 +33054,9 @@ globalThis.ContextUtil = {
 					);
 
 					menu.close();
+				})
+				.on("mousedown", evt => {
+					evt.preventDefault();
 				});
 
 			return {
@@ -32883,6 +33098,84 @@ globalThis.UrlUtil = {
 	decodeHash (hash) {
 		return hash.split(HASH_LIST_SEP).map(it => decodeURIComponent(it));
 	},
+
+	/* -------------------------------------------- */
+
+	/**
+	 * @param hash
+	 * @param {?string} page
+	 */
+	async pAutoDecodeHash (hash, {page = null} = {}) {
+		page ||= UrlUtil.getCurrentPage();
+
+		if ([UrlUtil.PG_ADVENTURE, UrlUtil.PG_BOOK].includes(page)) return UrlUtil._pAutoDecodeHashAdventureBookHash(hash, {page});
+		return UrlUtil.autoDecodeHash(hash, {page});
+	},
+
+	// TODO(Future) expand
+	/**
+	 * @param hash
+	 * @param {?string} page
+	 */
+	autoDecodeHash (hash, {page = null} = {}) {
+		page ||= UrlUtil.getCurrentPage();
+		const parts = UrlUtil.decodeHash(hash.toLowerCase().trim());
+
+		if (page === UrlUtil.PG_DEITIES) {
+			const [name, pantheon, source] = parts;
+			return {name, pantheon, source};
+		}
+
+		// TODO(Future) this is broken for docs where the id != the source
+		//   consider indexing
+		//   + homebrew
+		if (page === UrlUtil.PG_ADVENTURE || page === UrlUtil.PG_BOOK) {
+			const [source] = parts;
+			return {source};
+		}
+
+		const [name, source] = parts;
+		return {name, source};
+	},
+
+	/**
+	 * @param hash
+	 * @param {?string} page
+	 */
+	async _pAutoDecodeHashAdventureBookHash (hash, {page = null} = {}) {
+		page ||= UrlUtil.getCurrentPage();
+		const parts = UrlUtil.decodeHash(hash.toLowerCase().trim());
+
+		if (![UrlUtil.PG_ADVENTURE, UrlUtil.PG_BOOK].includes(page)) throw new Error(`Unhandled page "${page}"!`);
+
+		const [id] = parts;
+
+		for (const {prop, contentsUrl} of [
+			{
+				prop: "adventure",
+				contentsUrl: `${Renderer.get().baseUrl}data/adventures.json`,
+			},
+			{
+				prop: "book",
+				contentsUrl: `${Renderer.get().baseUrl}data/books.json`,
+			},
+		]) {
+			const contents = await DataUtil.loadJSON(contentsUrl);
+
+			const ent = contents[prop].find(it => it.id.toLowerCase() === id);
+			if (ent) return {name: ent.name, source: ent.source, id: ent.id};
+		}
+
+		for (const brewUtil of [PrereleaseUtil, BrewUtil2]) {
+			const urlRoot = await brewUtil.pGetCustomUrl();
+			const idsIndex = await brewUtil.pLoadAdventureBookIdsIndex(urlRoot);
+			if (idsIndex[id]) return idsIndex[id];
+		}
+
+		return {};
+	},
+
+	/* -------------------------------------------- */
 
 	getSluggedHash (hash) {
 		return Parser.stringToSlug(decodeURIComponent(hash)).replace(/_/g, "-");
@@ -33233,6 +33526,7 @@ UrlUtil.URL_TO_HASH_BUILDER["skill"] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER["sense"] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER["raceFeature"] = (it) => UrlUtil.encodeArrayForHash(it.name, it.raceName, it.raceSource, it.source);
 UrlUtil.URL_TO_HASH_BUILDER["citation"] = UrlUtil.URL_TO_HASH_GENERIC;
+UrlUtil.URL_TO_HASH_BUILDER["languageScript"] = UrlUtil.URL_TO_HASH_GENERIC;
 
 // Add lowercase aliases
 Object.keys(UrlUtil.URL_TO_HASH_BUILDER)
@@ -33670,6 +33964,26 @@ globalThis.SortUtil = {
 	},
 };
 
+globalThis.MultiSourceUtil = class {
+	static getIndexKey (prop, ent) {
+		switch (prop) {
+			case "class":
+			case "classFluff":
+				return (ent.name || "").toLowerCase().split(" ").at(-1);
+			case "subclass":
+			case "subclassFluff":
+				return (ent.className || "").toLowerCase().split(" ").at(-1);
+			default:
+				return ent.source;
+		}
+	}
+
+	static isEntityIndexKeyMatch (indexKey, prop, ent) {
+		if (indexKey == null) return true;
+		return indexKey === MultiSourceUtil.getIndexKey(prop, ent);
+	}
+};
+
 // JSON LOADING ========================================================================================================
 class _DataUtilPropConfig {
 	static _MERGE_REQUIRES_PRESERVE = {};
@@ -33708,7 +34022,7 @@ class _DataUtilPropConfigMultiSource extends _DataUtilPropConfig {
 
 	static async pLoadAll () {
 		const json = await this.loadJSON();
-		return json[this._PROP];
+		return json[this._PROP] || [];
 	}
 
 	static async loadJSON () { return this._loadJSON({isUnmerged: false}); }
@@ -33718,7 +34032,7 @@ class _DataUtilPropConfigMultiSource extends _DataUtilPropConfig {
 		const index = await this.pLoadIndex();
 
 		const allData = await Object.entries(index)
-			.pMap(async ([source, file]) => this._pLoadSourceEntities({source, isUnmerged, file}));
+			.pMap(async ([indexKey, file]) => this._pLoadSourceEntities({indexKey, isUnmerged, file}));
 
 		return {[this._PROP]: allData.flat()};
 	}
@@ -33729,16 +34043,16 @@ class _DataUtilPropConfigMultiSource extends _DataUtilPropConfig {
 		const file = index[source];
 		if (!file) return null;
 
-		return {[this._PROP]: await this._pLoadSourceEntities({source, file})};
+		return {[this._PROP]: await this._pLoadSourceEntities({indexKey: source, file})};
 	}
 
-	static async _pLoadSourceEntities ({source, isUnmerged = false, file}) {
+	static async _pLoadSourceEntities ({indexKey = null, isUnmerged = false, file}) {
 		await this._pInitPreData();
 
 		const fnLoad = isUnmerged ? DataUtil.loadRawJSON.bind(DataUtil) : DataUtil.loadJSON.bind(DataUtil);
 
 		let data = await fnLoad(`${Renderer.get().baseUrl}data/${this._DIR}/${file}`);
-		data = data[this._PROP].filter(it => it.source === source);
+		data = (data[this._PROP] || []).filter(MultiSourceUtil.isEntityIndexKeyMatch.bind(this, indexKey, this._PROP));
 
 		if (!this._IS_MUT_ENTITIES) return data;
 
@@ -33795,9 +34109,24 @@ class _DataUtilBrewHelper {
 		return DataUtil.loadJSON(`${urlRoot}_generated/index-sources.json`);
 	}
 
+	async pLoadAdventureBookIdsIndex (urlRoot) {
+		urlRoot = this._getCleanUrlRoot(urlRoot);
+		return DataUtil.loadJSON(`${urlRoot}_generated/index-adventure-book-ids.json`);
+	}
+
 	getFileUrl (path, urlRoot) {
 		urlRoot = this._getCleanUrlRoot(urlRoot);
 		return `${urlRoot}${path}`;
+	}
+
+	/* -------------------------------------------- */
+
+	isUrlUnderDefaultRoot (url) {
+		return url.startsWith(this._defaultUrlRoot);
+	}
+
+	getUrlRelativeToDefaultRoot (url) {
+		return url.slice(this._defaultUrlRoot.length).replace(/^\/+/, "");
 	}
 }
 
@@ -33856,13 +34185,28 @@ globalThis.DataUtil = {
 	},
 
 	_mutAddProps (data) {
-		if (data && typeof data === "object") {
-			for (const k in data) {
-				if (data[k] instanceof Array) {
-					for (const it of data[k]) {
-						if (typeof it !== "object") continue;
-						it.__prop = k;
-					}
+		if (!data || typeof data !== "object") return;
+
+		for (const k in data) {
+			if (!(data[k] instanceof Array)) continue;
+
+			for (const it of data[k]) {
+				if (typeof it !== "object") continue;
+				it.__prop = k;
+			}
+		}
+	},
+
+	_verifyMerged (data) {
+		if (!data || typeof data !== "object") return;
+
+		for (const k in data) {
+			if (!(data[k] instanceof Array)) continue;
+
+			for (const it of data[k]) {
+				if (typeof it !== "object") continue;
+				if (it._copy) {
+					setTimeout(() => { throw new Error(`Unresolved "_copy" in entity: ${JSON.stringify(it)}`); });
 				}
 			}
 		}
@@ -33898,7 +34242,10 @@ globalThis.DataUtil = {
 
 	async pDoMetaMerge (ident, data, options) {
 		DataUtil._mutAddProps(data);
-		DataUtil._merging[ident] = DataUtil._merging[ident] || DataUtil._pDoMetaMerge(ident, data, options);
+
+		const isFresh = !DataUtil._merging[ident];
+
+		DataUtil._merging[ident] ||= DataUtil._pDoMetaMerge(ident, data, options);
 		await DataUtil._merging[ident];
 		const out = DataUtil._merged[ident];
 
@@ -33908,6 +34255,8 @@ globalThis.DataUtil = {
 			delete DataUtil._merging[ident];
 			delete DataUtil._merged[ident];
 		}
+
+		if (isFresh) DataUtil._verifyMerged(out);
 
 		return out;
 	},
@@ -34039,77 +34388,17 @@ globalThis.DataUtil = {
 	},
 
 	_userDownload (filename, data, mimeType) {
-		const a = document.createElement("a");
 		const t = new Blob([data], {type: mimeType});
-		a.href = window.URL.createObjectURL(t);
-		a.download = filename;
-		a.dispatchEvent(new MouseEvent("click", {bubbles: true, cancelable: true, view: window}));
-		setTimeout(() => window.URL.revokeObjectURL(a.href), 100);
+		const dataUrl = window.URL.createObjectURL(t);
+		DataUtil.userDownloadDataUrl(filename, dataUrl);
+		setTimeout(() => window.URL.revokeObjectURL(dataUrl), 100);
 	},
 
-	/** Always returns an array of files, even in "single" mode. */
-	pUserUpload (
-		{
-			isMultiple = false,
-			expectedFileTypes = null,
-			propVersion = "siteVersion",
-		} = {},
-	) {
-		return new Promise(resolve => {
-			const $iptAdd = $(`<input type="file" ${isMultiple ? "multiple" : ""} class="ve-hidden" accept=".json">`)
-				.on("change", (evt) => {
-					const input = evt.target;
-
-					const reader = new FileReader();
-					let readIndex = 0;
-					const out = [];
-					const errs = [];
-
-					reader.onload = async () => {
-						const name = input.files[readIndex - 1].name;
-						const text = reader.result;
-
-						try {
-							const json = JSON.parse(text);
-
-							const isSkipFile = expectedFileTypes != null
-								&& json.fileType
-								&& !expectedFileTypes.includes(json.fileType)
-								&& !(await InputUiUtil.pGetUserBoolean({
-									textYes: "Yes",
-									textNo: "Cancel",
-									title: "File Type Mismatch",
-									htmlDescription: `The file "${name}" has the type "${json.fileType}" when the expected file type was "${expectedFileTypes.join("/")}".<br>Are you sure you want to upload this file?`,
-								}));
-
-							if (!isSkipFile) {
-								delete json.fileType;
-								delete json[propVersion];
-
-								out.push({name, json});
-							}
-						} catch (e) {
-							errs.push({filename: name, message: e.message});
-						}
-
-						if (input.files[readIndex]) {
-							reader.readAsText(input.files[readIndex++]);
-							return;
-						}
-
-						resolve({
-							files: out,
-							errors: errs,
-							jsons: out.map(({json}) => json),
-						});
-					};
-
-					reader.readAsText(input.files[readIndex++]);
-				})
-				.appendTo(document.body);
-
-			$iptAdd.click();
-		});
+	userDownloadDataUrl (filename, dataUrl) {
+		const a = document.createElement("a");
+		a.href = dataUrl;
+		a.download = filename;
+		a.dispatchEvent(new MouseEvent("click", {bubbles: true, cancelable: true, view: window}));
 	},
 
 	doHandleFileLoadErrorsGeneric (errors) {
@@ -34157,7 +34446,9 @@ globalThis.DataUtil = {
 		"spell": "spells",
 		"spellFluff": "spells",
 		"class": "class",
+		"classFluff": "class",
 		"subclass": "class",
+		"subclassFluff": "class",
 		"classFeature": "class",
 		"subclassFeature": "class",
 	},
@@ -34185,7 +34476,9 @@ globalThis.DataUtil = {
 
 			// region Multi-source
 			case "class":
+			case "classFluff":
 			case "subclass":
+			case "subclassFluff":
 			case "classFeature":
 			case "subclassFeature": {
 				const baseUrlPart = `${Renderer.get().baseUrl}data/${DataUtil._MULTI_SOURCE_PROP_TO_DIR[prop]}`;
@@ -34205,6 +34498,8 @@ globalThis.DataUtil = {
 				return DataUtil._pLoadByMeta_pGetPrereleaseBrew(source);
 			}
 			case "race": {
+				// FIXME(Future) this should really `loadRawJSON`, but this breaks existing brew.
+				//   Consider a large-scale migration in future.
 				const data = await DataUtil.race.loadJSON({isAddBaseRaces: true});
 				if (data[prop] && data[prop].some(it => it.source === source)) return data;
 				return DataUtil._pLoadByMeta_pGetPrereleaseBrew(source);
@@ -34341,8 +34636,7 @@ globalThis.DataUtil = {
 
 			if (!it) {
 				if (options.isErrorOnMissing) {
-					// In development/script mode, throw an exception
-					if (!IS_DEPLOYED && !IS_VTT) throw new Error(`Could not find "${page}" entity "${entry._copy.name}" ("${entry._copy.source}") to copy in copier "${entry.name}" ("${entry.source}")`);
+					throw new Error(`Could not find "${page}" entity "${entry._copy.name}" ("${entry._copy.source}") to copy in copier "${entry.name}" ("${entry.source}")`);
 				}
 				return;
 			}
@@ -34361,9 +34655,10 @@ globalThis.DataUtil = {
 
 		_pMergeCopy_search (impl, page, entryList, entry, options) {
 			const entryHash = UrlUtil.URL_TO_HASH_BUILDER[page](entry._copy);
-			return entryList.find(it => {
-				const hash = UrlUtil.URL_TO_HASH_BUILDER[page](it);
-				impl._mergeCache[hash] = it;
+			return entryList.find(ent => {
+				const hash = UrlUtil.URL_TO_HASH_BUILDER[page](ent);
+				// Avoid clobbering existing caches, as we assume "earlier = better"
+				impl._mergeCache[hash] ||= ent;
 				return hash === entryHash;
 			});
 		},
@@ -34374,6 +34669,8 @@ globalThis.DataUtil = {
 		],
 
 		copyApplier: class {
+			static _WALKER = null;
+
 			// convert everything to arrays
 			static _normaliseMods (obj) {
 				Object.entries(obj._mod).forEach(([k, v]) => {
@@ -34514,6 +34811,26 @@ globalThis.DataUtil = {
 						else throw new Error(`${msgPtFailed} Could not find "${prop}" item "${itemToRemove}" to remove`);
 					});
 				} else throw new Error(`${msgPtFailed} One of "names" or "items" must be provided!`);
+			}
+
+			static _doMod_renameArr ({copyTo, copyFrom, modInfo, msgPtFailed, prop, isThrow = true}) {
+				this._doEnsureArray({obj: modInfo, prop: "renames"});
+
+				if (!copyTo[prop]) {
+					if (isThrow) throw new Error(`${msgPtFailed} Could not find "${prop}" array`);
+					return;
+				}
+
+				modInfo.renames
+					.forEach(rename => {
+						const ent = copyTo[prop].find(ent => ent?.name === rename.rename);
+						if (!ent) {
+							if (isThrow) throw new Error(`${msgPtFailed} Could not find "${prop}" item with name "${rename.rename}" to rename`);
+							return;
+						}
+
+						ent.name = rename.with;
+					});
 			}
 
 			static _doMod_calculateProp ({copyTo, copyFrom, modInfo, msgPtFailed, prop}) {
@@ -34763,12 +35080,32 @@ globalThis.DataUtil = {
 
 			static _doMod_scalarAddHit ({copyTo, copyFrom, modInfo, msgPtFailed, prop}) {
 				if (!copyTo[prop]) return;
-				copyTo[prop] = JSON.parse(JSON.stringify(copyTo[prop]).replace(/{@hit ([-+]?\d+)}/g, (m0, m1) => `{@hit ${Number(m1) + modInfo.scalar}}`));
+
+				const re = /{@hit ([-+]?\d+)}/g;
+				copyTo[prop] = this._WALKER.walk(
+					copyTo[prop],
+					{
+						string: (str) => {
+							return str
+								.replace(re, (m0, m1) => `{@hit ${Number(m1) + modInfo.scalar}}`);
+						},
+					},
+				);
 			}
 
 			static _doMod_scalarAddDc ({copyTo, copyFrom, modInfo, msgPtFailed, prop}) {
 				if (!copyTo[prop]) return;
-				copyTo[prop] = JSON.parse(JSON.stringify(copyTo[prop]).replace(/{@dc (\d+)(?:\|[^}]+)?}/g, (m0, m1) => `{@dc ${Number(m1) + modInfo.scalar}}`));
+
+				const re = /{@dc (\d+)(?:\|[^}]+)?}/g;
+				copyTo[prop] = this._WALKER.walk(
+					copyTo[prop],
+					{
+						string: (str) => {
+							return str
+								.replace(re, (m0, m1) => `{@dc ${Number(m1) + modInfo.scalar}}`);
+						},
+					},
+				);
 			}
 
 			static _doMod_maxSize ({copyTo, copyFrom, modInfo, msgPtFailed}) {
@@ -34802,7 +35139,7 @@ globalThis.DataUtil = {
 
 			static _doMod_setProp ({copyTo, copyFrom, modInfo, msgPtFailed, prop}) {
 				const propPath = modInfo.prop.split(".");
-				if (prop !== "*") propPath.unshift(prop);
+				if (prop != null && prop !== "*") propPath.unshift(prop);
 				MiscUtil.set(copyTo, ...propPath, MiscUtil.copyFast(modInfo.value));
 			}
 
@@ -34825,6 +35162,7 @@ globalThis.DataUtil = {
 							case "appendIfNotExistsArr": return this._doMod_appendIfNotExistsArr({copyTo, copyFrom, modInfo, msgPtFailed, prop});
 							case "insertArr": return this._doMod_insertArr({copyTo, copyFrom, modInfo, msgPtFailed, prop});
 							case "removeArr": return this._doMod_removeArr({copyTo, copyFrom, modInfo, msgPtFailed, prop});
+							case "renameArr": return this._doMod_renameArr({copyTo, copyFrom, modInfo, msgPtFailed, prop});
 							case "calculateProp": return this._doMod_calculateProp({copyTo, copyFrom, modInfo, msgPtFailed, prop});
 							case "scalarAddProp": return this._doMod_scalarAddProp({copyTo, copyFrom, modInfo, msgPtFailed, prop});
 							case "scalarMultProp": return this._doMod_scalarMultProp({copyTo, copyFrom, modInfo, msgPtFailed, prop});
@@ -34867,6 +35205,8 @@ globalThis.DataUtil = {
 			}
 
 			static getCopy (impl, copyFrom, copyTo, templateData, {isExternalApplicationKeepCopy = false, isExternalApplicationIdentityOnly = false} = {}) {
+				this._WALKER ||= MiscUtil.getWalker();
+
 				if (isExternalApplicationKeepCopy) copyTo.__copy = MiscUtil.copyFast(copyFrom);
 
 				const msgPtFailed = `Failed to apply _copy to "${copyTo.name}" ("${copyTo.source}").`;
@@ -35169,7 +35509,16 @@ globalThis.DataUtil = {
 					return DataUtil.generic._getVersions_basic({ver});
 				})
 				.flat()
-				.map(ver => DataUtil.generic._getVersion({parentEntity: parent, version: ver, impl, isExternalApplicationIdentityOnly}));
+				.map(ver => DataUtil.generic._getVersion({parentEntity: parent, version: ver, impl, isExternalApplicationIdentityOnly}))
+				.filter(ver => {
+					if (!UrlUtil.URL_TO_HASH_BUILDER[ver.__prop]) throw new Error(`Unhandled version prop "${ver.__prop}"!`);
+					return !ExcludeUtil.isExcluded(
+						UrlUtil.URL_TO_HASH_BUILDER[ver.__prop](ver),
+						ver.__prop,
+						SourceUtil.getEntitySource(ver),
+						{isNoCount: true},
+					);
+				});
 		},
 
 		_getVersions_template ({ver}) {
@@ -35221,6 +35570,7 @@ globalThis.DataUtil = {
 				_versionBase_hasToken: parentEntity.hasToken,
 				_versionBase_hasFluff: parentEntity.hasFluff,
 				_versionBase_hasFluffImages: parentEntity.hasFluffImages,
+				__prop: parentEntity.__prop,
 			};
 			const cpyParentEntity = MiscUtil.copyFast(parentEntity);
 
@@ -35228,6 +35578,12 @@ globalThis.DataUtil = {
 			delete cpyParentEntity.hasToken;
 			delete cpyParentEntity.hasFluff;
 			delete cpyParentEntity.hasFluffImages;
+
+			["additionalSources", "otherSources"]
+				.forEach(prop => {
+					if (cpyParentEntity[prop]?.length) cpyParentEntity[prop] = cpyParentEntity[prop].filter(srcMeta => srcMeta.source !== version.source);
+					if (!cpyParentEntity[prop]?.length) delete cpyParentEntity[prop];
+				});
 
 			DataUtil.generic.copyApplier.getCopy(
 				impl,
@@ -35707,13 +36063,13 @@ globalThis.DataUtil = {
 
 			// region Populate fonts, based on script
 			const scriptLookup = {};
-			(rawData.languageScript || []).forEach(script => scriptLookup[script.name] = script);
+			(rawData.languageScript || []).forEach(script => MiscUtil.set(scriptLookup, script.source, script.name, script));
 
 			const out = {language: MiscUtil.copyFast(rawData.language)};
 			out.language.forEach(lang => {
 				if (!lang.script || lang.fonts === false) return;
 
-				const script = scriptLookup[lang.script];
+				const script = MiscUtil.get(scriptLookup, lang.source, lang.script);
 				if (!script) return;
 
 				lang._fonts = [...script.fonts];
@@ -35743,19 +36099,17 @@ globalThis.DataUtil = {
 		static _PAGE = UrlUtil.PG_RACES;
 		static _FILENAME = "races.json";
 
-		static _loadCache = {};
-		static _pIsLoadings = {};
+		static _psLoadJson = {};
+
 		static async loadJSON ({isAddBaseRaces = false} = {}) {
-			if (!DataUtil.race._pIsLoadings[isAddBaseRaces]) {
-				DataUtil.race._pIsLoadings[isAddBaseRaces] = (async () => {
-					DataUtil.race._loadCache[isAddBaseRaces] = DataUtil.race.getPostProcessedSiteJson(
-						await this.loadRawJSON(),
-						{isAddBaseRaces},
-					);
-				})();
-			}
-			await DataUtil.race._pIsLoadings[isAddBaseRaces];
-			return DataUtil.race._loadCache[isAddBaseRaces];
+			const cacheKey = `site-${isAddBaseRaces}`;
+			DataUtil.race._psLoadJson[cacheKey] ||= (async () => {
+				return DataUtil.race.getPostProcessedSiteJson(
+					await this.loadRawJSON(),
+					{isAddBaseRaces},
+				);
+			})();
+			return DataUtil.race._psLoadJson[cacheKey];
 		}
 
 		static getPostProcessedSiteJson (rawRaceData, {isAddBaseRaces = false} = {}) {
@@ -35775,11 +36129,15 @@ globalThis.DataUtil = {
 		}
 
 		static async loadPrerelease ({isAddBaseRaces = true} = {}) {
-			return DataUtil.race._loadPrereleaseBrew({isAddBaseRaces, brewUtil: typeof PrereleaseUtil !== "undefined" ? PrereleaseUtil : null});
+			const cacheKey = `prerelease-${isAddBaseRaces}`;
+			this._psLoadJson[cacheKey] ||= DataUtil.race._loadPrereleaseBrew({isAddBaseRaces, brewUtil: typeof PrereleaseUtil !== "undefined" ? PrereleaseUtil : null});
+			return this._psLoadJson[cacheKey];
 		}
 
 		static async loadBrew ({isAddBaseRaces = true} = {}) {
-			return DataUtil.race._loadPrereleaseBrew({isAddBaseRaces, brewUtil: typeof BrewUtil2 !== "undefined" ? BrewUtil2 : null});
+			const cacheKey = `brew-${isAddBaseRaces}`;
+			this._psLoadJson[cacheKey] ||= DataUtil.race._loadPrereleaseBrew({isAddBaseRaces, brewUtil: typeof BrewUtil2 !== "undefined" ? BrewUtil2 : null});
+			return this._psLoadJson[cacheKey];
 		}
 
 		static async _loadPrereleaseBrew ({isAddBaseRaces = true, brewUtil} = {}) {
@@ -35861,61 +36219,22 @@ globalThis.DataUtil = {
 		static _FILENAME = "recipes.json";
 
 		static async loadJSON () {
-			const rawData = await super.loadJSON();
-			return {recipe: await DataUtil.recipe.pGetPostProcessedRecipes(rawData.recipe)};
-		}
-
-		static async pGetPostProcessedRecipes (recipes) {
-			if (!recipes?.length) return;
-
-			recipes = MiscUtil.copyFast(recipes);
-
-			// Apply ingredient properties
-			recipes.forEach(r => Renderer.recipe.populateFullIngredients(r));
-
-			const out = [];
-
-			// region Merge together main data and fluff, as we render the fluff in the main tab
-			for (const r of recipes) {
-				const fluff = await Renderer.utils.pGetFluff({
-					entity: r,
-					fnGetFluffData: DataUtil.recipeFluff.loadJSON.bind(DataUtil.recipeFluff),
-					fluffProp: "recipeFluff",
-				});
-
-				if (!fluff) {
-					out.push(r);
-					continue;
-				}
-
-				const cpyR = MiscUtil.copyFast(r);
-				cpyR.fluff = MiscUtil.copyFast(fluff);
-				delete cpyR.fluff.name;
-				delete cpyR.fluff.source;
-				out.push(cpyR);
-			}
-			//
-
-			return out;
+			return DataUtil.recipe._pLoadJson = DataUtil.recipe._pLoadJson || (async () => {
+				return {
+					recipe: await DataLoader.pCacheAndGetAllSite("recipe"),
+				};
+			})();
 		}
 
 		static async loadPrerelease () {
-			return this._loadPrereleaseBrew({brewUtil: typeof PrereleaseUtil !== "undefined" ? PrereleaseUtil : null});
+			return {
+				recipe: await DataLoader.pCacheAndGetAllPrerelease("recipe"),
+			};
 		}
 
 		static async loadBrew () {
-			return this._loadPrereleaseBrew({brewUtil: typeof BrewUtil2 !== "undefined" ? BrewUtil2 : null});
-		}
-
-		static async _loadPrereleaseBrew ({brewUtil}) {
-			if (!brewUtil) return {};
-
-			const brew = await brewUtil.pGetBrewProcessed();
-			if (!brew?.recipe?.length) return brew;
-
 			return {
-				...brew,
-				recipe: await DataUtil.recipe.pGetPostProcessedRecipes(brew.recipe),
+				recipe: await DataLoader.pCacheAndGetAllBrew("recipe"),
 			};
 		}
 	},
@@ -36095,8 +36414,25 @@ globalThis.DataUtil = {
 		// endregion
 	},
 
-	subclass: class extends _DataUtilPropConfig {
+	classFluff: class extends _DataUtilPropConfigMultiSource {
+		static _PAGE = UrlUtil.PG_CLASSES;
+		static _DIR = "class";
+		static _PROP = "classFluff";
+	},
+
+	subclass: class extends _DataUtilPropConfigCustom {
 		static _PAGE = "subclass";
+		static _PROP = "subclassFluff";
+
+		static async loadJSON () {
+			return DataUtil.class.loadJSON();
+		}
+	},
+
+	subclassFluff: class extends _DataUtilPropConfigMultiSource {
+		static _PAGE = "subclassFluff";
+		static _DIR = "class";
+		static _PROP = "subclassFluff";
 	},
 
 	deity: class extends _DataUtilPropConfigSingleSource {
@@ -37368,189 +37704,6 @@ Map.prototype.getOrSet || Object.defineProperty(Map.prototype, "getOrSet", {
 	},
 });
 
-// OVERLAY VIEW ========================================================================================================
-/**
- * Relies on:
- * - page implementing HashUtil's `loadSubHash` with handling to show/hide the book view based on hashKey changes
- * - page running no-argument `loadSubHash` when `hashchange` occurs
- *
- * @param opts Options object.
- * @param opts.hashKey to use in the URL so that forward/back can open/close the view
- * @param opts.$btnOpen jQuery-selected button to bind click open/close
- * @param [opts.$eleNoneVisible] "error" message to display if user has not selected any viewable content
- * @param opts.pageTitle Title.
- * @param opts.state State to modify when opening/closing.
- * @param opts.stateKey Key in state to set true/false when opening/closing.
- * @param [opts.hasPrintColumns] True if the overlay should contain a dropdown for adjusting print columns.
- * @param [opts.isHideContentOnNoneShown]
- * @param [opts.isHideButtonCloseNone]
- * @constructor
- *
- * @abstract
- */
-class BookModeViewBase {
-	static _BOOK_VIEW_COLUMNS_K = "bookViewColumns";
-
-	_hashKey;
-	_stateKey;
-	_pageTitle;
-	_isColumns = true;
-	_hasPrintColumns = false;
-
-	constructor (opts) {
-		opts = opts || {};
-		const {$btnOpen, state} = opts;
-
-		if (this._hashKey && this._stateKey) throw new Error(`Only one of "hashKey" and "stateKey" may be specified!`);
-
-		this._state = state;
-		this._$btnOpen = $btnOpen;
-
-		this._isActive = false;
-		this._$wrpBook = null;
-
-		this._$btnOpen.off("click").on("click", () => this.setStateOpen());
-	}
-
-	/* -------------------------------------------- */
-
-	setStateOpen () {
-		if (this._stateKey) return this._state[this._stateKey] = true;
-		Hist.cleanSetHash(`${window.location.hash}${HASH_PART_SEP}${this._hashKey}${HASH_SUB_KV_SEP}true`);
-	}
-
-	setStateClosed () {
-		if (this._stateKey) return this._state[this._stateKey] = false;
-		Hist.cleanSetHash(window.location.hash.replace(`${this._hashKey}${HASH_SUB_KV_SEP}true`, ""));
-	}
-
-	/* -------------------------------------------- */
-
-	_$getWindowHeaderLhs () {
-		return $(`<div class="ve-flex-v-center"></div>`);
-	}
-
-	_$getBtnWindowClose () {
-		return $(`<button class="btn btn-xs btn-danger br-0 bt-0 btl-0 btr-0 bbr-0 bbl-0 h-20p" title="Close"><span class="glyphicon glyphicon-remove"></span></button>`)
-			.click(() => this.setStateClosed());
-	}
-
-	/* -------------------------------------------- */
-
-	async _$pGetWrpControls ({$wrpContent}) {
-		const $wrp = $(`<div class="w-100 ve-flex-col no-shrink no-print"></div>`);
-
-		if (!this._hasPrintColumns) return $wrp;
-
-		$wrp.addClass("px-2 mt-2 bb-1p pb-1");
-
-		const onChangeColumnCount = (cols) => {
-			$wrpContent.toggleClass(`bkmv__wrp--columns-1`, cols === 1);
-			$wrpContent.toggleClass(`bkmv__wrp--columns-2`, cols === 2);
-		};
-
-		const lastColumns = StorageUtil.syncGetForPage(BookModeViewBase._BOOK_VIEW_COLUMNS_K);
-
-		const $selColumns = $(`<select class="form-control input-sm">
-			<option value="0">Two (book style)</option>
-			<option value="1">One</option>
-		</select>`)
-			.change(() => {
-				const val = Number($selColumns.val());
-				if (val === 0) onChangeColumnCount(2);
-				else onChangeColumnCount(1);
-
-				StorageUtil.syncSetForPage(BookModeViewBase._BOOK_VIEW_COLUMNS_K, val);
-			});
-		if (lastColumns != null) $selColumns.val(lastColumns);
-		$selColumns.change();
-
-		const $wrpPrint = $$`<div class="w-100 ve-flex">
-			<div class="ve-flex-vh-center"><div class="mr-2 no-wrap help-subtle" title="Applied when printing the page.">Print columns:</div>${$selColumns}</div>
-		</div>`.appendTo($wrp);
-
-		return {$wrp, $wrpPrint};
-	}
-
-	/* -------------------------------------------- */
-
-	_$getEleNoneVisible () { return null; }
-
-	_$getBtnNoneVisibleClose () {
-		return $(`<button class="btn btn-default">Close</button>`)
-			.click(() => this.setStateClosed());
-	}
-
-	/** @abstract */
-	async _pGetRenderContentMeta ({$wrpContent, $wrpContentOuter}) {
-		return {cntSelectedEnts: 0, isAnyEntityRendered: false};
-	}
-
-	/* -------------------------------------------- */
-
-	async pOpen () {
-		if (this._isActive) return;
-		this._isActive = true;
-
-		document.title = `${this._pageTitle} - 5etools`;
-		document.body.style.overflow = "hidden";
-		document.body.classList.add("bkmv-active");
-
-		const {$wrpContentOuter, $wrpContent} = await this._pGetContentElementMetas();
-
-		this._$wrpBook = $$`<div class="bkmv print__h-initial ve-flex-col print__ve-block">
-			<div class="bkmv__spacer-name no-print split-v-center no-shrink no-print">${this._$getWindowHeaderLhs()}${this._$getBtnWindowClose()}</div>
-			${(await this._$pGetWrpControls({$wrpContent})).$wrp}
-			${$wrpContentOuter}
-		</div>`
-			.appendTo(document.body);
-	}
-
-	async _pGetContentElementMetas () {
-		const $wrpContent = $(`<div class="bkmv__scroller smooth-scroll ve-overflow-y-auto print__overflow-visible ${this._isColumns ? "bkmv__wrp" : "ve-flex-col"} w-100 min-h-0"></div>`);
-
-		const $wrpContentOuter = $$`<div class="h-100 print__h-initial w-100 min-h-0 ve-flex-col print__ve-block">${$wrpContent}</div>`;
-
-		const out = {
-			$wrpContentOuter,
-			$wrpContent,
-		};
-
-		const {cntSelectedEnts, isAnyEntityRendered} = await this._pGetRenderContentMeta({$wrpContent, $wrpContentOuter});
-
-		if (isAnyEntityRendered) $wrpContentOuter.append($wrpContent);
-
-		if (cntSelectedEnts) return out;
-
-		$wrpContentOuter.append(this._$getEleNoneVisible());
-
-		return out;
-	}
-
-	teardown () {
-		if (!this._isActive) return;
-
-		document.body.style.overflow = "";
-		document.body.classList.remove("bkmv-active");
-
-		this._$wrpBook.remove();
-		this._isActive = false;
-	}
-
-	async pHandleSub (sub) {
-		if (this._stateKey) return sub; // Assume anything with state will handle this itself.
-
-		const bookViewHash = sub.find(it => it.startsWith(this._hashKey));
-		if (!bookViewHash) {
-			this.teardown();
-			return sub;
-		}
-
-		if (UrlUtil.unpackSubHash(bookViewHash)[this._hashKey][0] === "true") await this.pOpen();
-		return sub.filter(it => !it.startsWith(this._hashKey));
-	}
-}
-
 // CONTENT EXCLUSION ===================================================================================================
 globalThis.ExcludeUtil = {
 	isInitialised: false,
@@ -37703,15 +37856,15 @@ globalThis.ExcludeUtil = {
 };
 
 // EXTENSIONS ==========================================================================================================
-globalThis.ExtensionUtil = {
-	ACTIVE: false,
+globalThis.ExtensionUtil = class {
+	static ACTIVE = false;
 
-	_doSend (type, data) {
+	static _doSend (type, data) {
 		const detail = MiscUtil.copy({type, data}); // Note that this needs to include `JSON.parse` to function
 		window.dispatchEvent(new CustomEvent("rivet.send", {detail}));
-	},
+	}
 
-	async pDoSendStats (evt, ele) {
+	static async pDoSendStats (evt, ele) {
 		const {page, source, hash, extensionData} = ExtensionUtil._getElementData({ele});
 
 		if (page && source && hash) {
@@ -37730,9 +37883,9 @@ globalThis.ExtensionUtil = {
 
 			ExtensionUtil._doSend("entity", {page, entity: toSend, isTemp: !!evt.shiftKey});
 		}
-	},
+	}
 
-	async doDragStart (evt, ele) {
+	static async doDragStart (evt, ele) {
 		const {page, source, hash} = ExtensionUtil._getElementData({ele});
 		const meta = {
 			type: VeCt.DRAG_TYPE_IMPORT,
@@ -37741,9 +37894,9 @@ globalThis.ExtensionUtil = {
 			hash,
 		};
 		evt.dataTransfer.setData("application/json", JSON.stringify(meta));
-	},
+	}
 
-	_getElementData ({ele}) {
+	static _getElementData ({ele}) {
 		const $parent = $(ele).closest(`[data-page]`);
 		const page = $parent.attr("data-page");
 		const source = $parent.attr("data-source");
@@ -37752,31 +37905,31 @@ globalThis.ExtensionUtil = {
 		const extensionData = rawExtensionData ? JSON.parse(rawExtensionData) : null;
 
 		return {page, source, hash, extensionData};
-	},
+	}
 
-	pDoSendStatsPreloaded ({page, entity, isTemp, options}) {
+	static pDoSendStatsPreloaded ({page, entity, isTemp, options}) {
 		ExtensionUtil._doSend("entity", {page, entity, isTemp, options});
-	},
+	}
 
-	pDoSendCurrency ({currency}) {
+	static pDoSendCurrency ({currency}) {
 		ExtensionUtil._doSend("currency", {currency});
-	},
+	}
 
-	doSendRoll (data) { ExtensionUtil._doSend("roll", data); },
+	static doSendRoll (data) { ExtensionUtil._doSend("roll", data); }
 
-	pDoSend ({type, data}) { ExtensionUtil._doSend(type, data); },
+	static pDoSend ({type, data}) { ExtensionUtil._doSend(type, data); }
 
 	/* -------------------------------------------- */
 
-	_CACHE_EMBEDDED_STATS: {},
+	static _CACHE_EMBEDDED_STATS = {};
 
-	addEmbeddedToCache (page, source, hash, ent) {
+	static addEmbeddedToCache (page, source, hash, ent) {
 		MiscUtil.set(ExtensionUtil._CACHE_EMBEDDED_STATS, page.toLowerCase(), source.toLowerCase(), hash.toLowerCase(), MiscUtil.copyFast(ent));
-	},
+	}
 
-	_getEmbeddedFromCache (page, source, hash) {
+	static _getEmbeddedFromCache (page, source, hash) {
 		return MiscUtil.get(ExtensionUtil._CACHE_EMBEDDED_STATS, page.toLowerCase(), source.toLowerCase(), hash.toLowerCase());
-	},
+	}
 
 	/* -------------------------------------------- */
 };
@@ -37938,6 +38091,12 @@ globalThis.EditorUtil = {
 	},
 };
 
+globalThis.BrowserUtil = class {
+	static isFirefox () {
+		return navigator.userAgent.includes("Firefox");
+	}
+};
+
 // MISC WEBPAGE ONLOADS ================================================================================================
 if (!IS_VTT && typeof window !== "undefined") {
 	window.addEventListener("load", () => {
@@ -38035,54 +38194,6 @@ if (!IS_VTT && typeof window !== "undefined") {
 
 
 EXT_LIB_SCRIPTS.push((function lib_script_5 () {
-"use strict";
-
-class Prx {
-	static addHook (prop, hook) {
-		this.px._hooks[prop] = this.px._hooks[prop] || [];
-		this.px._hooks[prop].push(hook);
-		return hook;
-	}
-
-	static addHookAll (hook) {
-		this.px._hooksAll.push(hook);
-	}
-
-	static toString () {
-		return JSON.stringify(this, (k, v) => k === "px" ? undefined : v);
-	}
-
-	static copy () {
-		return JSON.parse(Prx.toString.bind(this)());
-	}
-
-	static get (toProxy) {
-		toProxy.px = {
-			addHook: Prx.addHook.bind(toProxy),
-			addHookAll: Prx.addHookAll.bind(toProxy),
-			toString: Prx.toString.bind(toProxy),
-			copy: Prx.copy.bind(toProxy),
-			_hooksAll: [],
-			_hooks: {},
-		};
-
-		return new Proxy(toProxy, {
-			set: (object, prop, value) => {
-				object[prop] = value;
-				toProxy.px._hooksAll.forEach(hook => hook(prop, value));
-				if (toProxy.px._hooks[prop]) toProxy.px._hooks[prop].forEach(hook => hook(prop, value));
-				return true;
-			},
-			deleteProperty: (object, prop) => {
-				delete object[prop];
-				toProxy.px._hooksAll.forEach(hook => hook(prop, null));
-				if (toProxy.px._hooks[prop]) toProxy.px._hooks[prop].forEach(hook => hook(prop, null));
-				return true;
-			},
-		});
-	}
-}
-
 /**
  * @mixin
  * @param {Class} Cls
@@ -38391,6 +38502,7 @@ class UiUtil {
 	 * @param {boolean} [opts.isIndestructible] If the modal elements should be detached, not removed.
 	 * @param {boolean} [opts.isClosed] If the modal should start off closed.
 	 * @param {boolean} [opts.isEmpty] If the modal should contain no content.
+	 * @param {boolean} [opts.headerType]
 	 * @param {boolean} [opts.hasFooter] If the modal has a footer.
 	 * @returns {object}
 	 */
@@ -38483,7 +38595,7 @@ class UiUtil {
 						children: [
 							opts.title
 								? e_({
-									tag: "h4",
+									tag: `h${opts.headerType || 4}`,
 									clazz: `my-2`,
 									html: opts.title.qq(),
 								})
@@ -39001,7 +39113,7 @@ class ListUiUtil {
 		let elePreviewWrp;
 		if (item.ele.children.length === 1) {
 			elePreviewWrp = e_({
-				ag: "div",
+				tag: "div",
 				clazz: "ve-hidden ve-flex",
 				children: [
 					e_({tag: "div", clazz: "ve-col-0-5"}),
@@ -39111,13 +39223,17 @@ class ListUiUtil {
 		_getSearchCache_handleEntryProp (entity, prop, ptrOut) {
 			if (!entity[prop]) return;
 
+			this._getSearchCache_handleEntry(entity[prop], ptrOut);
+		}
+
+		_getSearchCache_handleEntry (entry, ptrOut) {
 			this.constructor._READONLY_WALKER = this.constructor._READONLY_WALKER || MiscUtil.getWalker({
 				keyBlocklist: new Set(["type", "colStyles", "style"]),
 				isNoModification: true,
 			});
 
 			this.constructor._READONLY_WALKER.walk(
-				entity[prop],
+				entry,
 				{
 					string: (str) => this._getSearchCache_handleString(ptrOut, str),
 				},
@@ -39390,7 +39506,7 @@ class TabUiUtil extends TabUiUtilBase {
 		super.decorate(obj, {isInitMeta});
 
 		obj.__$getBtnTab = function ({tabMeta, _propProxy, propActive, ixTab}) {
-			return $(`<button class="btn btn-default ui-tab__btn-tab-head ${tabMeta.isHeadHidden ? "ve-hidden" : ""}">${tabMeta.name.qq()}</button>`)
+			return $(`<button class="btn btn-default ui-tab__btn-tab-head pt-2p px-4p pb-0 ${tabMeta.isHeadHidden ? "ve-hidden" : ""}">${tabMeta.name.qq()}</button>`)
 				.click(() => obj[_propProxy][propActive] = ixTab);
 		};
 
@@ -39407,7 +39523,7 @@ class TabUiUtil extends TabUiUtilBase {
 
 		obj.__renderTypedTabMeta_buttons = function ({tabMeta, ixTab}) {
 			const $btns = tabMeta.buttons.map((meta, j) => {
-				const $btn = $(`<button class="btn ui-tab__btn-tab-head ${meta.type ? `btn-${meta.type}` : "btn-primary"}" ${meta.title ? `title="${meta.title.qq()}"` : ""}>${meta.html}</button>`)
+				const $btn = $(`<button class="btn ui-tab__btn-tab-head pt-2p px-4p pb-0 bbr-0 bbl-0 ${meta.type ? `btn-${meta.type}` : "btn-primary"}" ${meta.title ? `title="${meta.title.qq()}"` : ""}>${meta.html}</button>`)
 					.click(evt => meta.pFnClick(evt, $btn));
 				return $btn;
 			});
@@ -39971,7 +40087,8 @@ class SearchWidget {
 			fnTransform: doc => {
 				const cpy = MiscUtil.copyFast(doc);
 				Object.assign(cpy, SearchWidget.docToPageSourceHash(cpy));
-				const hashName = UrlUtil.decodeHash(cpy.u)[0].toTitleCase();
+				const {name: hashNameRaw} = UrlUtil.autoDecodeHash(cpy.u);
+				const hashName = hashNameRaw.toTitleCase();
 				const isRename = hashName.toLowerCase() !== cpy.n.toLowerCase();
 				const pts = [
 					isRename ? hashName : cpy.n.toSpellCase(),
@@ -40670,7 +40787,7 @@ class InputUiUtil {
 		if (!isDataEntered) return null;
 		const outRaw = $iptNumber.val();
 		if (!outRaw.trim()) return null;
-		let out = UiUtil.strToInt(outRaw);
+		let out = UiUtil.strToNumber(outRaw);
 		if (opts.min) out = Math.max(opts.min, out);
 		if (opts.max) out = Math.min(opts.max, out);
 		if (opts.int) out = Math.round(out);
@@ -41343,6 +41460,76 @@ class InputUiUtil {
 
 		return Parser.CRS[comp._state.cur];
 		// endregion
+	}
+
+	/**
+	 * Always returns an array of files, even in "single" mode.
+	 * @param {?boolean} isMultiple
+	 * @param {?Array<string>} expectedFileTypes
+	 * @param {?string} propVersion
+	 */
+	static pGetUserUploadJson (
+		{
+			isMultiple = false,
+			expectedFileTypes = null,
+			propVersion = "siteVersion",
+		} = {},
+	) {
+		return new Promise(resolve => {
+			const $iptAdd = $(`<input type="file" ${isMultiple ? "multiple" : ""} class="ve-hidden" accept=".json">`)
+				.on("change", (evt) => {
+					const input = evt.target;
+
+					const reader = new FileReader();
+					let readIndex = 0;
+					const out = [];
+					const errs = [];
+
+					reader.onload = async () => {
+						const name = input.files[readIndex - 1].name;
+						const text = reader.result;
+
+						try {
+							const json = JSON.parse(text);
+
+							const isSkipFile = expectedFileTypes != null
+								&& json.fileType
+								&& !expectedFileTypes.includes(json.fileType)
+								&& !(await InputUiUtil.pGetUserBoolean({
+									textYes: "Yes",
+									textNo: "Cancel",
+									title: "File Type Mismatch",
+									htmlDescription: `The file "${name}" has the type "${json.fileType}" when the expected file type was "${expectedFileTypes.join("/")}".<br>Are you sure you want to upload this file?`,
+								}));
+
+							if (!isSkipFile) {
+								delete json.fileType;
+								delete json[propVersion];
+
+								out.push({name, json});
+							}
+						} catch (e) {
+							errs.push({filename: name, message: e.message});
+						}
+
+						if (input.files[readIndex]) {
+							reader.readAsText(input.files[readIndex++]);
+							return;
+						}
+
+						resolve({
+							files: out,
+							errors: errs,
+							jsons: out.map(({json}) => json),
+						});
+					};
+
+					reader.readAsText(input.files[readIndex++]);
+				})
+				.appendTo(document.body);
+
+			$iptAdd.click();
+		});
 	}
 }
 
@@ -42313,282 +42500,6 @@ class RenderableCollectionAsyncBase {
 
 globalThis.RenderableCollectionAsyncBase = RenderableCollectionAsyncBase;
 
-class RenderableCollectionAsyncGenericRows extends RenderableCollectionAsyncBase {
-	/**
-	 * @param comp
-	 * @param prop
-	 * @param $wrpRows
-	 * @param [opts]
-	 * @param [opts.namespace]
-	 * @param [opts.isDiffMode]
-	 */
-	constructor (comp, prop, $wrpRows, opts) {
-		super(comp, prop, opts);
-		this._$wrpRows = $wrpRows;
-
-		this._utils = new _RenderableCollectionGenericRowsSyncAsyncUtils({
-			comp,
-			prop,
-			$wrpRows,
-			namespace: opts?.namespace,
-		});
-	}
-
-	pDoUpdateExistingRender (renderedMeta, entity, i) {
-		return this._utils.doUpdateExistingRender(renderedMeta, entity, i);
-	}
-
-	pDoReorderExistingComponent (renderedMeta, entity, i) {
-		return this._utils.doReorderExistingComponent(renderedMeta, entity, i);
-	}
-
-	async pGetNewRender (entity, i) {
-		const comp = this._utils.getNewRenderComp(entity, i);
-
-		const $wrpRow = this._$getWrpRow()
-			.appendTo(this._$wrpRows);
-
-		const renderAdditional = await this._pPopulateRow({comp, $wrpRow, entity});
-
-		return {
-			...(renderAdditional || {}),
-			id: entity.id,
-			comp,
-			$wrpRow,
-		};
-	}
-
-	_$getWrpRow () {
-		return $(`<div class="ve-flex-v-center w-100"></div>`);
-	}
-
-	/**
-	 * @return {?object}
-	 */
-	async _pPopulateRow ({comp, $wrpRow, entity}) {
-		throw new Error(`Unimplemented!`);
-	}
-}
-
-class BaseLayeredComponent extends BaseComponent {
-	constructor () {
-		super();
-
-		// layers
-		this._layers = [];
-		this.__layerMeta = {};
-		this._layerMeta = this._getProxy("layerMeta", this.__layerMeta);
-	}
-
-	_addHookDeep (prop, hook) {
-		this._addHookBase(prop, hook);
-		this._addHook("layerMeta", prop, hook);
-	}
-
-	_removeHookDeep (prop, hook) {
-		this._removeHookBase(prop, hook);
-		this._removeHook("layerMeta", prop, hook);
-	}
-
-	_getBase (prop) {
-		return this._state[prop];
-	}
-
-	_get (prop) {
-		if (this._layerMeta[prop]) {
-			for (let i = this._layers.length - 1; i >= 0; --i) {
-				const val = this._layers[i].data[prop];
-				if (val != null) return val;
-			}
-			// this should never fall through, but if it does, returning the base value is fine
-		}
-		return this._state[prop];
-	}
-
-	_addLayer (layer) {
-		this._layers.push(layer);
-		this._addLayer_addLayerMeta(layer);
-	}
-
-	_addLayer_addLayerMeta (layer) {
-		Object.entries(layer.data).forEach(([k, v]) => this._layerMeta[k] = v != null);
-	}
-
-	_removeLayer (layer) {
-		const ix = this._layers.indexOf(layer);
-		if (~ix) {
-			this._layers.splice(ix, 1);
-
-			// regenerate layer meta
-			Object.keys(this._layerMeta).forEach(k => delete this._layerMeta[k]);
-			this._layers.forEach(l => this._addLayer_addLayerMeta(l));
-		}
-	}
-
-	updateLayersActive (prop) {
-		// this uses the fact that updating a proxy value to the same value still triggers hooks
-		//   anything listening to changes in this flag will be forced to recalculate from base + all layers
-		this._layerMeta[prop] = this._layers.some(l => l.data[prop] != null);
-	}
-
-	getBaseSaveableState () {
-		return {
-			state: MiscUtil.copyFast(this.__state),
-			layers: MiscUtil.copyFast(this._layers.map(l => l.getSaveableState())),
-		};
-	}
-
-	setBaseSaveableStateFrom (toLoad) {
-		toLoad.state && Object.assign(this._state, toLoad.state);
-		if (toLoad.layers) toLoad.layers.forEach(l => this._addLayer(CompLayer.fromSavedState(this, l)));
-	}
-
-	getPod () {
-		this.__pod = this.__pod || {
-			...super.getPod(),
-
-			addHookDeep: (prop, hook) => this._addHookDeep(prop, hook),
-			removeHookDeep: (prop, hook) => this._removeHookDeep(prop, hook),
-			addHookAll: (hook) => this._addHookAll("state", hook),
-			getBase: (prop) => this._getBase(prop),
-			get: (prop) => this._get(prop),
-			addLayer: (name, data) => {
-				// FIXME
-				const l = new CompLayer(this, name, data);
-				this._addLayer(l);
-				return l;
-			},
-			removeLayer: (layer) => this._removeLayer(layer),
-			layers: this._layers, // FIXME avoid passing this directly to the child
-		};
-		return this.__pod;
-	}
-}
-
-/**
- * A "layer" of state which is applied over the base state.
- *  This allows e.g. a temporary stat reduction to modify a statblock, without actually
- *  modifying the underlying component.
- */
-class CompLayer extends ProxyBase {
-	constructor (component, layerName, data) {
-		super();
-
-		this._name = layerName;
-		this.__data = data;
-
-		this.data = this._getProxy("data", this.__data);
-
-		this._addHookAll("data", prop => component.updateLayersActive(prop));
-	}
-
-	getSaveableState () {
-		return {
-			name: this._name,
-			data: MiscUtil.copyFast(this.__data),
-		};
-	}
-
-	static fromSavedState (component, savedState) { return new CompLayer(component, savedState.name, savedState.data); }
-}
-
-function MixinComponentHistory (Cls) {
-	class MixedComponentHistory extends Cls {
-		constructor () {
-			super(...arguments);
-			this._histStackUndo = [];
-			this._histStackRedo = [];
-			this._isHistDisabled = true;
-			this._histPropBlocklist = new Set();
-			this._histPropAllowlist = null;
-
-			this._histInitialState = null;
-		}
-
-		set isHistDisabled (val) { this._isHistDisabled = val; }
-		addBlocklistProps (...props) { props.forEach(p => this._histPropBlocklist.add(p)); }
-		addAllowlistProps (...props) {
-			this._histPropAllowlist = this._histPropAllowlist || new Set();
-			props.forEach(p => this._histPropAllowlist.add(p));
-		}
-
-		/**
-		 * This should be initialised after all other hooks have been added
-		 */
-		initHistory () {
-			// Track the initial state, and watch for further modifications
-			this._histInitialState = MiscUtil.copyFast(this._state);
-			this._isHistDisabled = false;
-
-			this._addHookAll("state", prop => {
-				if (this._isHistDisabled) return;
-				if (this._histPropBlocklist.has(prop)) return;
-				if (this._histPropAllowlist && !this._histPropAllowlist.has(prop)) return;
-
-				this.recordHistory();
-			});
-		}
-
-		recordHistory () {
-			const stateCopy = MiscUtil.copyFast(this._state);
-
-			// remove any un-tracked properties
-			this._histPropBlocklist.forEach(prop => delete stateCopy[prop]);
-			if (this._histPropAllowlist) Object.keys(stateCopy).filter(k => !this._histPropAllowlist.has(k)).forEach(k => delete stateCopy[k]);
-
-			this._histStackUndo.push(stateCopy);
-			this._histStackRedo = [];
-		}
-
-		_histAddExcludedProperties (stateCopy) {
-			Object.entries(this._state).forEach(([k, v]) => {
-				if (this._histPropBlocklist.has(k)) return stateCopy[k] = v;
-				if (this._histPropAllowlist && !this._histPropAllowlist.has(k)) stateCopy[k] = v;
-			});
-		}
-
-		undo () {
-			if (this._histStackUndo.length) {
-				const lastHistDisabled = this._isHistDisabled;
-				this._isHistDisabled = true;
-
-				const curState = this._histStackUndo.pop();
-				this._histStackRedo.push(curState);
-				const toApply = MiscUtil.copyFast(this._histStackUndo.last() || this._histInitialState);
-				this._histAddExcludedProperties(toApply);
-				this._setState(toApply);
-
-				this._isHistDisabled = lastHistDisabled;
-			} else {
-				const lastHistDisabled = this._isHistDisabled;
-				this._isHistDisabled = true;
-
-				const toApply = MiscUtil.copyFast(this._histInitialState);
-				this._histAddExcludedProperties(toApply);
-				this._setState(toApply);
-
-				this._isHistDisabled = lastHistDisabled;
-			}
-		}
-
-		redo () {
-			if (!this._histStackRedo.length) return;
-
-			const lastHistDisabled = this._isHistDisabled;
-			this._isHistDisabled = true;
-
-			const toApplyRaw = this._histStackRedo.pop();
-			this._histStackUndo.push(toApplyRaw);
-			const toApply = MiscUtil.copyFast(toApplyRaw);
-			this._histAddExcludedProperties(toApply);
-			this._setState(toApply);
-
-			this._isHistDisabled = lastHistDisabled;
-		}
-	}
-	return MixedComponentHistory;
-}
-
 // region Globally-linked state components
 function MixinComponentGlobalState (Cls) {
 	class MixedComponentGlobalState extends Cls {
@@ -42853,16 +42764,17 @@ class ComponentUiUtil {
 					//  breaks when the number is negative, as we need to add a "=" to the front of the input before
 					//  evaluating
 					// $ipt.change();
-					const nxt = component._state[prop] + delta;
+					const cur = isNaN(component._state[prop]) ? opts.fallbackOnNaN : component._state[prop];
+					const nxt = cur + delta;
 					if (!isValidValue(nxt)) return;
 					component._state[prop] = nxt;
 					$ipt.focus();
 				};
 
-				const $btnUp = $(`<button class="btn btn-default ui-ideco__btn-ticker bold no-select">+</button>`)
+				const $btnUp = $(`<button class="btn btn-default ui-ideco__btn-ticker p-0 bold no-select">+</button>`)
 					.click(() => handleClick(1));
 
-				const $btnDown = $(`<button class="btn btn-default ui-ideco__btn-ticker bold no-select">\u2012</button>`)
+				const $btnDown = $(`<button class="btn btn-default ui-ideco__btn-ticker p-0 bold no-select">\u2012</button>`)
 					.click(() => handleClick(-1));
 
 				return $$`<div class="ui-ideco__wrp ui-ideco__wrp--${side} ve-flex-vh-center ve-flex-col">
@@ -43001,9 +42913,9 @@ class ComponentUiUtil {
 	 * @param [opts.isTreatIndeterminateNullAsPositive]
 	 * @param [opts.stateName] State name.
 	 * @param [opts.stateProp] State prop.
-	 * @return {jQuery}
+	 * @return {(HTMLElementModified | Object)}
 	 */
-	static $getCbBool (component, prop, opts) {
+	static getCbBool (component, prop, opts) {
 		opts = opts || {};
 
 		const stateName = opts.stateName || "state";
@@ -43032,10 +42944,417 @@ class ComponentUiUtil {
 		component._addHook(stateName, prop, hook);
 		hook();
 
-		const $cb = $(cb);
-
-		return opts.asMeta ? ({$cb, unhook: () => component._removeHook(stateName, prop, hook)}) : $cb;
+		return opts.asMeta
+			? ({
+				cb,
+				unhook: () => component._removeHook(stateName, prop, hook),
+			})
+			: cb;
 	}
+
+	/**
+	 * @param component An instance of a class which extends BaseComponent.
+	 * @param prop Component to hook on.
+	 * @param [opts] Options Object.
+	 * @param [opts.$ele] Element to use.
+	 * @param [opts.asMeta] If a meta-object should be returned containing the hook and the input.
+	 * @param [opts.isDisplayNullAsIndeterminate]
+	 * @param [opts.isTreatIndeterminateNullAsPositive]
+	 * @param [opts.stateName] State name.
+	 * @param [opts.stateProp] State prop.
+	 * @return {(jQuery | Object)}
+	 */
+	static $getCbBool (component, prop, opts) {
+		opts ||= {};
+		const out = this.getCbBool(component, prop, opts);
+		if (!opts.asMeta) return $(out);
+		return {...out, $cb: $(out.cb)};
+	}
+
+	/* -------------------------------------------- */
+
+	static _SearchableDropdownComponent = class extends BaseComponent {
+		static _RenderState = class {
+			$iptDisplay;
+			$iptSearch;
+			$wrpChoices;
+			$wrp;
+
+			constructor (
+				{
+					fnFilter = null,
+				},
+			) {
+				this.optionMetas = [];
+				this._fnFilter = fnFilter;
+			}
+
+			setFnFilter (fnFilter) {
+				this._fnFilter = fnFilter;
+			}
+
+			getAvailableOptionMetas () {
+				return this.optionMetas
+					.filter((optionMeta, ix) => this._fnFilter == null || this._fnFilter(optionMeta.value, ix));
+			}
+
+			getVisibleOptionMetas () {
+				return this.getAvailableOptionMetas()
+					.filter(optionMeta => optionMeta.isVisible);
+			}
+
+			doHandleSearchTerm (
+				{
+					searchTerm,
+				},
+			) {
+				this.optionMetas
+					.forEach((optionMeta, ix) => {
+						optionMeta.isVisible = optionMeta.searchTerm.includes(searchTerm);
+						optionMeta.$ele.toggleVe(optionMeta.isVisible && (this._fnFilter == null || this._fnFilter(optionMeta.value, ix)));
+					});
+			}
+		};
+
+		static _getSearchString (str) {
+			if (str == null) return "";
+			return CleanUtil.getCleanString(str.trim().toLowerCase().replace(/\s+/g, " "));
+		}
+
+		constructor (
+			{
+				values,
+				fnFilter = null,
+				isDisabled = false,
+				isForceHideNull = false,
+
+				isMultiSelect = false,
+				isAllowNull = false,
+				fnDisplay = null,
+				displayNullAs = null,
+				fnGetAdditionalStyleClasses = null,
+			},
+		) {
+			super();
+
+			// TODO(Future) implement as required
+			//    consider making selection a single-item array and normalizing to always use "multi" logic
+			if (isMultiSelect) throw new Error("Unimplemented!");
+
+			this._isMultiSelect = isMultiSelect;
+			this._isAllowNull = isAllowNull;
+			this._fnDisplay = fnDisplay;
+			this._displayNullAs = displayNullAs;
+			this._fnGetAdditionalStyleClasses = fnGetAdditionalStyleClasses;
+
+			Object.assign(
+				this.__state,
+				{
+					values,
+					isDisabled,
+					isForceHideNull,
+
+					searchTerm: "",
+					pulse_fnFilter: false,
+				},
+			);
+
+			this._handleSearchChangeDebounced = MiscUtil.debounce(this._handleSearchChange.bind(this), 30);
+
+			this._rdState = new this.constructor._RenderState({fnFilter});
+		}
+
+		setSelected (val) {
+			if (val == null) {
+				if (!this._isAllowNull) throw new Error(`"null" is not a valid value! This is a bug!`);
+				this._state.selected = null;
+				return;
+			}
+
+			if (this._isMultiSelect && !(val instanceof Array)) throw new Error(`Expected array value! This is a bug!`);
+
+			this._state.selected = val;
+		}
+
+		addHookSelected (hk) {
+			this._addHookBase("selected", hk);
+		}
+
+		getSelected () {
+			return this._state.selected;
+		}
+
+		setFnFilter (fnFilter) {
+			this._rdState.setFnFilter(fnFilter);
+			this._state.pulse_fnFilter = !this._state.pulse_fnFilter;
+		}
+
+		setValues (nxtValues, {isResetOnMissing = false} = {}) {
+			this._state.values = nxtValues;
+
+			if (!isResetOnMissing) return;
+
+			if (this._isMultiSelect) return this._setValues_resetOnMissing_multi();
+			return this._setValues_resetOnMissing_single();
+		}
+
+		_setValues_resetOnMissing_single () {
+			if (this._state.selected == null) return;
+
+			if (this._state.values.includes(this._state.selected)) return;
+
+			if (this._isAllowNull) return this._state.selected = null;
+
+			const [availableOptionMetaFirst] = this._rdState.getAvailableOptionMetas();
+			this._state.selected = availableOptionMetaFirst?.value ?? null;
+		}
+
+		_setValues_resetOnMissing_multi () {
+			// TODO(Future) implement as required
+		}
+
+		_render_$iptDisplay () {
+			const $iptDisplay = $(`<input class="form-control input-xs form-control--minimal">`)
+				.addClass("ui-sel2__ipt-display")
+				.attr("tabindex", "-1")
+				.click(() => {
+					if (this._state.isDisabled) return;
+
+					this._rdState.$iptSearch.focus().select();
+				})
+				.disableSpellcheck();
+
+			this._addHookBase("selected", () => {
+				if (!this._isMultiSelect) {
+					$iptDisplay
+						.toggleClass("italic", this._state.selected == null)
+						.toggleClass("ve-muted", this._state.selected == null);
+
+					if (this._state.selected == null) {
+						$iptDisplay.val(this._displayNullAs || "\u2014");
+						return;
+					}
+
+					$iptDisplay.val(this._fnDisplay ? this._fnDisplay(this._state.selected) : this._state.selected);
+				}
+
+				// TODO(Future) implement as required
+			})();
+
+			this._addHookBase("isDisabled", () => {
+				$iptDisplay.prop("disabled", !!this._state.isDisabled);
+			})();
+
+			return $iptDisplay;
+		}
+
+		_handleSearchChange () {
+			this._state.searchTerm = this.constructor._getSearchString(this._rdState.$iptSearch.val());
+		}
+
+		_render_$iptSearch () {
+			const $iptSearch = $(`<input class="form-control input-xs form-control--minimal">`)
+				.addClass("absolute ui-sel2__ipt-search")
+				.keydown(evt => {
+					if (this._state.isDisabled) return;
+
+					switch (evt.key) {
+						case "Escape": evt.stopPropagation(); return $iptSearch.blur();
+
+						case "ArrowDown": {
+							evt.preventDefault();
+							const visibleMetaOptions = this._rdState.getVisibleOptionMetas();
+							if (!visibleMetaOptions.length) return;
+
+							const [visibleMetaOptionFirst] = visibleMetaOptions;
+
+							visibleMetaOptionFirst.$ele.focus();
+							break;
+						}
+
+						case "Enter":
+						case "Tab": {
+							const visibleMetaOptions = this._rdState.getVisibleOptionMetas();
+							if (!visibleMetaOptions.length) return;
+
+							const [visibleMetaOptionFirst] = visibleMetaOptions;
+
+							this._addToSelection(visibleMetaOptionFirst.value);
+
+							$iptSearch.blur();
+							break;
+						}
+
+						default: this._handleSearchChangeDebounced();
+					}
+				})
+				.change(() => this._handleSearchChangeDebounced())
+				.click(() => {
+					if (this._state.isDisabled) return;
+
+					$iptSearch.focus().select();
+				})
+				.disableSpellcheck();
+
+			this._addHookBase("isDisabled", () => {
+				$iptSearch.prop("disabled", !!this._state.isDisabled);
+			})();
+
+			return $iptSearch;
+		}
+
+		_render_$wrp ({$iptDisplay, $iptSearch}) {
+			const $wrpChoices = $(`<div class="absolute ui-sel2__wrp-options ve-overflow-y-scroll"></div>`);
+
+			const $wrp = $$`<div class="ve-flex relative ui-sel2__wrp w-100">
+				${$iptDisplay}
+				${$iptSearch}
+				${$wrpChoices}
+				<div class="ui-sel2__disp-arrow absolute no-events bold"><span class="glyphicon glyphicon-menu-down"></span></div>
+			</div>`;
+
+			return {
+				$wrpChoices,
+				$wrp,
+			};
+		}
+
+		_render_values () {
+			this._addHookBase("values", (prop, values, prevValues) => {
+				if (prop && CollectionUtil.deepEquals(values, prevValues)) return;
+
+				this._rdState.optionMetas
+					.forEach(metaOption => {
+						metaOption.$ele.remove();
+					});
+
+				const procValues = this._isAllowNull
+					? [null, ...this._state.values]
+					: [...this._state.values];
+
+				this._rdState.optionMetas = procValues
+					.map((v, i) => {
+						const display = v == null ? (this._displayNullAs || "\u2014") : this._fnDisplay ? this._fnDisplay(v) : v;
+						const additionalStyleClasses = this._fnGetAdditionalStyleClasses ? this._fnGetAdditionalStyleClasses(v) : null;
+
+						const $ele = $(`<div class="ve-flex-v-center py-1 px-1 clickable ui-sel2__disp-option ${v == null ? `italic` : ""} ${additionalStyleClasses ? additionalStyleClasses.join(" ") : ""}" tabindex="0">${display}</div>`)
+							.on("click", () => {
+								if (this._state.isDisabled) return;
+
+								this._addToSelection(v);
+
+								$(document.activeElement).blur();
+
+								// Temporarily remove pointer events from the dropdown, so it collapses thanks to its :hover CSS
+								this._rdState.$wrp.addClass("no-events");
+								setTimeout(() => this._rdState.$wrp.removeClass("no-events"), 50);
+							})
+							.on("keydown", evt => {
+								if (this._state.isDisabled) return;
+
+								switch (evt.key) {
+									case "Escape": evt.stopPropagation(); return $ele.blur();
+
+									case "ArrowDown": {
+										evt.preventDefault();
+
+										const visibleMetaOptions = this._rdState.getVisibleOptionMetas();
+										if (!visibleMetaOptions.length) return;
+
+										const ixCur = visibleMetaOptions.indexOf(out);
+										const nxt = visibleMetaOptions[ixCur + 1];
+										if (nxt) nxt.$ele.focus();
+										break;
+									}
+
+									case "ArrowUp": {
+										evt.preventDefault();
+
+										const visibleMetaOptions = this._rdState.getVisibleOptionMetas();
+										if (!visibleMetaOptions.length) return;
+
+										const ixCur = visibleMetaOptions.indexOf(out);
+										const prev = visibleMetaOptions[ixCur - 1];
+										if (prev) return prev.$ele.focus();
+										this._rdState.$iptSearch.focus();
+										break;
+									}
+
+									case "Enter": {
+										this._addToSelection(v);
+
+										$ele.blur();
+										break;
+									}
+								}
+							})
+							.appendTo(this._rdState.$wrpChoices);
+
+						const out = {
+							value: v,
+							isVisible: true,
+							searchTerm: this.constructor._getSearchString(display),
+							$ele,
+						};
+						return out;
+					});
+
+				this._state.pulse_fnFilter = !this._state.pulse_fnFilter;
+			})();
+
+			this._addHookBase("selected", () => {
+				if (!this._isMultiSelect) {
+					this._rdState.optionMetas
+						.forEach(it => it.$ele.removeClass("active"));
+
+					const optionMetaActive = this._rdState.optionMetas
+						.find(optionMeta => MiscUtil.isNearStrictlyEqual(optionMeta.value, this._state.selected));
+					if (optionMetaActive) optionMetaActive.$ele.addClass("active");
+				}
+
+				// TODO(Future) implement as required
+			})();
+
+			this._addHookBase("searchTerm", () => {
+				this._rdState.doHandleSearchTerm({searchTerm: this._state.searchTerm});
+			})();
+
+			this._addHookBase("pulse_fnFilter", () => {
+				this._rdState.doHandleSearchTerm({searchTerm: this._state.searchTerm});
+			})();
+		}
+
+		_addToSelection (val) {
+			if (!this._isMultiSelect) {
+				this._state.selected = val;
+			}
+
+			// TODO(Future) implement as required
+		}
+
+		render () {
+			this._rdState.$iptDisplay = this._render_$iptDisplay();
+			this._rdState.$iptSearch = this._render_$iptSearch();
+
+			(
+				{
+					$wrpChoices: this._rdState.$wrpChoices,
+					$wrp: this._rdState.$wrp,
+				} = this._render_$wrp({
+					$iptDisplay: this._rdState.$iptDisplay,
+					$iptSearch: this._rdState.$iptSearch,
+				})
+			);
+
+			this._render_values();
+
+			return {
+				$wrp: this._rdState.$wrp,
+				$iptDisplay: this._rdState.$iptDisplay,
+				$iptSearch: this._rdState.$iptSearch,
+			};
+		}
+	};
 
 	/**
 	 * A select2-style dropdown.
@@ -43043,9 +43362,7 @@ class ComponentUiUtil {
 	 * @param prop Component to hook on.
 	 * @param opts Options Object.
 	 * @param opts.values Values to display.
-	 * @param [opts.isHiddenPerValue]
-	 * @param [opts.$ele] Element to use.
-	 * @param [opts.html] HTML to convert to element to use.
+	 * @param [opts.fnFilter]
 	 * @param [opts.isAllowNull] If null is allowed.
 	 * @param [opts.fnDisplay] Value display function.
 	 * @param [opts.displayNullAs] If null values are allowed, display them as this string.
@@ -43054,174 +43371,81 @@ class ComponentUiUtil {
 	 * @param [opts.isDisabled] If the selector should be display-only
 	 * @return {jQuery}
 	 */
-	static $getSelSearchable (comp, prop, opts) {
-		opts = opts || {};
+	static $getSelSearchable (
+		comp,
+		prop,
+		{
+			values,
+			fnFilter,
+			isAllowNull,
+			fnDisplay,
+			displayNullAs,
+			fnGetAdditionalStyleClasses,
+			asMeta,
+			isDisabled,
+		} = {},
+	) {
+		const selComp = new this._SearchableDropdownComponent({
+			values,
+			isDisabled,
+			fnFilter,
 
-		const $iptDisplay = (opts.$ele || $(opts.html || `<input class="form-control input-xs form-control--minimal">`))
-			.addClass("ui-sel2__ipt-display")
-			.attr("tabindex", "-1")
-			.click(() => {
-				if (opts.isDisabled) return;
-				$iptSearch.focus().select();
-			})
-			.prop("disabled", !!opts.isDisabled)
-			.disableSpellcheck();
-
-		const handleSearchChange = () => {
-			const cleanTerm = this._$getSelSearchable_getSearchString($iptSearch.val());
-			metaOptions.forEach(it => {
-				it.isVisible = it.searchTerm.includes(cleanTerm);
-				it.$ele.toggleVe(it.isVisible && !it.isForceHidden);
-			});
-		};
-		const handleSearchChangeDebounced = MiscUtil.debounce(handleSearchChange, 30);
-
-		const $iptSearch = (opts.$ele || $(opts.html || `<input class="form-control input-xs form-control--minimal">`))
-			.addClass("absolute ui-sel2__ipt-search")
-			.keydown(evt => {
-				if (opts.isDisabled) return;
-
-				switch (evt.key) {
-					case "Escape": evt.stopPropagation(); return $iptSearch.blur();
-
-					case "ArrowDown": {
-						evt.preventDefault();
-						const visibleMetaOptions = metaOptions.filter(it => it.isVisible && !it.isForceHidden);
-						if (!visibleMetaOptions.length) return;
-						visibleMetaOptions[0].$ele.focus();
-						break;
-					}
-
-					case "Enter":
-					case "Tab": {
-						const visibleMetaOptions = metaOptions.filter(it => it.isVisible && !it.isForceHidden);
-						if (!visibleMetaOptions.length) return;
-						comp._state[prop] = visibleMetaOptions[0].value;
-						$iptSearch.blur();
-						break;
-					}
-
-					default: handleSearchChangeDebounced();
-				}
-			})
-			.change(() => handleSearchChangeDebounced())
-			.click(() => {
-				if (opts.isDisabled) return;
-				$iptSearch.focus().select();
-			})
-			.prop("disabled", !!opts.isDisabled)
-			.disableSpellcheck();
-
-		const $wrpChoices = $(`<div class="absolute ui-sel2__wrp-options ve-overflow-y-scroll"></div>`);
-
-		const $wrp = $$`<div class="ve-flex relative ui-sel2__wrp w-100">
-			${$iptDisplay}
-			${$iptSearch}
-			${$wrpChoices}
-			<div class="ui-sel2__disp-arrow absolute no-events bold"><span class="glyphicon glyphicon-menu-down"></span></div>
-		</div>`;
-
-		const procValues = opts.isAllowNull ? [null, ...opts.values] : opts.values;
-		const metaOptions = procValues.map((v, i) => {
-			const display = v == null ? (opts.displayNullAs || "\u2014") : opts.fnDisplay ? opts.fnDisplay(v) : v;
-			const additionalStyleClasses = opts.fnGetAdditionalStyleClasses ? opts.fnGetAdditionalStyleClasses(v) : null;
-
-			const $ele = $(`<div class="ve-flex-v-center py-1 px-1 clickable ui-sel2__disp-option ${v == null ? `italic` : ""} ${additionalStyleClasses ? additionalStyleClasses.join(" ") : ""}" tabindex="0">${display}</div>`)
-				.click(() => {
-					if (opts.isDisabled) return;
-
-					comp._state[prop] = v;
-					$(document.activeElement).blur();
-					// Temporarily remove pointer events from the dropdown, so it collapses thanks to its :hover CSS
-					$wrp.addClass("no-events");
-					setTimeout(() => $wrp.removeClass("no-events"), 50);
-				})
-				.keydown(evt => {
-					if (opts.isDisabled) return;
-
-					switch (evt.key) {
-						case "Escape": evt.stopPropagation(); return $ele.blur();
-
-						case "ArrowDown": {
-							evt.preventDefault();
-							const visibleMetaOptions = metaOptions.filter(it => it.isVisible && !it.isForceHidden);
-							if (!visibleMetaOptions.length) return;
-							const ixCur = visibleMetaOptions.indexOf(out);
-							const nxt = visibleMetaOptions[ixCur + 1];
-							if (nxt) nxt.$ele.focus();
-							break;
-						}
-
-						case "ArrowUp": {
-							evt.preventDefault();
-							const visibleMetaOptions = metaOptions.filter(it => it.isVisible && !it.isForceHidden);
-							if (!visibleMetaOptions.length) return;
-							const ixCur = visibleMetaOptions.indexOf(out);
-							const prev = visibleMetaOptions[ixCur - 1];
-							if (prev) return prev.$ele.focus();
-							$iptSearch.focus();
-							break;
-						}
-
-						case "Enter": {
-							comp._state[prop] = v;
-							$ele.blur();
-							break;
-						}
-					}
-				})
-				.appendTo($wrpChoices);
-
-			const isForceHidden = opts.isHiddenPerValue && !!(opts.isAllowNull ? opts.isHiddenPerValue[i - 1] : opts.isHiddenPerValue[i]);
-			if (isForceHidden) $ele.hideVe();
-
-			const out = {
-				value: v,
-				isVisible: true,
-				isForceHidden,
-				searchTerm: this._$getSelSearchable_getSearchString(display),
-				$ele,
-			};
-			return out;
+			isAllowNull,
+			fnDisplay,
+			displayNullAs,
+			fnGetAdditionalStyleClasses,
 		});
 
-		const fnUpdateHidden = (isHiddenPerValue, isHideNull = false) => {
-			let metaOptions_ = metaOptions;
+		const hk = () => selComp.setSelected(comp._state[prop]);
+		comp._addHookBase(prop, hk)();
 
-			if (opts.isAllowNull) {
-				metaOptions_[0].isForceHidden = isHideNull;
-				metaOptions_ = metaOptions_.slice(1);
-			}
+		selComp.addHookSelected(() => comp._state[prop] = selComp.getSelected());
 
-			metaOptions_.forEach((it, i) => it.isForceHidden = !!isHiddenPerValue[i]);
-			handleSearchChange();
-		};
+		const {$wrp, $iptDisplay, $iptSearch} = selComp.render();
 
-		const hk = () => {
-			if (comp._state[prop] == null) $iptDisplay.addClass("italic").addClass("ve-muted").val(opts.displayNullAs || "\u2014");
-			else $iptDisplay.removeClass("italic").removeClass("ve-muted").val(opts.fnDisplay ? opts.fnDisplay(comp._state[prop]) : comp._state[prop]);
-
-			metaOptions.forEach(it => it.$ele.removeClass("active"));
-			const metaActive = metaOptions.find(it => it.value == null ? comp._state[prop] == null : it.value === comp._state[prop]);
-			if (metaActive) metaActive.$ele.addClass("active");
-		};
-		comp._addHookBase(prop, hk);
-		hk();
-
-		return opts.asMeta
+		return asMeta
 			? ({
 				$wrp,
 				unhook: () => comp._removeHookBase(prop, hk),
 				$iptDisplay,
 				$iptSearch,
-				fnUpdateHidden,
+				setFnFilter: selComp.setFnFilter.bind(selComp),
+				setValues: selComp.setValues.bind(selComp),
 			})
 			: $wrp;
 	}
 
-	static _$getSelSearchable_getSearchString (str) {
-		if (str == null) return "";
-		return CleanUtil.getCleanString(str.trim().toLowerCase().replace(/\s+/g, " "));
+	/* -------------------------------------------- */
+
+	// If the new value list doesn't contain our current value, reset our current value
+	static _$getSel_setValues_handleResetOnMissing (
+		{
+			component,
+			_propProxy,
+			prop,
+			isResetOnMissing,
+			nxtValues,
+			isSetIndexes,
+			isAllowNull,
+		},
+	) {
+		if (!isResetOnMissing) return;
+
+		if (component[_propProxy][prop] == null) return;
+
+		if (isSetIndexes) {
+			if (component[_propProxy][prop] >= 0 && component[_propProxy][prop] < nxtValues.length) {
+				if (isAllowNull) return component[_propProxy][prop] = null;
+				return component[_propProxy][prop] = 0;
+			}
+
+			return;
+		}
+
+		if (!nxtValues.includes(component[_propProxy][prop])) {
+			if (isAllowNull) return component[_propProxy][prop] = null;
+			return component[_propProxy][prop] = nxtValues[0];
+		}
 	}
 
 	/**
@@ -43238,79 +43462,40 @@ class ComponentUiUtil {
 	 * @param [opts.propProxy] Proxy prop.
 	 * @param [opts.isSetIndexes] If the index of the selected item should be set as state, rather than the item itself.
 	 */
-	static $getSelEnum (component, prop, {values, $ele, html, isAllowNull, fnDisplay, displayNullAs, asMeta, propProxy = "state", isSetIndexes = false} = {}) {
-		const _propProxy = `_${propProxy}`;
-
-		let values_;
-
-		let $sel = $ele || (html ? $(html) : null);
-		// Use native API, if we can, for performance
-		if (!$sel) { const sel = document.createElement("select"); sel.className = "form-control input-xs"; $sel = $(sel); }
-
-		$sel.change(() => {
-			const ix = Number($sel.val());
-			if (~ix) return void (component[_propProxy][prop] = isSetIndexes ? ix : values_[ix]);
-
-			if (isAllowNull) return void (component[_propProxy][prop] = null);
-			component[_propProxy][prop] = isSetIndexes ? 0 : values_[0];
-		});
-
-		// If the new value list doesn't contain our current value, reset our current value
-		const setValues_handleResetOnMissing = ({isResetOnMissing, nxtValues}) => {
-			if (!isResetOnMissing) return;
-
-			if (component[_propProxy][prop] == null) return;
-
-			if (isSetIndexes) {
-				if (component[_propProxy][prop] >= 0 && component[_propProxy][prop] < nxtValues.length) {
-					if (isAllowNull) return component[_propProxy][prop] = null;
-					return component[_propProxy][prop] = 0;
-				}
-
-				return;
-			}
-
-			if (!nxtValues.includes(component[_propProxy][prop])) {
-				if (isAllowNull) return component[_propProxy][prop] = null;
-				return component[_propProxy][prop] = nxtValues[0];
-			}
-		};
-
-		const setValues = (nxtValues, {isResetOnMissing = false, isForce = false} = {}) => {
-			if (!isForce && CollectionUtil.deepEquals(values_, nxtValues)) return;
-			values_ = nxtValues;
-			$sel.empty();
-			// Use native API for performance
-			if (isAllowNull) { const opt = document.createElement("option"); opt.value = "-1"; opt.text = displayNullAs || "\u2014"; $sel.append(opt); }
-			values_.forEach((it, i) => { const opt = document.createElement("option"); opt.value = `${i}`; opt.text = fnDisplay ? fnDisplay(it) : it; $sel.append(opt); });
-
-			setValues_handleResetOnMissing({isResetOnMissing, nxtValues});
-
-			hook();
-		};
-
-		const hook = () => {
-			if (isSetIndexes) {
-				const ix = component[_propProxy][prop] == null ? -1 : component[_propProxy][prop];
-				$sel.val(`${ix}`);
-				return;
-			}
-
-			const searchFor = component[_propProxy][prop] === undefined ? null : component[_propProxy][prop];
-			// Null handling is done in change handler
-			const ix = values_.indexOf(searchFor);
-			$sel.val(`${ix}`);
-		};
-		component._addHookBase(prop, hook);
-
-		setValues(values);
-
-		if (!asMeta) return $sel;
-
+	static $getSelEnum (
+		component,
+		prop,
+		{
+			values,
+			$ele,
+			html,
+			isAllowNull,
+			fnDisplay,
+			displayNullAs,
+			asMeta,
+			propProxy = "state",
+			isSetIndexes = false,
+		} = {},
+	) {
+		const out = this.getSelEnum(
+			component,
+			prop,
+			{
+				values,
+				ele: $ele?.[0],
+				html,
+				isAllowNull,
+				fnDisplay,
+				displayNullAs,
+				asMeta,
+				propProxy,
+				isSetIndexes,
+			},
+		);
+		if (!asMeta) return $(out);
 		return {
-			$sel,
-			unhook: () => component._removeHookBase(prop, hook),
-			setValues,
+			...out,
+			$sel: $(out.sel),
 		};
 	}
 
@@ -43319,91 +43504,510 @@ class ComponentUiUtil {
 	 * @param prop Component to hook on.
 	 * @param opts Options Object.
 	 * @param opts.values Values to display.
+	 * @param [opts.ele] Element to use.
+	 * @param [opts.html] HTML to convert to element to use.
+	 * @param [opts.isAllowNull] If null is allowed.
 	 * @param [opts.fnDisplay] Value display function.
+	 * @param [opts.displayNullAs] If null values are allowed, display them as this string.
+	 * @param [opts.asMeta] If a meta-object should be returned containing the hook and the select.
+	 * @param [opts.propProxy] Proxy prop.
+	 * @param [opts.isSetIndexes] If the index of the selected item should be set as state, rather than the item itself.
 	 */
-	static $getPickEnum (component, prop, opts) {
-		return this._$getPickEnumOrString(component, prop, opts);
-	}
+	static getSelEnum (
+		component,
+		prop,
+		{
+			values,
+			ele,
+			html,
+			isAllowNull,
+			fnDisplay,
+			displayNullAs,
+			asMeta,
+			propProxy = "state",
+			isSetIndexes = false,
+		} = {},
+	) {
+		const _propProxy = `_${propProxy}`;
 
-	/**
-	 * @param component An instance of a class which extends BaseComponent.
-	 * @param prop Component to hook on.
-	 * @param [opts] Options Object.
-	 * @param [opts.values] Values to display.
-	 * @param [opts.isCaseInsensitive] If the values should be case insensitive.
-	 */
-	static $getPickString (component, prop, opts) {
-		return this._$getPickEnumOrString(component, prop, {...opts, isFreeText: true});
-	}
+		let values_;
 
-	/**
-	 * @param component An instance of a class which extends BaseComponent.
-	 * @param prop Component to hook on.
-	 * @param opts Options Object.
-	 * @param [opts.values] Values to display.
-	 * @param [opts.fnDisplay] Value display function.
-	 * @param [opts.isFreeText] If the picker should accept free text.
-	 * @param [opts.isCaseInsensitive] If the picker should accept free text.
-	 */
-	static _$getPickEnumOrString (component, prop, opts) {
-		opts = opts || {};
+		const sel = ele
+			|| (html ? e_({outer: html}) : null)
+			|| e_({tag: "select", clazz: "form-control input-xs"});
 
-		const getSubcompValues = () => {
-			const initialValuesArray = (opts.values || []).concat(opts.isFreeText ? MiscUtil.copyFast((component._state[prop] || [])) : []);
-			const initialValsCompWith = opts.isCaseInsensitive ? component._state[prop].map(it => it.toLowerCase()) : component._state[prop];
-			return initialValuesArray
-				.map(v => opts.isCaseInsensitive ? v.toLowerCase() : v)
-				.mergeMap(v => ({[v]: component._state[prop] && initialValsCompWith.includes(v)}));
+		sel
+			.onn("change", () => {
+				const ix = Number(sel.val());
+				if (~ix) return void (component[_propProxy][prop] = isSetIndexes ? ix : values_[ix]);
+
+				if (isAllowNull) return void (component[_propProxy][prop] = null);
+				component[_propProxy][prop] = isSetIndexes ? 0 : values_[0];
+			});
+
+		const setValues = (nxtValues, {isResetOnMissing = false, isForce = false} = {}) => {
+			if (!isForce && CollectionUtil.deepEquals(values_, nxtValues)) return;
+			values_ = nxtValues;
+			sel.empty();
+
+			let htmlOptions = "";
+
+			if (isAllowNull) htmlOptions += `<option value="-1">${`${displayNullAs || "\u2014"}`.qq()}</option>`;
+
+			values_
+				.forEach((it, i) => {
+					htmlOptions += `<option value="${i}">${`${fnDisplay ? fnDisplay(it) : it}`.qq()}</option>`;
+				});
+
+			sel.html(htmlOptions);
+
+			this._$getSel_setValues_handleResetOnMissing({
+				component,
+				_propProxy,
+				prop,
+				isResetOnMissing,
+				nxtValues,
+				isSetIndexes,
+				isAllowNull,
+			});
+
+			hook();
 		};
 
-		const initialVals = getSubcompValues();
+		const hook = () => {
+			if (isSetIndexes) {
+				const ix = component[_propProxy][prop] == null ? -1 : component[_propProxy][prop];
+				sel.val(`${ix}`);
+				return;
+			}
 
-		let $btnAdd;
-		if (opts.isFreeText) {
-			$btnAdd = $(`<button class="btn btn-xxs btn-default ui-pick__btn-add ml-auto">+</button>`)
-				.click(async () => {
-					const input = await InputUiUtil.pGetUserString();
-					if (input == null || input === VeCt.SYM_UI_SKIP) return;
-					const inputClean = opts.isCaseInsensitive ? input.trim().toLowerCase() : input.trim();
-					pickComp.getPod().set(inputClean, true);
-				});
-		} else {
-			const menu = ContextUtil.getMenu(opts.values.map(it => new ContextUtil.Action(
-				opts.fnDisplay ? opts.fnDisplay(it) : it,
-				() => pickComp.getPod().set(it, true),
-			)));
+			const searchFor = component[_propProxy][prop] === undefined ? null : component[_propProxy][prop];
+			// Null handling is done in change handler
+			const ix = values_.indexOf(searchFor);
+			sel.val(`${ix}`);
+		};
+		component._addHookBase(prop, hook);
 
-			$btnAdd = $(`<button class="btn btn-xxs btn-default ui-pick__btn-add">+</button>`)
-				.click(evt => ContextUtil.pOpenMenu(evt, menu));
+		setValues(values);
+
+		if (!asMeta) return sel;
+
+		return {
+			sel,
+			unhook: () => component._removeHookBase(prop, hook),
+			setValues,
+		};
+	}
+
+	/* -------------------------------------------- */
+
+	static _PickerDisplayComponent = class extends BaseComponent {
+		static _RenderState = class {
+			constructor () {
+				this._$btnsRemove = [];
+			}
+
+			reset ($parent) {
+				$parent.empty();
+				this._$btnsRemove.splice(0, this._$btnsRemove.length);
+			}
+
+			track$BtnRemove ($btnRemove) {
+				this._$btnsRemove.push($btnRemove);
+			}
+
+			setIsDisabled (val) {
+				val = !!val;
+
+				this._$btnsRemove
+					.forEach($btnRemove => $btnRemove.prop("disabled", val));
+			}
+		};
+
+		constructor (
+			{
+				compParent,
+				propParent,
+				values = null,
+				isCaseInsensitive = false,
+				$wrpPills,
+				fnGetTitlePill = null,
+				fnGet$ElePill = null,
+			} = {},
+		) {
+			super();
+
+			this._compParent = compParent;
+			this._propParent = propParent;
+			this._values = values;
+			this._isCaseInsensitive = isCaseInsensitive;
+			this._$wrpPills = $wrpPills;
+			this._fnGet$ElePill = fnGet$ElePill;
+			this._fnGetTitlePill = fnGetTitlePill;
+
+			Object.assign(this.__state, this._getSubcompValues());
+
+			this.__meta = {
+				isDisabled: false,
+			};
+			this._meta = this._getProxy("meta", this.__meta);
+
+			this._rdState = new this.constructor._RenderState();
 		}
 
-		const pickComp = BaseComponent.fromObject(initialVals);
-		pickComp.render = function ($parent) {
-			$parent.empty();
+		_getSubcompValues ({isIgnoreUnknown = false} = {}) {
+			const initialValuesArray = [
+				...(this._values || []),
+				...(
+					isIgnoreUnknown
+						? []
+						: (this._compParent._state[this._propParent] || [])
+				),
+			]
+				.map(v => this._isCaseInsensitive ? v.toLowerCase() : v);
+
+			const initialValsCompWith = this._isCaseInsensitive
+				? this._compParent._state[this._propParent].map(it => it.toLowerCase())
+				: this._compParent._state[this._propParent];
+
+			return initialValuesArray
+				.mergeMap(v => ({[v]: this._compParent._state[this._propParent] && initialValsCompWith.includes(v)}));
+		}
+
+		init () {
+			this._addHook("meta", "isDisabled", () => {
+				this._rdState.setIsDisabled(this._meta.isDisabled);
+			})();
+
+			this._addHookAll("state", () => {
+				this.render();
+			});
+			this.render();
+		}
+
+		setIsDisabled (val) {
+			val = !!val;
+			this._meta.isDisabled = val;
+		}
+
+		addValue (v) {
+			if (this._isCaseInsensitive) v = v.toLowerCase();
+			this._state[v] = true;
+		}
+
+		setValues (nxtValues, {isResetOnMissing = false} = {}) {
+			this._values = [
+				...(nxtValues || []),
+			];
+
+			if (!isResetOnMissing) return;
+
+			this._proxyAssignSimple("state", this._getSubcompValues({isIgnoreUnknown: isResetOnMissing}), true);
+		}
+
+		render () {
+			this._rdState.reset(this._$wrpPills);
 
 			Object.entries(this._state).forEach(([k, v]) => {
 				if (v === false) return;
 
 				const $btnRemove = $(`<button class="btn btn-danger ui-pick__btn-remove ve-text-center">×</button>`)
-					.click(() => this._state[k] = false);
-				const txt = `${opts.fnDisplay ? opts.fnDisplay(k) : k}`;
-				$$`<div class="ve-flex mx-1 mb-1 ui-pick__disp-pill max-w-100 min-w-0"><div class="px-1 ui-pick__disp-text ve-flex-v-center text-clip-ellipsis" title="${txt.qq()}">${txt}</div>${$btnRemove}</div>`.appendTo($parent);
+					.click(() => this._state[k] = false)
+					.prop("disabled", this._meta.isDisabled);
+
+				this._rdState.track$BtnRemove($btnRemove);
+
+				const titlePill = this._fnGetTitlePill ? this._fnGetTitlePill(k) : k;
+				const $elePill = this._fnGet$ElePill ? this._fnGet$ElePill(k) : k;
+				$$`<div class="ve-flex mx-1 mb-1 ui-pick__disp-pill max-w-100 min-w-0">
+					<div class="px-1 ui-pick__disp-text ve-flex-v-center text-clip-ellipsis no-select" title="${titlePill.qq()}">
+						${$elePill}
+					</div>
+					${$btnRemove}
+				</div>`
+					.appendTo(this._$wrpPills);
 			});
+		}
+
+		bindParent (
+			{
+				$elesDisable = null,
+			},
+		) {
+			this._addHookAll("state", () => {
+				this._compParent._state[this._propParent] = Object.keys(this._state).filter(k => this._state[k]);
+			});
+
+			this._addHook("meta", "isDisabled", () => {
+				if (!$elesDisable?.length) return;
+
+				$elesDisable.forEach($eleDisable => $eleDisable.prop("disabled", this._meta.isDisabled));
+			})();
+
+			const hkParent = () => this._proxyAssignSimple("state", this._getSubcompValues(), true);
+			this._compParent._addHookBase(this._propParent, hkParent);
+
+			return {hkParent};
+		}
+	};
+
+	static _$getPickPillDisplay (
+		{
+			comp,
+			prop,
+			values = null,
+			isCaseInsensitive = false,
+			fnGet$ElePill = null,
+			fnGetTitlePill = null,
+		},
+	) {
+		const $wrpPills = $(`<div class="ve-flex ve-flex-wrap max-w-100 min-w-0"></div>`);
+
+		const pickComp = new this._PickerDisplayComponent({
+			compParent: comp,
+			propParent: prop,
+			values,
+			isCaseInsensitive,
+			$wrpPills,
+			fnGet$ElePill,
+			fnGetTitlePill,
+		});
+		pickComp.init();
+
+		return {
+			$wrpPills,
+			setIsDisabled: pickComp.setIsDisabled.bind(pickComp),
+			addValue: pickComp.addValue.bind(pickComp),
+			bindParent: pickComp.bindParent.bind(pickComp),
+			unbindParent: ({hk}) => {
+				comp._removeHookBase(prop, hk);
+			},
+			setValues: pickComp.setValues.bind(pickComp),
+		};
+	}
+
+	/* -------------------------------------------- */
+
+	/**
+	 * @param comp An instance of a class which extends BaseComponent.
+	 * @param prop Component to hook on.
+	 * @param opts Options Object.
+	 * @param opts.values Values to display.
+	 * @param [opts.fnGet$ElePill] Value display function.
+	 * @param [opts.fnGetTitlePill] Value display function.
+	 * @param [opts.fnGetTextContextAction] Value display function.
+	 * @param [opts.asMeta] If a meta-object should be returned containing the hook and elements.
+	 */
+	static $getPickEnum (comp, prop, opts) {
+		opts = opts || {};
+
+		let values = opts.values;
+
+		const getMenu = () => {
+			return ContextUtil.getMenu(
+				values.map(val => new ContextUtil.Action(
+					opts.fnGetTextContextAction ? opts.fnGetTextContextAction(val) : val,
+					() => addValue(val),
+				)),
+			);
 		};
 
-		const $wrpPills = $(`<div class="ve-flex ve-flex-wrap max-w-100 min-w-0"></div>`);
-		const $wrp = $$`<div class="ve-flex-v-center w-100">${$btnAdd}${$wrpPills}</div>`;
-		pickComp._addHookAll("state", () => {
-			component._state[prop] = Object.keys(pickComp._state).filter(k => pickComp._state[k]);
-			pickComp.render($wrpPills);
+		let menu = getMenu();
+
+		const $btnAdd = $(`<button class="btn btn-xxs btn-default ui-pick__btn-add ve-flex-vh-center">+</button>`)
+			.click(evt => ContextUtil.pOpenMenu(evt, menu));
+
+		const {
+			$wrpPills,
+			setIsDisabled,
+			addValue,
+			bindParent,
+			unbindParent,
+			setValues: setValuesPickDisplay,
+		} = this._$getPickPillDisplay({
+			comp,
+			prop,
+			values: opts.values,
+			fnGet$ElePill: opts.fnGet$ElePill,
+			fnGetTitlePill: opts.fnGetTitlePill,
 		});
-		pickComp.render($wrpPills);
 
-		const hkParent = () => pickComp._proxyAssignSimple("state", getSubcompValues(), true);
-		component._addHookBase(prop, hkParent);
+		const $wrp = $$`<div class="ve-flex-v-center w-100 ui-pick__wrp-btns">${$btnAdd}${$wrpPills}</div>`;
 
-		return $wrp;
+		const {hkParent} = bindParent({comp, prop, $elesDisable: [$btnAdd]});
+
+		const setValues = (nxtValues, ...rest) => {
+			setValuesPickDisplay(nxtValues, ...rest);
+
+			if (menu) ContextUtil.deleteMenu(menu);
+			values = nxtValues;
+			menu = getMenu();
+		};
+
+		if (!opts.asMeta) return $wrp;
+
+		return {
+			$wrp,
+			unhook: () => unbindParent({comp, prop, hk: hkParent}),
+			fnToggleDisabled: isDisabled => {
+				setIsDisabled(isDisabled);
+			},
+			setValues,
+		};
 	}
+
+	/**
+	 * @param comp An instance of a class which extends BaseComponent.
+	 * @param prop Component to hook on.
+	 * @param [opts] Options Object.
+	 * @param [opts.fnGet$ElePill] Value display function.
+	 * @param [opts.fnGetTitlePill] Value display function.
+	 * @param [opts.fnGetTextContextAction] Value display function.
+	 * @param [opts.isCaseInsensitive] If the values should be case insensitive.
+	 * @param [opts.asMeta] If a meta-object should be returned containing the hook and elements.
+	 */
+	static $getPickString (comp, prop, opts) {
+		opts = opts || {};
+
+		const $btnAdd = $(`<button class="btn btn-xxs btn-default ui-pick__btn-add ve-flex-vh-center">+</button>`)
+			.click(async () => {
+				const input = await InputUiUtil.pGetUserString();
+				if (input == null || input === VeCt.SYM_UI_SKIP) return;
+				const inputClean = opts.isCaseInsensitive ? input.trim().toLowerCase() : input.trim();
+				addValue(inputClean);
+			});
+
+		const {
+			$wrpPills,
+			setIsDisabled,
+			addValue,
+			bindParent,
+			unbindParent,
+		} = this._$getPickPillDisplay({
+			comp,
+			prop,
+			isCaseInsensitive: opts.isCaseInsensitive,
+			fnGet$ElePill: opts.fnGet$ElePill,
+			fnGetTitlePill: opts.fnGetTitlePill,
+		});
+
+		const $wrp = $$`<div class="ve-flex-v-center w-100">${$btnAdd}${$wrpPills}</div>`;
+
+		const {hkParent} = bindParent({comp, prop, $elesDisable: [$btnAdd]});
+
+		if (!opts.asMeta) return $wrp;
+
+		return {
+			$wrp,
+			unhook: () => unbindParent({comp, prop, hk: hkParent}),
+			fnToggleDisabled: isDisabled => {
+				setIsDisabled(isDisabled);
+			},
+		};
+	}
+
+	/**
+	 * @param comp An instance of a class which extends BaseComponent.
+	 * @param prop Component to hook on.
+	 * @param [opts] Options Object.
+	 * @param [opts.fnGet$ElePill] Value display function.
+	 * @param [opts.fnGetTitlePill] Value display function.
+	 * @param [opts.fnOnDrop] Function triggered on drag-drop.
+	 * @param [opts.isCaseInsensitive] If the values should be case insensitive.
+	 * @param [opts.asMeta] If a meta-object should be returned containing the hook and elements.
+	 */
+	static $getPickString2 (
+		comp,
+		prop,
+		{
+			fnGet$ElePill = null,
+			fnGetTitlePill = null,
+			fnOnDrop = null,
+			isCaseInsensitive = false,
+			asMeta = false,
+			placeholderInput = null,
+			additionalStyleClassesInput = null,
+		},
+	) {
+		const {
+			$wrpPills,
+			setIsDisabled,
+			addValue,
+			bindParent,
+			unbindParent,
+		} = this._$getPickPillDisplay({
+			comp,
+			prop,
+			isCaseInsensitive: isCaseInsensitive,
+			fnGet$ElePill: fnGet$ElePill,
+			fnGetTitlePill: fnGetTitlePill,
+		});
+
+		const addInputValue = () => {
+			const val = $iptText.val().trim();
+
+			if (!val) return;
+
+			addValue(val);
+
+			$iptText.val("");
+		};
+
+		const $iptText = $(`<input class="form-control form-control--minimal input-xs ${additionalStyleClassesInput || ""}" type="text">`)
+			.disableSpellcheck()
+			.placeholder(placeholderInput)
+			.on("keydown", evt => {
+				switch (evt.key) {
+					case "Escape": return $iptText.blur();
+					case "Enter": return addInputValue();
+				}
+			});
+
+		const $btnAdd = $(`<button class="btn btn-xs btn-default ve-self-flex-stretch"><span class="glyphicon glyphicon-plus"></span></button>`)
+			.on("click", () => {
+				addInputValue();
+			});
+
+		const $wrp = $$`<div class="ve-flex-col w-100">
+			${$wrpPills.addClass("mb-1").addClass("ve-flex-h-right")}
+			<div class="ve-flex-v-center w-100 input-group">
+				${$iptText}
+				${$btnAdd}
+			</div>
+		</div>`;
+
+		if (fnOnDrop) {
+			$wrp.on("drop", evt => {
+				evt = evt.originalEvent;
+
+				fnOnDrop({
+					evt,
+					addValue,
+				});
+			});
+		}
+
+		const {hkParent} = bindParent({
+			comp,
+			prop,
+			$elesDisable: [
+				$iptText,
+				$btnAdd,
+			],
+		});
+
+		if (!asMeta) return $wrp;
+
+		return {
+			$wrp,
+			unhook: () => unbindParent({comp, prop, hk: hkParent}),
+			fnToggleDisabled: isDisabled => {
+				setIsDisabled(isDisabled);
+			},
+		};
+	}
+
+	/* -------------------------------------------- */
 
 	/**
 	 * @param component An instance of a class which extends BaseComponent.
