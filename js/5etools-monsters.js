@@ -322,8 +322,7 @@ function d20plusMonsters () {
 				/* OGL Sheet */
 				try {
 					const type = Parser.monTypeToFullObj(data.type).asText;
-					const source = Parser.sourceJsonToAbv(data.source);
-					const tokenUrl = `${IMG_URL}bestiary/tokens/${data.source}/${name.replace(/"/g, "")}.webp`
+					const tokenUrl = Renderer.monster.getTokenUrl(data);
 					const avatar = data.tokenUrl || Parser.nameToTokenName(tokenUrl);
 					character.size = data.size;
 					character.name = data._displayName || data.name;
@@ -338,7 +337,6 @@ function d20plusMonsters () {
 						url: avatar,
 						type: "HEAD",
 						error: function () {
-							d20plus.ut.log("AJAX failed", avatar, "source", source);
 							d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.webp`, firstFluffImage);
 						},
 						success: function () {
