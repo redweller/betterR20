@@ -50,7 +50,7 @@ function d20plusObjects () {
 							url: avatar,
 							type: "HEAD",
 							error: function () {
-								d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank.webp`);
+								d20plus.importer.getSetAvatarImage(character, `${IMG_URL}blank-friendly.webp`);
 							},
 							success: function () {
 								d20plus.importer.getSetAvatarImage(character, avatar);

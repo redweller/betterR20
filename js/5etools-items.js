@@ -33,7 +33,7 @@ function d20plusItems () {
 			if (url.trim() === `${DATA_URL}items.json`) {
 				const itemList = await Renderer.item.pBuildList();
 
-				function showItemList (itemList) {
+				const showItemList = (itemList) => {
 					const packNames = new Set([`burglar's pack`, `diplomat's pack`, `dungeoneer's pack`, `entertainer's pack`, `explorer's pack`, `priest's pack`, `scholar's pack`, `monster hunter's pack`]);
 
 					const packs = itemList.filter(it => packNames.has(it.name.toLowerCase()));
