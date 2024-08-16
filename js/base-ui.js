@@ -302,8 +302,8 @@ function baseUi () {
 	};
 
 	d20plus.ui.layerVisibilityIcon = (layer, state) => {
-		const $layerIcon = d20plus.ui.$secondaryPanel.find(`[data-layer=${layer}]`);
-		$layerIcon.toggleClass("layer-off", !state);
+		const $layerIcon = d20plus.ui.$secondaryPanel?.find(`[data-layer=${layer}]`);
+		$layerIcon?.toggleClass("layer-off", !state);
 	}
 
 	/**

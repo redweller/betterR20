@@ -3,7 +3,8 @@ CONFIG_HANDOUT = "betteR20-config";
 
 // TODO automate to use mirror if main site is unavailable
 BASE_SITE_URL = "https://5e.tools/";
-// BASE_SITE_URL = "https://5etools-mirror-1.github.io/";
+// BASE_SITE_URL = "https://5etools-mirror-2.github.io/";
+BASE_IMG_REPO_URL = "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/";
 
 SITE_JS_URL = `${BASE_SITE_URL}js/`;
 DATA_URL = `${BASE_SITE_URL}data/`;

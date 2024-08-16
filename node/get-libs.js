@@ -16,7 +16,7 @@ const _LIBS = new Set([
 	"utils.js",
 	"utils-ui.js",
 	"utils-brew.js",
-	"utils-dataloader.js"
+	"utils-dataloader.js",
 ]);
 
 async function main () {

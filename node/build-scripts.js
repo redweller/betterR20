@@ -2,10 +2,10 @@ const fs = require("fs");
 const beautify_html = require("js-beautify").html;
 const lzstring = require("./lz-string");
 
-const SCRIPT_VERSION = "1.35.8.57";
+const SCRIPT_VERSION = "1.35.10.59";
 const SCRIPT_REPO = "https://github.com/redweller/betterR20/raw/run/";
 
-const SCRIPT_BETA = "1.35.184.7";
+const SCRIPT_BETA = "1.35.184.10";
 const SCRIPT_BETA_REPO = "https://github.com/redweller/betterR20/raw/beta/";
 const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
 -- Beta features overview:
@@ -43,7 +43,13 @@ const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
 - fix BA detectiing ritual spells
 - page settings now work with beta UI
 - art repo is functional again
+-- v.184.9 changes:
+- layer settings hotfix
+-- v.184.10 changes:
+- new r20 Page Menu hotfix
 `;
+
+SCRIPT_ALPHA_DESCRIPTION = `<p>This version contains following changes<br><code>-- Beta features overview:</code><br>⦁ Mouseover hints on Conditions<br>⦁ Filter Imports by List<br>⦁ Extra Layers functionality<br>⦁ Token Images Editor<br>⦁ Better token Actions & Automation<br>⦁ Some fixes related to roll20 newUI<br>⦁ ArtRepo is restored from backup repo<br><code>-- Pre-release 185a:</code><br>⦁ Update libs and data to latest 5etools versions<br><code>-- v.185.5a:</code><br>⦁ URLs now point to the main site<br></p>`;
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -251,6 +257,7 @@ const SCRIPTS = {
 			"base-tool-dlimport",
 			"base-art",
 			"base-art-browse",
+			"base-art-cdn",
 			"overwrites/base",
 			"overwrites/canvas-handler",
 			"templates/template-roll20-token-editor",
@@ -300,6 +307,7 @@ const SCRIPTS = {
 			"base-tool-dlimport",
 			"base-art",
 			"base-art-browse",
+			"base-art-cdn",
 			"overwrites/base",
 			"overwrites/canvas-handler",
 			"templates/template-roll20-token-editor",
@@ -387,8 +395,12 @@ const CHANGED_SCRIPTS = [
 	"templates/template-page-views",
 	"templates/template-page-weather",
 	"5etools-config",
+	"5etools-classes",
 	"5etools-main",
-	"5etools-template",
+	"5etools-tool",
+	"5etools-vehicles",
+	"5etools-monsters",
+	"5etools-objects",
 	"base-art",
 	"base-art-browse",
 	"base-remote-libre",

@@ -425,6 +425,7 @@ function initHTMLbaseMisc () {
 						<button data-action="opensheet" title="Open character sheet">U</button>
 						<button data-action="openchar" title="Open character settings">x</button><br>-->
 					</span>
+				</span>
 				</div>
 				<ul class="ba-tabs nav nav-tabs">
 					<li class="nav-tabs active" data-tab="general"><a>

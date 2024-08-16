@@ -49,7 +49,7 @@ const D20plus = function (version) {
 				window.d20plus = d20plus;
 				d20plus.ut.log("Injection successful...");
 			} else {
-				if (timeWaitedForEnhancementSuiteMs > 2 * 5000) {
+				if (timeWaitedForEnhancementSuiteMs > 4 * 5000) {
 					alert("betteR20 may require the VTTES (R20ES) extension to be installed!\nPlease install it from https://ssstormy.github.io/roll20-enhancement-suite/\nClicking ok will take you there.");
 					window.open("https://ssstormy.github.io/roll20-enhancement-suite/", "_blank");
 				} else {

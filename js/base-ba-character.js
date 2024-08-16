@@ -678,7 +678,7 @@ function baseBACharacters () {
 			return new Promise(resolve => {
 				let inProgress = 0;
 				const wait = setInterval(() => {
-					const statsFetched = Object.keys(this.character?.sheet?.data.stats).length > 1;
+					const statsFetched = Object.keys(this.character?.sheet?.data.stats || {}).length > 1;
 					inProgress++;
 					if (statsFetched) resolve(true);
 					if (statsFetched || inProgress > 120) {

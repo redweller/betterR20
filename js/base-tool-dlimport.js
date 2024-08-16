@@ -170,10 +170,18 @@ function baseToolDLImport () {
 		const resizeMap = (gridSize, grid, map) => {
 			if (!this.configResize) return;
 
+			if (grid.x === undefined) {
+				const fromString = grid.split(" ");
+				grid = {
+					x: parseInt(fromString[0]),
+					y: parseInt(fromString[1]),
+				}
+			}
+
 			const mapWidth = grid.x * gridSize;
 			const mapHeight = grid.y * gridSize;
 
-			this.page.set({
+			grid.x && grid.y && this.page.set({
 				width: (grid.x * gridSize) / defaultGridSize,
 				height: (grid.y * gridSize) / defaultGridSize,
 			});

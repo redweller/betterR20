@@ -154,7 +154,7 @@ function d20plusEngine () {
 			}).addTouch();
 		}
 
-		if (!d20plus.betaFeaturesEnabled) { // Jan 2024 beta features include the new Page Toolbar
+		if (!d20plus) { // Aug 2024 the New Page Toolbar is non-optional
 			// this should be executed only for the old Page Toolbar
 			overwriteDraggables();
 			$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
@@ -173,6 +173,7 @@ function d20plusEngine () {
 				debouncedOverwrite();
 			}
 		} else {
+			// #TODO Remove the old styling
 			$(`#page-toolbar`).hide(); // hide the old Page Toolbar that pops with b20 styling
 		}
 
@@ -188,9 +189,6 @@ function d20plusEngine () {
 			}
 			if ($isTabAnchor.data("tab") === "lighting") $dynLightTab.removeClass("legacy");
 			if ($isTabAnchor.data("tab") === "legacy-lighting") $dynLightTab.addClass("legacy");
-		}).on("mousedown", ".chooseablepage .js__settings-page", (evt) => {
-			const {currentTarget: target} = evt;
-			d20plus.engine._lastSettingsPageId = $(target).closest(`[data-pageid]`).data("pageid");
 		}).on("click", ".weather input[type=range]", (evt) => {
 			const {currentTarget: target} = evt;
 			if (target.name) $(`.${target.name}`).val(target.value);
@@ -291,10 +289,8 @@ function d20plusEngine () {
 	}
 
 	d20plus.engine.enhancePageSettings = () => {
-		const page = !d20plus.betaFeaturesEnabled
-			? d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId)
-			: d20.Campaign.pages.find(p => $(p.view.el).is(":visible"));
-		d20plus.engine._lastSettingsPageId = page.id;
+		const page = d20.Campaign.pages.find(p => $(p.view.el).is(":visible")); // #TODO get rid of _lastsettingsPageId
+		d20plus.engine._lastSettingsPageId = page.id;							// it used to capture d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId)
 		d20plus.ut.log("Enhancing page", page);
 		if (page && page.get) {
 			const $dialog = $(`.pagedetails_navigation:visible`).closest(`.ui-dialog`);
@@ -444,6 +440,7 @@ function d20plusEngine () {
 	d20plus.engine._populatePageCustomOptions = (page, dialog) => {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		d20plus.engine._customPageOptions = d20plus.engine._customPageOptions || {};
 		if (!d20plus.engine._customPageOptions[page?.id]) return;
 		Object.entries(d20plus.engine._customPageOptions[page.id]).forEach(([name, val]) => {
 			dialog.find(`[name="${name}"]`).each((i, e) => {
@@ -1093,6 +1090,7 @@ function d20plusEngine () {
 	};
 
 	d20plus.engine.checkPageSettings = () => {
+		if (!d20plus.cfg.getOrDefault("canvas", "extraLayerButtons")) return;
 		if (!d20.Campaign.activePage() || !d20.Campaign.activePage().get) {
 			setTimeout(d20plus.engine.checkPageSettings, 50);
 		} else {
