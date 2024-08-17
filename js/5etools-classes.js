@@ -372,7 +372,7 @@ function d20plusClass () {
 		importClassGeneral(attrs, clss, maxLevel);
 
 		let featureSourceBlacklist = await d20plus.ui.chooseCheckboxList(
-			[Parser.SRC_TCE, Parser.SRC_UACFV],
+			[Parser.SRC_TCE],
 			"Choose Variant/Optional Feature Sources to Exclude",
 			{
 				note: "Choosing to exclude a source will prevent its features from being added to your sheet.",

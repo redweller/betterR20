@@ -10,7 +10,9 @@
 		"build": "node node/build-scripts.js"
 	},
 	"repository": "5etools/5etoolsR20",
-	"dependencies": {},
+	"dependencies": {
+		"rollup": "^4.20.0"
+	},
 	"devDependencies": {
 		"eslint": "^7.32.0"
 	}

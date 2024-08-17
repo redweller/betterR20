@@ -1,16 +1,16 @@
 {
 	"_meta": {
+		"dependencies": {
+			"monster": [
+				"MM"
+			]
+		},
 		"otherSources": {
 			"monster": {
 				"MM": "ERLW",
 				"VGM": "ERLW",
 				"TCE": "ERLW"
 			}
-		},
-		"dependencies": {
-			"monster": [
-				"MM"
-			]
 		}
 	},
 	"monster": [
@@ -305,6 +305,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The knight is an 8th-level spellcaster. Its spellcasting ability is Charisma (spell save {@dc 14}, {@hit 6} to hit with spell attacks). It has the following paladin spells prepared:"
 					],
@@ -526,12 +527,6 @@
 			],
 			"source": "ERLW",
 			"page": 289,
-			"otherSources": [
-				{
-					"source": "UAWGE",
-					"page": 81
-				}
-			],
 			"size": [
 				"M"
 			],
@@ -634,10 +629,12 @@
 			"_copy": {
 				"name": "Spy",
 				"source": "MM",
-				"_trait": {
-					"name": "Stout Halfling",
-					"source": "PHB"
-				},
+				"_templates": [
+					{
+						"name": "Stout Halfling",
+						"source": "PHB"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -946,6 +943,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The hag's spellcasting ability is Charisma (spell save {@dc 15}). She can innately cast the following spells, requiring no material components:"
 					],
@@ -1028,6 +1026,7 @@
 				"I"
 			],
 			"miscTags": [
+				"CUR",
 				"MW"
 			],
 			"conditionInflictSpell": [
@@ -1475,6 +1474,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The quori's spellcasting ability is Intelligence (spell save {@dc 16}). It can innately cast the following spells, requiring no components:"
 					],
@@ -1632,6 +1632,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The Inspired's spellcasting ability is Intelligence (spell save {@dc 13}). It can innately cast the following spells, requiring no material components:"
 					],
@@ -1706,7 +1707,7 @@
 									"type": "entries",
 									"name": "All Around Vision",
 									"entries": [
-										"The Inspired can't be {@quickref Surprise|PHB|3|0|surprised}."
+										"The Inspired can't be {@status surprised}."
 									]
 								},
 								{
@@ -1799,7 +1800,7 @@
 							"items": {
 								"name": "All Around Vision",
 								"entries": [
-									"The Inspired can't be {@quickref Surprise|PHB|3|0|surprised}."
+									"The Inspired can't be {@status surprised}."
 								]
 							}
 						}
@@ -1881,7 +1882,7 @@
 				{
 					"name": "Keen Senses",
 					"entries": [
-						"The defender has advantage on Wisdom (Perception) checks."
+						"The defender has advantage on Wisdom ({@skill Perception}) checks."
 					]
 				},
 				{
@@ -2013,6 +2014,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The quori's spellcasting ability is Charisma (spell save {@dc 21}, {@hit 13} to hit with spell attacks). It can innately cast the following spells, requiring no components:"
 					],
@@ -2034,7 +2036,7 @@
 				{
 					"name": "All-Around Vision",
 					"entries": [
-						"The quori can't be {@quickref Surprise|PHB|3|0|surprised} while it isn't {@condition incapacitated}."
+						"The quori can't be {@status surprised} while it isn't {@condition incapacitated}."
 					]
 				},
 				{
@@ -2117,7 +2119,8 @@
 				"P"
 			],
 			"miscTags": [
-				"AOE"
+				"AOE",
+				"CUR"
 			],
 			"conditionInflict": [
 				"blinded",
@@ -2446,6 +2449,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Illmarrow is a 20th-level spellcaster. Her spellcasting ability is Intelligence (spell save {@dc 23}, {@hit 15} to hit with spell attacks). Illmarrow has the following wizard spells prepared:"
 					],
@@ -3059,6 +3063,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The magewright's spellcasting ability is Intelligence (spell save {@dc 12}). To cast one of its rituals, the magewright must provide additional material components whose value in gold pieces is 20 times the spell's level. These components are consumed when the ritual is finished. The magewright knows the following spells:"
 					],
@@ -3181,6 +3186,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Mordakhesh's spellcasting ability is Charisma (spell save {@dc 18}, {@hit 10} to hit with spell attacks). Mordakhesh can innately cast the following spells, requiring no material components:"
 					],
@@ -3367,6 +3373,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The radiant idol's spellcasting ability is Charisma (spell save {@dc 17}). The radiant idol can innately cast the following spells, requiring no material components:"
 					],
@@ -3561,6 +3568,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Rak Tulkhesh's spellcasting ability is Charisma (spell save {@dc 24}). He can innately cast the following spells, requiring no material components:"
 					],
@@ -3887,6 +3895,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Sul Khatesh's spellcasting ability is Intelligence (spell save {@dc 26}, {@hit 18} to hit with spell attacks). She can innately cast the following spells, requiring no material components:"
 					],
@@ -4101,6 +4110,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The assassin's spellcasting ability is Constitution ({@hit 4} to hit with spell attacks). It can innately cast the following spells, requiring no material components:"
 					],
@@ -4250,7 +4260,8 @@
 			"conditionImmune": [
 				"charmed",
 				"exhaustion",
-				"frightened"
+				"frightened",
+				"disease"
 			],
 			"languages": [
 				"Common",
@@ -4262,6 +4273,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The Lord of Blades is a 20th-level spellcaster. His spellcasting ability is Intelligence (spell save {@dc 18}, {@hit 10} to hit with spell attacks). He has the following artificer spells prepared:"
 					],
@@ -4504,6 +4516,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The quori's spellcasting ability is Charisma (spell save {@dc 14}). It can innately cast the following spells, requiring no components:"
 					],
@@ -4665,6 +4678,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The councilor is a 13th-level spellcaster. Its spellcasting ability is Wisdom (spell save {@dc 17}, {@hit 9} to hit with spell attacks). It has the following cleric spells prepared:"
 					],
@@ -5017,7 +5031,7 @@
 				{
 					"name": "Keen Sight",
 					"entries": [
-						"The hawk has advantage on Wisdom (Perception) checks that rely on sight."
+						"The hawk has advantage on Wisdom ({@skill Perception}) checks that rely on sight."
 					]
 				}
 			],
@@ -5099,7 +5113,7 @@
 				{
 					"name": "Keen Hearing and Smell",
 					"entries": [
-						"The hound has advantage on Wisdom (Perception) checks that rely on hearing or smell."
+						"The hound has advantage on Wisdom ({@skill Perception}) checks that rely on hearing or smell."
 					]
 				}
 			],
@@ -5424,6 +5438,9 @@
 			"resist": [
 				"poison"
 			],
+			"conditionImmune": [
+				"disease"
+			],
 			"languages": [
 				"Common"
 			],
@@ -5681,6 +5698,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The rakshasa's innate spellcasting ability is Charisma (spell save {@dc 11}). The rakshasa can innately cast the following spells, requiring no material components:"
 					],

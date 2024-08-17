@@ -125,6 +125,9 @@
 			"damageInflict": [
 				"thunder"
 			],
+			"spellAttack": [
+				"M"
+			],
 			"miscTags": [
 				"AAD",
 				"SCL"
@@ -243,14 +246,17 @@
 			"damageInflict": [
 				"fire"
 			],
+			"spellAttack": [
+				"M"
+			],
 			"miscTags": [
 				"AAD",
 				"SCL",
 				"SGT"
 			],
 			"areaTags": [
-				"ST",
-				"MT"
+				"MT",
+				"ST"
 			]
 		},
 		{
@@ -301,8 +307,8 @@
 				"psychic"
 			],
 			"miscTags": [
-				"SGT",
-				"ADV"
+				"ADV",
+				"SGT"
 			],
 			"hasFluffImages": true
 		},

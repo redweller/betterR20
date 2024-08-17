@@ -97,7 +97,7 @@ function d20plusPsionics () {
 		const baseNoteContents = `
 			<h3>${data.name}</h3>
 			<p><em>${data.type === "D" ? `${data.order} ${Parser.psiTypeToFull(data.type)}` : `${Parser.psiTypeToFull(data.type)}`}</em></p>
-			${Renderer.psionic.getBodyText(data, renderer)}
+			${Renderer.psionic.getBodyHtml(data, renderer)}
 			`;
 
 		const noteContents = `${baseNoteContents}<br><del class="hidden">${gmNotes}</del>`;
@@ -187,7 +187,7 @@ function d20plusPsionics () {
 				const level = "cantrip";
 				makeSpellTrait(level, rowId, "spelllevel", "cantrip");
 				makeSpellTrait(level, rowId, "spellname", data.name);
-				makeSpellTrait(level, rowId, "spelldescription", `Psionic Talent\n\n${getCleanText(Renderer.psionic.getBodyText(data, renderer))}`);
+				makeSpellTrait(level, rowId, "spelldescription", `Psionic Talent\n\n${getCleanText(Renderer.psionic.getBodyHtml(data, renderer))}`);
 				noComponents(level, rowId, false);
 			}
 		} else if (d20plus.sheet === "shaped") {
@@ -284,7 +284,7 @@ function d20plusPsionics () {
 				});
 			} else {
 				const typeStr = `**Psionic Talent**\n`;
-				const talentContent = `${typeStr}\n${getCleanText(Renderer.psionic.getBodyText(data, renderer))}`;
+				const talentContent = `${typeStr}\n${getCleanText(Renderer.psionic.getBodyHtml(data, renderer))}`;
 				const rowId = d20plus.ut.generateRowId();
 				const level = 0;
 				makeSpellTrait(level, rowId, "spell_level", shapedSpellLevel(level));

@@ -1,9 +1,19 @@
+// SPECIFYING PATH TO 5eTOOLS:
+// Console: node get-libs.js <path_to_5etools_root>
+// OR create /node/path.js with module.exports = "<path_to_5etools_root>"
+
 const process = require("process");
 const fs = require("fs");
-const path = require("path")
+const path = require("path");
+const rollup = require("rollup").rollup;
 
-if (!process.argv[2]) {
-	console.error(`Usage: node get-data.js <path_to_5etools_root>`);
+const pathFromFile = fs.existsSync("node/path.js") && require("./path.js");
+const pathFromArg = process.argv[2];
+const SRC_PATH = pathFromFile || pathFromArg;
+
+if (!SRC_PATH) {
+	// eslint-disable-next-line no-console
+	console.error(`We need the path to 5etools data to work`);
 	process.exit(1);
 }
 
@@ -16,18 +26,33 @@ const _LIBS = new Set([
 	"utils.js",
 	"utils-ui.js",
 	"utils-brew.js",
-	"utils-dataloader.js"
+	"utils-dataloader.js",
 ]);
 
-async function main () {
-	const siteJsRoot = path.join(process.argv[2], "js");
+async function build (input, output) {
+	const bundle = await rollup({
+		input,
+		onLog: (lvl, log, handler) => log.code !== "EVAL" && handler(lvl, log),
+	});
 
-	fs.readdirSync(siteJsRoot).forEach(name => {
-		if (!_LIBS.has(name)) return;
-
-		const p = path.join(siteJsRoot, name);
-		fs.copyFileSync(p, path.join("lib", name));
+	await bundle.write({
+		file: output,
+		format: "es",
 	});
 }
 
+async function main () {
+	const siteJsRoot = path.join(SRC_PATH, "js");
+	const files = fs.readdirSync(siteJsRoot);
+
+	for (const name of files) {
+		if (!_LIBS.has(name)) continue;
+
+		const src = path.join(siteJsRoot, name);
+		const bundle = path.join("lib", name);
+		await build(src, bundle);
+	}
+}
+
+// eslint-disable-next-line no-console
 main().then(() => console.log("Done!"));
