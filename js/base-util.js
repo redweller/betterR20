@@ -92,10 +92,10 @@ function baseUtil () {
 		if (shownHardDickWarning) return;
 		shownHardDickWarning = true;
 
-		d20plus.ut.sendHackerChat(`
+		/* d20plus.ut.sendHackerChat(`
 			${scriptName} needs VTT Enhancement Suite! Please install it from <a href="${vttesUrl}">here</a>.
 			<br>
-		`, true);
+		`, true); */
 	};
 
 	d20plus.ut.chatTag = () => {
@@ -104,9 +104,10 @@ function baseUtil () {
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const classname = !legacyStyle ? "userscript-b20intro" : "userscript-hackerintro";
 		const scriptName = isStreamer ? "Script" : d20plus.scriptName;
+		const vttesVersion = window.r20es?.hooks?.welcomeScreen?.config?.previousVersion;
 		const data = [
 			d20plus.scriptName,
-			window.r20es?.hooks?.welcomeScreen?.config?.previousVersion,
+			(vttesVersion && `v${vttesVersion}`) || "not",
 			d20plus.ut.WIKI_URL,
 		];
 		const welcomeTemplate = (b20v, vttv, faq) => `
@@ -115,7 +116,7 @@ function baseUtil () {
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					betteR20 
 					<span style=" font-size: 13px ; font-weight: normal">by 5etools</span>
-					<p style="font-size: 11px;line-height: 15px;font-family: monospace;color: rgb(32, 194, 14);">VTTES v${vttv} detected<br>${b20v} loaded</p>
+					<p style="font-size: 11px;line-height: 15px;font-family: monospace;color: rgb(32, 194, 14);">VTTES ${vttv} detected<br>${b20v} loaded</p>
 				</h1>
 				<p>Need help? Visit our <a href="${faq}/index.php/BetteR20_FAQ"><strong>wiki</strong></a> or join our <a href="https://discord.gg/nGvRCDs"><strong>Discord</strong></a>.</p>
 				<span title="You'd think this would be obvious.">
@@ -138,9 +139,9 @@ function baseUtil () {
 			d20plus.ut.showHardDickMessage(scriptName);
 		}
 		d20plus.betaFeaturesEnabled && !isStreamer && d20plus.ut.sendHackerChat(`
-			betteR20 does not support the beta UI preview at this moment!
-			Using it will make some betteR20 or roll20 functionality unavailable.
-			If you experience problems with Page Settings, disable roll20 Beta Features.
+			<div class="userscript-b20intro" style="border: 1px solid; background-color: #582124;">
+			betteR20 does not support the beta UI preview at this moment! Using it MAY OR MAY NOT make some betteR20 or roll20 functionality unavailable. If you experience problems, try disabling roll20 Beta Features.
+			</div>
 		`);
 		$boringProgress
 			.before(`<span><span>&gt;</span>all systems operational</span>`)
