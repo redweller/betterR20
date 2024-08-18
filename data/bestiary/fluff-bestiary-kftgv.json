@@ -241,6 +241,20 @@
 			]
 		},
 		{
+			"name": "Nixylanna Vidorant",
+			"source": "KftGV",
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "bestiary/KftGV/065-08-005.nixylanna-vidorant.webp"
+					},
+					"credit": "Evyn Fong"
+				}
+			]
+		},
+		{
 			"name": "Prisoner 13",
 			"source": "KftGV",
 			"entries": [

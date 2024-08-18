@@ -51,6 +51,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The aartuk casts one of the following spells, requiring no spell components and using Wisdom as the spellcasting ability (spell save {@dc 12}):"
 					],
@@ -188,6 +189,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The aartuk casts one of the following spells, requiring no spell components and using Wisdom as the spellcasting ability:"
 					],
@@ -391,6 +393,9 @@
 			"otherSources": [
 				{
 					"source": "LoX"
+				},
+				{
+					"source": "VEoR"
 				}
 			],
 			"size": [
@@ -1152,6 +1157,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The elf casts one of the following spells, using Intelligence as the spellcasting ability:"
 					],
@@ -1176,7 +1182,7 @@
 				{
 					"name": "Special Equipment",
 					"entries": [
-						"The elf wears a suit of elven chain."
+						"The elf wears a suit of {@item elven chain}."
 					]
 				},
 				{
@@ -1324,6 +1330,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The elf casts the following spell, using Wisdom as the spellcasting ability:"
 					],
@@ -1591,6 +1598,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The elf casts one of the following spells, using Wisdom as the spellcasting ability (spell save {@dc 16}):"
 					],
@@ -2123,6 +2131,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The braxat casts one of the following spells, requiring no spell components and using Intelligence as the spellcasting ability (spell save {@dc 14}):"
 					],
@@ -2344,6 +2353,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The chwinga casts one of the following spells, requiring no material or verbal components and using Charisma as the spellcasting ability:"
 					],
@@ -2402,6 +2412,11 @@
 			"name": "Cosmic Horror",
 			"source": "BAM",
 			"page": 18,
+			"otherSources": [
+				{
+					"source": "VEoR"
+				}
+			],
 			"size": [
 				"G"
 			],
@@ -2605,6 +2620,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The dohwar casts the following spell, requiring no spell components and using Charisma as the spellcasting ability (spell save {@dc 11}):"
 					],
@@ -2788,6 +2804,11 @@
 			"name": "Eye Monger",
 			"source": "BAM",
 			"page": 21,
+			"otherSources": [
+				{
+					"source": "VEoR"
+				}
+			],
 			"size": [
 				"L"
 			],
@@ -2842,7 +2863,7 @@
 				{
 					"name": "False Appearance",
 					"entries": [
-						"If the eye monger is motionless and has its eye and mouth closed at the start of combat, it has advantage on its initiative roll. Moreover, if a creature hasn't observed the eye monger move or act, that creature must succeed on a {@dc 18} Intelligence (Investigation) check to discern that the eye monger is animate."
+						"If the eye monger is motionless and has its eye and mouth closed at the start of combat, it has advantage on its initiative roll. Moreover, if a creature hasn't observed the eye monger move or act, that creature must succeed on a {@dc 18} Intelligence ({@skill Investigation}) check to discern that the eye monger is animate."
 					]
 				},
 				{
@@ -2897,6 +2918,11 @@
 			"name": "Feyr",
 			"source": "BAM",
 			"page": 22,
+			"otherSources": [
+				{
+					"source": "BMT"
+				}
+			],
 			"size": [
 				"L"
 			],
@@ -3604,6 +3630,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The githyanki casts one of the following spells, requiring no spell components and using Intelligence as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -3741,6 +3768,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The githyanki casts one of the following spells, requiring no spell components and using Intelligence as the spellcasting ability (spell save {@dc 15}):"
 					],
@@ -3873,6 +3901,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The githyanki casts one of the following spells, requiring no spell components and using Wisdom as the spellcasting ability (spell save {@dc 16}):"
 					],
@@ -4839,6 +4868,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The mercane casts one of the following spells, requiring no spell components and using Intelligence as the spellcasting ability (spell save {@dc 15}):"
 					],
@@ -5105,6 +5135,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The neh-thalggu casts one of the following spells, requiring no spell components and using Intelligence as the spellcasting ability (spell save {@dc 11}). It must have consumed the requisite number of brains to cast the spell, as indicated:"
 					],
@@ -5503,6 +5534,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The neogi casts one of the following spells, using Charisma as the spellcasting ability:"
 					],
@@ -5618,6 +5650,11 @@
 			"name": "Night Scavver",
 			"source": "BAM",
 			"page": 49,
+			"otherSources": [
+				{
+					"source": "VEoR"
+				}
+			],
 			"size": [
 				"H"
 			],
@@ -6082,6 +6119,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The psurlon casts one of the following spells, requiring no spell components and using Intelligence as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -6223,6 +6261,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The psurlon casts one of the following spells, requiring no spell components and using Intelligence as the spellcasting ability (spell save {@dc 16}):"
 					],
@@ -6377,6 +6416,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The psurlon casts one of the following spells, requiring no spell components and using Intelligence as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -6506,6 +6546,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The reigar casts one of the following spells, requiring no spell components and using Charisma as the spellcasting ability (spell save {@dc 18}):"
 					],
@@ -6800,6 +6841,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The clown casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability:"
 					],
@@ -6850,7 +6892,7 @@
 				{
 					"name": "Phantasmal Form (3/Day)",
 					"entries": [
-						"The clown veils itself and everything it is wearing and carrying in an illusion that makes it look like some other creature of its size or smaller (such as a child) or an object small enough to fit in the clown's space (such as a floating balloon). Maintaining this effect requires the clown's {@status concentration} (as if {@status concentration||concentrating} on a spell), and the illusion fails to hold up to physical inspection. As an action, a creature that can see the clown's illusory form can make a {@dc 15} Wisdom (Insight) check, piercing the illusion and discerning the clown's true form on a success."
+						"The clown veils itself and everything it is wearing and carrying in an illusion that makes it look like some other creature of its size or smaller (such as a child) or an object small enough to fit in the clown's space (such as a floating balloon). Maintaining this effect requires the clown's {@status concentration} (as if {@status concentration||concentrating} on a spell), and the illusion fails to hold up to physical inspection. As an action, a creature that can see the clown's illusory form can make a {@dc 15} Wisdom ({@skill Insight}) check, piercing the illusion and discerning the clown's true form on a success."
 					]
 				}
 			],
@@ -7272,7 +7314,7 @@
 					"ac": 16,
 					"from": [
 						"natural armor",
-						"{@spell intellect fortress|tce}"
+						"intellect fortress"
 					]
 				}
 			],
@@ -7311,6 +7353,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The ssurran casts one of the following spells, requiring no spell components and using Intelligence as the spellcasting ability:"
 					],
@@ -7849,7 +7892,7 @@
 				{
 					"name": "Chameleon Carapace",
 					"entries": [
-						"The thri-kreen changes the color of its carapace to match the color and texture of its surroundings, gaining advantage on Dexterity (Stealth) checks it makes to hide in those surroundings."
+						"The thri-kreen changes the color of its carapace to match the color and texture of its surroundings, gaining advantage on Dexterity ({@skill Stealth}) checks it makes to hide in those surroundings."
 					]
 				},
 				{
@@ -7943,6 +7986,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The thri-kreen casts one of the following spells, requiring no spell components and using Wisdom as the spellcasting ability:"
 					],
@@ -7990,7 +8034,7 @@
 				{
 					"name": "Chameleon Carapace",
 					"entries": [
-						"The thri-kreen changes the color of its carapace to match the color and texture of its surroundings, gaining advantage on Dexterity (Stealth) checks it makes to hide in those surroundings."
+						"The thri-kreen changes the color of its carapace to match the color and texture of its surroundings, gaining advantage on Dexterity ({@skill Stealth}) checks it makes to hide in those surroundings."
 					]
 				}
 			],
@@ -8357,6 +8401,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The mage casts one of the following spells, using Charisma as the spellcasting ability (spell save {@dc 13}):"
 					],
@@ -8900,6 +8945,23 @@
 				"see Disembodied Voice below"
 			],
 			"cr": "16",
+			"spellcasting": [
+				{
+					"name": "Wish",
+					"type": "spellcasting",
+					"headerEntries": [
+						"The zodar casts the {@spell wish} spell, requiring no spell components and using Charisma as the spellcasting ability (spell save {@dc 17}). After casting this spell, the zodar turns to dust and is destroyed."
+					],
+					"will": [
+						{
+							"entry": "{@spell wish}",
+							"hidden": true
+						}
+					],
+					"ability": "cha",
+					"displayAs": "action"
+				}
+			],
 			"trait": [
 				{
 					"name": "Disembodied Voice",
@@ -8943,12 +9005,6 @@
 					"name": "Forced Teleport",
 					"entries": [
 						"The zodar magically warps space around one creature it can see within 60 feet of itself. The target must make a {@dc 21} Constitution saving throw. On a failed save, the target takes 22 ({@damage 4d10}) force damage, and the zodar teleports it, along with any equipment it's wearing or carrying, up to 60 feet to an unoccupied space that the zodar can see and that can support the target. On a successful save, the target takes half as much damage and isn't teleported."
-					]
-				},
-				{
-					"name": "Wish",
-					"entries": [
-						"The zodar casts the {@spell wish} spell, requiring no spell components and using Charisma as the spellcasting ability (spell save {@dc 17}). After casting this spell, the zodar turns to dust and is destroyed."
 					]
 				}
 			],

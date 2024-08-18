@@ -191,7 +191,10 @@ function d20plusBackgrounds () {
 
 		if (bg.skillProficiencies && bg.skillProficiencies.length) {
 			if (bg.skillProficiencies.length > 1) {
-				const options = bg.skillProficiencies.map(item => Renderer.background.getSkillSummary([item], true, []))
+				const options = bg.skillProficiencies.map(item => {
+					const summaryOptions = {skillProfs: [item], skillToolLanguageProfs: [], isShort: true};
+					Renderer.generic.getSkillSummary(summaryOptions);
+				})
 				const chosenIndex = await chooseSkillsGroup(options);
 				await handleSkillsItem(bg.skillProficiencies[chosenIndex]);
 			} else {

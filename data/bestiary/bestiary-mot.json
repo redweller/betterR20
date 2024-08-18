@@ -84,6 +84,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The abhorrent overlord's spellcasting ability is Charisma (spell save {@dc 15}). It can innately cast the following spells, requiring no material components:"
 					],
@@ -329,6 +330,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The alseid's spellcasting ability is Charisma (spell save {@dc 14}). It can innately cast the following spells, requiring no material components:"
 					],
@@ -351,7 +353,7 @@
 				{
 					"name": "Hide in Plain Sight",
 					"entries": [
-						"The alseid has advantage on Dexterity (Stealth) checks made to hide while it is in grassland."
+						"The alseid has advantage on Dexterity ({@skill Stealth}) checks made to hide while it is in grassland."
 					]
 				},
 				{
@@ -462,13 +464,13 @@
 				{
 					"name": "Keen Sight",
 					"entries": [
-						"The raptor has advantage on Wisdom (Perception) checks that rely on sight."
+						"The raptor has advantage on Wisdom ({@skill Perception}) checks that rely on sight."
 					]
 				},
 				{
 					"name": "Recorded Mimicry",
 					"entries": [
-						"The raptor can mimic any sound, including voices, it has heard in the last 24 hours. A creature that hears the sounds can tell they are imitations with a successful {@dc 12} Wisdom (Insight) check."
+						"The raptor can mimic any sound, including voices, it has heard in the last 24 hours. A creature that hears the sounds can tell they are imitations with a successful {@dc 12} Wisdom ({@skill Insight}) check."
 					]
 				}
 			],
@@ -955,6 +957,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The archon's spellcasting ability is Wisdom (spell save {@dc 17}, {@hit 9} to hit with spell attacks). The archon can innately cast the following spells, requiring no material components:"
 					],
@@ -982,7 +985,7 @@
 				{
 					"name": "Mount",
 					"entries": [
-						"If the archon isn't mounted, it can use a bonus action to magically teleport onto the creature serving as its mount, provided the archon and its mount are on the same plane of existence. When it teleports, the archon appears astride the mount, along with any equipment it is wearing or carrying. While mounted and not {@condition incapacitated}, the archon can't be {@quickref Surprise|PHB|3|0|surprised}, and both it and its mount have advantage on Dexterity saving throws. If the archon is reduced to 0 hit points while riding its mount, the mount is reduced to 0 hit points as well."
+						"If the archon isn't mounted, it can use a bonus action to magically teleport onto the creature serving as its mount, provided the archon and its mount are on the same plane of existence. When it teleports, the archon appears astride the mount, along with any equipment it is wearing or carrying. While mounted and not {@condition incapacitated}, the archon can't be {@status surprised}, and both it and its mount have advantage on Dexterity saving throws. If the archon is reduced to 0 hit points while riding its mount, the mount is reduced to 0 hit points as well."
 					]
 				},
 				{
@@ -1134,6 +1137,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The ashen rider's spellcasting ability is Wisdom (spell save {@dc 18}). The rider can innately cast the following spells, requiring no material components:"
 					],
@@ -1161,7 +1165,7 @@
 					"name": "Mount",
 					"entries": [
 						"If the ashen rider isn't mounted, it can use a bonus action to magically teleport onto the creature serving as its mount, provided the ashen rider and its mount are on the same plane of existence. When it teleports, the ashen rider appears astride the mount along with any equipment it is wearing or carrying.",
-						"While mounted and not {@condition incapacitated}, the ashen rider can't be {@quickref Surprise|PHB|3|0|surprised}, and both it and its mount have advantage on Dexterity saving throws. If the ashen rider is reduced to 0 hit points while riding its mount, the mount is reduced to 0 hit points as well."
+						"While mounted and not {@condition incapacitated}, the ashen rider can't be {@status surprised}, and both it and its mount have advantage on Dexterity saving throws. If the ashen rider is reduced to 0 hit points while riding its mount, the mount is reduced to 0 hit points as well."
 					]
 				}
 			],
@@ -1424,7 +1428,7 @@
 				{
 					"name": "Amphora",
 					"entries": [
-						"{@atk mw} {@hit 6} to hit, reach 5 ft., one Medium or smaller creature. {@h}8 ({@damage 1d8 + 4}) bludgeoning damage. If there is not already a creature inside the amphora, the target is {@condition restrained} inside. As an action, the {@condition restrained} creature can make a {@dc 14} Dexterity (Acrobatics) check, escaping from the amphora on a success. The effect also ends if the amphora is destroyed. The amphora has AC 8, 20 hit points, and immunity to poison and psychic damage."
+						"{@atk mw} {@hit 6} to hit, reach 5 ft., one Medium or smaller creature. {@h}8 ({@damage 1d8 + 4}) bludgeoning damage. If there is not already a creature inside the amphora, the target is {@condition restrained} inside. As an action, the {@condition restrained} creature can make a {@dc 14} Dexterity ({@skill Acrobatics}) check, escaping from the amphora on a success. The effect also ends if the amphora is destroyed. The amphora has AC 8, 20 hit points, and immunity to poison and psychic damage."
 					]
 				}
 			],
@@ -2157,7 +2161,7 @@
 				{
 					"name": "Keen Smell",
 					"entries": [
-						"The lion has advantage on Wisdom (Perception) checks that rely on smell."
+						"The lion has advantage on Wisdom ({@skill Perception}) checks that rely on smell."
 					]
 				},
 				{
@@ -2762,7 +2766,7 @@
 				{
 					"name": "Vigilant",
 					"entries": [
-						"The giant can't be {@quickref Surprise|PHB|3|0|surprised}."
+						"The giant can't be {@status surprised}."
 					]
 				}
 			],
@@ -2892,6 +2896,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Hythonia's spellcasting ability is Charisma (spell save {@dc 18}). She can innately cast {@spell animate objects} once per day requiring no material components."
 					],
@@ -2913,7 +2918,7 @@
 				{
 					"name": "Petrifying Gaze",
 					"entries": [
-						"When a creature that can see Hythonia's eyes starts its turn within 30 feet of her, Hythonia can force it to make a {@dc 18} Constitution saving throw if she isn't {@condition incapacitated} and can see the creature. If the saving throw fails by 5 or more, the creature is instantly {@condition petrified}. Otherwise, on a failed save the creature begins to turn to stone and is {@condition restrained}. The {@condition restrained} creature must repeat the saving throw at the end of its next turn, becoming {@condition petrified} on a failure or ending the effect on a success. The petrification lasts until the creature is freed by the {@spell greater restoration} spell or other magic. Unless {@quickref Surprise|PHB|3|0|surprised}, a creature can avert its eyes to avoid the saving throw at the start of its turn. If the creature does so, it can't see Hythonia until the start of its next turn, when it can avert its eyes again. If the creature looks at Hythonia in the meantime, it must immediately make the save. If Hythonia sees herself reflected on a polished surface within 30 feet of her and in an area of bright light, she is affected by her own gaze."
+						"When a creature that can see Hythonia's eyes starts its turn within 30 feet of her, Hythonia can force it to make a {@dc 18} Constitution saving throw if she isn't {@condition incapacitated} and can see the creature. If the saving throw fails by 5 or more, the creature is instantly {@condition petrified}. Otherwise, on a failed save the creature begins to turn to stone and is {@condition restrained}. The {@condition restrained} creature must repeat the saving throw at the end of its next turn, becoming {@condition petrified} on a failure or ending the effect on a success. The petrification lasts until the creature is freed by the {@spell greater restoration} spell or other magic. Unless {@status surprised}, a creature can avert its eyes to avoid the saving throw at the start of its turn. If the creature does so, it can't see Hythonia until the start of its next turn, when it can avert its eyes again. If the creature looks at Hythonia in the meantime, it must immediately make the save. If Hythonia sees herself reflected on a polished surface within 30 feet of her and in an area of bright light, she is affected by her own gaze."
 					]
 				},
 				{
@@ -3215,6 +3220,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The lampad's spellcasting ability is Charisma ({@hit 6} to hit with spell attacks). It can innately cast the following spells, requiring no material components:"
 					],
@@ -3342,6 +3348,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The leonin's spellcasting ability is Wisdom (spell save {@dc 14}). It can innately cast the following spells, requiring no material components:"
 					],
@@ -3427,11 +3434,6 @@
 			"name": "Medusa",
 			"source": "MOT",
 			"page": 206,
-			"otherSources": [
-				{
-					"source": "SatO"
-				}
-			],
 			"_copy": {
 				"name": "Medusa",
 				"source": "MM",
@@ -3517,6 +3519,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The hoplite is a 3rd-level spellcaster. Its spellcasting ability is Intelligence (spell save {@dc 13}, {@hit 5} to hit with spell attacks). It has the following wizard spells prepared:"
 					],
@@ -3682,6 +3685,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The naiad's spellcasting ability is Charisma (spell save {@dc 14}). It can innately cast the following spells, requiring no material components:"
 					],
@@ -3836,6 +3840,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The shepherd's spellcasting ability is Charisma (spell save {@dc 17}). It can innately cast the following spells, requiring no material components:"
 					],
@@ -4062,6 +4067,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The oracle's spellcasting ability is Wisdom (spell save {@dc 13}, {@hit 5} to hit with spell attacks). It can innately cast the following spells, requiring no material components:"
 					],
@@ -4192,6 +4198,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The oread's spellcasting ability is Charisma (spell save {@dc 14}, {@hit 6} to hit with spell attacks). It can innately cast the following spells, requiring no material components:"
 					],
@@ -4361,7 +4368,7 @@
 				{
 					"name": "Vigilant",
 					"entries": [
-						"The phylaskia can't be {@quickref Surprise|PHB|3|0|surprised}."
+						"The phylaskia can't be {@status surprised}."
 					]
 				}
 			],
@@ -4535,7 +4542,7 @@
 				{
 					"name": "Detect",
 					"entries": [
-						"Polukranos makes a Wisdom (Perception) check."
+						"Polukranos makes a Wisdom ({@skill Perception}) check."
 					]
 				},
 				{
@@ -4634,7 +4641,7 @@
 				{
 					"name": "Unreadable Face",
 					"entries": [
-						"The Returned is immune to any effect that would sense its emotions or read its thoughts. Wisdom (Insight) checks to ascertain the Returned's intentions or sincerity are made with disadvantage."
+						"The Returned is immune to any effect that would sense its emotions or read its thoughts. Wisdom ({@skill Insight}) checks to ascertain the Returned's intentions or sincerity are made with disadvantage."
 					]
 				}
 			],
@@ -4745,7 +4752,7 @@
 				{
 					"name": "Unreadable Face",
 					"entries": [
-						"The Returned is immune to any effect that would sense its emotions or read its thoughts. Wisdom (Insight) checks to ascertain the Returned's intentions or sincerity are made with disadvantage."
+						"The Returned is immune to any effect that would sense its emotions or read its thoughts. Wisdom ({@skill Insight}) checks to ascertain the Returned's intentions or sincerity are made with disadvantage."
 					]
 				}
 			],
@@ -4853,7 +4860,7 @@
 				{
 					"name": "Unreadable Face",
 					"entries": [
-						"The Returned is immune to any effect that would sense its emotions or read its thoughts. Wisdom (Insight) checks to ascertain the Returned's intentions or sincerity are made with disadvantage."
+						"The Returned is immune to any effect that would sense its emotions or read its thoughts. Wisdom ({@skill Insight}) checks to ascertain the Returned's intentions or sincerity are made with disadvantage."
 					]
 				}
 			],
@@ -4959,7 +4966,7 @@
 				{
 					"name": "Unreadable Face",
 					"entries": [
-						"The Returned is immune to any effect that would sense its emotions or read its thoughts. Wisdom (Insight) checks to ascertain the Returned's intentions or sincerity are made with disadvantage."
+						"The Returned is immune to any effect that would sense its emotions or read its thoughts. Wisdom ({@skill Insight}) checks to ascertain the Returned's intentions or sincerity are made with disadvantage."
 					]
 				}
 			],
@@ -5513,6 +5520,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The triton's spellcasting ability is Charisma (spell save {@dc 15}, {@hit 7} to hit with spell attacks). It can innately cast the following spells, requiring no material components:"
 					],
@@ -5659,6 +5667,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The triton's spellcasting ability is Wisdom (spell save {@dc 12}). It can innately cast the following spells, requiring no material components:"
 					],
@@ -6014,7 +6023,7 @@
 				{
 					"name": "Multiheaded",
 					"entries": [
-						"The cerberus can't be {@quickref Surprise|PHB|3|0|surprised}, and it has advantage on saving throws against being knocked {@condition unconscious}."
+						"The cerberus can't be {@status surprised}, and it has advantage on saving throws against being knocked {@condition unconscious}."
 					]
 				},
 				{
@@ -6040,7 +6049,7 @@
 				{
 					"name": "Breath Weapon {@recharge 5}",
 					"entries": [
-						"The cerberus exhales a 15-foot cone of molten rock. Each creature in the cone must make a {@dc 12} Dexterity saving throw, taking 10 ({@damage 3d6}) fire damage on a failed save, or half as much damage on a successful one. On a failed save, a creature is also {@condition restrained} by the hardening rock. A creature can make a {@dc 12} Strength (Athletics) check as an action, freeing itself or a creature within reach from the rock on a success. The rock has AC 17 and 10 hit points, and it is immune to fire, poison, and psychic damage."
+						"The cerberus exhales a 15-foot cone of molten rock. Each creature in the cone must make a {@dc 12} Dexterity saving throw, taking 10 ({@damage 3d6}) fire damage on a failed save, or half as much damage on a successful one. On a failed save, a creature is also {@condition restrained} by the hardening rock. A creature can make a {@dc 12} Strength ({@skill Athletics}) check as an action, freeing itself or a creature within reach from the rock on a success. The rock has AC 17 and 10 hit points, and it is immune to fire, poison, and psychic damage."
 					]
 				}
 			],
@@ -6125,7 +6134,7 @@
 				{
 					"name": "Keen Smell",
 					"entries": [
-						"The typhon has advantage on Wisdom (Perception) checks that rely on smell."
+						"The typhon has advantage on Wisdom ({@skill Perception}) checks that rely on smell."
 					]
 				},
 				{
@@ -6259,7 +6268,7 @@
 				{
 					"name": "Multiheaded",
 					"entries": [
-						"The cerberus can't be {@quickref Surprise|PHB|3|0|surprised}, and it has advantage on saving throws against being knocked {@condition unconscious}."
+						"The cerberus can't be {@status surprised}, and it has advantage on saving throws against being knocked {@condition unconscious}."
 					]
 				},
 				{
@@ -6285,7 +6294,7 @@
 				{
 					"name": "Breath Weapon {@recharge 5}",
 					"entries": [
-						"The cerberus exhales a 30-foot cone of molten rock. Each creature in the cone must make a {@dc 15} Dexterity saving throw, taking 21 ({@damage 6d6}) fire damage on a failed save, or half as much damage on a successful one. On a failed save, a creature is also {@condition restrained} by the hardening rock. A creature can make a {@dc 15} Strength (Athletics) check as an action, freeing itself or a creature within reach from the rock on a success. The rock has AC 17 and 20 hit points, and it is immune to fire, poison, and psychic damage."
+						"The cerberus exhales a 30-foot cone of molten rock. Each creature in the cone must make a {@dc 15} Dexterity saving throw, taking 21 ({@damage 6d6}) fire damage on a failed save, or half as much damage on a successful one. On a failed save, a creature is also {@condition restrained} by the hardening rock. A creature can make a {@dc 15} Strength ({@skill Athletics}) check as an action, freeing itself or a creature within reach from the rock on a success. The rock has AC 17 and 20 hit points, and it is immune to fire, poison, and psychic damage."
 					]
 				}
 			],

@@ -54,8 +54,8 @@
 				"SGT"
 			],
 			"areaTags": [
-				"ST",
-				"MT"
+				"MT",
+				"ST"
 			]
 		},
 		{
@@ -1080,6 +1080,7 @@
 				"unconscious"
 			],
 			"miscTags": [
+				"PRM",
 				"PS"
 			],
 			"areaTags": [
@@ -1687,6 +1688,9 @@
 			],
 			"savingThrow": [
 				"wisdom"
+			],
+			"miscTags": [
+				"PRM"
 			],
 			"areaTags": [
 				"ST"
@@ -2477,8 +2481,8 @@
 				"SGT"
 			],
 			"areaTags": [
-				"ST",
-				"MT"
+				"MT",
+				"ST"
 			]
 		},
 		{
@@ -4186,6 +4190,7 @@
 				"A flame, equivalent in brightness to a torch, springs forth from an object that you touch. The effect looks like a regular flame, but it creates no heat and doesn't use oxygen. A continual flame can be covered or hidden but not smothered or quenched."
 			],
 			"miscTags": [
+				"LGT",
 				"OBJ"
 			]
 		},
@@ -6406,8 +6411,8 @@
 				"SCL"
 			],
 			"areaTags": [
-				"ST",
-				"MT"
+				"MT",
+				"ST"
 			]
 		},
 		{
@@ -8202,6 +8207,7 @@
 				"undead"
 			],
 			"miscTags": [
+				"PIR",
 				"PRM"
 			]
 		},
@@ -8292,7 +8298,7 @@
 				}
 			],
 			"entries": [
-				"You touch a willing creature and bestow a limited ability to see into the immediate future. For the duration, the target can't be {@quickref Surprise|PHB|3|0|surprised} and has advantage on attack rolls, ability checks, and saving throws. Additionally, other creatures have disadvantage on attack rolls against the target for the duration.",
+				"You touch a willing creature and bestow a limited ability to see into the immediate future. For the duration, the target can't be {@status surprised} and has advantage on attack rolls, ability checks, and saving throws. Additionally, other creatures have disadvantage on attack rolls against the target for the duration.",
 				"This spell immediately ends if you cast it again before its duration ends."
 			],
 			"miscTags": [
@@ -8543,6 +8549,7 @@
 				"wisdom"
 			],
 			"miscTags": [
+				"PRM",
 				"SGT"
 			],
 			"areaTags": [
@@ -9171,6 +9178,7 @@
 			],
 			"miscTags": [
 				"OBS",
+				"PIR",
 				"PRM"
 			],
 			"areaTags": [
@@ -9531,6 +9539,9 @@
 			],
 			"savingThrow": [
 				"charisma"
+			],
+			"miscTags": [
+				"LGT"
 			]
 		},
 		{
@@ -11870,8 +11881,8 @@
 				"SGT"
 			],
 			"areaTags": [
-				"ST",
-				"MT"
+				"MT",
+				"ST"
 			],
 			"hasFluffImages": true
 		},
@@ -12026,6 +12037,7 @@
 				"intelligence"
 			],
 			"miscTags": [
+				"PRM",
 				"SGT"
 			]
 		},
@@ -13087,6 +13099,7 @@
 				}
 			],
 			"miscTags": [
+				"PIR",
 				"PRM"
 			],
 			"areaTags": [
@@ -13297,6 +13310,7 @@
 			],
 			"miscTags": [
 				"OBJ",
+				"PIR",
 				"PRM"
 			],
 			"areaTags": [
@@ -13889,8 +13903,8 @@
 				"TP"
 			],
 			"areaTags": [
-				"ST",
-				"MT"
+				"MT",
+				"ST"
 			]
 		},
 		{
@@ -14528,6 +14542,7 @@
 				"wisdom"
 			],
 			"miscTags": [
+				"LGT",
 				"PRM",
 				"SGT"
 			],
@@ -15850,8 +15865,8 @@
 				"R"
 			],
 			"areaTags": [
-				"ST",
-				"MT"
+				"MT",
+				"ST"
 			]
 		},
 		{
@@ -16830,8 +16845,8 @@
 				"MAC"
 			],
 			"areaTags": [
-				"MT",
-				"C"
+				"C",
+				"MT"
 			]
 		},
 		{
@@ -18160,6 +18175,7 @@
 				}
 			],
 			"miscTags": [
+				"OBJ",
 				"RO",
 				"SGT",
 				"TP"
@@ -18211,6 +18227,7 @@
 				"You can create a permanent teleportation circle by casting this spell in the same location every day for one year. You need not use the circle to teleport when you cast the spell in this way."
 			],
 			"miscTags": [
+				"PIR",
 				"PRM",
 				"TP"
 			]
@@ -19761,9 +19778,9 @@
 				"necrotic"
 			],
 			"miscTags": [
+				"ADV",
 				"HL",
-				"SGT",
-				"ADV"
+				"SGT"
 			]
 		},
 		{

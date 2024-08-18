@@ -36,7 +36,8 @@
 			"type": "A",
 			"rarity": "none",
 			"weight": 0.05,
-			"value": 5
+			"value": 5,
+			"arrow": true
 		},
 		{
 			"name": "Arrows (20)",
@@ -48,6 +49,7 @@
 			"rarity": "none",
 			"weight": 1,
 			"value": 100,
+			"arrow": true,
 			"packContents": [
 				{
 					"item": "arrow|phb",
@@ -170,7 +172,8 @@
 			"type": "A",
 			"rarity": "none",
 			"weight": 0.02,
-			"value": 2
+			"value": 2,
+			"needleBlowgun": true
 		},
 		{
 			"name": "Blowgun Needles (50)",
@@ -182,6 +185,7 @@
 			"rarity": "none",
 			"weight": 1,
 			"value": 100,
+			"needleBlowgun": true,
 			"packContents": [
 				{
 					"item": "blowgun needle|phb",
@@ -267,7 +271,8 @@
 			"type": "A",
 			"rarity": "none",
 			"weight": 0.075,
-			"value": 5
+			"value": 5,
+			"bolt": true
 		},
 		{
 			"name": "Crossbow Bolts (20)",
@@ -279,6 +284,7 @@
 			"rarity": "none",
 			"weight": 1.5,
 			"value": 100,
+			"bolt": true,
 			"packContents": [
 				{
 					"item": "crossbow bolt|phb",
@@ -344,12 +350,6 @@
 			"name": "Double-Bladed Scimitar",
 			"source": "ERLW",
 			"page": 21,
-			"otherSources": [
-				{
-					"source": "UAWGE",
-					"page": 74
-				}
-			],
 			"type": "M",
 			"rarity": "none",
 			"weight": 6,
@@ -403,7 +403,10 @@
 			"type": "AF",
 			"rarity": "none",
 			"weight": 0.3125,
-			"age": "futuristic"
+			"age": "futuristic",
+			"miscTags": [
+				"CNS"
+			]
 		},
 		{
 			"name": "Flail",
@@ -449,6 +452,7 @@
 			],
 			"dmg1": "1d10",
 			"dmgType": "S",
+			"polearm": true,
 			"weapon": true
 		},
 		{
@@ -538,6 +542,7 @@
 			],
 			"dmg1": "1d10",
 			"dmgType": "S",
+			"polearm": true,
 			"weapon": true
 		},
 		{
@@ -795,7 +800,7 @@
 				"AF",
 				"RLD"
 			],
-			"range": "30/120",
+			"range": "40/120",
 			"reload": 50,
 			"dmg1": "3d6",
 			"dmgType": "R",
@@ -1025,7 +1030,10 @@
 			"type": "AF",
 			"rarity": "none",
 			"weight": 0.1,
-			"age": "modern"
+			"age": "modern",
+			"miscTags": [
+				"CNS"
+			]
 		},
 		{
 			"name": "Modern Bullets (10)",
@@ -1040,6 +1048,9 @@
 					"item": "modern bullet",
 					"quantity": 10
 				}
+			],
+			"miscTags": [
+				"CNS"
 			]
 		},
 		{
@@ -1253,7 +1264,10 @@
 			"rarity": "none",
 			"weight": 0.2,
 			"value": 30,
-			"age": "renaissance"
+			"age": "renaissance",
+			"miscTags": [
+				"CNS"
+			]
 		},
 		{
 			"name": "Renaissance Bullets (10)",
@@ -1269,6 +1283,9 @@
 					"item": "renaissance bullet",
 					"quantity": 10
 				}
+			],
+			"miscTags": [
+				"CNS"
 			]
 		},
 		{
@@ -1504,7 +1521,8 @@
 			"type": "A",
 			"rarity": "none",
 			"weight": 0.075,
-			"value": 0.2
+			"value": 0.2,
+			"bulletSling": true
 		},
 		{
 			"name": "Sling Bullets (20)",
@@ -1516,6 +1534,7 @@
 			"rarity": "none",
 			"weight": 1.5,
 			"value": 4,
+			"bulletSling": true,
 			"packContents": [
 				{
 					"item": "sling bullet|phb",
@@ -2322,6 +2341,13 @@
 				"While this rose is held, it {{item.detail1}} as a harmless visual effect.",
 				"While holding the rose by its stem, you gain resistance to {{item.resist}} damage. If you would take more than 10 {{item.resist}} damage from a single source (after applying the resistance), the rose disintegrates, and you take no damage instead.",
 				"As an action, you can blow the petals from the rose to produce a 20-foot cone of {{item.resist}}. Each creature in the cone must make a DC 15 Constitution saving throw, taking {@damage 3d10} {{item.resist}} damage on a failed save, or half as much damage on a successful one. Using this property destroys the rose."
+			]
+		},
+		{
+			"name": "Grenade",
+			"source": "DMG",
+			"entriesTemplate": [
+				"As an action, a character can throw a grenade at a point up to 60 feet away. With a grenade launcher, the character can propel the grenade up to 120 feet away."
 			]
 		}
 	]

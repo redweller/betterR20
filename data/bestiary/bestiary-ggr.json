@@ -164,6 +164,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The archon's innate spellcasting ability is Wisdom (spell save {@dc 18}, {@hit 10} to hit with spell attacks). The archon can innately cast the following spells, requiring no material components:"
 					],
@@ -185,7 +186,7 @@
 				{
 					"name": "Mount",
 					"entries": [
-						"If the archon isn't mounted, it can use a bonus action to magically teleport onto the creature serving as its mount, provided the archon and its mount are on the same plane of existence. When it teleports, the archon appears astride the mount along with any equipment it is wearing or carrying. While mounted and not {@condition incapacitated}, the archon can't be {@quickref Surprise|PHB|3|0|surprised}, and both it and its mount gain advantage on Dexterity saving throws. If the archon is reduced to 0 hit points while riding its mount, the mount is reduced to 0 hit points as well."
+						"If the archon isn't mounted, it can use a bonus action to magically teleport onto the creature serving as its mount, provided the archon and its mount are on the same plane of existence. When it teleports, the archon appears astride the mount along with any equipment it is wearing or carrying. While mounted and not {@condition incapacitated}, the archon can't be {@status surprised}, and both it and its mount gain advantage on Dexterity saving throws. If the archon is reduced to 0 hit points while riding its mount, the mount is reduced to 0 hit points as well."
 					]
 				}
 			],
@@ -758,6 +759,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The biomancer is a 16th-level Simic spellcaster. Its spellcasting ability is Intelligence (spell save {@dc 17}, {@hit 9} to hit with spell attacks). The biomancer has the following wizard spells prepared:"
 					],
@@ -1215,6 +1217,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The witch's innate spellcasting ability is Charisma (spell save {@dc 15}, {@hit 7} to hit with spell attacks). The witch can innately cast the following spells, requiring no material components:"
 					],
@@ -1309,6 +1312,7 @@
 				"I"
 			],
 			"miscTags": [
+				"CUR",
 				"MLW",
 				"MW"
 			],
@@ -1661,6 +1665,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The cackler's innate spellcasting ability is Charisma (spell save {@dc 11}, {@hit 3} to hit with spell attacks). The cackler can innately cast the following spells, requiring no material components:"
 					],
@@ -1685,7 +1690,7 @@
 				{
 					"name": "Mimicry",
 					"entries": [
-						"The cackler can mimic any sounds it has heard, including voices. A creature that hears the sounds can tell they are imitations with a successful {@dc 11} Wisdom (Insight) check."
+						"The cackler can mimic any sounds it has heard, including voices. A creature that hears the sounds can tell they are imitations with a successful {@dc 11} Wisdom ({@skill Insight}) check."
 					]
 				}
 			],
@@ -1702,6 +1707,9 @@
 						"{@atk mw} {@hit 5} to hit, reach 10 ft., one target. {@h}6 ({@damage 1d6 + 3}) slashing damage."
 					]
 				}
+			],
+			"traitTags": [
+				"Mimicry"
 			],
 			"senseTags": [
 				"SD"
@@ -2042,6 +2050,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The dryad's innate spellcasting ability is Charisma (spell save {@dc 17}). The dryad can innately cast the following spells, requiring no material components:"
 					],
@@ -2089,7 +2098,7 @@
 				{
 					"name": "Vine Staff",
 					"entries": [
-						"{@atk mw} {@hit 9} to hit, reach 5 ft., one target. {@h}12 ({@damage 2d6 + 5}) bludgeoning damage. If the target is a creature, it must succeed on a {@dc 17} Dexterity saving throw or become {@condition restrained} by twisting vines for 1 minute. A target {@condition restrained} in this way can use an action to make a {@dc 17} Strength (Athletics) or Dexterity (Acrobatics) check, ending the effect on itself on a success."
+						"{@atk mw} {@hit 9} to hit, reach 5 ft., one target. {@h}12 ({@damage 2d6 + 5}) bludgeoning damage. If the target is a creature, it must succeed on a {@dc 17} Dexterity saving throw or become {@condition restrained} by twisting vines for 1 minute. A target {@condition restrained} in this way can use an action to make a {@dc 17} Strength ({@skill Athletics}) or Dexterity ({@skill Acrobatics}) check, ending the effect on itself on a success."
 					]
 				},
 				{
@@ -2218,6 +2227,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The blastseeker's innate spellcasting ability is Intelligence (spell save {@dc 14}, {@hit 6} to hit with spell attacks). The blastseeker can innately cast the following spells, requiring no components other than its Izzet gear, which doesn't function for others:"
 					],
@@ -2338,6 +2348,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The blastseeker's innate spellcasting ability is Intelligence (spell save {@dc 14}, {@hit 6} to hit with spell attacks). The blastseeker can innately cast the following spells, requiring no components other than its Izzet gear, which doesn't function for others:"
 					],
@@ -2490,6 +2501,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The angel's innate spellcasting ability is Charisma (spell save {@dc 19}, {@hit 11} to hit with spell attacks). The angel can innately cast the following spells, requiring no material components:"
 					],
@@ -2669,6 +2681,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The lich is a 14th-level Golgari spellcaster. Its spellcasting ability is Intelligence (spell save {@dc 17}, {@hit 9} to hit with spell attacks). The lich has the following wizard spells prepared:"
 					],
@@ -2902,6 +2915,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The druid is a 12th-level Gruul spellcaster. Its spellcasting ability is Wisdom (spell save {@dc 16}, {@hit 8} to hit with spell attacks). It has the following druid spells prepared:"
 					],
@@ -3082,7 +3096,7 @@
 				{
 					"name": "Keen Hearing and Sight",
 					"entries": [
-						"The felidar has advantage on Wisdom (Perception) checks that rely on hearing or sight."
+						"The felidar has advantage on Wisdom ({@skill Perception}) checks that rely on hearing or sight."
 					]
 				},
 				{
@@ -3218,6 +3232,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The firefist is a 9th-level Boros spellcaster. Its spellcasting ability is Wisdom (spell save {@dc 14}, {@hit 6} to hit with spell attacks). It has the following cleric spells prepared:"
 					],
@@ -3398,6 +3413,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The angel's innate spellcasting ability is Charisma (spell save {@dc 18}, {@hit 10} to hit with spell attacks). The angel can innately cast the following spells, requiring no material components:"
 					],
@@ -3542,6 +3558,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The blastseeker's innate spellcasting ability is Intelligence (spell save {@dc 16}, {@hit 8} to hit with spell attacks). The blastseeker can innately cast the following spells, requiring no components other than its Izzet gear, which doesn't function for others:"
 					],
@@ -3793,7 +3810,7 @@
 				{
 					"name": "Sunlight Sensitivity",
 					"entries": [
-						"While in sunlight, the horror has disadvantage on attack rolls and on Wisdom (Perception) checks that rely on sight."
+						"While in sunlight, the horror has disadvantage on attack rolls and on Wisdom ({@skill Perception}) checks that rely on sight."
 					]
 				}
 			],
@@ -3885,6 +3902,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The medic is a 3rd-level Boros spellcaster. Its spellcasting ability is Wisdom (spell save {@dc 11}). The medic has the following cleric spells prepared:"
 					],
@@ -4001,6 +4019,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The blastseeker's innate spellcasting ability is Intelligence (spell save {@dc 15}, {@hit 7} to hit with spell attacks). The blastseeker can innately cast the following spells, requiring no components other than its Izzet gear, which doesn't function for others:"
 					],
@@ -4267,7 +4286,7 @@
 				{
 					"name": "Sunlight Sensitivity",
 					"entries": [
-						"While in sunlight, the gloamwing has disadvantage on attack rolls, as well as on Wisdom (Perception) checks that rely on sight."
+						"While in sunlight, the gloamwing has disadvantage on attack rolls, as well as on Wisdom ({@skill Perception}) checks that rely on sight."
 					]
 				}
 			],
@@ -4375,6 +4394,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The shaman is an 8th-level Golgari spellcaster. Its spellcasting ability is Wisdom (spell save {@dc 14}, {@hit 6} to hit with spell attacks). The shaman has the following druid spells prepared:"
 					],
@@ -4547,7 +4567,7 @@
 				{
 					"name": "Vigilant",
 					"entries": [
-						"The giant can't be {@quickref Surprise|PHB|3|0|surprised}."
+						"The giant can't be {@status surprised}."
 					]
 				}
 			],
@@ -4648,6 +4668,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The horncaller's innate spellcasting ability is Wisdom (spell save {@dc 14}). The horncaller can innately cast the following spells, requiring no material components:"
 					],
@@ -4939,7 +4960,7 @@
 				{
 					"name": "Assassinate",
 					"entries": [
-						"During its first turn, the hybrid poisoner has advantage on attack rolls against any creature that hasn't taken a turn. Any hit the hybrid scores against a {@quickref Surprise|PHB|3|0|surprised} creature is a critical hit."
+						"During its first turn, the hybrid poisoner has advantage on attack rolls against any creature that hasn't taken a turn. Any hit the hybrid scores against a {@status surprised} creature is a critical hit."
 					]
 				},
 				{
@@ -5131,7 +5152,7 @@
 				{
 					"name": "Chameleon Skin",
 					"entries": [
-						"The hybrid has advantage on Dexterity (Stealth) checks made to hide."
+						"The hybrid has advantage on Dexterity ({@skill Stealth}) checks made to hide."
 					]
 				},
 				{
@@ -5357,6 +5378,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Isperia's innate spellcasting ability is Wisdom (spell save {@dc 23}). Isperia can innately cast {@spell imprisonment} twice per day, requiring no material components."
 					],
@@ -5372,6 +5394,7 @@
 				},
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Isperia is a 15th-level Azorius spellcaster. Her spellcasting ability is Wisdom (spell save {@dc 23}, {@hit 14} to hit with spell attacks). Isperia has the following cleric spells prepared:"
 					],
@@ -5456,7 +5479,7 @@
 				{
 					"name": "Inscrutable",
 					"entries": [
-						"Isperia is immune to any effect that would sense her emotions or read her thoughts, as well as any divination spell that she refuses. Wisdom (Insight) checks made to ascertain her intentions or sincerity have disadvantage."
+						"Isperia is immune to any effect that would sense her emotions or read her thoughts, as well as any divination spell that she refuses. Wisdom ({@skill Insight}) checks made to ascertain her intentions or sincerity have disadvantage."
 					]
 				},
 				{
@@ -5635,6 +5658,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Jarad is a 14th-level Golgari spellcaster. His spellcasting ability is Intelligence (spell save {@dc 20}, {@hit 12} to hit with spell attacks). Jarad has the following wizard spells prepared:"
 					],
@@ -5901,6 +5925,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The kraul's innate spellcasting ability is Wisdom (spell save {@dc 12}, {@hit 4} to hit with spell attacks). The kraul can innately cast the following spells, requiring no material components:"
 					],
@@ -6181,6 +6206,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The lawmage is an 8th-level Azorius spellcaster. Its spellcasting ability is Intelligence (spell save {@dc 14}, {@hit 6} to hit with spell attacks). The lawmage has the following wizard spells prepared:"
 					],
@@ -6338,6 +6364,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Lazav's innate spellcasting ability is Intelligence (spell save {@dc 20}). He can innately cast the following spells, requiring no material components:"
 					],
@@ -6548,6 +6575,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The master's innate spellcasting ability is Charisma (spell save {@dc 17}). The master can innately cast the following spells, requiring no material components:"
 					],
@@ -6707,6 +6735,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The vampire's innate spellcasting ability is Intelligence (spell save {@dc 14}). It can innately cast the following spells, requiring no components:"
 					],
@@ -6738,7 +6767,7 @@
 				{
 					"name": "Sunlight Sensitivity",
 					"entries": [
-						"While in sunlight, the vampire has disadvantage on attack rolls, as well as on Wisdom (Perception) checks that rely on sight."
+						"While in sunlight, the vampire has disadvantage on attack rolls, as well as on Wisdom ({@skill Perception}) checks that rely on sight."
 					]
 				}
 			],
@@ -6865,6 +6894,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The mage's spellcasting ability is Intelligence (spell save {@dc 16}). It can innately cast the following spells, requiring no components:"
 					],
@@ -7006,7 +7036,7 @@
 				{
 					"name": "Mount",
 					"entries": [
-						"If the specter isn't mounted, it can use a bonus action to magically teleport onto its gloamwing mount, provided the specter and the gloamwing are on the same plane of existence. When it teleports, the specter appears astride the gloamwing along with any equipment it is wearing or carrying. While mounted and not {@condition incapacitated}, the specter can't be {@quickref Surprise|PHB|3|0|surprised}, and both it and its mount gain advantage on Dexterity saving throws."
+						"If the specter isn't mounted, it can use a bonus action to magically teleport onto its gloamwing mount, provided the specter and the gloamwing are on the same plane of existence. When it teleports, the specter appears astride the gloamwing along with any equipment it is wearing or carrying. While mounted and not {@condition incapacitated}, the specter can't be {@status surprised}, and both it and its mount gain advantage on Dexterity saving throws."
 					]
 				}
 			],
@@ -7137,6 +7167,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Niv-Mizzet is a 20th-level Izzet spellcaster. His spellcasting ability is Intelligence (spell save {@dc 26}, {@hit 18} to hit with spell attacks). He has the following wizard spells prepared:"
 					],
@@ -7575,6 +7606,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The ghost's innate spellcasting ability is Wisdom (spell save {@dc 16}, {@hit 8} to hit with spell attacks). It can innately cast the following spells, requiring no components:"
 					],
@@ -7872,6 +7904,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The mage's innate spellcasting ability is Intelligence (spell save {@dc 14}). It can cast the following spells, requiring no material components:"
 					],
@@ -8029,6 +8062,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Rakdos's spellcasting ability is Charisma (spell save {@dc 25}). He can innately cast {@spell hellish rebuke} (at 5th level) at will, requiring no material components."
 					],
@@ -8207,6 +8241,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The lampooner is a 4th-level Rakdos spellcaster. Its spellcasting ability is Charisma (spell save {@dc 14}, {@hit 6} to hit with spell attacks). It knows the following bard spells:"
 					],
@@ -8605,6 +8640,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The reckoner is a 5th-level Boros spellcaster. Its spellcasting ability is Intelligence (spell save {@dc 12}, {@hit 4} to hit with spell attacks). The reckoner has the following wizard spells prepared:"
 					],
@@ -8762,7 +8798,7 @@
 				{
 					"name": "Ruin Dweller",
 					"entries": [
-						"The stalker has advantage on Dexterity (Stealth) checks made to hide in ruins, and its speed is not reduced in {@quickref difficult terrain||3} composed of rubble."
+						"The stalker has advantage on Dexterity ({@skill Stealth}) checks made to hide in ruins, and its speed is not reduced in {@quickref difficult terrain||3} composed of rubble."
 					]
 				},
 				{
@@ -9038,7 +9074,7 @@
 				{
 					"name": "Sunlight Sensitivity",
 					"entries": [
-						"While in sunlight, the horror has disadvantage on attack rolls and on Wisdom (Perception) checks that rely on sight."
+						"While in sunlight, the horror has disadvantage on attack rolls and on Wisdom ({@skill Perception}) checks that rely on sight."
 					]
 				}
 			],
@@ -9200,6 +9236,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The sire's innate spellcasting ability is Charisma (spell save {@dc 18}, {@hit 10} to hit with spell attacks). The sire can innately cast the following spells, requiring no material components:"
 					],
@@ -9347,7 +9384,7 @@
 				{
 					"name": "Sunlight Sensitivity",
 					"entries": [
-						"While in sunlight, the horror has disadvantage on attack rolls and on Wisdom (Perception) checks that rely on sight."
+						"While in sunlight, the horror has disadvantage on attack rolls and on Wisdom ({@skill Perception}) checks that rely on sight."
 					]
 				}
 			],
@@ -9451,7 +9488,7 @@
 				{
 					"name": "Keen Sight",
 					"entries": [
-						"The roc has advantage on Wisdom (Perception) checks that rely on sight."
+						"The roc has advantage on Wisdom ({@skill Perception}) checks that rely on sight."
 					]
 				}
 			],
@@ -9693,6 +9730,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The sphinx is a 9th-level spellcaster. Its spellcasting ability is Intelligence (spell save {@dc 16}, {@hit 8} to hit with spell attacks). It requires no material components to cast its spells. The sphinx has the following wizard spells prepared:"
 					],
@@ -9822,7 +9860,7 @@
 				{
 					"name": "Stone Camouflage",
 					"entries": [
-						"The giant has advantage on Dexterity (Stealth) checks made to hide in rocky terrain."
+						"The giant has advantage on Dexterity ({@skill Stealth}) checks made to hide in rocky terrain."
 					]
 				}
 			],
@@ -9934,6 +9972,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting (Psionics)",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The thought spy's innate spellcasting ability is Intelligence (spell save {@dc 13}). The thought spy can innately cast the following spells, requiring no components:"
 					],
@@ -10077,6 +10116,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Trostani's innate spellcasting ability is Wisdom (spell save {@dc 24}). She can innately cast the following spells, requiring no material components:"
 					],
@@ -10292,6 +10332,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The medusa's innate spellcasting ability is Intelligence (spell save {@dc 14}). The medusa can innately cast the following spells, requiring no material components:"
 					],
@@ -10315,7 +10356,7 @@
 				{
 					"name": "Surprise Attack",
 					"entries": [
-						"During the first round of combat, the medusa has advantage on attack rolls against any creature that is {@quickref Surprise|PHB|3|0|surprised}, and it deals an extra 10 ({@dice 3d6}) damage each time it hits such a creature with an attack."
+						"During the first round of combat, the medusa has advantage on attack rolls against any creature that is {@status surprised}, and it deals an extra 10 ({@dice 3d6}) damage each time it hits such a creature with an attack."
 					]
 				}
 			],
@@ -10628,6 +10669,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Zegana is a 15th-level Simic spellcaster. Her spellcasting ability is Intelligence (spell save {@dc 18}, {@hit 10} to hit with spell attacks). She has the following wizard spells prepared:"
 					],

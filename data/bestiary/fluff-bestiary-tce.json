@@ -27,6 +27,19 @@
 			]
 		},
 		{
+			"name": "Reflection",
+			"source": "TCE",
+			"images": [
+				{
+					"type": "image",
+					"href": {
+						"type": "internal",
+						"path": "bestiary/TCE/Reflection.webp"
+					}
+				}
+			]
+		},
+		{
 			"name": "Shadow Spirit",
 			"source": "TCE",
 			"images": [
