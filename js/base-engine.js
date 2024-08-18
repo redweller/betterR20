@@ -47,53 +47,6 @@ function d20plusEngine () {
 		}
 
 		if (window.is_gm) {
-			// add lighting layer tool
-			if (!$(`#editinglayer .choosewalls`).length) {
-				$(`#editinglayer .choosegmlayer`).after(`<li class="choosewalls"><span class="pictostwo">r</span> Dynamic Lighting</li>`);
-			}
-
-			// add DL objects tool
-			if (!$(`#placelight`).length) {
-				const $placeControl = $(`<li id="placeObject">
-					<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-					<use href="#place-object-icon"></use>
-					</svg>
-					<div class="submenu"><ul>
-						<li id="placelight" tip="Place Light">
-							<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-							<use href="#torch-icon"></use>
-							</svg>
-							Place Light
-						</li>
-						<li id="placeWindow">
-							<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-							<use href="#window-icon"></use>
-							</svg>
-							Place Window
-						</li>
-						<li id="placeDoor">
-							<svg fill="currentColor" height="24" width="24" xmlns="http://www.w3.org/2000/svg">
-							<use href="#door-icon"></use>
-							</svg>
-							Place Door
-						</li>
-					</ul></div>
-				</li>`);
-				$placeControl.find(`#placelight`).on("click", () => {
-					d20plus.setMode("placelight");
-					$placeControl.addClass("activebutton");
-				});
-				$placeControl.find(`#placeWindow`).on("click", () => {
-					d20plus.setMode("placeWindow");
-					$placeControl.addClass("activebutton");
-				});
-				$placeControl.find(`#placeDoor`).on("click", () => {
-					d20plus.setMode("placeDoor");
-					$placeControl.addClass("activebutton");
-				});
-				$(`#measure`).after($placeControl);
-			}
-
 			$("#page-toolbar").on("mousedown", ".js__settings-page", function () {
 				let e = d20.Campaign.pages.get($(this).parents(".availablepage").attr("data-pageid"));
 				e.view._template = $.jqotec("#tmpl_pagesettings");
@@ -199,28 +152,6 @@ function d20plusEngine () {
 			}).addTouch();
 		}
 
-		if (!d20plus.betaFeaturesEnabled) { // Jan 2024 beta features include the new Page Toolbar
-			// this should be executed only for the old Page Toolbar
-			overwriteDraggables();
-			$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
-
-			const originalFn = d20.pagetoolbar.refreshPageListing;
-			// original function is debounced at 100ms, so debounce this at 110ms and hope for the best
-			const debouncedOverwrite = _.debounce(() => {
-				overwriteDraggables();
-				// fire an event for other parts of the script to listen for
-				const pageChangeEvt = new Event(`VePageChange`);
-				d20plus.ut.log("Firing page-change event");
-				document.dispatchEvent(pageChangeEvt);
-			}, 110);
-			d20.pagetoolbar.refreshPageListing = () => {
-				originalFn();
-				debouncedOverwrite();
-			}
-		} else {
-			$(`#page-toolbar`).hide(); // hide the old Page Toolbar that pops with b20 styling
-		}
-
 		$(`body`).on("mouseup", "li.dl", (evt) => {
 			// process Dynamic Lighting tabs
 			const $dynLightTab = $(evt.target).closest("li.dl");
@@ -233,13 +164,10 @@ function d20plusEngine () {
 			}
 			if ($isTabAnchor.data("tab") === "lighting") $dynLightTab.removeClass("legacy");
 			if ($isTabAnchor.data("tab") === "legacy-lighting") $dynLightTab.addClass("legacy");
-		}).on("mousedown", ".chooseablepage .js__settings-page", (evt) => {
-			const {currentTarget: target} = evt;
-			d20plus.engine._lastSettingsPageId = $(target).closest(`[data-pageid]`).data("pageid");
 		}).on("click", ".weather input[type=range]", (evt) => {
 			const {currentTarget: target} = evt;
 			if (target.name) $(`.${target.name}`).val(target.value);
-		}).on("click", ".chooseablepage .js__settings-page", () => {
+		}).on("mouseup", ".chooseablepage .js__settings-page, .page-container .settings-menu-trigger-container", () => {
 			setTimeout(() => d20plus.engine.enhancePageSettings(), 50);
 		}).on("click", ".pagedetails_navigation .nav-tabs--beta", () => {
 			d20plus.engine._populatePageCustomOptions();
@@ -319,8 +247,9 @@ function d20plusEngine () {
 	}
 
 	d20plus.engine.enhancePageSettings = () => {
-		if (!d20plus.engine._lastSettingsPageId) return;
-		const page = d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
+		const page = d20.Campaign.pages.find(p => $(p.view.el).is(":visible")); // #TODO get rid of _lastsettingsPageId
+		d20plus.engine._lastSettingsPageId = page.id;							// it used to capture d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId)
+		d20plus.ut.log("Enhancing page", page);
 		if (page && page.get) {
 			const $dialog = $(`.pagedetails_navigation:visible`).closest(`.ui-dialog`);
 			const $saveBtn = $dialog.find(`.btn-primary:visible`);
@@ -468,7 +397,8 @@ function d20plusEngine () {
 	d20plus.engine._populatePageCustomOptions = (page, dialog) => {
 		dialog = dialog || $(`.pagedetails_navigation:visible`).closest(".ui-dialog");
 		page = page || d20.Campaign.pages.get(d20plus.engine._lastSettingsPageId);
-		if (!d20plus.engine._customPageOptions[page.id]) return;
+		d20plus.engine._customPageOptions = d20plus.engine._customPageOptions || {};
+		if (!d20plus.engine._customPageOptions[page?.id]) return;
 		Object.entries(d20plus.engine._customPageOptions[page.id]).forEach(([name, val]) => {
 			dialog.find(`[name="${name}"]`).each((i, e) => {
 				const $e = $(e);
