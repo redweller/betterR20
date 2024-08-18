@@ -802,6 +802,30 @@
 				}
 			],
 			"hasToken": true
+		},
+		{
+			"name": "Unborn Palanquin",
+			"source": "BMT",
+			"page": 173,
+			"size": [
+				"G"
+			],
+			"objectType": "U",
+			"ac": 20,
+			"hp": 250,
+			"speed": {
+				"walk": 50,
+				"burrow": 30
+			},
+			"immune": [
+				"poison",
+				"psychic"
+			],
+			"entries": [
+				"The Unborn Palanquin is a wormlike leviathan of screeching gears made up of hundreds of tireless {@creature mezzoloth||mezzoloths}. It is a unique vehicle which serves as both {@creature Malaxxix|BMT}'s primary conveyance and the Fiend's lair."
+			],
+			"hasToken": true,
+			"hasFluffImages": true
 		}
 	]
 }

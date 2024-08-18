@@ -156,10 +156,12 @@
 			"_copy": {
 				"name": "Commoner",
 				"source": "MM",
-				"_trait": {
-					"name": "Drow",
-					"source": "PHB"
-				}
+				"_templates": [
+					{
+						"name": "Drow",
+						"source": "PHB"
+					}
+				]
 			},
 			"alignment": [
 				"C",
@@ -246,6 +248,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The druid is a 4th-level spellcaster. Its spellcasting ability is Wisdom (spell save {@dc 12}, {@hit 4} to hit with spell attacks). It has the following druid spells prepared:"
 					],
@@ -602,6 +605,7 @@
 				"P"
 			],
 			"miscTags": [
+				"CUR",
 				"MLW",
 				"MW",
 				"RCH"
@@ -675,10 +679,12 @@
 			"_copy": {
 				"name": "Commoner",
 				"source": "MM",
-				"_trait": {
-					"name": "Stout Halfling",
-					"source": "PHB"
-				}
+				"_templates": [
+					{
+						"name": "Stout Halfling",
+						"source": "PHB"
+					}
+				]
 			},
 			"languageTags": [
 				"C",
@@ -856,10 +862,12 @@
 			"_copy": {
 				"name": "Spy",
 				"source": "MM",
-				"_trait": {
-					"name": "Stout Halfling",
-					"source": "PHB"
-				},
+				"_templates": [
+					{
+						"name": "Stout Halfling",
+						"source": "PHB"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -1186,10 +1194,12 @@
 			"_copy": {
 				"name": "Druid",
 				"source": "MM",
-				"_trait": {
-					"name": "Wood Elf",
-					"source": "PHB"
-				},
+				"_templates": [
+					{
+						"name": "Wood Elf",
+						"source": "PHB"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -1301,6 +1311,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The acolyte is a 1st-level spellcaster. Its spellcasting ability is Wisdom (spell save {@dc 12}, {@hit 4} to hit with spell attacks). The acolyte has following cleric spells prepared:"
 					],
@@ -2145,10 +2156,12 @@
 			"_copy": {
 				"name": "Commoner",
 				"source": "MM",
-				"_trait": {
-					"name": "Goblin",
-					"source": "DMG"
-				}
+				"_templates": [
+					{
+						"name": "Goblin",
+						"source": "DMG"
+					}
+				]
 			},
 			"hp": {
 				"average": 3,
@@ -2188,10 +2201,12 @@
 			"_copy": {
 				"name": "Priest",
 				"source": "MM",
-				"_trait": {
-					"name": "Mountain Dwarf",
-					"source": "PHB"
-				},
+				"_templates": [
+					{
+						"name": "Mountain Dwarf",
+						"source": "PHB"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -2415,6 +2430,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Grenl is a 1st-level spellcaster. Her spellcasting ability is Wisdom (spell save {@dc 11}, {@hit 3} to hit with spell attacks). She has the following cleric spells prepared:"
 					],
@@ -2561,6 +2577,7 @@
 				"P"
 			],
 			"miscTags": [
+				"DIS",
 				"MW"
 			],
 			"savingThrowForced": [
@@ -2773,10 +2790,12 @@
 			"_copy": {
 				"name": "Commoner",
 				"source": "MM",
-				"_trait": {
-					"name": "Half-Elf",
-					"source": "PHB"
-				}
+				"_templates": [
+					{
+						"name": "Half-Elf",
+						"source": "PHB"
+					}
+				]
 			},
 			"traitTags": [
 				"Fey Ancestry"
@@ -2831,6 +2850,9 @@
 					]
 				}
 			},
+			"alignment": [
+				"N"
+			],
 			"ac": [
 				{
 					"ac": 18,
@@ -2934,6 +2956,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Kaarghaz is a 4th-level spellcaster. His spellcasting ability is Charisma (spell save {@dc 12}, {@hit 4} to hit with spell attacks). He knows the following sorcerer spells:"
 					],
@@ -2970,7 +2993,7 @@
 				{
 					"name": "Chameleon Skin",
 					"entries": [
-						"The troglodyte has advantage on Dexterity (Stealth) checks made to hide."
+						"The troglodyte has advantage on Dexterity ({@skill Stealth}) checks made to hide."
 					]
 				},
 				{
@@ -3297,10 +3320,12 @@
 			"_copy": {
 				"name": "Commoner",
 				"source": "MM",
-				"_trait": {
-					"name": "Half-Elf",
-					"source": "PHB"
-				}
+				"_templates": [
+					{
+						"name": "Half-Elf",
+						"source": "PHB"
+					}
+				]
 			},
 			"traitTags": [
 				"Fey Ancestry"
@@ -3393,10 +3418,12 @@
 			"_copy": {
 				"name": "Commoner",
 				"source": "MM",
-				"_trait": {
-					"name": "Kobold",
-					"source": "DMG"
-				}
+				"_templates": [
+					{
+						"name": "Kobold",
+						"source": "DMG"
+					}
+				]
 			},
 			"hp": {
 				"average": 3,
@@ -3783,7 +3810,7 @@
 				{
 					"name": "Ambusher",
 					"entries": [
-						"In the first round of a combat, the doppelganger has advantage on attack rolls against any creature it has {@quickref Surprise|PHB|3|0|surprised}."
+						"In the first round of a combat, the doppelganger has advantage on attack rolls against any creature it has {@status surprised}."
 					]
 				},
 				{
@@ -4070,10 +4097,12 @@
 			"_copy": {
 				"name": "Assassin",
 				"source": "MM",
-				"_trait": {
-					"name": "Mountain Dwarf",
-					"source": "PHB"
-				},
+				"_templates": [
+					{
+						"name": "Mountain Dwarf",
+						"source": "PHB"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -4105,10 +4134,12 @@
 			"_copy": {
 				"name": "Ogre",
 				"source": "MM",
-				"_trait": {
-					"name": "Skeleton",
-					"source": "DMG"
-				}
+				"_templates": [
+					{
+						"name": "Skeleton",
+						"source": "DMG"
+					}
+				]
 			},
 			"languageTags": [
 				"C",
@@ -4201,6 +4232,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The Ooze Master is a 9th-level spellcaster. Its spellcasting ability is Intelligence (spell save {@dc 15}, {@hit 7} to hit with spell attacks). It has the following wizard spells prepared:"
 					],
@@ -4343,10 +4375,12 @@
 			"_copy": {
 				"name": "Commoner",
 				"source": "MM",
-				"_trait": {
-					"name": "Orc",
-					"source": "DMG"
-				}
+				"_templates": [
+					{
+						"name": "Orc",
+						"source": "DMG"
+					}
+				]
 			},
 			"traitTags": [
 				"Aggressive"
@@ -4415,10 +4449,12 @@
 			"_copy": {
 				"name": "Aboleth",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"damageTagsLegendary": [],
 			"hasToken": true
@@ -4430,10 +4466,12 @@
 			"_copy": {
 				"name": "Basilisk",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4444,10 +4482,12 @@
 			"_copy": {
 				"name": "Behir",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				},
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				],
 				"_mod": {
 					"action": {
 						"mode": "removeArr",
@@ -4475,10 +4515,12 @@
 			"_copy": {
 				"name": "Beholder",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4489,10 +4531,12 @@
 			"_copy": {
 				"name": "Black Pudding",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4503,10 +4547,12 @@
 			"_copy": {
 				"name": "Carrion Crawler",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4517,10 +4563,12 @@
 			"_copy": {
 				"name": "Clay Golem",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4531,10 +4579,12 @@
 			"_copy": {
 				"name": "Darkmantle",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4545,10 +4595,12 @@
 			"_copy": {
 				"name": "Displacer Beast",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4559,10 +4611,12 @@
 			"_copy": {
 				"name": "Dragon Turtle",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				},
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				],
 				"_mod": {
 					"action": [
 						{
@@ -4598,10 +4652,12 @@
 			"_copy": {
 				"name": "Ettercap",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"damageTags": [
 				"I",
@@ -4617,10 +4673,12 @@
 			"_copy": {
 				"name": "Flesh Golem",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4631,10 +4689,12 @@
 			"_copy": {
 				"name": "Glabrezu",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4645,10 +4705,12 @@
 			"_copy": {
 				"name": "Gray Ooze",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"damageTags": [
 				"A",
@@ -4663,10 +4725,12 @@
 			"_copy": {
 				"name": "Helmed Horror",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4677,10 +4741,12 @@
 			"_copy": {
 				"name": "Hezrou",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4691,10 +4757,12 @@
 			"_copy": {
 				"name": "Hook Horror",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4705,10 +4773,12 @@
 			"_copy": {
 				"name": "Ochre Jelly",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4719,10 +4789,12 @@
 			"_copy": {
 				"name": "Otyugh",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				},
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				],
 				"_mod": {
 					"action": [
 						{
@@ -4756,10 +4828,12 @@
 			"_copy": {
 				"name": "Owlbear",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4770,10 +4844,12 @@
 			"_copy": {
 				"name": "Peryton",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4784,10 +4860,12 @@
 			"_copy": {
 				"name": "Remorhaz",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4798,10 +4876,12 @@
 			"_copy": {
 				"name": "Stone Golem",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4812,10 +4892,12 @@
 			"_copy": {
 				"name": "Vrock",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4826,10 +4908,12 @@
 			"_copy": {
 				"name": "Wight",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -4840,10 +4924,12 @@
 			"_copy": {
 				"name": "Wyvern",
 				"source": "MM",
-				"_trait": {
-					"name": "Reduced Threat",
-					"source": "TftYP"
-				}
+				"_templates": [
+					{
+						"name": "Reduced Threat",
+						"source": "TftYP"
+					}
+				]
 			},
 			"hasToken": true
 		},
@@ -5038,10 +5124,12 @@
 			"_copy": {
 				"name": "Knight",
 				"source": "MM",
-				"_trait": {
-					"name": "High Elf",
-					"source": "PHB"
-				}
+				"_templates": [
+					{
+						"name": "High Elf",
+						"source": "PHB"
+					}
+				]
 			},
 			"traitTags": [
 				"Fey Ancestry"
@@ -5103,6 +5191,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Sharwyn is a 1st-level spellcaster. Her spellcasting ability is Intelligence (spell save {@dc 13}, {@hit 5} to hit with spell attacks). She has the following wizard spells prepared:"
 					],
@@ -5339,6 +5428,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Siren's innate spellcasting ability is Charisma (spell save {@dc 13}). She can innately cast the following spells, requiring no material components:"
 					],
@@ -5497,6 +5587,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Snarla is a 6th-level spellcaster. Her spellcasting ability is Intelligence (spell save {@dc 14}, +6 to hit with spell attacks). She has the following wizard spells prepared:"
 					],
@@ -5605,6 +5696,7 @@
 				"CW"
 			],
 			"miscTags": [
+				"CUR",
 				"MLW",
 				"MW",
 				"RW",
@@ -5695,6 +5787,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Snurrevin is a 3rd-level spellcaster. His spellcasting ability is Intelligence (spell save {@dc 12}, {@hit 4} to hit with spell attacks). He has the following wizard spells prepared:"
 					],
@@ -5933,6 +6026,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Var is a 12th-level spellcaster. His spellcasting ability is Intelligence (spell save {@dc 17}, {@hit 9} to hit with spell attacks). He has the following wizard spells prepared:",
 						"*Conjuration spell of 1st level or higher"
@@ -6294,6 +6388,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The apprentice is a 4th-level spellcaster. Its spellcasting ability is Intelligence (spell save {@dc 12}, {@hit 4} to hit with spell attacks). It has the following wizard spells prepared:"
 					],
@@ -6547,10 +6642,12 @@
 			"_copy": {
 				"name": "Commoner",
 				"source": "MM",
-				"_trait": {
-					"name": "Drow",
-					"source": "PHB"
-				}
+				"_templates": [
+					{
+						"name": "Drow",
+						"source": "PHB"
+					}
+				]
 			},
 			"traitTags": [
 				"Fey Ancestry",
@@ -6714,6 +6811,7 @@
 			"spellcasting": [
 				{
 					"name": "Innate Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Tloques can cast {@spell hold person} ({@dc 14}) at will, requiring no components, but his target must be able to see him."
 					],
@@ -7214,6 +7312,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"Yusdrayl is a 2nd-level spellcaster. Her spellcasting ability is Charisma (spell save {@dc 13}, {@hit 5} to hit with spell attacks). She knows the following sorcerer spells:"
 					],

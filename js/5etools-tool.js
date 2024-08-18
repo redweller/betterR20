@@ -136,7 +136,7 @@ function tools5eTool () {
 				// Load from file
 				const $btnLoadFile = $(`#button-json-load-file`);
 				$btnLoadFile.off("click").click(async () => {
-					const allFiles = await DataUtil.pUserUpload();
+					const allFiles = await InputUiUtil.pGetUserUploadJson();
 					// Due to the new util functon, need to account for data being an array
 					const data = allFiles.jsons.find(Boolean);
 					const cats = IMPORT_CATEGORIES.filter(ic => ic.name in data && !ic.uniqueImport);

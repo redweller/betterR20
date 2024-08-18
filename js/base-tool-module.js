@@ -576,7 +576,7 @@ function baseToolModule () {
 			// Load from file
 			const $btnLoadFile = $win.find(`[name="load-file"]`);
 			$btnLoadFile.off("click").click(async () => {
-				const data = await DataUtil.pUserUpload();
+				const data = await InputUiUtil.pGetUserUploadJson();
 				// Due to the new util functon, need to account for data being an array
 				data.jsons.forEach(d => handleLoadedData(d));
 			});

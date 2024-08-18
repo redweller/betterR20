@@ -121,3 +121,4 @@ typings/
 
 .idea
 *.iml
+node/path.js

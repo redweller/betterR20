@@ -116,9 +116,9 @@ function tools5eConfig () {
 	});
 	addConfigOptions("import", {
 		"_name": "Import",
-		"baseSiteUrl": {
-			"name": "5e Tools Website (reload to apply changes)",
-			"default": "https://5e.tools/",
+		"baseSiteURL": {
+			"name": "5e Tools Website (reload to apply, blank for default)",
+			"default": "",
 			"_type": "String",
 			"_player": true,
 		},
@@ -292,8 +292,8 @@ function tools5eConfig () {
 	});
 
 	d20plus.cfg5e.updateBaseSiteUrl = () => {
-		if (d20plus.cfg.get("import", "baseSiteUrl")) {
-			BASE_SITE_URL = d20plus.cfg.get("import", "baseSiteUrl");
+		if (d20plus.cfg.get("import", "baseSiteURL")) {
+			BASE_SITE_URL = d20plus.cfg.get("import", "baseSiteURL");
 			if (BASE_SITE_URL.slice(-1) !== "/") BASE_SITE_URL += "/";
 			d20plus.ut.log(`Base Site Url updated: ${BASE_SITE_URL}`);
 		} else {

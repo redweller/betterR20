@@ -5,14 +5,14 @@
 				"MM"
 			]
 		},
+		"internalCopies": [
+			"monster"
+		],
 		"otherSources": {
 			"monster": {
 				"MM": "JttRC"
 			}
-		},
-		"internalCopies": [
-			"monster"
-		]
+		}
 	},
 	"monster": [
 		{
@@ -24,10 +24,12 @@
 			"_copy": {
 				"name": "Archmage",
 				"source": "MM",
-				"_trait": {
-					"name": "High Elf",
-					"source": "PHB"
-				},
+				"_templates": [
+					{
+						"name": "High Elf",
+						"source": "PHB"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -240,6 +242,11 @@
 			"name": "Aurumvorax",
 			"source": "JttRC",
 			"page": 105,
+			"otherSources": [
+				{
+					"source": "QftIS"
+				}
+			],
 			"size": [
 				"S"
 			],
@@ -339,6 +346,11 @@
 			"name": "Aurumvorax Den Leader",
 			"source": "JttRC",
 			"page": 105,
+			"otherSources": [
+				{
+					"source": "QftIS"
+				}
+			],
 			"size": [
 				"M"
 			],
@@ -889,10 +901,12 @@
 			"_copy": {
 				"name": "Commoner",
 				"source": "MM",
-				"_trait": {
-					"name": "Kobold",
-					"source": "DMG"
-				},
+				"_templates": [
+					{
+						"name": "Kobold",
+						"source": "DMG"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -1295,10 +1309,12 @@
 			"_copy": {
 				"name": "Noble",
 				"source": "MM",
-				"_trait": {
-					"name": "Kobold",
-					"source": "DMG"
-				},
+				"_templates": [
+					{
+						"name": "Kobold",
+						"source": "DMG"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -1359,10 +1375,12 @@
 			"_copy": {
 				"name": "Scout",
 				"source": "MM",
-				"_trait": {
-					"name": "High Elf",
-					"source": "PHB"
-				},
+				"_templates": [
+					{
+						"name": "High Elf",
+						"source": "PHB"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -1392,10 +1410,12 @@
 			"_copy": {
 				"name": "Commoner",
 				"source": "MM",
-				"_trait": {
-					"name": "Rock Gnome",
-					"source": "PHB"
-				},
+				"_templates": [
+					{
+						"name": "Rock Gnome",
+						"source": "PHB"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -1477,10 +1497,12 @@
 			"_copy": {
 				"name": "Noble",
 				"source": "MM",
-				"_trait": {
-					"name": "Rock Gnome",
-					"source": "PHB"
-				},
+				"_templates": [
+					{
+						"name": "Rock Gnome",
+						"source": "PHB"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -1505,10 +1527,12 @@
 			"_copy": {
 				"name": "Noble",
 				"source": "MM",
-				"_trait": {
-					"name": "Orc",
-					"source": "DMG"
-				},
+				"_templates": [
+					{
+						"name": "Orc",
+						"source": "DMG"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -1655,10 +1679,12 @@
 			"_copy": {
 				"name": "Priest",
 				"source": "MM",
-				"_trait": {
-					"name": "Tiefling",
-					"source": "PHB"
-				},
+				"_templates": [
+					{
+						"name": "Tiefling",
+						"source": "PHB"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -1698,10 +1724,12 @@
 			"_copy": {
 				"name": "Assassin",
 				"source": "MM",
-				"_trait": {
-					"name": "Rock Gnome",
-					"source": "PHB"
-				},
+				"_templates": [
+					{
+						"name": "Rock Gnome",
+						"source": "PHB"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -1813,6 +1841,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The pari casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 19}):"
 					],
@@ -2041,6 +2070,7 @@
 			"spellcasting": [
 				{
 					"name": "Spellcasting",
+					"type": "spellcasting",
 					"headerEntries": [
 						"The riverine casts one of the following spells, requiring no material components and using Charisma as the spellcasting ability (spell save {@dc 17}):"
 					],
@@ -2180,10 +2210,12 @@
 			"_copy": {
 				"name": "Spy",
 				"source": "MM",
-				"_trait": {
-					"name": "High Elf",
-					"source": "PHB"
-				},
+				"_templates": [
+					{
+						"name": "High Elf",
+						"source": "PHB"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -2488,6 +2520,7 @@
 			],
 			"miscTags": [
 				"AOE",
+				"DIS",
 				"MW"
 			],
 			"conditionInflict": [
@@ -2642,10 +2675,12 @@
 			"_copy": {
 				"name": "Priest",
 				"source": "MM",
-				"_trait": {
-					"name": "Mountain Dwarf",
-					"source": "PHB"
-				},
+				"_templates": [
+					{
+						"name": "Mountain Dwarf",
+						"source": "PHB"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -2702,10 +2737,12 @@
 			"_copy": {
 				"name": "Guard",
 				"source": "MM",
-				"_trait": {
-					"name": "Mountain Dwarf",
-					"source": "PHB"
-				},
+				"_templates": [
+					{
+						"name": "Mountain Dwarf",
+						"source": "PHB"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -2922,10 +2959,12 @@
 			"_copy": {
 				"name": "Noble",
 				"source": "MM",
-				"_trait": {
-					"name": "Hill Dwarf",
-					"source": "PHB"
-				},
+				"_templates": [
+					{
+						"name": "Hill Dwarf",
+						"source": "PHB"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",
@@ -3110,10 +3149,12 @@
 			"_copy": {
 				"name": "Noble",
 				"source": "MM",
-				"_trait": {
-					"name": "Dragonborn (Red)",
-					"source": "PHB"
-				},
+				"_templates": [
+					{
+						"name": "Dragonborn (Red)",
+						"source": "PHB"
+					}
+				],
 				"_mod": {
 					"*": {
 						"mode": "replaceTxt",

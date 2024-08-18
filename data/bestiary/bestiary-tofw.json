@@ -1,17 +1,17 @@
 {
 	"_meta": {
+		"dependencies": {
+			"monster": [
+				"MM",
+				"MPP"
+			]
+		},
 		"otherSources": {
 			"monster": {
 				"MPP": "ToFW",
 				"MM": "ToFW",
 				"DMG": "ToFW"
 			}
-		},
-		"dependencies": {
-			"monster": [
-				"MM",
-				"MPP"
-			]
 		}
 	},
 	"monster": [
@@ -20,6 +20,7 @@
 			"isNpc": true,
 			"isNamedCreature": true,
 			"source": "ToFW",
+			"page": 17,
 			"_copy": {
 				"name": "Society of Sensation Muse",
 				"source": "MPP",
@@ -39,6 +40,7 @@
 			"isNpc": true,
 			"isNamedCreature": true,
 			"source": "ToFW",
+			"page": 50,
 			"_copy": {
 				"name": "Saber-Toothed Tiger",
 				"source": "MM",
@@ -55,7 +57,8 @@
 				"L",
 				"N"
 			],
-			"hasToken": true
+			"hasToken": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Eyestalk of Gzemnid",
@@ -70,18 +73,32 @@
 						"replace": "\\bworm\\b",
 						"with": "eyestalk"
 					},
-					"action": {
-						"mode": "replaceArr",
-						"replace": "Tail Stinger",
-						"items": {
-							"name": "Eradication Gaze {@recharge 5}",
-							"entries": [
-								"The eyestalk creates an area of magical devastation in a 150-foot cone. Any creature in that area must succeed on a {@dc 16} Dexterity saving throw or take 55 ({@damage 10d10}) necrotic damage. If this damage reduces a creature to 0 hit points, its body becomes a pile of fine violet dust."
-							]
+					"action": [
+						{
+							"mode": "replaceArr",
+							"replace": "Multiattack",
+							"items": {
+								"name": "Multiattack",
+								"entries": [
+									"The eyestalk attacks with its bite and uses Eradication Gaze."
+								]
+							}
+						},
+						{
+							"mode": "replaceArr",
+							"replace": "Tail Stinger",
+							"items": {
+								"name": "Eradication Gaze {@recharge 5}",
+								"entries": [
+									"The eyestalk creates an area of magical devastation in a 150-foot cone. Any creature in that area must succeed on a {@dc 16} Dexterity saving throw or take 55 ({@damage 10d10}) necrotic damage. If this damage reduces a creature to 0 hit points, its body becomes a pile of fine violet dust."
+								]
+							}
 						}
-					}
+					]
 				}
 			},
+			"tokenCredit": "@hamosart",
+			"hasToken": true,
 			"hasFluff": true
 		},
 		{
@@ -89,6 +106,7 @@
 			"isNpc": true,
 			"isNamedCreature": true,
 			"source": "ToFW",
+			"page": 17,
 			"_copy": {
 				"name": "Spy",
 				"source": "MM",
@@ -110,13 +128,15 @@
 			"alignment": [
 				"N"
 			],
-			"hasToken": true
+			"hasToken": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Gertrube",
 			"isNpc": true,
 			"isNamedCreature": true,
 			"source": "ToFW",
+			"page": 18,
 			"_copy": {
 				"name": "Thug",
 				"source": "MM",
@@ -139,11 +159,13 @@
 				"C",
 				"E"
 			],
-			"hasToken": true
+			"hasToken": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Giant Whirlwyrm",
 			"source": "ToFW",
+			"page": 55,
 			"_copy": {
 				"name": "Behir",
 				"source": "MM",
@@ -176,6 +198,7 @@
 			"isNpc": true,
 			"isNamedCreature": true,
 			"source": "ToFW",
+			"page": 17,
 			"_copy": {
 				"name": "Harmonium Peacekeeper",
 				"source": "MPP",
@@ -188,13 +211,15 @@
 					}
 				}
 			},
-			"hasToken": true
+			"hasToken": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Kal the Crisp",
 			"isNpc": true,
 			"isNamedCreature": true,
 			"source": "ToFW",
+			"page": 17,
 			"_copy": {
 				"name": "Hands of Havoc Fire Starter",
 				"source": "MPP",
@@ -214,6 +239,7 @@
 			"isNpc": true,
 			"isNamedCreature": true,
 			"source": "ToFW",
+			"page": 61,
 			"_copy": {
 				"name": "Empyrean",
 				"source": "MM",
@@ -234,11 +260,13 @@
 				"C",
 				"G"
 			],
-			"hasToken": true
+			"hasToken": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Modron Planar Incarnate",
 			"source": "ToFW",
+			"page": 92,
 			"_copy": {
 				"name": "Planar Incarnate",
 				"source": "MPP",
@@ -272,7 +300,8 @@
 				}
 			},
 			"type": "fiend",
-			"hasToken": true
+			"hasToken": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Morte",
@@ -365,6 +394,7 @@
 			"isNpc": true,
 			"isNamedCreature": true,
 			"source": "ToFW",
+			"page": 49,
 			"_copy": {
 				"name": "Elephant",
 				"source": "MM",
@@ -387,13 +417,15 @@
 			"languages": [
 				"Common"
 			],
-			"hasToken": true
+			"hasToken": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Parvaz",
 			"isNpc": true,
 			"isNamedCreature": true,
 			"source": "ToFW",
+			"page": 50,
 			"_copy": {
 				"name": "Giant Eagle",
 				"source": "MM",
@@ -414,13 +446,15 @@
 			"languages": [
 				"Common"
 			],
-			"hasToken": true
+			"hasToken": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "R04M",
 			"isNpc": true,
 			"isNamedCreature": true,
 			"source": "ToFW",
+			"page": 75,
 			"_copy": {
 				"name": "Monodrone",
 				"source": "MM",
@@ -442,13 +476,15 @@
 				"Common",
 				"Modron"
 			],
-			"hasToken": true
+			"hasToken": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Shariel",
 			"isNpc": true,
 			"isNamedCreature": true,
 			"source": "ToFW",
+			"page": 65,
 			"_copy": {
 				"name": "Deva",
 				"source": "MM",
@@ -461,11 +497,13 @@
 					}
 				}
 			},
-			"hasToken": true
+			"hasToken": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Vecna Impersonator",
 			"source": "ToFW",
+			"page": 26,
 			"_copy": {
 				"name": "Doppelganger",
 				"source": "MM",
@@ -477,13 +515,15 @@
 					}
 				}
 			},
-			"hasToken": true
+			"hasToken": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Whirlwyrm",
 			"source": "ToFW",
+			"page": 52,
 			"_copy": {
-				"name": "Crocodile",
+				"name": "Giant Crocodile",
 				"source": "MM",
 				"_mod": {
 					"*": {
@@ -493,13 +533,15 @@
 					}
 				}
 			},
-			"hasToken": true
+			"hasToken": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "X01",
 			"isNpc": true,
 			"isNamedCreature": true,
 			"source": "ToFW",
+			"page": 91,
 			"_copy": {
 				"name": "Hexton Modron",
 				"source": "MPP",
@@ -512,13 +554,15 @@
 					}
 				}
 			},
-			"hasToken": true
+			"hasToken": true,
+			"hasFluffImages": true
 		},
 		{
 			"name": "Zaythir",
 			"isNpc": true,
 			"isNamedCreature": true,
 			"source": "ToFW",
+			"page": 32,
 			"_copy": {
 				"name": "Githzerai Uniter",
 				"source": "MPP",
@@ -534,7 +578,8 @@
 			"alignment": [
 				"N"
 			],
-			"hasToken": true
+			"hasToken": true,
+			"hasFluffImages": true
 		}
 	]
 }

@@ -1556,7 +1556,7 @@ function baseToolAnimator () {
 		async _shared_doImport (prop, name, fnNextId, fnNextName, fnGetValidMsg, fnAdd, ...requiredProps) {
 			let data;
 			try {
-				data = await DataUtil.pUserUpload();
+				data = await InputUiUtil.pGetUserUploadJson();
 			} catch (e) {
 				d20plus.ut.chatLog("File was not valid JSON!");
 				// eslint-disable-next-line no-console
