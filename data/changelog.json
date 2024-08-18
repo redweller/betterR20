@@ -419,12 +419,17 @@
 	},
 	{
 		"ver": "1.35.9",
-		"date": "2024-09-08",
+		"date": "2024-08-08",
 		"txt": "- Update main site URL"
 	},
 	{
 		"ver": "1.35.10",
-		"date": "2024-09-08",
+		"date": "2024-08-08",
 		"txt": "- Update token URL generation"
+	},
+	{
+		"ver": "1.35.11",
+		"date": "2024-08-18",
+		"txt": "- Added various new filters to the Monster Importer (thanks @ redweller)\n- Fixed incompatibility with updated Page Toolbar (thanks @ redweller)\n- Fixed Art Browser failing to load (thanks @ redweller)\n- Updated to latest 5etools dataset (thanks @ redweller)"
 	}
 ]
