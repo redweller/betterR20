@@ -907,26 +907,11 @@ const betteR205etoolsMain = function () {
 		d20plus.ut.log("Switched Character Sheet Template");
 		d20plus.sheet = "ogl";
 		if (window.is_gm && (!d20.journal.customSheets || !d20.journal.customSheets)) {
-			const $body = $(`body`);
-			$body.addClass("ve-nosheet__body");
-			const $btnClose = $(`<button class="btn btn-danger ve-nosheet__btn-close">X</button>`)
-				.click(() => {
-					$overlay.remove();
-					$body.removeClass("ve-nosheet__body");
-				});
-			const $overlay = $(`<div class="flex-col flex-vh-center ve-nosheet__overlay"/>`);
-			$btnClose.appendTo($overlay);
-			$overlay.append(`<div class="flex-col flex-vh-center">
-				<div class="ve-nosheet__title mb-2">NO CHARACTER SHEET</div>
-				<div><i>Your game does not have a character sheet template selected.<br>
-				Please either disable betteR20, or visit the settings page for your game to choose one. We recommend the OGL sheet, which is listed as &quot;D&D 5E by Roll20.&quot;</i></div>
-			</div>`).appendTo($body);
-
-			d20.textchat.incoming(false, ({
-				who: "system",
-				type: "system",
-				content: `<span style="color: red;">5etoolsR20: no character sheet selected! Exiting...</span>`,
-			}));
+			d20plus.ut.showFullScreenWarning({
+				title: "NO CHARACTER SHEET",
+				message: "Your game does not have a character sheet template selected",
+				instructions: "Please either disable betteR20, or visit the settings page for your game to choose one. We recommend the OGL sheet, which is listed as &quot;D&D 5E by Roll20.&quot;",
+			});
 			throw new Error("No character sheet selected!");
 		}
 		if (d20.journal.customSheets.layouthtml.indexOf("shaped_d20") > 0) d20plus.sheet = "shaped";

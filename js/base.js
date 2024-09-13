@@ -40,6 +40,14 @@ const D20plus = function (version) {
 					if ((typeof window.d20 !== "undefined" || window.currentPlayer?.d20) && !$("#loading-overlay").is(":visible") && !hasRunInit) {
 						hasRunInit = true;
 						if (!window.d20) window.d20 = window.currentPlayer.d20;
+						if (!d20.engine?.canvas) {
+							d20plus.ut.showFullScreenWarning({
+								title: "JUMPGATE IS NOT SUPPORTED",
+								message: "Your game appears to run on Jumpgate that is not supported",
+								instructions: "Jumpgate can't be disabled or enabled for a game, it is chosen upon the game creation. Please either disable betteR20, or switch to a game that utilizes the old roll20 engine",
+							});
+							return;
+						}
 						d20plus.Init();
 					} else {
 						setTimeout(waitForD20, 50);
