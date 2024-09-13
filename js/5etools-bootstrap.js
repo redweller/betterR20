@@ -72,6 +72,7 @@ const betteR205etools = function () {
 			d20plus.engine.fixPolygonTool();
 			// d20plus.ut.fixSidebarLayout();
 			d20plus.chat.enhanceChat();
+			d20plus.ba.initBetterActions();
 
 			// Clear BrewUtil cache
 			BrewUtil2._storage = new StorageUtilMemory();

@@ -10,8 +10,25 @@ function baseConfig () {
 			"default": false,
 			"_type": "boolean",
 		},
-	},
-	);
+		"compactMarkersMenu": {
+			"name": "Compact token markers menu",
+			"default": true,
+			"_type": "boolean",
+		},
+		"showTokenMenu": {
+			"name": "Add Quick Token Actions",
+			"default": "char",
+			"_type": "_enum",
+			"_player": true,
+			"__values": ["none", "char-anim", "char", "anim"],
+			"__texts": [
+				"Disabled",
+				"Enabled",
+				"Only character menu",
+				"Only animation menu",
+			],
+		},
+	});
 	addConfigOptions("canvas", {
 		"_name": "Canvas",
 		"_player": true,
@@ -22,32 +39,53 @@ function baseConfig () {
 			"__values": ["0.25", "0.5", "1"],
 			"_player": true,
 		},
-		"scaleNamesStatuses": {
-			"name": "Scaled Names and Status Icons",
+		"extraLayerButtons": {
+			"name": "Add Extra Layer Buttons panel",
 			"default": true,
 			"_type": "boolean",
-			"_player": true,
+		},
+		"allowHideExtraLayers": {
+			"name": "Show toggles to hide Extra Layers",
+			"default": true,
+			"_type": "boolean",
+		},
+		"showFloors": {
+			"name": "-- Include the Floors layer (reload to apply changes)",
+			"default": false,
+			"_type": "boolean",
+			"_player": false,
 		},
 		"showBackground": {
-			"name": "Include the Background layer (reload to apply changes)",
+			"name": "-- Include the Background layer (reload to apply changes)",
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
 		},
+		"showRoofs": {
+			"name": "-- Include the Roofs layer (reload to apply changes)",
+			"default": false,
+			"_type": "boolean",
+			"_player": false,
+		},
 		"showForeground": {
-			"name": "Include the Foreground layer (reload to apply changes)",
+			"name": "-- Include the Foreground layer (reload to apply changes)",
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
 		},
 		"showWeather": {
 			"name": "Include the Weather layer and settings (reload to apply changes)",
-			"default": true,
+			"default": false,
 			"_type": "boolean",
 			"_player": false,
 		},
-	},
-	);
+		"scaleNamesStatuses": {
+			"name": "Scaled Names and Status Icons",
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
+	});
 	addConfigOptions("import", {
 		"_name": "Import",
 		"importIntervalMap": {
@@ -71,31 +109,6 @@ function baseConfig () {
 			"_type": "_slider",
 			"__sliderMin": 1,
 			"__sliderMax": 100,
-			"__sliderStep": 1,
-		},
-		"hideDarkModeSwitch": {
-			"name": "Hide Roll20's Dark Mode switch",
-			"default": false,
-			"_type": "boolean",
-			"_player": true,
-		},
-		"hideHelpButton": {
-			"name": "Hide Help Button on floating toolbar",
-			"default": false,
-			"_type": "boolean",
-			"_player": true,
-		},
-		"quickLayerButtons": {
-			"name": "Add Quick Layer Buttons",
-			"default": true,
-			"_type": "boolean",
-		},
-		"quickLayerButtonsPosition": {
-			"name": "-- Quick Layer Buttons position (left/right)",
-			"default": 0,
-			"_type": "_slider",
-			"__sliderMin": 0,
-			"__sliderMax": 1,
 			"__sliderStep": 1,
 		},
 		"quickInitButtons": {
@@ -124,6 +137,15 @@ function baseConfig () {
 	addConfigOptions("chat", {
 		"_name": "Chat",
 		"_player": true,
+		"playerPortraitSize": {
+			"name": "Set Player List size (0 - don't change)",
+			"default": 30,
+			"_type": "_slider",
+			"__sliderMin": 30,
+			"__sliderMax": 250,
+			"__sliderStep": 20,
+			"_player": true,
+		},
 		"streamerChatTag": {
 			"name": "Streamer-Friendly Chat Tags",
 			"default": false,
@@ -145,6 +167,12 @@ function baseConfig () {
 		"languages": {
 			"name": "Enable in-game languages (via social panel or /in)",
 			"default": true,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"showDNDHints": {
+			"name": "Show DND status hints in chat",
+			"default": false,
 			"_type": "boolean",
 			"_player": true,
 		},
@@ -748,6 +776,25 @@ function baseConfig () {
 	};
 	*/
 
+	d20plus.cfg.handlePlayerImgSize = () => {
+		const setSize = d20plus.cfg.getOrDefault("chat", "playerPortraitSize");
+		const dynamicStyle = d20plus.ut.dynamicStyles("players");
+		if (setSize === 30) {
+			dynamicStyle.html("");
+		} else {
+			// the "magic numbers" are just quotients handpicked so that resulting sizes look good together
+			const setFont = Math.round((setSize / 150) * 16);
+			const setCol = Math.round((setSize / 150) * 24);
+			const setLine = Math.round((setSize / 150) * 18);
+			const setStyle = `
+				#playerzone .player .playername {width: ${setSize}px !important; font-size: ${setFont}px !important;line-height:${setLine}px}
+				#playerzone .player .video {width: ${setSize}px; height: ${setSize}px; }
+				#playerzone .player .playercolor, .player .color_picker {width: ${setCol}px; height: ${setCol}px; }
+			`;
+			dynamicStyle.html(setStyle);
+		}
+	}
+
 	d20plus.cfg.handleInitiativeShrink = () => {
 		const doShrink = d20plus.cfg.getOrDefault("interface", "minifyTracker");
 		const dynamicStyle = d20plus.ut.dynamicStyles("tracker");
@@ -759,16 +806,34 @@ function baseConfig () {
 	}
 
 	d20plus.cfg.HandleCss = () => {
-		// properly align layer toolbar
-		const $wrpDmModeSw = $(`.dark-mode-switch`);
-		const $wrpBtnsMain = $(`#floatingtoolbar`);
-		const $ulBtns = $(`#floatinglayerbar`);
-		const darkModeShift = $wrpDmModeSw.css("display") === "none" || $wrpDmModeSw.css("visibility") === "hidden" ? 0 : 54;
-		$ulBtns.css({top: $wrpBtnsMain.height() + darkModeShift + 40});
-		$wrpDmModeSw.css({top: $wrpBtnsMain.height() + 40});
+
+		const showHints = d20plus.cfg.getOrDefault("chat", "showDNDHints");
+		const hintStyle = d20plus.ut.dynamicStyles("hints");
+		if (showHints) hintStyle.html(d20plus.css.clickableConditionHints);
+		else hintStyle.html("");
+
+		const compactMarkers = d20plus.cfg.getOrDefault("token", "compactMarkersMenu");
+		const markerMenuStyle = d20plus.ut.dynamicStyles("markerMenu");
+		const vttesRadiant = window.r20es?.hooks?.alternativeRadialMenu?.config.enabled;
+		if (compactMarkers && !vttesRadiant) markerMenuStyle.html(d20plus.css.betterTokenMarkersMenu);
+		else markerMenuStyle.html("");
+
+		const amOn = d20plus.cfg.getOrDefault("chat", "showTokenMenu") !== "none";
+		const amStyle = d20plus.ut.dynamicStyles("actions");
+		if (amOn) amStyle.html(d20plus.css.actionMenu);
+		else amStyle.html("");
+
+		const extraLayers = d20plus.cfg.getOrDefault("canvas", "extraLayerButtons");
+		const extraLayersToggle = d20plus.cfg.getOrDefault("canvas", "allowHideExtraLayers");
+		const layerBarStyle = d20plus.ut.dynamicStyles("extralrs");
+		const layerToggleStyle = d20plus.ut.dynamicStyles("togglelrs");
+		if (extraLayers) layerBarStyle.html(d20plus.css.layerToolbar);
+		if (extraLayersToggle) layerToggleStyle.html("");
+		else layerToggleStyle.html(d20plus.css.hideExtraLayersToggle);
 	}
 
 	d20plus.cfg.baseHandleConfigChange = () => {
+		d20plus.cfg.handlePlayerImgSize();
 		d20plus.cfg.handleInitiativeShrink();
 
 		if (d20plus.cfg.has("interface", "toolbarOpacity")) {
@@ -776,12 +841,6 @@ function baseConfig () {
 			$(`#secondary-toolbar`).css({opacity: v * 0.01});
 		}
 
-		$(`#floatinglayerbar`).toggle(d20plus.cfg.getOrDefault("interface", "quickLayerButtons"));
-		$(`#floatinglayerbar`).toggleClass("right", !!d20plus.cfg.getOrDefault("interface", "quickLayerButtonsPosition"));
-		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
-		$(`input[placeholder="Search by tag or name..."]`).parent().toggle(!d20plus.cfg.getOrDefault("interface", "hideDefaultJournalSearch"))
-		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
-		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
 		$(`#langpanel`).toggle(d20plus.cfg.getOrDefault("chat", "languages"));
 
 		d20plus.cfg.HandleCss();

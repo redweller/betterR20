@@ -238,6 +238,320 @@ function initHTMLbaseMisc () {
 		}
 	</style>
 	`;
+
+	d20plus.html.tokenImageEditor = `
+	<div class="dialog largedialog edittokenimages">
+		<h4 class="edittitle">Token name</h4>
+		<span class="editlabel">
+			Currently this token is represented by a single image. Add more images to convert it to multi-sided token
+		</span>
+		<div class="tokenlist"></div>
+		<hr>
+		<button class="addimageurl btn" style="float: right;margin-left:5px;">Add From URL...</button>
+		<h4>Images</h4>
+		You can drop a file or a character below
+		<div class="clear" style="height: 7px;"></div>
+		<table class="table table-striped tokenimagelist">
+			<tbody>
+			</tbody>
+		</table>
+		<style>
+			.tokenimage img {
+				max-width: 70px;
+				max-height: 70px;
+			}
+
+			.tokenimage select {
+				width: 100px;
+				margin-right: 10px;
+			}
+
+			.tokenimage input {
+				width: 25px;
+			}
+
+			.tokenimage input.face {
+				margin: 30px 0px 0px 5px;
+				width: unset;
+			}
+
+			.tokenimage input.face:indeterminate {
+				opacity: 0.8;
+				filter: grayscale(0.7);
+			}
+
+			.tokenimage .btn {
+				font-family: pictos;
+				margin-top: 26px;
+			}
+
+			.tokenimage .dropbox {
+				height: 70px;
+				width: 70px;
+				padding: 0px;
+				box-sizing: content-box;
+			}
+
+			.tokenimage .inner {
+				display: inline-block;
+				vertical-align: middle;
+				line-height: 67px;
+			}
+
+			.tokenimage .remove {
+				background: none;
+			}
+
+			.tokenimage .remove span {
+				line-height: initial;
+				display: inline-block;
+				font-weight: bold;
+				background: white;
+				vertical-align: bottom;
+			}
+
+			.tokenimage .dropbox.filled {
+				border: 4px solid transparent;
+			}
+
+			.ui-dropping .dropbox.filled {
+				border: 4px dashed #d1d1d1;
+			}
+
+			.tokenimagelist .ui-dropping .tokenimage {
+				background: rgba(155, 155, 155, 0.5);
+			}
+
+			.tokenimagelist .ui-dropping .dropbox {
+				background: gray;
+				border: 4px dashed rgba(155, 155, 155, 0.5);
+			}
+
+			.tokenimage .ui-droppable.drop-highlight {
+				border: 4px dashed;
+			}
+
+			.tokenimage.lastone .face,
+			.tokenimage.lastone .skippable,
+			.tokenimage.lastone .btn.delete {
+				display: none;
+			}
+
+			.tokenimage .custom {
+				visibility: hidden;
+			}
+
+			.tokenimage .custom.set {
+				visibility: visible;
+			}
+
+			.tokenimage input.toskip {
+				margin: 0px;
+				width: unset;
+			}
+
+			.tokenimage .skippable {
+				display: block;
+				margin: 0px;
+			}
+
+			.tokenimagelist .tokenimage:not(.lastone).skipped td {
+				background-color: rgba(155, 0, 0, 0.1);
+			}
+
+			.tokenlist {
+				position: sticky;
+				top: -11px;
+				padding: 5px 0px;
+				background: inherit;
+				z-index: 1;
+				overflow-x: auto;
+				white-space: nowrap;
+			}
+
+			.tokenlist .tokenbox {
+				display: inline-block;
+				position: relative;
+				border: 4px solid transparent;
+				width: 60px;
+				height: 60px;
+				cursor: pointer;
+				vertical-align: bottom;
+			}
+
+			.tokenlist .tokenbox img {
+				max-width: 60px;
+				max-height: 60px;
+			}
+
+			.tokenlist .tokenbox .inner {
+				text-align: center;
+			}
+
+			.tokenbox .name {
+				display: none;
+				position: absolute;
+				bottom: 0px;
+				background-color: rgba(155, 155, 155, 0.7);
+				padding: 3px;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				white-space: nowrap;
+				box-sizing: border-box;
+				color: white;
+				width: 100%;
+			}
+
+			.tokenbox:hover .name {
+				display: block;
+			}
+
+			.tokenbox.selected {
+				border: 4px solid gray;
+			}
+		</style>
+	</div>
+	`;
+
+	d20plus.html.bActionsMenu = `
+	<div id="ba-panel">
+		<button aria-disabled="false" type="button" style="" class="el-button large page-button">
+			<span><span style="font-family: Pictos;font-size: 21px;">U</span></span>
+		</button>
+		<div class="ba-menu" style="display:none">
+			<div class="ba-title">
+				<span class="ba-token" data-action="findtoken"><img src="https://img.icons8.com/ios-glyphs/30/multicultural-people.png"></span>
+				<span class="ba-name">Selected</span>
+				<span class="ba-title-actions">
+					<button data-action="collapsew" title="Collapse/expand"></button>
+					<button data-action="expandh" title="Lock/unlock menu height"></button>
+					<button data-action="close" title="Close this menu">*</button>
+					<!--<button data-action="speakas" title="Speak as character">w</button>
+						<button data-action="opensheet" title="Open character sheet">U</button>
+						<button data-action="openchar" title="Open character settings">x</button><br>-->
+				</span>
+			</div>
+			<ul class="ba-tabs nav nav-tabs">
+				<li class="nav-tabs active" data-tab="general"><a>
+						<img src="https://img.icons8.com/ios-glyphs/30/pulse.png">
+						<span>General</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="stats" style="display:none;"><a>
+						<img src="https://img.icons8.com/external-kmg-design-glyph-kmg-design/32/external-muscle-gym-kmg-design-glyph-kmg-design.png">
+						<span>Abilities</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="skills" style="display:none;"><a>
+						<img src="https://img.icons8.com/external-icongeek26-glyph-icongeek26/64/external-Lute-music-icongeek26-glyph-icongeek26.png">
+						<span>Skills</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="attacks" style="display:none;"><a>
+						<img src="https://img.icons8.com/external-prettycons-solid-prettycons/60/external-swords-games-prettycons-solid-prettycons.png">
+						<span>Attacks</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="traits" style="display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/exercise.png">
+						<span>Traits</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="spells" style="display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/fantasy.png">
+						<span>Spells</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="items" style="display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/red-purse.png">
+						<span>Items</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="animations" style="float:right;display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/service.png">
+						<span>Animations</span></a>
+				</li>
+			</ul>
+			<div class="ba-main">
+				<div class="ba-list content-left">
+					<ul class="active" data-list="general"></ul>
+					<ul data-list="stats"></ul>
+					<ul class="uneven" data-list="skills"></ul>
+					<ul data-list="attacks"></ul>
+					<ul data-list="traits"></ul>
+					<ul data-list="spells"></ul>
+					<ul data-list="items"></ul>
+					<ul data-list="animations"></ul>
+				</div>
+				<div class="ba-info content-right">
+					<ul class="active" data-pane="general">
+						<li>You don't seem to have controllable tokens on this map. Please select something to begin</li>
+					</ul>
+					<ul data-pane="stats">
+						<li> </li>
+					</ul>
+					<ul data-pane="skills">
+						<li> </li>
+					</ul>
+					<ul data-pane="attacks">
+						<li> </li>
+					</ul>
+					<ul data-pane="traits">
+						<li> </li>
+					</ul>
+					<ul data-pane="spells">
+						<li> </li>
+					</ul>
+					<ul data-pane="items">
+						<li> </li>
+					</ul>
+					<ul data-pane="context" style="font-size: 12px; line-height: 15px; font-weight: 100;">
+						<li> </li>
+					</ul>
+					<ul data-pane="animations">
+						<li>Animations are set in the betteR20 tools menu</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	`;
+
+	d20plus.html.layerExtrasButton = `
+	<div class="toolbar-button-outer b20" style="color: var(--vtt-toolbar-active-selection-color);" id="extra-layer-button">
+		<div class="toolbar-button-mid">
+			<div class="toolbar-button-inner" tabindex="0">
+				<div style="" class="icon-slot icon-circle">
+					<span style="font-size: 1.5em;font-family: Pictos;" class="grimoire__roll20-icon">|</span>
+				</div>
+				<div class="submenu-caret"></div>
+			</div>
+			<span class="label" style="">EXTRA</span>
+		</div>
+		<div class="toolbar-tooltip-outer" style="filter: initial; --0c2fd930: 6px;">
+			<div class="toolbar-tooltip-caret"></div>
+			<div class="toolbar-tooltip-inner">
+				<span class="toolbar-tooltip-label text-sm-medium">Extra editable layers</span>
+				<span class="toolbar-shortcut-label">[b20]</span>
+			</div>
+		</div>
+		<span class="decoration" style="color: inherit;"></span>
+	</div>
+	`;
+
+	d20plus.html.layerSecondaryPanel = (l) => `
+		<div class="toolbar-button-outer b20" style="color: var(--vtt-toolbar-active-selection-color);" id="${l.name.toLowerCase()}-layer-button">
+			<div class="toolbar-button-mid">
+				<div class="toolbar-button-inner" data-layer="${l.id}" tabindex="0">
+					<div style="" class="icon-slot icon-circle">
+						<span style="font-size: 1.5em;font-family: Pictos;" class="grimoire__roll20-icon">${l.icon}</span>
+					</div>
+				</div>
+				<span class="layer-toggle">E</span>
+				<span class="label" style="">${l.name}</span>
+			</div>
+			<div class="toolbar-tooltip-outer" style="filter: initial; top: 6px;">
+				<div class="toolbar-tooltip-caret"></div>
+				<div  class="toolbar-tooltip-inner">
+					<span class="toolbar-tooltip-label text-sm-medium">${l.tooltip}</span>
+					<span class="toolbar-shortcut-label">[b20]</span>
+				</div>
+			</div>
+		</div>
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLbaseMisc);

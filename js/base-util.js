@@ -72,9 +72,14 @@ function baseUtil () {
 					if (cmp < 0) {
 						setTimeout(() => {
 							if (!isStreamer) {
-								const rawToolsInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-5etools.user.js?raw=true";
-								const rawCoreInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-core.user.js?raw=true";
-								d20plus.ut.sendHackerChat(`<br>A newer version of ${scriptName} is available.<br>Get ${avail} <a href="${rawToolsInstallUrl}">5etools</a> OR <a href="${rawCoreInstallUrl}">core</a>.<br><br>`);
+								const rawToolsInstallUrl = "https://github.com/redweller/betterR20/raw/run/betteR20-5etools.user.js";
+								const rawCoreInstallUrl = "https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js";
+								const msgVars = [scriptName, avail, rawToolsInstallUrl, rawCoreInstallUrl];
+								d20plus.ut.sendHackerChat(`
+									<div class="userscript-b20intro" style="border: 1px solid; background-color: #582124;">
+									<br>A newer version of ${msgVars[0]} is available.<br>Get ${msgVars[1]} <a href="${msgVars[2]}">5etools</a> OR <a href="${msgVars[3]}">core</a>.<br><br>
+									</div>
+								`);
 							} else {
 								d20plus.ut.sendHackerChat(`<br>A newer version of ${scriptName} is available.<br><br>`);
 							}
@@ -234,9 +239,10 @@ function baseUtil () {
 	d20plus.ut.parseVersionInfo = (raw) => {
 		const info = JSON.parse(decodeURI(atob(raw)));
 		const time = d20plus.ut.timeAgo(info.date);
-		const phdm = info.phdm ? "<br>Detected DarkMode script" : "";
-		const dnd20 = info.dnd20 ? "<br>Detected Beyond20 extension" : "";
-		let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}${dnd20}<br>Info updated ${time}`;
+		const phdm = info.phdm ? `<br>Detected DarkMode script` : "";
+		const vttes = info.vtte ? `<br>Detected VTTES v${info.vtte}` : "";
+		const dnd20 = info.dnd20 ? `<br>Detected Beyond20 extension` : "";
+		let html = `Detected betteR20-${info.b20n} v${info.b20v}${vttes}${phdm}${dnd20}<br>Info updated ${time}`;
 		if (d20plus.ut.cmpVersions(info.b20v, d20plus.version) < 0) html += `<br>Player's betteR20 may be outdated`;
 		if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's VTTES may be outdated`;
 		return html;
@@ -344,9 +350,12 @@ function baseUtil () {
 		return JSON.parse(journalFolder);
 	};
 
-	d20plus.ut.fetchCharAttribs = async (char) => {
+	d20plus.ut.fetchCharAttribs = async (char, keepSync) => {
 		const attribs = char?.attribs;
 		if (!attribs) return false;
+		if (keepSync && !attribs.backboneFirebase) {
+			attribs.backboneFirebase = new BackboneFirebase(attribs)
+		}
 		if (attribs.length) {
 			return char;
 		}
@@ -457,6 +466,26 @@ function baseUtil () {
 		}
 	};
 
+	d20plus.ut.getTokensDistanceText = (tokenAmodel, tokenBmodel) => {
+		if (!tokenAmodel?.attributes || !tokenBmodel?.attributes) return "";
+		const page = d20.Campaign.activePage().attributes;
+		const tokenA = tokenAmodel.attributes;
+		const tokenB = tokenBmodel.attributes;
+		const distX = Math.abs(tokenA.left - tokenB.left) - tokenA.width / 2 - tokenB.width / 2 + 70;
+		const distY = Math.abs(tokenA.top - tokenB.top) - tokenA.height / 2 - tokenB.height / 2 + 70;
+		const distMapUnits = (dist) => Math.round(dist / 70 * (page.scale_number || 5));
+		if (page.diagonaltype === "foure") {
+			const maxDist = Math.max(distX, distY);
+			return `${distMapUnits(maxDist)} ${page.scale_units || "ft."}`;
+		} else if (page.diagonaltype === "manhattan") {
+			const totDist = distX + distY;
+			return `${distMapUnits(totDist)} ${page.scale_units || "ft."}`;
+		} else {
+			const distPixels = Math.sqrt(distX ** 2 + distY ** 2);
+			return `${distMapUnits(distPixels)} ${page.scale_units || "ft."}`;
+		}
+	};
+
 	d20plus.ut.getPathById = (pathId) => {
 		return d20plus.ut._getCanvasElementById(pathId, "thepaths");
 	};
@@ -487,9 +516,44 @@ function baseUtil () {
 		return null;
 	};
 
+	d20plus.ut.getCharacter = (charRef) => {
+		if (charRef === "selected") return d20.engine.selected()[0]?.model?.character;
+		const characters = d20.Campaign.characters;
+		if (charRef.id) return characters._byId[charRef.id];
+		return characters._byId[charRef]
+			|| characters.models.find(char => char.attributes.name === charRef);
+	}
+
 	d20plus.ut.getCharAttribByName = (char, attribName) => {
 		return char.attribs?.models?.find(prop => prop?.attributes?.name === attribName);
 	};
+
+	d20plus.ut.getCharAbilityByName = (char, abilbName) => {
+		return char.abilities?.models?.find(prop => prop?.attributes?.name === abilbName);
+	};
+
+	d20plus.ut.getCharMetaAttribByName = (char, attribNamePart, caseInsensitive) => {
+		const extract = /^repeating_(?:attack|inventory|proficiencies|resource|spell_(?:\d?|cantrip)|traits)_[^_]*(?:_resource_(?:right|left)|)/;
+		const toFind = caseInsensitive ? attribNamePart.toLowerCase() : attribNamePart;
+		const metaAttrib = {_ref: {}};
+		char.attribs?.models.forEach(prop => {
+			const find = caseInsensitive
+				? prop.attributes?.name.toLowerCase().includes(toFind)
+				: prop.attributes?.name.includes(toFind);
+			if (!find) return;
+			metaAttrib._ref._id = metaAttrib._ref._id
+				|| prop.attributes.name.match(extract)?.last()
+				|| attribNamePart;
+			const attribName = prop.attributes.name.replace(metaAttrib._ref._id, "").slice(1);
+			metaAttrib[attribName || "current"] = prop.attributes.current;
+			metaAttrib._ref[attribName || "current"] = prop;
+			if (prop.attributes.max) {
+				metaAttrib[`${attribName}max`] = prop.attributes.max;
+				metaAttrib._ref[`${attribName}max`] = prop;
+			}
+		});
+		if (Object.entries(metaAttrib).length > 1) return metaAttrib;
+	}
 
 	d20plus.ut._BYTE_UNITS = ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 	d20plus.ut.getReadableFileSizeString = (fileSizeInBytes) => {

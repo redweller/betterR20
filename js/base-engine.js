@@ -152,6 +152,29 @@ function d20plusEngine () {
 			}).addTouch();
 		}
 
+		if (!d20plus) { // Aug 2024 the New Page Toolbar is non-optional
+			// this should be executed only for the old Page Toolbar
+			overwriteDraggables();
+			$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
+
+			const originalFn = d20.pagetoolbar.refreshPageListing;
+			// original function is debounced at 100ms, so debounce this at 110ms and hope for the best
+			const debouncedOverwrite = _.debounce(() => {
+				overwriteDraggables();
+				// fire an event for other parts of the script to listen for
+				const pageChangeEvt = new Event(`VePageChange`);
+				d20plus.ut.log("Firing page-change event");
+				document.dispatchEvent(pageChangeEvt);
+			}, 110);
+			d20.pagetoolbar.refreshPageListing = () => {
+				originalFn();
+				debouncedOverwrite();
+			}
+		} else {
+			// #TODO Remove the old styling
+			$(`#page-toolbar`).hide(); // hide the old Page Toolbar that pops with b20 styling
+		}
+
 		$(`body`).on("mouseup", "li.dl", (evt) => {
 			// process Dynamic Lighting tabs
 			const $dynLightTab = $(evt.target).closest("li.dl");
@@ -173,6 +196,23 @@ function d20plusEngine () {
 			d20plus.engine._populatePageCustomOptions();
 		}).on("click keyup", ".weather input, .weather .slider", () => {
 			d20plus.engine._updatePageCustomOptions();
+		}).on("click", ".go_to_image_editor", (evt) => {
+			const {currentTarget: target} = evt;
+			const $modal = $(target).closest(`[data-tokenid]`);
+			if (!$modal.find(".btn.go_to_image_editor").length) return;
+			const tokenId = $modal.data("tokenid");
+			const $tokenEdit = d20plus.menu.editToken(tokenId);
+			$modal.find(".modal-tokeneditor-body")
+				.empty()
+				.append($tokenEdit.parent("div").css({
+					display: "block",
+					position: "initial",
+					width: "auto",
+					"box-shadow": "none",
+				}).attr("style", (i, css) => css.replace("initial", "initial !important")));
+			$modal.parent("div")
+				.find(".ui-dialog-buttonset .btn-primary")
+				.on("mousedown", $tokenEdit.dialog("option", "buttons").save.click);
 		});
 	};
 
@@ -560,6 +600,141 @@ function d20plusEngine () {
 
 	/* eslint-enable */
 
+	d20plus.engine.expendResources = async (expend) => {
+		const character = d20.Campaign.characters._byId[expend.charID];
+		if (!character || !character?.currentPlayerControls()) return;
+		const fetched = await d20plus.ut.fetchCharAttribs(character);
+		if (!fetched) return;
+		const getAttribVal = () => {
+			const vals = {
+				spell: {cur: "expended", id: `lvl${expend.lvl}_slots`},
+				resource: {cur: "current", link: "itemid", id: `${expend.res}_resource`},
+				repeated: {cur: "current", link: "itemid", exp: /repeating_resource_(.*?)_resource_(?<pos>right|left)_name/},
+				item: {cur: "itemcount", link: "itemresourceid", exp: /repeating_inventory_(.*?)_itemname/},
+			}[expend.type];
+			vals.id = vals.id || character.attribs?.models
+				?.find(prop => prop?.attributes?.current === expend.name && prop?.attributes?.name.match(vals.exp))
+				?.attributes.name.replace(/_(name|itemname)$/, "");
+			return vals;
+		};
+		d20plus.ut.log(expend);
+		const playerName = d20plus.ut.getPlayerNameById(d20_player_id);
+		const characterName = character.get("name");
+		const refs = getAttribVal();
+		const attrib = d20plus.ut.getCharMetaAttribByName(character, refs.id);
+		if (!attrib) return;
+		const syncWeight = (ref) => {
+			const ignNonequipped = !!d20plus.ut.getCharAttribByName(character, "ingore_non_equipped_weight")?.attributes.current;
+			const isAccounted = (!ignNonequipped || ref.equipped !== "0") && ref.itemweight > 0;
+			if (!isAccounted) return;
+			const totalWeight = d20plus.ut.getCharAttribByName(character, "weighttotal");
+			if (!totalWeight?.attributes.current) return;
+			const weightDelta = ((expend.restore || attrib._new) - attrib._cur) * ref.itemweight;
+			const weightResult = totalWeight.attributes.current + weightDelta;
+			totalWeight.save({current: weightResult});
+		}
+		const syncSheet = () => {
+			if (attrib.itemweight) syncWeight(attrib);
+			if (!refs.link || !attrib[refs.link]) return;
+			const toSync = d20plus.ut.getCharMetaAttribByName(character, attrib[refs.link], true);
+			const toSyncRef = toSync?._ref?.current || toSync?._ref?.itemcount;
+			toSyncRef?.save({current: expend.restore || attrib._new});
+			if (toSync?.itemweight) syncWeight(toSync);
+		}
+		const getMsgText = () => {
+			if (expend.type === "spell") return `lvl${expend.lvl} slots`;
+			else if (expend.name) return `of ${expend.name}`;
+			else if (attrib.name) return `of ${attrib.name}`;
+			else return `class resource`;
+		};
+		expend.amt = expend.amt || 1;
+		attrib._cur = attrib[refs.cur];
+		d20plus.ut.log(attrib);
+		if (isNaN(attrib._cur)) return;
+		if (expend.restore !== undefined) {
+			attrib._ref[refs.cur].save({current: String(expend.restore)});
+			attrib._msg = `/w "${characterName}" ${characterName} has ${expend.restore} ${getMsgText()} again`;
+			syncSheet();
+		} else if (attrib._cur - expend.amt >= 0) {
+			attrib._new = attrib._cur - expend.amt;
+			attrib._ref[refs.cur].save({current: String(attrib._new)});
+			attrib._undo = {...expend}; attrib._undo.restore = attrib._cur;
+			attrib._msg = `/w "${characterName}" ${characterName} now has ${attrib._new} ${getMsgText()} left`;
+			syncSheet();
+		} else {
+			attrib._msg = `/w "${characterName}" ${characterName} already had zero ${getMsgText()}`;
+		}
+		const transport = {type: "automation"};
+		if (expend.restore) transport.author = `${playerName} restored some ${getMsgText()}`;
+		else transport.author = `${playerName} tried using ${expend.amt} ${getMsgText()}`;
+		if (attrib._undo) transport.undo = attrib._undo;
+		d20.textchat.doChatInput(attrib._msg, undefined, transport);
+	}
+
+	d20plus.engine.alterTokensHP = (alter) => {
+		const barID = Number(d20plus.cfg.getOrDefault("chat", "dmgTokenBar"));
+		const bar = {
+			val: `bar${barID}_value`,
+			link: `bar${barID}_link`,
+			max: `bar${barID}_max`,
+		};
+		const calcHP = (token) => {
+			if (!token?.get) return false;
+			const current = token.get(bar.val);
+			const max = token.get(bar.max);
+			if (isNaN(max) || isNaN(current) || current === "") return false;
+			const hp = {old: current, new: current - alter.dmg};
+			if (hp.new < 0) hp.new = 0;
+			if (max !== "") {
+				if (hp.new > max) hp.new = max;
+				if (hp.new <= -max) hp.dead = true;
+				if (hp.old <= 0 && hp.new > 0) hp.alive = true;
+			}
+			return hp;
+		}
+		const playerName = d20plus.ut.getPlayerNameById(d20_player_id);
+		const author = `${playerName} applied ${alter.dmg} damage`;
+		const transport = {type: "automation", author};
+		const targets = alter.targets || d20.engine.selected();
+		d20.engine.unselect();
+		targets.forEach(async token => {
+			if (typeof token === "string") token = d20plus.ut.getTokenById(token);
+			else if (token.model) token = token.model;
+			const hp = calcHP(token);
+			if (!hp) return d20plus.ut.sendHackerChat("You have to select proper token bar in the settings", true);
+			if (!token.currentPlayerControls()) return;
+			if (alter.restore !== undefined) hp.new = alter.restore;
+			const barLinked = token.get(bar.link);
+			const tokenName = token.get("name");
+			if (barLinked) {
+				if (!token.character?.currentPlayerControls()) return;
+				const charID = token.character?.id;
+				const fetched = await d20plus.ut.fetchCharAttribs(token.character);
+				if (fetched && charID) {
+					const attrib = token.character.attribs.get(barLinked);
+					const charName = token.character.get("name");
+					attrib.save({current: hp.new});
+					attrib.syncTokenBars();
+					hp.msg = `/w "${charName}" ${tokenName} from ${hp.old} to ${hp.new} HP`;
+					if (alter.restore !== undefined) hp.msg = `/w "${charName}" ${tokenName} HP back to ${hp.new}`;
+				}
+			} else {
+				token.save({[bar.val]: hp.new});
+				hp.msg = `/w gm ${tokenName} from ${hp.old} to ${hp.new} HP`;
+				if (alter.restore !== undefined) hp.msg = `/w gm ${tokenName} HP back to ${hp.new}`;
+			}
+			if (hp.msg) {
+				hp.undo = {type: "hp", dmg: alter.dmg, restore: hp.old, targets: [token.id]};
+				if (alter.restore === undefined) hp.transport = Object.assign({undo: hp.undo}, transport);
+				else transport.author = `${playerName} restored HP to ${alter.restore}`;
+				d20.textchat.doChatInput(hp.msg, undefined, hp.transport || transport);
+				if (hp.dead) d20.textchat.doChatInput(`${tokenName} is instantly dead`, undefined, transport);
+				else if (hp.alive) d20.textchat.doChatInput(`${tokenName} is conscious again`, undefined, transport);
+				else if (hp.new === 0) d20.textchat.doChatInput(`${tokenName} falls unconscious`, undefined, transport);
+			}
+		})
+	}
+
 	d20plus.engine.addLineCutterTool = () => {
 		// The code in /overwrites/canvas-handler.js doesn't work
 		const $btnTextTool = $(`.choosetext`);
@@ -715,45 +890,181 @@ function d20plusEngine () {
 		})
 	};
 
-	d20plus.engine.addLayers = () => {
-		d20plus.ut.log("Adding layers");
+	d20plus.engine.layersIsMarkedAsHidden = (layer) => {
+		const page = d20.Campaign.activePage();
+		return page?.get(`bR20cfg_hidden`)?.search(layer) > -1;
+	}
 
-		d20plus.mod.editingLayerOnclick();
-		if (window.is_gm) {
-			// Add layers to layer dropdown
-			$(`#floatingtoolbar .choosemap`).html(`<span class="pictos" style="padding: 0 3px 0 3px;">@</span> Map`);
-			if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
-				$(`#floatingtoolbar .choosemap`).after(`
-					<li class="choosebackground">
-						<span class="pictos">a</span>
-						Background
-					</li>
-				`);
-			}
-			if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
-				$(`#floatingtoolbar .chooseobjects`).after(`
-					<li class="chooseforeground">
-						<span class="pictos">B</span>
-						Foreground
-					</li>
-				`);
-			}
+	d20plus.engine.layersVisibilityCheck = () => {
+		const layers = ["floors", "background", "foreground", "roofs"];
+		layers.forEach((layer) => {
+			const isHidden = d20.engine.canvas._objects.some((o) => {
+				if (o.model) return o.model.get("layer") === `hidden_${layer}`;
+			}) || d20plus.engine.layersIsMarkedAsHidden(layer);
+			d20plus.engine.layerVisibilityOff(layer, isHidden, true);
+		});
+	}
 
-			if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
-				$(`#floatingtoolbar .choosewalls`).after(`
-					<li class="chooseweather">
-						<span class="pictos">C</span>
-						Weather Exclusions
-					</li>
-				`);
+	d20plus.engine.layersToggle = (layer) => {
+		const page = d20.Campaign.activePage();
+		if (!page.get(`bR20cfg_hidden`)) page.set(`bR20cfg_hidden`, "");
+		if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
+			d20plus.engine.layerVisibilityOff(layer, false);
+		} else {
+			d20plus.engine.layerVisibilityOff(layer, true);
+		}
+	};
+
+	d20plus.engine.layerVisibilityOff = (layer, off, force) => {
+		const page = d20.Campaign.activePage();
+		if (off) {
+			if (d20plus.engine.objectsHideUnhide("layer", layer, "layeroff", false) || force) {
+				if (window.currentEditingLayer === layer) d20plus.ui.switchToR20Layer();
+				d20plus.ui.layerVisibilityIcon(layer, false);
+				if (!d20plus.engine.layersIsMarkedAsHidden(layer)) {
+					page.set(`bR20cfg_hidden`, `${page.get(`bR20cfg_hidden`)} ${layer}`);
+					page.save();
+				}
+			}
+		} else {
+			d20plus.engine.objectsHideUnhide("layer", layer, "layeroff", true);
+			d20plus.ui.layerVisibilityIcon(layer, true);
+			if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
+				page.set(`bR20cfg_hidden`, page.get(`bR20cfg_hidden`).replace(` ${layer}`, ""));
+				page.save();
 			}
 		}
+	}
+
+	d20plus.engine._objectsStashProps = (obj, visible) => {
+		[
+			"emits_bright_light",
+			"emits_low_light",
+			"has_directional_bright_light",
+			"has_directional_dim_light",
+			"bar1_value",
+			"bar2_value",
+			"bar3_value",
+			"showname",
+		].each((prop) => {
+			if (!visible) {
+				if (obj.attributes[prop]) {
+					obj.attributes[`bR20_${prop}`] = obj.attributes[prop];
+					obj.attributes[prop] = false;
+				}
+			} else {
+				if (obj.attributes[`bR20_${prop}`]) {
+					obj.attributes[prop] = obj.attributes[`bR20_${prop}`];
+					obj.attributes[`bR20_${prop}`] = null;
+				}
+			}
+		});
+	}
+
+	d20plus.engine._graphicsStashToRight = (_this, visible) => {
+		const xAttr = _this.x !== undefined ? "x" : "left";
+		if (typeof _this[xAttr] !== "number") return;
+		if (!visible) {
+			const page = d20.Campaign.pages.get(_this.page_id) || d20.Campaign.activePage();
+			const newLeft = _this[xAttr] + page.get("width") * 70;
+			_this.bR20_left = _this[xAttr];
+			_this[xAttr] = newLeft;
+		} else {
+			if (_this.bR20_left) {
+				_this[xAttr] = _this.bR20_left;
+				_this.bR20_left = null;
+			}
+		}
+	}
+
+	d20plus.engine.objectsHideUnhide = (query, val, prefix, visible) => {
+		let some = false;
+		for (const o of d20.engine.canvas._objects) {
+			if (!o.model) continue;
+			if (`${o.model.get(query)}`.search(val) > -1) {
+				const _this = o.model.attributes;
+				const {layer} = o.model.attributes;
+				if (visible) {
+					if (_this.bR20_hidden && _this.bR20_hidden.search(prefix) > -1) {
+						_this.bR20_hidden = _this.bR20_hidden.replace(`${prefix}_`, "");
+						if (_this.type !== "path") {
+							_this.layer = layer.replace(`${prefix}_`, "");
+							if (!_this.bR20_hidden) {
+								d20plus.engine._objectsStashProps(o.model, true);
+							}
+						} else if (!_this.bR20_hidden) {
+							d20plus.engine._graphicsStashToRight(_this, true);
+						}
+						o.saveState();
+						o.model.save();
+						some = true;
+					}
+				} else {
+					if (!_this.bR20_hidden || _this.bR20_hidden.search(prefix) === -1) {
+						_this.bR20_hidden = `${prefix}_${_this.bR20_hidden || ""}`;
+						if (_this.type !== "path") {
+							_this.layer = `${prefix}_${layer}`;
+							d20plus.engine._objectsStashProps(o.model, false);
+						} else {
+							d20plus.engine._graphicsStashToRight(_this, false);
+						}
+						o.saveState();
+						o.model.save();
+						some = true;
+					}
+				}
+			}
+		}
+		return some;
+	};
+
+	d20plus.engine.portalsHideUnhide = (viewid, prefix, visible) => {
+		const page = d20.Campaign.activePage();
+		[`doors`, `windows`].forEach(e => page[e].models.forEach(it => {
+			const _this = it.attributes;
+			if (!it.get(viewid)) return;
+			if (visible) {
+				if (_this.bR20_hidden && _this.bR20_hidden.search(prefix) > -1) {
+					_this.bR20_hidden = _this.bR20_hidden.replace(`${prefix}_`, "");
+					if (!_this.bR20_hidden) {
+						d20plus.engine._graphicsStashToRight(_this, true);
+					}
+					it.save();
+					it.createView();
+				}
+			} else {
+				if (!_this.bR20_hidden || _this.bR20_hidden.search(prefix) === -1) {
+					_this.bR20_hidden = `${prefix}_${_this.bR20_hidden || ""}`;
+					d20plus.engine._graphicsStashToRight(_this, false);
+					it.save();
+					it.createView();
+				}
+			}
+		}))
+	};
+
+	d20plus.engine.addLayers = () => {
+		d20plus.ut.log("Adding layers");
 
 		d20.engine.canvas._renderAll = _.bind(d20plus.mod.renderAll, d20.engine.canvas);
 		d20.engine.canvas.sortTokens = _.bind(d20plus.mod.sortTokens, d20.engine.canvas);
 		d20.engine.canvas.drawAnyLayer = _.bind(d20plus.mod.drawAnyLayer, d20.engine.canvas);
 		d20.engine.canvas.drawTokensWithoutAuras = _.bind(d20plus.mod.drawTokensWithoutAuras, d20.engine.canvas);
+
+		if (window.is_gm) {
+			$(document).on("d20:new_page_fully_loaded", d20plus.engine.checkPageSettings);
+			d20plus.engine.checkPageSettings();
+		}
 	};
+
+	d20plus.engine.checkPageSettings = () => {
+		if (!d20plus.cfg.getOrDefault("canvas", "extraLayerButtons")) return;
+		if (!d20.Campaign.activePage() || !d20.Campaign.activePage().get) {
+			setTimeout(d20plus.engine.checkPageSettings, 50);
+		} else {
+			d20plus.engine.layersVisibilityCheck();
+		}
+	}
 
 	d20plus.engine.removeLinkConfirmation = function () {
 		d20.utils.handleURL = d20plus.mod.handleURL;

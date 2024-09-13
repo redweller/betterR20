@@ -381,7 +381,11 @@ function d20plusMod () {
 		e && !window.is_gm && (e.hideResizers = !0),
 		this.clipTo ? fabric.util.clipContext(this, p) : p.save(),
 		v.tokens = u.map,
-		this.drawMapLayer(p, v);
+		this.drawMapLayer(p, v),
+		// BEGIN MOD
+		v.tokens = u.floors,
+		this.drawAnyLayer(p, v, "floors");
+		// END MOD
 		const n = v && v.grid_before_afow
 		  , y = !d20.Campaign.activePage().get("adv_fow_enabled") || v && v.disable_afow
 		  , d = !d20.Campaign.activePage().get("showgrid") || v && v.disable_grid;
@@ -389,7 +393,7 @@ function d20plusMod () {
 		!y && window.largefeats && d20.canvas_overlay.drawAFoW(d20.engine.advfowctx, d20.engine.work_canvases.floater.context),
 		!n && !d && d20.canvas_overlay.drawGrid(p),
 		// BEGIN MOD
-		["background", "objects", "foreground"].forEach(layer => {
+		["background", "objects", "roofs", "foreground"].forEach(layer => {
 			v.tokens = u[layer],
 			this.drawAnyLayer(p, v, layer);
 		}),
@@ -410,8 +414,10 @@ function d20plusMod () {
 		const v = {
 			map: [],
 			// BEGIN MOD
+			floors: [],
 			background: [],
 			objects: [],
+			roofs: [],
 			foreground: [],
 			gmlayer: [],
 			weather: [],
@@ -427,12 +433,12 @@ function d20plusMod () {
 	// END ROLL20 CODE
 
 	d20plus.mod.setAlpha = function (layer) {
-		const l = ["map", "walls", "weather", "background", "objects", "foreground", "gmlayer"];
+		const l = ["map", "floors", "walls", "weather", "background", "objects", "roofs", "foreground", "gmlayer"];
 		const o = ["background", "objects", "foreground"];
 		return !window.is_gm 
 			|| (o.includes(layer) && o.includes(window.currentEditingLayer))
 			|| (l.indexOf(window.currentEditingLayer) >= l.indexOf(layer)
-				&& !(o.includes(layer) && window.currentEditingLayer === "gmlayer"))
+				&& !((layer === "roofs" || o.includes(layer)) && window.currentEditingLayer === "gmlayer"))
 			? 1 : (layer === "gmlayer" ? d20.engine.gm_layer_opacity : .5);
 	}
 
@@ -474,34 +480,6 @@ function d20plusMod () {
 		),
 		v.restore()
 	},
-	// END ROLL20 CODE
-
-	// BEGIN ROLL20 CODE
-	d20plus.mod.editingLayerOnclick = () => {
-		$("#editinglayer").off(clicktype).on(clicktype, "li", function() {
-			var e = $(this);
-			$("#editinglayer").removeClass(window.currentEditingLayer);
-			$("#drawingtools .choosepath").show();
-			"polygon" !== d20.engine.mode && $("#drawingtools").hasClass("polygon") && $("#drawingtools").removeClass("polygon").addClass("path");
-
-			// BEGIN MOD
-			if (e.hasClass("chooseweather")) {
-				window.currentEditingLayer = "weather";
-				$("#drawingtools .choosepath").hide();
-				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon")
-			} else {
-				e.hasClass("choosebackground") ? window.currentEditingLayer = "background" : e.hasClass("chooseforeground") ? window.currentEditingLayer = "foreground" : e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
-					$("#drawingtools .choosepath").hide(),
-				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon"));
-			}
-			// END MOD
-			$("#editinglayer").addClass(window.currentEditingLayer);
-
-			// BEGIN MOD
-			d20.Campaign.activePage().onLayerChange();
-			// END MOD
-		});
-	};
 	// END ROLL20 CODE
 
 	// prevent prototype methods from breaking some poorly-written property loops

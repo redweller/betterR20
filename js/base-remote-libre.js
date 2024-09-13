@@ -4,6 +4,7 @@ function remoteLibre () {
 			return fetch("https://api.github.com/repos/DMsGuild201/Roll20_resources/contents/playlist")
 				.then(response => response.json())
 				.then(data => {
+					if (!data.filter) return;
 					const promises = data.filter(file => file.download_url.toLowerCase().endsWith(".json"))
 						.map(file => d20plus.remoteLibre.downloadPlaylist(file.download_url));
 					return Promise.all(promises).then(res => d20plus.remoteLibre.processRemotePlaylists(res));

@@ -21,6 +21,14 @@ function initHTMLTokenEditor () {
 						<h2>Dynamic Lighting</h2>
 					</a>
 				</li>
+				<!-- BEGIN MOD -->
+				<li class='nav-tabs--beta'>
+					<span class="label label-info">bR20</span>
+					<a class='go_to_image_editor' data-tab='image' href='javascript:void(0);'>
+						<h2>Edit Image</h2>
+					</a>
+				</li>
+				<!-- END MOD -->
 			</ul>
 			<div class='tab-content'>
 				<div class='basic tab-pane tokeneditor__details'>
@@ -121,6 +129,10 @@ function initHTMLTokenEditor () {
 							<div class='tokeneditor__row'>
 								<button class='btn btn-primary update_default_token'>Update Default Token</button>
 								<a class='showtip pictos' title='Copy a snapshot of this token’s image and settings as the default token for this character.'>?</a>
+							</div>
+							<div class='tokeneditor__row'>
+								<button class='btn btn-primary go_to_character'>Open Character Sheet</button>
+								<a class='showtip pictos' title='Open the character sheet linked to this token (alt + double click on token).'>?</a>
 							</div>
 							<$ } $>
 							<!-- Tint Color -->
@@ -647,7 +659,7 @@ function initHTMLTokenEditor () {
 				<!-- Dynamic Lighting -- Legacy lighting is under Advanced within this. -->
 				<div class='prototype tab-pane'>
 					<div class='alert alert-info' role='alert'>
-						<p><a href="https://help.roll20.net/hc/en-us/articles/360051754954-Token-Settings" target='' _blank''>Easily convert your legacy settings with the Convert Lighting tool </a></p>
+						<p><a href="https://help.roll20.net/hc/articles/360051754954-Token-Settings" target='' _blank''>Easily convert your legacy settings with the Convert Lighting tool </a></p>
 					</div>
 					<div class='token_vision'>
 						<p class='token_vision_title'>Token Vision</p>
@@ -1083,6 +1095,30 @@ function initHTMLTokenEditor () {
 							</div>
 						</div>
 					</div>
+				</div>
+				<div class='image tab-pane'>
+					<div class='modal-tokeneditor-header'>
+						<h3 class='d-inline'>Edit Token Image</h3>
+					</div>
+					<div class="modal-tokeneditor-body">
+						<div class='tokeneditor__row'>
+							<button class='btn btn-primary go_to_image_editor'>Load Image Editor</button>
+							<a class='showtip pictos' title='Load editor for image or multiple images stored in this token.'>?</a>
+						</div>
+					</div>
+					<style type="text/css">
+						.modal-tokeneditor-body .ui-dialog-titlebar {
+							display: none
+						}
+
+						.modal-tokeneditor-body .ui-dialog-buttonset {
+							display: none
+						}
+
+						.modal-tokeneditor-body h4 {
+							display: block
+						}
+					</style>
 				</div>
 			</div>
 		</div>

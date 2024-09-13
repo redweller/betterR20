@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.35.11";
+const SCRIPT_VERSION = "1.35.185.2a";
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -21,12 +21,12 @@ const analyticsBlocking = `
 `;
 
 const HEADER_CORE = `// ==UserScript==
-// @name         betteR20-core
+// @name         betteR20-alpha-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
-// @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
+// @updateURL    https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-core.meta.js
+// @downloadURL  https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
 // @author       TheGiddyLimit
 ${matchString}
@@ -37,12 +37,12 @@ ${analyticsBlocking}
 `;
 
 const HEADER_5ETOOLS = `// ==UserScript==
-// @name         betteR20-5etools
+// @name         betteR20-alpha-5etools
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-5etools.meta.js
-// @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-5etools.user.js
+// @updateURL    https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-5etools.meta.js
+// @downloadURL  https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-5etools.user.js
 // @description  Enhance your Roll20 experience
 // @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne/Cucucc/Cee/oldewyrm/darthbeep/Mertang/Redweller
 ${matchString}
@@ -175,6 +175,9 @@ const SCRIPTS = {
 			"base-chat-languages",
 			"base-chat-emoji",
 			"base-chat",
+			"base-ba-character",
+			"base-ba-rolltemplates",
+			"base-ba",
 			"base-remote-libre",
 			"base-jukebox-widget",
 
@@ -218,6 +221,9 @@ const SCRIPTS = {
 			"base-chat-languages",
 			"base-chat-emoji",
 			"base-chat",
+			"base-ba-character",
+			"base-ba-rolltemplates",
+			"base-ba",
 			"base-remote-libre",
 			"base-jukebox-widget",
 

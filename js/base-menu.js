@@ -46,15 +46,20 @@ function baseMenu () {
 			lastSceneUid: null,
 		};
 
+		const tagSize = "?roll20_token_size=";
+		const tagSkip = "?roll20_skip_token=";
+
 		/* eslint-disable */
 
 		// BEGIN ROLL20 CODE
 		var e, t = !1, n = [];
-		var i = function() {
+		d20plus.ut.injectCode(d20.token_editor, "closeContextMenu", (func) => {
 			t && (t.remove(),
 				t = !1),
-			e && clearTimeout(e)
-		};
+			e && clearTimeout(e);
+			func();
+		})
+		var i = d20.token_editor.closeContextMenu;
 		var r = function (r) {
 			var o, a;
 			r.changedTouches && r.changedTouches.length > 0 ? (o = r.changedTouches[0].pageX,
@@ -357,17 +362,27 @@ function baseMenu () {
 									i();
 						else if ("side_random" == e) {
 							d20.engine.canvas.getActiveGroup() && d20.engine.unselect();
-							var d = [];
+							var d = []
+								// BEGIN MOD
+								, prevUrl = "none";
+								// END MOD
 							_.each(n, function(e) {
 								if (e.model && "" != e.model.get("sides")) {
 									var t = e.model.get("sides").split("|")
 										, n = t.length
-										, i = d20.textchat.diceengine.random(n);
 									// BEGIN MOD
-									const imgUrl = unescape(t[i]);
-									e.model.save(getRollableTokenUpdate(imgUrl, i)),
+										, i = -1
+										, imgUrl = tagSkip;
+									const tweakRandom = t.filter(j => !unescape(j).includes(tagSkip)).length > 1;
+									while (imgUrl.includes(tagSkip)) {
+										i = d20.textchat.diceengine.random(n);
+										const tUrl = unescape(t[i]);
+										imgUrl = tweakRandom && tUrl === prevUrl ? tagSkip : tUrl;
+									}
+									prevUrl = imgUrl;
+									const trueUrl = getRollableTokenUpdate(imgUrl, i, e.model);
+									d.push(trueUrl);
 									// END MOD
-										d.push(t[i])
 								}
 							}),
 								d20.textchat.rawChatInput({
@@ -389,7 +404,7 @@ function baseMenu () {
 										const imgUrl = unescape(o[r]);
 										d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
 											// BEGIN MOD
-											e.model.save(getRollableTokenUpdate(imgUrl, r)),
+											getRollableTokenUpdate(imgUrl, r, e.model),
 											// END MOD
 											a.off("slide"),
 											a.dialog("destroy").remove()
@@ -584,8 +599,8 @@ function baseMenu () {
 						} else if ("back-one" === e) {
 							d20plus.engine.backwardOneLayer(n);
 							i();
-						} else if ("rollertokenresize" === e) {
-							resizeToken();
+						} else if ("edittokenimages" === e) {
+							d20plus.menu.editToken();
 							i();
 						} else if ("copy-tokenid" === e) {
 							const sel = d20.engine.selected();
@@ -810,74 +825,354 @@ function baseMenu () {
 
 		/* eslint-enable */
 
-		function getRollableTokenUpdate (imgUrl, curSide) {
-			const m = /\?roll20_token_size=(.*)/.exec(imgUrl);
+		function getRollableTokenUpdate (imgUrl, currentSide, token) {
+			const [imgsrc, m] = (imgUrl || "").replace(tagSkip, "").split(tagSize);
 			const toSave = {
-				currentSide: curSide,
-				imgsrc: imgUrl,
+				currentSide,
+				imgsrc,
 			};
 			if (m) {
-				toSave.width = 70 * Number(m[1]);
-				toSave.height = 70 * Number(m[1])
+				if (isNaN(m) && m?.split) {
+					const [w, h] = m.split("x");
+					if (!isNaN(w) && !isNaN(h)) {
+						toSave.width = Number(w);
+						toSave.height = Number(h);
+					}
+				} else {
+					toSave.width = 70 * Number(m);
+					toSave.height = 70 * Number(m)
+				}
 			}
-			return toSave;
+			token.save(toSave);
+			return imgsrc;
 		}
 
-		function resizeToken () {
-			const sel = d20.engine.selected();
+		function tokenEditorTexts (selection) {
+			const name = selection.length > 1 ? "You are editing multiple tokens" : selection[0].model?.attributes?.name || "Unnamed token";
+			const description = selection.length > 1 ? `
+				If you press "Save", the changes will be applied to each of the selected tokens, making them multi-sided if you have multiple images on the list below
+			` : selection[0].model.attributes.sides ? `
+				You are currently editing images for multi-sided token. Add or remove as many sides as you want. If only one image remains, the token will become a single-sided one
+			` : `
+				Currently this token is represented by a single image. Add more images to convert it to multi-sided token
+			`;
+			const tokenList = selection.length <= 1 ? "" : selection.reduce((r, t) => `${r}
+				<div class="tokenbox selected" data-tokenid="${t.model.id}" data-tokenimg="${t.model.attributes.imgsrc}">
+					<div class="inner">
+						<img src="${t.model.attributes.imgsrc}">
+						<div class="name">${t.model.attributes.name}</div>
+					</div>
+				</div>
+			`, "");
+			return {name, description, tokenList};
+		}
 
-			const options = [["Tiny", 0.5], ["Small", 1], ["Medium", 1], ["Large", 2], ["Huge", 3], ["Gargantuan", 4], ["Colossal", 5]].map(it => `<option value='${it[1]}'>${it[0]}</option>`);
-			const dialog = $(`<div><p style='font-size: 1.15em;'><strong>${d20.utils.strip_tags("Select Size")}:</strong> <select style='width: 150px; margin-left: 5px;'>${options.join("")}</select></p></div>`);
-			dialog.dialog({
-				title: "New Size",
-				beforeClose: function () {
-					return false;
+		d20plus.menu.editToken = (tokenId) => {
+			const selection = tokenId
+				? d20.engine.canvas._objects.filter(t => t.model.id === tokenId)
+				: d20.engine.selected().filter(t => t.type === "image");
+			if (!selection.length) return;
+			const images = [];
+			const added = [];
+			const $dialog = $(d20plus.html.tokenImageEditor);
+			const $list = $dialog.find(".tokenimagelist tbody");
+			const $tokenList = $dialog.find(".tokenlist");
+			const sizes = [["tiny - half square", "0.5"], ["small - 1x1", "1.0"], ["medium - 1x1", "1"], ["large - 2x2", "2"], ["huge - 3x3", "3"], ["gargantuan - 4x4", "4"], ["colossal - 5x5", "5"], ["custom", "0"]];
+			const findStandardSize = (w, h) => {
+				return (w === h && sizes.find(s => s[1] === `${w / 70}`)?.last()) || "0";
+			}
+			const addImageOnInit = (img, add) => {
+				const sizeChanged = img.w !== images.last()?.w || img.h !== images.last()?.h;
+				if (images.length && sizeChanged) $list.variedSizes = true;
+				images.push(img);
+				added.push(add || img.url);
+			}
+			selection.forEach(t => {
+				const sides = t.model.attributes.sides?.split("|");
+				const token = t.model.attributes.imgsrc;
+				const {width: tw, height: th} = t.model.attributes;
+				if (sides.length > 1) {
+					const curSide = sides[t.model.attributes.currentSide] || token;
+					sides.forEach((s, k) => {
+						const checked = unescape(s);
+						const listed = added.indexOf(checked);
+						const [url, size] = checked.split(tagSize);
+						const [sw, sh] = (size || "").split("x");
+						const image = {
+							url: url.replaceAll(tagSkip, ""),
+							skip: url.includes(tagSkip),
+							face: unescape(curSide).includes(url),
+							w: tw,
+							h: th,
+						};
+						if (listed !== -1) {
+							if (k === t.model.attributes.currentSide) images[listed].face = true;
+							return;
+						} else if (!isNaN(size)) {
+							Object.merge(image, {size, w: size * 70, h: size * 70});
+						} else if (!isNaN(sw) && !isNaN(sh)) {
+							Object.merge(image, {size: "0", w: sw, h: sh});
+						}
+						addImageOnInit(image, checked);
+					});
+				} else {
+					const listed = added.indexOf(t.model.attributes.imgsrc);
+					if (listed !== -1) images[listed].face = true;
+					else addImageOnInit({url: t.model.attributes.imgsrc, face: true, w: tw, h: th});
+				}
+			});
+			if ($list.variedSizes) {
+				images.forEach(i => { if (i.size === undefined) i.size = findStandardSize(i.w, i.h); });
+			}
+			const htmls = tokenEditorTexts(selection);
+			const resetTokens = () => {
+				$tokenList.find(".selected").each((k, t) => {
+					const $token = $(t);
+					const $tokenimage = $token.find("img");
+					$tokenimage.attr("src", $token.data("tokenimg"));
+				});
+			}
+			const buildList = () => {
+				if (images.length === 1) {
+					$list.someImageSelected = true;
+					images[0].selected = true;
+				}
+				$list.html(images.reduce((r, i, k) => `${r}
+					<tr class="tokenimage${images.length === 1 ? " lastone" : ""}${i.skip ? " skipped" : ""}" data-index="${(i.id = k, k)}">
+						<td style="padding:0px;" title="Current image">
+							<input class="face" type="checkbox"${i.selected ? " checked" : ""}>
+						</td>
+						<td>
+							<div class="dropbox filled">
+							<div class="inner"><img src="${i.url}"><div class="remove"><span>Drop a file</span></div></div>
+							</div>
+						</td>
+						<td>
+							<label>Select size:</label><select>${sizes.reduce((o, s) => `${o}
+								<option value="${s[1]}"${s[1] === i.size ? " selected" : ""}>${s[0]}</option>
+							`, `<option>default (keep as is)</option>`)}</select>
+							<span class="custom${i.size === "0" ? " set" : ""}"><input class="w" value="${i.w}"> X <input class="h" value="${i.h}">px</span>
+							<label class="skippable"><input class="toskip" type="checkbox"${i.skip ? " checked" : ""}> Skip side on randomize</label>
+						</td>
+						<td style="padding:0px;">
+							<span class="btn url" title="Edit URL...">j</span>
+							<span class="btn delete" title="Delete">#</span>
+						</td>
+					</tr>
+				`, ""));
+				if (!$list.someImageSelected) {
+					images.forEach((i, k) => {
+						if (i.face) $list.find("input.face").eq(k).prop({indeterminate: true});
+					});
+				}
+			}
+			$dialog.dialog({
+				autoopen: true,
+				title: "Edit token image(s)",
+				width: 450,
+				open: () => {
+					buildList();
+					$tokenList.html(htmls.tokenList);
+					$dialog.parent().css("maxHeight", "80vh").css("top", "10vh");
+					$dialog.find(".edittitle").text(htmls.name);
+					$dialog.find(".editlabel").text(htmls.description);
+					$list.droppable({
+						greedy: true,
+						tolerance: "pointer",
+						hoverClass: "ui-dropping",
+						scope: "default",
+						accept: ".resultimage, .library-item, .journalitem.character",
+						drop: (evt, $d) => {
+							evt.originalEvent.dropHandled = !0;
+							evt.stopPropagation();
+							evt.preventDefault();
+							$d.helper.detach();
+							const char = d20.Campaign.characters.get($d.draggable.data("itemid"));
+							const dtoken = JSON.parse(char?._blobcache.defaulttoken || "{}");
+							const url = $d.draggable.data("fullsizeurl")
+								|| $d.draggable.data("url")
+								|| dtoken.imgsrc;
+							const img = document.elementFromPoint(evt.clientX, evt.clientY);
+							const id = img.tagName === "IMG" ? $(img).closest(".tokenimage").data("index") : undefined;
+							if (images[id]?.url && url) {
+								images[id].url = url;
+								$list.find(".dropbox img").eq(id).attr("src", url);
+								if (images[id].selected) $tokenList.find(".selected img").attr("src", images[id].url);
+							} else if (url) {
+								if ($list.variedSizes && dtoken.width) {
+									const [w, h] = [dtoken.width, dtoken.height];
+									const size = findStandardSize(w, h);
+									images.push({url, size, w, h});
+								} else {
+									images.push({url, w: 70, h: 70});
+								}
+								buildList();
+							}
+						},
+					});
+					$dialog.on(window.mousedowntype, ".tokenbox", evt => {
+						const $token = $(evt.currentTarget);
+						if ($token.hasClass("selected")) {
+							if ($tokenList.find(".selected").length > 1) {
+								$token.removeClass("selected");
+								$token.find("img").attr("src", $token.data("tokenimg"));
+							}
+						} else {
+							$token.addClass("selected");
+							if ($list.someImageSelected) $token.find("img").attr("src", images.find(i => i.selected)?.url);
+						}
+					}).on("change", "select", evt => {
+						const $changed = $(evt.target);
+						const $token = $changed.parent();
+						const $custom = $token.find(".custom").removeClass("set");
+						const newSize = $changed.val();
+						const id = $changed.closest(".tokenimage").data("index");
+						if (newSize > 0) {
+							$token.find(".w, .h").val(newSize * 70);
+							images[id].size = newSize;
+							$list.variedSizes = true;
+						} else {
+							delete images[id].size;
+							if (newSize === "0") {
+								$list.variedSizes = true;
+								images[id].size = newSize;
+								images[id].w = $token.find(".w").val();
+								images[id].h = $token.find(".h").val();
+								$custom.addClass("set");
+							}
+						}
+					}).on("change", "input.face", evt => {
+						const id = $(evt.target).closest(".tokenimage").data("index");
+						const isChecked = $(evt.target).prop("checked");
+						const $allBoxes = $list.find("input.face");
+						if (isChecked) {
+							$list.someImageSelected = true;
+							$allBoxes.prop({checked: false}).prop({indeterminate: false});
+							$(evt.target).prop({checked: true});
+							$tokenList.find(".selected img").attr("src", images[id].url);
+							images.forEach((i, k) => {
+								if (k === id) i.selected = true;
+								else i.selected = false;
+							});
+						} else {
+							$list.someImageSelected = false;
+							images[id].selected = false;
+							resetTokens();
+							images.forEach((i, k) => {
+								if (i.face) $allBoxes.eq(k).prop({indeterminate: true});
+							});
+						}
+					}).on("change", "input.toskip", evt => {
+						const $token = $(evt.target).closest(".tokenimage");
+						const id = $token.data("index");
+						const isChecked = $(evt.target).prop("checked");
+						if (isChecked) {
+							$token.addClass("skipped");
+							images[id].skip = true;
+						} else {
+							$token.removeClass("skipped");
+							images[id].skip = false;
+						}
+					}).on("change", "input .w, input.h", evt => {
+						const $token = $(evt.target).closest(".tokenimage");
+						const id = $token.data("index");
+						const set = {w: $token.find(".w").val(), h: $token.find(".h").val()};
+						if (isNaN(set.w) || isNaN(set.h)) return;
+						images[id].w = set.w;
+						images[id].h = set.h;
+					}).on(window.mousedowntype, ".url", evt => {
+						const $token = $(evt.target).closest(".tokenimage");
+						const $image = $token.find("img");
+						const id = $token.data("index");
+						const url = window.prompt("Edit URL", $image.attr("src"));
+						if (!url) return;
+						d20plus.art.setLastImageUrl(url);
+						images[id].url = url;
+						$image.attr("src", url);
+					}).on(window.mousedowntype, ".delete", evt => {
+						const $deleted = $(evt.target).closest(".tokenimage");
+						const id = $deleted.data("index");
+						if (images.length <= 1) return;
+						if (images[id].selected) {
+							$list.someImageSelected = false;
+							resetTokens();
+						}
+						images.splice(id, 1);
+						buildList();
+						if (images.length === 1) {
+							$list.someImageSelected = true;
+							$list.find("input.face").prop({checked: true});
+							$tokenList.find(".selected img").attr("src", images[0].url);
+						}
+					}).on(window.mousedowntype, ".addimageurl", () => {
+						const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
+						if (!url) return;
+						d20plus.art.setLastImageUrl(url);
+						images.push({url, w: 70, h: 70});
+						buildList();
+					})
+				},
+				close: () => {
+					$dialog.off();
+					$dialog.dialog("destroy").remove();
 				},
 				buttons: {
-					Submit: function () {
-						const size = dialog.find("select").val();
-						d20.engine.unselect();
-						sel.forEach(it => {
-							const nxtSize = size * 70;
-							const sides = it.model.get("sides");
-							if (sides) {
-								const ueSides = unescape(sides);
-								const cur = it.model.get("currentSide");
-								const split = ueSides.split("|");
-								if (split[cur].includes("roll20_token_size")) {
-									split[cur] = split[cur].replace(/(\?roll20_token_size=).*/, `$1${size}`);
-								} else {
-									split[cur] += `?roll20_token_size=${size}`;
-								}
-								const toSaveSides = split.map(it => escape(it)).join("|");
-								const toSave = {
-									sides: toSaveSides,
-									width: nxtSize,
-									height: nxtSize,
-								};
-								// eslint-disable-next-line no-console
-								console.log(`Updating token:`, toSave);
-								it.model.save(toSave);
+					save: {
+						text: "Save changes",
+						click: () => {
+							const save = {};
+							if (images.length > 1) {
+								save.sides = images.map(i => {
+									const skipped = i.skip ? tagSkip : "";
+									const size = i.size ? tagSize + (i.size === "0" ? `${i.w}x${i.h}` : i.size) : "";
+									return escape(i.url + skipped + size);
+								}).join("|");
 							} else {
-								// eslint-disable-next-line no-console
-								console.warn("Token had no side data!")
+								save.sides = "";
 							}
-						});
-						dialog.off();
-						dialog.dialog("destroy").remove();
-						d20.textchat.$textarea.focus();
+							if ($list.someImageSelected) {
+								const selected = images.find(i => i.selected);
+								if (selected) {
+									save.imgsrc = selected.url;
+									save.currentSide = selected.id;
+									if (selected.size === "0") {
+										save.width = Number(selected.w);
+										save.height = Number(selected.h);
+									} else if (selected.size) {
+										save.width = selected.size * 70;
+										save.height = selected.size * 70;
+									}
+								}
+							}
+							if (selection.length > 1) {
+								d20.engine.unselect();
+							}
+							selection.forEach(t => {
+								if (selection.length === 1
+									|| $tokenList.find(`[data-tokenid=${t.model.id}]`).hasClass("selected")) {
+									t.model.save(save);
+								}
+							});
+							$dialog.off();
+							$dialog.dialog("destroy").remove();
+							d20.textchat.$textarea.focus();
+						},
 					},
-					Cancel: function () {
-						dialog.off();
-						dialog.dialog("destroy").remove();
+					cancel: {
+						text: "Cancel",
+						click: () => {
+							$dialog.off();
+							$dialog.dialog("destroy").remove();
+						},
 					},
 				},
 			});
+			return $dialog;
 		}
 
 		d20.token_editor.showContextMenu = r;
-		d20.token_editor.closeContextMenu = i;
-		$(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
+		// d20.token_editor.closeContextMenu = i;
+		// $(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
 	};
 }
 
