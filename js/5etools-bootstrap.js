@@ -60,6 +60,7 @@ const betteR205etools = function () {
 				// Better20 jukebox tab
 				d20plus.remoteLibre.init();
 				d20plus.jukeboxWidget.init();
+				d20plus.artLib.init();
 			}
 			d20.Campaign.pages.each(d20plus.bindGraphics);
 			d20.Campaign.activePage().collection.on("add", d20plus.bindGraphics);
