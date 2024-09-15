@@ -49,7 +49,7 @@ const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
 - new r20 Page Menu hotfix
 `;
 
-SCRIPT_ALPHA_DESCRIPTION = `<p>This version contains following changes<br><code>-- Beta features overview:</code><br>⦁ Mouseover hints on Conditions<br>⦁ Filter Imports by List<br>⦁ Extra Layers functionality<br>⦁ Token Images Editor<br>⦁ Better token Actions & Automation<br>⦁ Some fixes related to roll20 newUI<br>⦁ ArtRepo is restored from backup repo<br><code>-- Pre-release 185a:</code><br>⦁ Update libs and data to latest 5etools versions<br><code>-- v.185.5a:</code><br>⦁ URLs now point to the main site<br></p>`;
+SCRIPT_ALPHA_DESCRIPTION = `<p>This version contains following changes<br><code>-- Alpha features overview:</code><br>⦁ Mouseover hints on Conditions<br>⦁ Filter Imports by List<br>⦁ Extra Layers functionality<br>⦁ Token Images Editor<br>⦁ Better token Actions & Automation<br>⦁ Some fixes related to roll20 newUI<br>⦁ ArtRepo is restored from backup repo<br><code>-- Pre-release 185a:</code><br>⦁ Update libs and data to latest 5etools versions<br><code>-- v.185.5a:</code><br>⦁ URLs now point to the main site<br><code>-- v.185.6a:</code><br>⦁ Fix class import<br><code>-- v.185.7a:</code><br>⦁ Major 5etools data update<br></p>`;
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -395,12 +395,17 @@ const CHANGED_SCRIPTS = [
 	"templates/template-page-views",
 	"templates/template-page-weather",
 	"5etools-config",
+	"5etools-css",
+	"5etools-backgrounds",
+	"5etools-psionics",
 	"5etools-classes",
 	"5etools-main",
 	"5etools-tool",
 	"5etools-vehicles",
 	"5etools-monsters",
 	"5etools-objects",
+	"5etools-template",
+	"5etools-importer",
 	"base-art",
 	"base-art-browse",
 	"base-remote-libre",
