@@ -504,7 +504,7 @@ function baseToolDLImport () {
 	d20plus.tool.tools.push({
 		toolId: "DLIMPORT",
 		name: "Universal DL Importer",
-		desc: "Import map data from DungeonDraft and Dungeon Alchemist",
+		desc: "Import map data from DungeonDraft (UVTT) and Dungeon Alchemist",
 		html: ``,
 		dialogFn: () => {},
 		openFn: () => {

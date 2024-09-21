@@ -50,8 +50,8 @@ function baseMenu () {
 			lastSceneUid: null,
 		};
 
-		const tagSize = "?roll20_token_size=";
-		const tagSkip = "?roll20_skip_token=";
+		const tagSize = "#roll20_token_size=";
+		const tagSkip = "#roll20_skip_token=";
 
 		/* eslint-disable */
 
@@ -896,7 +896,7 @@ function baseMenu () {
 
 		d20plus.menu.editToken = (tokenId) => {
 			const selection = tokenId
-				? d20.engine.canvas._objects.filter(t => t.model.id === tokenId)
+				? [{model: d20plus.ut.getTokenById(tokenId)}].filter(t => !!t.model?.attributes)
 				: d20.engine.selected().filter(t => t.type === "image");
 			if (!selection.length) return;
 			const images = [];
