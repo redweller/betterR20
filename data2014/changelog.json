@@ -1,0 +1,425 @@
+[
+	{
+		"ver": "1.8.0",
+		"date": "2019-07-28",
+		"title": "Bad at Vec2 Maths",
+		"txt": "- Overhauled the measurement tool\n- Now has multiple modes; Ruler , Radius (colloquially known as a \"Circle,\" but that's lame), Cone, Box, and Line. Please do inform me of any other shapes I forgot to add.\n- Has a \"sticky\" mode, which will persist the last-drawn ruler to the table, so you can switch tool and do something else without losing your measurement. Press SHIFT while ruler-ing to enable it, or check the box.\n- [Note: I think I managed to get all this to properly sync to anyone else running the script, too. Ergo, with a mere 4 players acting in unison, it should be possible to use the ruler tool to draw dicks.]\n- Added a line-cutter tool . Largely stolen from here: https://app.roll20.net/forum/post/3190495/slug%7D (but instead of drawing a pink line and typing a command, you just click on a line to break it)\n- Added player-only Edit Config button and config options, currently very limited, but includes the ability to toggle half-grid snap\n- Added a Wild Shape Sheet Builder tool, credit to @ Bodrick\n- Fixed missing monster fluff when importing monsters from an adventure\n- Fixed \"hidden until edited\" monster save/skill import issue"
+	},
+	{
+		"ver": "1.8.1",
+		"date": "2019-08-10",
+		"txt": "Fixed line splitter for Pro users\n- Improved Wildform Builder UI\n- Get it here: https://get.5e.tools/script/betteR20-5etools.user.js?v=1.8.1"
+	},
+	{
+		"ver": "1.8.2",
+		"date": "2019-07-29",
+		"txt": "Fixed players not using the script breaking the measuring tool (and potentially other things besides) Get it here: https://get.5e.tools/script/betteR20-5etools.user.js?v=1.8.2"
+	},
+	{
+		"ver": "1.8.3",
+		"date": "2019-08-07",
+		"txt": "Hard-disabled 3d dice when the script is active. There's surprising complexity involved in the 3d dice system, and after several hours of head-scratching with zero progress, this seemed the only reasonable solution. Sorry folks.\n- Added custom line thickness options\n- Added hotkeys for the upgraded ruler (q-q; q-w; q-e; q-a; q-s -- lines/boxes on top in order of ascending area; circular rulers underneath. If this is dumb and doesn't match Roll20's scheme (they don't have one, as far as I could see, but I didn't look all that hard) do let me know, it's easily changed)\n- Fixed hotkey interaction with the script's extra tools\n- Fixed script tag indentation when chat avatars are disabled\n- Removed restrictions on some ruler inputs (e.g. there's no longer a 5-step on beam thickness)\n- Added flat-edge mode to the cone tool\n- Added \"Token\" config for players, allowing players to set token bars for NPC tokens they drag onto the table\n- Creature name show/hide in rolls can now be set in the Importer tab of the config\n- Imported creatures now have a \"level,\" fixing certain spell damage calculations\n- Fixed homebrew subclass drag-drop\n- Fixed script failing to load for players"
+	},
+	{
+		"ver": "1.8.5",
+		"date": "2019-08-15",
+		"title": "Surprisingly Well-Prepared for This Eventuality",
+		"txt": "- Updated script to be compatible with Roll20's \"Measured Update\"\n- Removed commas from monster XP\n- Custom line thickness now handles negative/fractional values more gracefully\n- Fixed horizontal cone drawing\n- Edit: A couple of hotkeys changes; Cone ruler is now on Q-C; Circle ruler is on Q-R (because it's internally referred to as [R]adius :😂:). Everything else seems to work alongside the new advanced hotkeys for the rulers.\n- Get it here: https://get.5e.tools/script/betteR20-5etools.user.js?v=1.8.5\nEDIT: Fake news, seems there's still significant issues. Further fixes Soon™"
+	},
+	{
+		"ver": "1.8.7",
+		"date": "2019-08-16",
+		"title": "Trying to Watch TI8",
+		"txt": "- Fixed various problems related to changing page/map properties\n- Fixed Spell/Item drag-drop\n- Fixed Monster import failing to respect \"Auto-Roll Damage\"\n- Made imported tags consistent across all imports; added environment (\"env\"), size, and NPC tags for imported creatures\n- Compacted rightclick -> Roll <X> options, and added \"Skills\" mass-roller\n- Added \"Forward/Back One Layer\" to rightclick menu; hotkeys pending, as they're mysteriously broken\n- Added \"Clear\" buttons to Mass-Whisper tool\n- Get it here: https://get.5e.tools/script/betteR20-5etools.user.js?v=1.8.7\n[Note: I was skimming the Roll20 forums earlier, and noticed bug reports of issues which were almost certainly caused by betteR20. If you are going to use the script, please DO NOT post bug reports without first disabling the script and ensuring it's not one of ours.]\nPart 2: - Fixed various instances of missing fluff (especially in dragons) - Made converter output editable, and title-casing of names toggle-able - Pinned list data can now be downloaded, as a rightclick option - Added various missing tags to the Demo page - Browsing to the Bestiary/Spells page from a bad URL now selects the first item - (Typo fixes/other hover-link tagging/etc)"
+	},
+	{
+		"ver": "1.9.1",
+		"date": "2019-09-04",
+		"txt": "Compatibility update for main site CR Scaler changes\n- Fixed non-PHB subclass import (as part of class import)\n- Importer now remember the last selected grouping chosen, e.g. \"Type\" or \"Alphabetical\\n- Added config option for basic horizontal UI bar transparency tweaking\n- Made dependency loading retry more often\n- As always, get it here: https://get.5e.tools/script/betteR20-5etools.user.js?ver=1.9.1\nEDIT: creature importing is a bit dicked, fix Soon™"
+	},
+	{
+		"ver": "1.9.2",
+		"date": "2019-09-05",
+		"txt": "Fixed creature conditions importing as HTML\n- Fixed issue with importing text containing tagged skills/actions (was breaking various background/race imports, probably others)\n- And a sneaky bonus feature: \"pack\" drag-n-drop should now expand the pack to its individual items\n- Link here: https://get.5e.tools/script/betteR20-5etools.user.js?v=1.9.2"
+	},
+	{
+		"ver": "1.10.0",
+		"date": "2019-09-10",
+		"title": "Roll20 Enhancement Suite Compatibility (Hopefully)",
+		"txt": "- See title. It worked on Firefox anyway (I think), but, Chrome users may now enjoy the benefits too Bigups to @ stormy, get his extension here:\n- https://ssstormy.github.io/roll20-enhancement-suite/ \n```It's preeeeetty nice: https://ssstormy.github.io/roll20-enhancement-suite/features.html```"
+	},
+	{
+		"ver": "1.11.0",
+		"date": "2019-09-11",
+		"title": "How am I Still Not Banned",
+		"txt": "- Added a Map Import/Export tool. Find it in the Tools List. Bit of a misleading (working?) title, it can do the following: \n- Dump all the pages from your current game to a text file, complete with tokens (although they don't properly link to character sheets, yet), lighting, etcetc. Bigups to the absolute madman @ Stormy for discovering the approximately four lines of code needed to do this\n- Import the above, allowing you to choose which pages you want to load back in. Note that they maintain their internal IDs, so you can't really use this to copy pages\n- And it wouldn't be 5etools without a bit of Robin-Hoodery; there's a button to load content exported straight from Roll20's published adventures. Sadly, there's (so far) only the two that I happen to own, and W:DH which was kindly donated to the cause. I forgot to ask if this person wanted credit, but they're pretty cool.\n- If you happen to own adventures other than CoS, SKT, or W:DH, please do drop me a PM with an invite to a minty-fresh copy of whatever module, and we can get this thing filled out. We caught them all. - Removed \"The Semicolon\" [I think exactly one person had noticed this, but there was a rando semicolon floating in the top-left corner of the screen.]\n\n- With regards to the map importer/exporter, more interesting is the fact that, in theory there's no reason the same technique can't be applied to the entire contents of a module (or, indeed, any custom game). Certainly something worth looking into in the (near?) future."
+	},
+	{
+		"ver": "1.12.1",
+		"date": "2019-09-14",
+		"title": "Raising the Black Flag a Notch Higher",
+		"txt": "- Added \"Module Importer/Exporte r\" tool to the tools list\nCan export/import: \n- Maps \n- Characters \n- Handouts \n- Rollable Tables \n- Decks\nContains a handy-dandy \"Load Data from 5etools\" button, which allows you to browse our\nfreshly-exported library of every single official WotC module. Huge thanks to all (see below) who donated me the games  \n- Note: the Map Importer/Exporter tool still exists, but no longer has a \"Load from 5etools\" button. Use the module tool. \n- Journal Cleaner can now delete things inside folders \n- Pauper's Character Vault now imports/exports Bio, GM Notes, and Default Token correctly\nTweaked Page Settings width/height input; now labeled \"X\" and \"Y\" and display current pixel count in each direction\nAdded workaround for old token images being cached -- a fresh copy will now be grabbed at time of import\nToken action/etc (horizontal) toolbar now goes 100% opaque on hover, hopefully preventing further confusion related to 100% transparent toolbars\n- Overhauled spellcaster importing (again), it should no longer suck\n- Improved Initiative Tracker:\n- Added Spell DC as a column option\n- Added config option to hide \"sheet\" button (now hidden by default, since one can shift-double-click tokens, for the most part)\n- Disabling tracker enhancements now reverts it to a near-default appearance\n- Tracker window is now wider by default\n- Character Default Token image can now be swapped out without having to remake the entire token; see the button under the Default Token\n- Some (very) minor UI cleanup Get it here: https://get.5e.tools/script/betteR20-5etools.user.js?v=1.12.1"
+	},
+	{
+		"ver": "1.12.2",
+		"date": "2019-09-15",
+		"txt": "Fixed missing handout notes\n- Fixed \"1 Remaining...\" displaying when module import had completed https://get.5e.tools/script/betteR20-5etools.user.js?v=1.12.2"
+	},
+	{
+		"ver": "1.12.3",
+		"date": "2019-09-15",
+		"title": "Clearly Not Announcement-Worthy",
+		"txt": "- Initiative tracker now behaves properly when creatures are missing CRs/HP formulas\n- TableExport paste now supports avatars"
+	},
+	{
+		"ver": "1.12.6",
+		"date": "2019-09-23",
+		"txt": "Removed default 5-foot light radius on tokens\n- Removed \"Confirm External Link\" prompts, because fuck 'em :point_right::door:\n- Page toolbar background is now transparent\n- Fixed missing item attunement text in handouts\n- Added rightclick -> \"Paste Image from URL \" to map\n- Added \"Sort Alphabetically\" option to the Transmogrifier\n- Added experimental \"Quantum Token Entangler\" tool, which allows you to bind tokens together across pages, linking their position/scale/rotation/flip\n- Added rightclick -> \"Advanced\" -> \"Show Token ID\" option to tokens\n- Fixed \"Import Monsters from All Sources\" button\n- Fixed some wonky Hellfire Engine and Beholder action imports\n- Hopefully fixed the \"0% transparency\" toolbar issue; appears to have been a \"commas are decimal separators lol\" localisation problem\n- Module Importer/Exporter :\n\nNow included in core\n- Removed Map Importer/Exporter, as it's a sub-set of the functionality\n- Added note about using the tool (and a link to open it) to the classico Adventure Import\n- Streamlined usage; now orders the steps for you\n- Now exports tokenactions\n- Now asks you which data categories you wish to export, instead of always exporting the entire thing\n- Fixed ruler/hex snap when used in conjunction with R20ES (I think)\n- Get it here: https://get.5e.tools/script/betteR20-5etools.user.js?v=1.12.6"
+	},
+	{
+		"ver": "1.12.7",
+		"date": "2019-09-24",
+		"txt": "Fixed cancelling prompt when adding an image directly to the map returning an error (thanks @ stormy)\n- Added error handling to tool initialisation, hopefully fixing the various #issues\n- Get it here: https://get.5e.tools/script/betteR20-5etools.user.js?v=1.12.7"
+	},
+	{
+		"ver": "1.12.8",
+		"date": "2019-09-27",
+		"txt": "Fixed Module Exporter failing on missing page attributes\n- Monster importer no longer hard-crashes on malformed/missing fluff (n.b.: fixes WDH monster import, although the fluff'll still be missing. That'll be fixed soon™)\n- Get it here https://get.5e.tools/script/betteR20-5etools.user.js?v=1.12.8"
+	},
+	{
+		"ver": "1.13.0",
+		"date": "2019-01-10",
+		"title": "Courtesy of @ Nikolay",
+		"txt": "- Shaped import drag/drop support: \n- Screenshot 1: https://user-images.githubusercontent.com/43446896/\n- 6276110-47c3b600-c589-11e8-8024-289f62da36ee.png  \n- Screenshot 2: https://user-images.githubusercontent.com/43446896/\n- 6276119-4befd380-c589-11e8-9fd5-73712bc05818.png (And here's a copy-paste the patch notes the absolute madman also provided:)\n- Feat import. Name and text.\n- Background import. Background name, feature name and text, ability check (skill) proficiency.\n- Race import. Race name, size, speed, senses, racial traits, racial ability score modifiers.\n- Optional feature (invocations, etc.) import. Name and text.\n- Class import. Name, level, hit dice, class features. Shaped sheet already has some support for many of the classes out-of-the-box, so we leverage it where appropriate. If a class is not supported by Shaped sheet, we configure it as a custom class. Mystic class received some special love -- custom spellcasting is set up for it.\n- Subclass import. Subclass features name and text.\n- Psionic abilities import. Focus, disciplines (with submodes), talents. Each includes correct name, level, text, casting time, dduration/concentration Psi points cost is encoded into: spell level, name, material components. Psionics import into handouts also changed to be aligned with other entities.\n- Get it here: https://get.5e.tools/script/betteR20-5etools.user.js?v=1.13.0 Big fuckin thank"
+	},
+	{
+		"ver": "1.4.0",
+		"date": "2019-10-14",
+		"title": "I'm In",
+		"txt": "- Added weather -\n- Can be found under Edit Config -> Weather\n- Requires players to be running the script to see it \n- Includes a custom layer, which will \"block\" weather in any filled polygons, allowing indoor areas to be specified, etc \n- Added an art browser, which reads from a monstrous spreadsheet curated by @ Ryan (Modnar) [2] -\n- The filter tags on the left side are due for a clean; please do not point out how silly the \"Flooring\" tag is, thanks.\n- Due to us not having any thumbnails for the images, is pretty clunk-tastic. Soon™\n- Doesn't remember scroll position, exacerbating the above issue. Soon™ \n- Added \"quick layer switch\" sidebar , which can be disabled in the config -\n- Added \"Streamer Friendly\" option, which hides the \"don't post this to Reddit, k?\" startup message. The person requesting this feature didn't seem concerned about the script's name being posted in chat, so that's still visible  -\n- Added \"Sort Descending\" button to initiative tracker -\n- Added Jukebox track/playlist import/export to the Module Importer/Exporter (shoutouts to @ Stormy for the prototype ) -\n- Creatures can now be renamed when importing (as part of the \"scale creatures?\" step) -\n- Added shorthand for /talktomyself: /ttms -\n- Added missing \"Set Art/Token/etc from URL\" buttons in Core version -\n- Fixed material spell components failing to populate when drag/dropping spells -\n- Fixed MTF Eladrin drag/drop -\n- Fixed WDH's Avi and Embric creature import -\n- Fixed Mass Page Deleter tool failing on corrupt-ish pages -\n- Fixed Wild Shape tool -\n- Background importer now correctly uses a feature's name when drag/dropping it to a sheet's traits -\n- Rightclick -> Image from URL now remembers the last input URL -\n- Improved import dialogs (thanks @ Stormy)"
+	},
+	{
+		"ver": "1.14.1",
+		"date": "2019-10-14",
+		"title": "Never Bothering to Test Error Handling",
+		"txt": "Prevented malformed \"Custom\" weather URLs from spamming alerts\nSwitched tracker sort button to always-available font\nAdded \"Foreground\" layer  [Edit: requires players to use the script, as with the weather]"
+	},
+	{
+		"ver": "1.14.2",
+		"date": "2019-10-14",
+		"title": "Edge Cases: Weather",
+		"txt": "- Setting weather to \"Custom\" with no image specified no longer spams popups\n- Added \"Custom\" weather direction, allowing free rotation\nhttps://get.5e.tools/script/betteR20-5etools.user.js?v=1.4.2 (and if it doesn't auto-update/show the notification, it's some cache somewhere being lame; everything's working as well as it can on our end)"
+	},
+	{
+		"ver": "1.4.3",
+		"date": "2019-10-16",
+		"txt": "Weather should now respect dynamic lighting\nAdded \"Ripple\" texture, kindly donated by <?> [Please react with the emojis \":regional_indicator_m:\" and \":regional_indicator_e:\" if you wish to receive credit for this.]\nFixed Shapeshift Token tool failing to load\nWild Form tool now allows multi-select; tries to set passive perception to the maximum of the character's vs. the beast's\nAdded an \"Oscillation\" mode to weather, which scrubs back and forth instead of infinitely scrolling in one direction\nFixed GM UI elements mistakenly being added to the player version\n(Squashed some log errors Firefox generates on encountering Chrome-only CSS rules)"
+	},
+	{
+		"ver": "1.14.5",
+		"date": "2019-01-11",
+		"txt": "Fixed missing higher-level casting on drag/dropped spells\nAdded Shaped support for Mass Rolls (thanks peacefighter1996)\nArt browser now remembers scroll position somewhat reasonably\nTweaked Art Browser layout slightly"
+	},
+	{
+		"ver": "1.14.13",
+		"date": "2019-01-03",
+		"txt": "The \"Spellcasting\" token action is now more compact/readable\nFixed position of hover GM notes while not at 1x zoom\nFixed monsters \"Import All\"\nCreature importer now handles missing spellcasting headers\nHandling for tokenURL/tokenUrl change\nUpdated Strongholds and Followers, fixing a bunch of broken links (and some typos, besides). Wipe/reload it to see the updates."
+	},
+	{
+		"ver": "1.14.14:",
+		"date": "2019-01-22",
+		"txt": "Generated skill/stat/etc macros now use wtype\nToolbar opacity is now a slider--this has almost certainly turned everyone's toolbars invisible, fix it under Config -> Interface\nHomebrew Roll20 spell data can now be specified, see here: https://github.com/TheGiddyLimit/homebrew/blob/master/spell/Sample%20-%20Giddy%3B%20Assorted%20Marginalia.json#L138\nFixed bug where archived maps wouldn't be exported\nFixed Wild Shape/Shapeshifter tool lists failing to populate"
+	},
+	{
+		"ver": "1.14.15:",
+		"date": "2019-01-22",
+		"txt": "Fixed failing initialisation soz lol"
+	},
+	{
+		"ver": "1.14.1617",
+		"date": "2019-01-29",
+		"txt": "Base compatability with Roll20's latest update (may still be issues, please report anything suspicious)\n Added config option to hide creature action descriptions on import. Config -> Import -> Hide Action Descriptions on Import"
+	},
+	{
+		"ver": "1.14.18",
+		"date": "2019-01-31",
+		"txt": "Compatibility fixes for...:\n- Shift-hover to view GM notes\n- Weather/foreground layers\n- Rightclick -> Set Flight Height (order of indicators was reversed)"
+	},
+	{
+		"ver": "1.14.19",
+		"date": "2019-03-13",
+		"txt": "- Added master volume slider for jukebox tracks (courtesy of @ Rich)\n- Renaming a monster now attempts to rename it in traits/actions/etc\n- Fixed imported creatures having bonus damage applied to crits\n- Added config option to use token as character portrait (instead of fluff image) on import\n- Added option to whisper token name to GM when doing mass-rolls\n- Fixed page settings using outdated layout\n- Fixed art browser downloads failing"
+	},
+	{
+		"ver": "1.14.21",
+		"date": "2019-03-17",
+		"txt": "Fixed double-printed \"Concentration\" in spell cards\nCompatibility for main-site changes"
+	},
+	{
+		"ver": "1.14.22",
+		"date": "2019-03-19",
+		"txt": "Added @ Rich's betteR20 jukebox track adding tab, which imports from @ Ryan (Modnar)'s repo, which is here: https://github.com/DMsGuild201/Roll20_resources/tree/master/playlist\nPauper's Character Vault can now assign characters to players as part of the import\nGet it here: https://get.5e.tools/script/betteR20-5etools.user.js?v=1.14.22"
+	},
+	{
+		"ver": "1.15.0",
+		"date": "2019-04-11",
+		"title": "At Your Own Risk",
+		"txt": "Added token animator, accessible in the Tools menu\nPic related\nSome documentation here https://gist.github.com/TheGiddyLimit/b11cdd482ca4a902bb2379ba405425be [to be added to a wiki Soon™], although there's a GUI included\nHighly experimental; we recommend testing anything remotely exotic in a temporary game rather than potentially killing your campaign\nAdded jukebox widget, accessible in the Jukebox tab, courtesy of @ Rich#1839\nIncludes ALT+(1-9) hotkeys to toggle playback\nFixed subclasses importer failing to locate base class when attempting to import homebrew\nEDIT: T'was broken, but now t'is fixed. EDIT2: couple minor bugfixes EDIT3: repeat on last, v1.15.4 live; get it 'ere: https://get.5e.tools/script/betteR20-5etools.user.js?v=1.15.4"
+	},
+	{
+		"ver": "1.15.6",
+		"date": "2019-04-11",
+		"txt": "Compatibility for main site updates above"
+	},
+	{
+		"ver": "1.15.7",
+		"date": "2019-05-25",
+		"txt": "Fixed token edits failing to save\n- Fixed tokens failing to flip when animating\n- Fixed animator accepting spaces in animation names\n- Fixed some log error spam (a[n].getReceiver us not a function)\n- Get it here: https://get.5e.tools/script/betteR20-5etools.user.js?v=1.15.7\n- EDIT: Due to some malfunctioning robots, the usual channels are broken. Get it here, instead: 5etools version: https://mega.nz/#!nxoyQahb!eP6tMIkRoB9WmSMe3DdwDJxzM5KPfAwZRLpugBKON68 core version: https://mega.nz/#!OxhylCLC!6JGjMpjackqWlKMYLRnitRaze1UTCmNmvfTtD8CU89A"
+	},
+	{
+		"ver": "1.15.8",
+		"date": "2019-05-28",
+		"txt": "Added button to \"Select All [from module contents]\" when importing modules\n- Fixed every importer creature action being an attack\n- Enjoy another round of Tampermonkey being bad at updating things; get it here: https://get.5e.tools/script/betteR20-5etools.user.js?v=1.15.8"
+	},
+	{
+		"ver": "1.15.9",
+		"date": "2019-05-28",
+		"title": "Channel Clutter",
+		"txt": "- Fixed attack actions showing as regular actions, despite working as attacks when clicked\n- Fixed case where script could repeatedly fail to fully initialise, resulting in tripled UI elements\nGet it here: https://get.5etools.com/script/betteR20-5etools.user.js?v=1.15.9"
+	},
+	{
+		"ver": "1.15.11",
+		"date": "2019-06-01",
+		"txt": "- Split save/skill/check/etc tokenaction generation options into own checkboxes - Moved \"on import\" token settings from \"Token\" config tab to \"Import\" tab [resetting your config to default in the process :^)] - Paths can now be entangled with the Quantum Token Entangler - Reworked item \"modifier\" field import, fixing it and adding many more item modifiers - Chat text area can now be resized in an effective manner - Fixed case where rollable table importer could crash on some inputs - Fixed \"Choose Side\" picker not displaying token images\n\nGet it here, if you're lucky: https://get.5etools.com/?v=1.15.11-ENTER_YOUR_NAME_HERE"
+	},
+	{
+		"ver": "1.15.10",
+		"date": "2019-06-01",
+		"txt": "- Added \"Background\" layer, underneath objects but above the map. The original idea was for use with this, I think: https://old.reddit.com/r/Roll20/comments/al8vsf/ - Fixed script failing to initialise (compatibility for latest main site update)\n- Slightly delayed because I forgot I'd half-written that background thing, and decided to finish it instead of removing it. My apologies.\n\nGet it here: https://get.5e.tools/script/betteR20-5etools.user.js?v=1.15.10 (change v=1.15.10 to something random to force it to give you a fresh copy, as required)"
+	},
+	{
+		"ver": "1.15.12",
+		"date": "2019-06-04",
+		"txt": "- Fixed Fog of War/Dynamic Lighting (hopefully) - Fixed AoE rulers - Split \"Skill\" and \"Perception\" tokenaction import options - Added link to [[1]] in \"script outdated\" notification\n\nGet it here https://get.5etools.com/script/betteR20-5etools.user.js?v=1.15.12, or see the pinned instructions in #better20-issues"
+	},
+	{
+		"ver": "1.15.13",
+		"date": "2019-06-06",
+		"txt": "- - Fixed players having their tokens vanish when dynamic lightning is enabled - Fixed token/creature editor \"controlled by\"etc. select boxes being styled strangely/n/nGet it here https://get.5e.tools/script/betteR20-5etools.user.js?v=1.15.13, or see the pinned post in #better20-issues"
+	},
+	{
+		"ver": "1.15.14",
+		"date": "2019-06-07",
+		"txt": "- Fixed stuff, probably\n- Get it here https://get.5e.tools/script/betteR20-5etools.user.js?v=1.15.14, or see the pinned post in | #better20-issues"
+	},
+	{
+		"ver": "v1.15.1516",
+		"date": "2019-06-12",
+		"txt": "- Compatibility update for main site changes\n- Fixed tokenaction import options not using their defaults, but showing the options as active/ticked in the config\n- Get it here https://get.5e.tools/script/betteR20-5etools.user.js?v=1.15.16, or see the pinned post in #better20-issues\n\n[EDIT] v14, fixing Spell page filtering [EDIT2] v15, fixing Druid Wild Shape links [EDIT3] v16, fixing some cache issues/speeding up page loads slightly"
+	},
+	{
+		"ver": "1.15.17",
+		"date": "2019-06-29",
+		"txt": "- Compatibility update for Roll20's latest changes (fixes rulers; dynamic lighting)\n- Get it here https://get.5e.tools/script/betteR20-5etools.user.js?v=1.15.17, or see the pinned post in #better20-issues"
+	},
+	{
+		"ver": "1.15.18",
+		"date": "2019-07-18",
+		"txt": "- Fixed module importer \"Select All\" (now called \"Select Everything,\" to better represent what it does) breaking import\n- Compatibility updates for main site changes\n- Get it here: https://get.5e.tools/script/betteR20-5etools.user.js?v=1.15.18, or see the pinned post in #better20-issues"
+	},
+	{
+		"ver": "1.16.2",
+		"date": "2019-07-20",
+		"txt": "- Overhauled script initialisation; is now much faster, and should produce useful errors when it doesn't work. Also less likely to spew random elements all over the screen if/when things go wrong.\n- Fixed importing creatures with no CR (seems to be the cause of most \"can't import monsters\" issues)\n- Fixed Shapeshifter Token Builder tool tokens not auto-resizing when changing their side\n- Fixed text tool de-selecting the text when releasing LMB\n- Fixed foreground objects being rendered underneath selected player tokens (I think)\n- Fixed chat box teleporting around during load (hopefully)\n- Get it here: https://get.5e.tools/script/betteR20-5etools.user.js?v=1.16.0, or see the pinned post in #better20-issues v.2, fixing chatbox https://get.5e.tools/script/betteR20-5etools.user.js?v=1.16.2"
+	},
+	{
+		"ver": "1.16.4",
+		"date": "2019-08-15",
+		"txt": "- Compatibility update for main site changes."
+	},
+	{
+		"ver": "1.16.5",
+		"date": "2019-08-20",
+		"txt": "- Added \"propSum\" operation to the Token Animator tool. This functions much like \"prop\" (aka \"SetProperty\"), but will sum any value provided with the existing value on the token instead of overwriting it.\n- Added \"DEX tiebreaker\" import option\n- Fixed spell component parsing\n- Fixed homebrew creatures failing to import due to mis-formatted senses/languages\n- Reverted foreground layer changes to combat player token appearing over foreground--that part worked, but the change also made every foreground element visible regardless of Dynamic Lighting. You'll just have to live with the floating tokens instead.\n- Restored missing \"Sort Alphabetically\" button in Transmogrifier\n- Get it here: https://get.5e.tools/script/betteR20-5etools.user.js?v=1.16.5, or see the pinned post in #better20-issues\n\nAdditionally, I would like to take this opportunity to remind you that betteR20 development is in \"maintenance only\" mode. The real party is happening over in #foundry-general, where the greatest VTT to have ever not been Fantasy Grounds just announced a big update with the final piece of their puzzle; drawing tools. Join the revolution here: https://www.patreon.com/foundryvtt"
+	},
+	{
+		"ver": "1.17.0",
+		"date": "2020-05-10",
+		"txt": "- (Hopefully) added support for Roll20's \"new\" dynamic lighting\n- Overhauled the way in which the script loads 5etools dependencies, freezing it at the current version. Some consequences of this change are:\n- Updates to 5etools won't break the Roll20 script\n- Many \"compatibility updates\" will no longer be mandatory; a copy of the script will now function as if brand-new until a Roll20 update eventually renders it useless\n- Updates to 5etools data (e.g. new Bestiary content) won't automatically be reflected in b20, requiring a b20 update instead\n- Note that the Module Importer/Exporter, while its source is hosted as 5etools data, is unaffected by this change, and any new modules added to that library will be immediately available\n- Changes to the structure of homebrew data may create incompatibilities with b20, requiring a b20 update to resolve\n- The script is now a (significantly) larger download, but should load faster\n- With this move we're aiming to provide a more stable and maintainable update cycle, with less breakage and downtime. Additionally, this change has produced a clean separation between 5etools and betteR20, allowing each to be updated without fear of breaking the other (this, historically, has been the cause of the vast majority of the script's issues).\n\nThis system has been in use by Plutonium (my Foundry module) since its inception, and has been highly successful. Hopefully this success can be reproduced in the badlands of Roll20."
+	},
+	{
+		"ver": "1.25.0",
+		"date": "2021-08-10",
+		"txt": "- Removed custom rulers. **This functionality is moving to VTTES!** (thanks @ Justas)\n- Added handling for homebrew subraces (thanks @ Mertang)\n- Added critical damage import step to Spell Importer (thanks @ Mertang)\n- Fixed Creature Importer failing to add bonus actions (thanks @ Mertang)\n- Updated Creature Importer to handle multiple reaction macros (thanks @ Mertang)\n- Fixed Feat and Optional Feature importers crashing when attempting to build prerequisite text (thanks @ Mertang)"
+	},
+	{
+		"ver": "1.25.1",
+		"date": "2021-09-05",
+		"txt": "- Fixed Roll20's analytics scripts somehow crashing betteR20 (thanks @ Justas)\n- Updated UDL template to include \"Nocturnal\" option (thanks @ Darkpulsar)\n- Fixed some backgrounds crashing on import (thanks @ darthbeep)"
+	},
+	{
+		"ver": "1.26.0",
+		"date": "2021-09-12",
+		"txt": "- Switched to GitHub URLs (instead of get.5e.tools) for update/version checks (thanks @ oldewyrm)\n- Added config option to set base site URL (thanks @ oldewyrm)\n- Removed journal \"Duplicate\" option, as VTTES includes this functionality (thanks @ oldewyrm)"
+	},
+	{
+		"ver": "1.26.1",
+		"date": "2021-09-25",
+		"txt": "- Improved Token Avatar URL Fixer tool to also replace URLs in tokens in the active scene (thanks @ asd5a)\n- Fixed last update's version check changes checking against the wrong URL (thanks @ oldewyrm)\n- (Updated to latest data files, including WBtW and AitFR content)"
+	},
+	{
+		"ver": "1.26.2",
+		"date": "2021-10-09",
+		"txt": "- Improved Background Importer, allowing you to select personality traits/ideals/bonds/flaws (thanks @ darthbeep)\n- Fixed issue which prevented 3d dice from displaying correct results with the script active, and re-enabled 3d dice (thanks @ Ken)\n- Fixed compendium imports (thanks @ oldewyrm)\n- Fixed Module Importer \"from file\" upload (thanks @ darthbeep)\n- Updated token editor to match most recent Roll20 version (thanks @ oldewyrm)\n- Added missing `/` to config site URLs (thanks @ Werring)"
+	},
+	{
+		"ver": "1.27.0",
+		"date": "2021-11-02",
+		"txt": "- Added option to import creatures from file (thanks @ darthbeep)\n- Journal Cleaner tool can now delete rollable tables and folders (thanks @ darthbeep)\n- Creature variant text is now imported to the creature's traits (thanks @ Ralakos)\n- Fixed 3D dice _even better_ this time (thanks @ Ken)\n- Fixed torch tool; fixed circle tool; fixed brightness slider (thanks @ oldewyrm)\n- Fixed Base Site URL config being sensitive to presence/absence of trailing slash (thanks @ oldewyrm)\n- Removed \"Pauper's Character Vault\" tool, as the functionality exists in VTTES (thanks @ darthbeep)\n- Removed \"QPI\" button, as it was a failed experiment (thanks @ darthbeep)\n"
+	},
+	{
+		"ver": "1.28.0",
+		"date": "2021-11-24",
+		"txt": "- Background characteristics may now be randomised during import (thanks @ Ralakos)\n- Added \"spell school\" as filterable field to Spell Importer list; added \"environment\" as filterable field to Creature Importer (thanks @ oldewyrm)\n- Added support for 5etools Bestiary \"sublist\" files to the \"Import Monsters from File\" flow (thanks @ cantbudgeit)"
+	},
+	{
+		"ver": "1.28.1",
+		"date": "2021-12-17",
+		"txt": "- Fixed loading issues (thanks @ Ken/oldewyrm)\n- Fixed light tool not showing up in all cases (thanks @ oldewyrm)\n- Fixed drag-and-drop (thanks @ oldewyrm)\n"
+	},
+	{
+		"ver": "1.28.2",
+		"date": "2022-01-09",
+		"txt": "- Fixed Roll20 layout changes preventing buttons from being added to the Settings tab (thanks @ darthbeep)\n- Optimized Tampermonkey use to avoid downloading the entire script when checking for updates (thanks @ oldewyrm)\n- Fixed missing images/fluff/stats when importing Objects (thanks @ darthbeep)\n- Tweaked \"welcome\" text and updated wiki links [currently to archived versions of the old wiki, but this may change as the new wiki is filled out] (thanks @ oldewyrm)\n- (Updated to latest data files)"
+	},
+	{
+		"ver": "1.29.0",
+		"date": "2022-01-16",
+		"txt": "- Merged various table import tools into a new single tool combining and expanding on the functionality of the old, and allowing import from user-specified URLs (thanks @ darthbeep)\n- Fixed race import (thanks @ oldewyrm)\n"
+	},
+	{
+		"ver": "1.30.0",
+		"date": "2022-02-07",
+		"txt": "- Deities are now importable as journal entries (thanks @ darthbeep)\n- Added config options to hide foreground/background/weather layers (thanks @ darthbeep) \n- Fixed Module Importer failing to import maps (thanks @ darthbeep)\n- Fixed Creature/Object Importer failing to find tokens for entities with names containing non-ASCII characters (thanks @ darthbeep)\n- (Updated to latest data files)"
+	},
+	{
+		"ver": "1.30.1",
+		"date": "2022-04-02",
+		"txt": "- Fixed \"layer\" buttons overlapping \"night mode\" button (thanks @ Lyra)\n- (Updated to latest data files; added support for latest data changes) (thanks @ darthbeep)"
+	},
+	{
+		"ver": "1.30.2",
+		"date": "2022-04-21",
+		"txt": "- Added workaround for \"session expired\" kick (thanks @ oldewyrm)"
+	},
+	{
+		"ver": "1.30.3",
+		"date": "2022-05-22",
+		"txt": "- Updated drag/drop handler to support latest compendium changes (thanks @ oldewyrm)\n- Fixed text tool failing to apply correct stroke\n- (Updated to latest data files; added support for latest data changes) (thanks @ oldewyrm)"
+	},
+	{
+		"ver": "1.31.0",
+		"date": "2022-08-28",
+		"txt": "- Added Vehicle importer (thanks @darthbeep)\n- Monster importer now adds lair actions and regional effects, where available, to sheet Bio & Info (thanks @darthbeep)\n- (Updated to latest data files; added support for latest data changes)"
+	},
+	{
+		"ver": "1.31.1",
+		"date": "2022-09-11",
+		"txt": "- Added \"Quick Layer Buttons Position\" to switch which side of the screen the Quick Layer Buttons appear on (thanks @ Riedel)\n- Fixed token editor failing to open (thanks @ Riedel)"
+	},
+	{
+		"ver": "1.32.0",
+		"date": "2022-09-21",
+		"txt": "- Added \"JSON Importer\" tool, which allows entire JSON files to be imported in one go (particularly useful for homebrew) (thanks @ darthbeep)\n- Fixed issue when deleting folder and files at the same time in the Journal Cleaner (thanks @ darthbeep)\n- Fixed random crash during initialization (generally caused by poor connection) (thanks @ Riedel)"
+	},
+	{
+		"ver": "1.32.1",
+		"date": "2022-10-01",
+		"txt": "- Re-organized page options, collecting lighting options into a single tab, and giving Weather its own tab (thanks @ Redweller)\n- Added weather \"Tint Opacity\" slider (thanks @ Redweller)\n- Fixed default token being un-settable (thanks @ Redweller)\n- Improved Art Browser styling (thanks @ Redweller)\n- Fixed some dark mode styling (thanks @ Redweller)\n- Fixed Module Importer/Exporter regression where creature data would not be exported (thanks @ darthbeep and @ Redweller)\n- (Updated to latest data files; added support for latest data changes)"
+	},
+	{
+		"ver": "1.33.0",
+		"date": "2022-10-01",
+		"txt": "- Handout creation is now optional in the Adventure Importer (thanks @ darthbeep)\n- The Spell Importer \"spell school\" filter now filters by the full school name, rather than the internal abbreviation (thanks @ darthbeep)\n- Updated token editor to latest Roll20 version, adding missing \"Update Default Token\" button (thanks @ Redweller)\n- Made all \"Interface\" options available to players (thanks @ Redweller)\n- Made \"Shrink Initiative Tracker\" option available to \"core\" script users (thanks @ Redweller)\n- Added \"Hide Roll20's Dark Mode switch\" and \"Hide Help Button on floating toolbar\" Interface options (thanks @ Redweller)\n- Fixed External Art Manager sizing on small screens (thanks @ Redweller)\n- (Updated to latest data files; added support for latest data changes)"
+	},
+	{
+		"ver": "1.33.1",
+		"date": "2022-12-02",
+		"txt": "- Fixed page settings template modification (with proper inputs for dynamic lighting, weather settings, and map size) failing to be applied (thanks @ Redweller)"
+	},
+	{
+		"ver": "1.33.2",
+		"date": "2023-01-23",
+		"txt": "- Fixed crash on load due to bad style injection (thanks @ Redweller)\n- Fixed editing an imported handout breaking drag-drop functionality (thanks @ darthbeep)"
+	},
+	{
+		"ver": "1.34.0",
+		"date": "2023-02-27",
+		"txt": "- Added in-character language system to chat (massive props and thanks @ Redweller)\n  - Includes support for all PHB languages (with the exception of the \"secret\" languages; Druidic and Thieves' Cant), and additional substitute languages (French-like, German-like, Italian-like, Russian-like, and Spanish-like) which can be used for languages and/or regional dialects otherwise not known by the system\n  - Allows chatting in any language known to your character\n  - Messages spoken in-language will appear to other players as flavorful gibberish, translated to the original message if their character knows the language\n  - Added social panel allowing quick selection of language (and `/w` target)\n  - _[Note that this requires the use of the OGL sheet in order to correctly read proficiencies]_\n- Added various quality-of-life features to chat (massive props and thanks @ Redweller)\n  - (Use `/help` in-game to see the full list of available commands, highlights include...)\n    - Added GM-only command to check which players are running the script, and which version\n    - Added GM-only command to speak as a given character\n    - Added shorthand various shortcuts and wrappers for the base \"/talktomyself\" command, allowing easier toggling and/or running of multiple commands\n  - Added optional GM notifications for players going on/offline\n- Tweaked existing chat features (thanks @ Redweller)\n  - Animated initial loading sequence\n  - Overhauled look and feel of other notifications _[the \"retro\" version remains available as a config option]_\n  - Added new \"Chat\" config group, and consolidated existing chat options (emojis; streamer mode) there\n- Fixed custom styling failing to properly apply (thanks @ Redweller)"
+	},
+	{
+		"ver": "1.34.1",
+		"date": "2023-03-02",
+		"txt": "- Various fixes/improvements to the chat system (thanks @ Redweller)\n  - Tweaked `/help` ordering for readability \n  - Added detection of Beyond20\n  - Fixed hiding/revealing messages\n  - Fixed `/w` revealing characters not in players' journals"
+	},
+	{
+		"ver": "1.34.2",
+		"date": "2023-04-07",
+		"txt": "- Updated UI templates to match latest Roll20 \"Doors & Windows\" update (thanks @ Redweller)\n- Disabled/removed non-functional Line Cutter tool (thanks @ Redweller)\n- Fixed crash when using \"Set image from URL...\" button in deck editor (thanks @ darthbeep)\n- Fixed misc Roll20 console spam when running an adblocker (thanks @ Redweller)"
+	},
+	{
+		"ver": "1.34.3",
+		"date": "2023-04-14",
+		"txt": "- Temporarily (until a better solution is found) disabled extra layers, to prevent crashes (thanks @ darthbeep)"
+	},
+	{
+		"ver": "1.35.0",
+		"date": "2023-04-21",
+		"txt": "- Added \"script\" mode to chat macros, allowing JavaScript to be executed (thanks @ Redweller)\n- Fixed script failing to load (thanks @ darthbeep); note that this comes with some caveats (until a better solution is found):\n  - 3d Dice are (probably) broken\n  - Subscriber-only Roll20 features (dynamic lighting, SFX, etc.) are (probably) no longer available unless you have the appropriate subscription _[previously, b20 enabled these even for \"Free\" users, provided all players were running the script]_\n- Re-enabled additional b20-specific layers (thanks @ darthbeep)\n- Fixed selecting \"freehand\" in drawing mode preventing further mode switches (thanks @ darthbeep)"
+	},
+	{
+		"ver": "1.35.1",
+		"date": "2023-04-22",
+		"txt": "- Fixed various Importer crashes (thanks @ darthbeep)"
+	},
+	{
+		"ver": "1.35.2",
+		"date": "2023-05-14",
+		"txt": "- Added \"Set Avatar\" journal item context menu option (thanks @ redweller)\n- Fixed journal item \"Make Tokenactions\" context menu option (thanks @ redweller)\n- Fixed Item Importer failing to split packs of items (thanks @ darthbeep)\n- Fixed \"Controlled by: All players\" character languages failing to register in list of languages a player can understand (thanks @ redweller)\n- Fixed Monster Importer crash when importing by \"CR -> Type\" (thanks @ darthbeep)\n- Fixed Spell Importer failing to load spellcaster classes for spells (thanks @ darthbeep)\n- Fixed Dynamic Lighting features being disabled for non-pro users (thanks @ redweller)\n- Updated page editor to match latest Roll20 version, and restored \"auto background color\" feature (thanks @ redweller)\n- Fixed deck and card editors, and added additional \"from URL\"/delete buttons (thanks @ redweller)\n- Fixed quick layers toolbar positioning (thanks @ redweller)\n- Fixed layers which are disabled in the config showing in the token right-click menu (thanks @ redweller)"
+	},
+	{
+		"ver": "1.35.3",
+		"date": "2023-05-18",
+		"txt": "- Added \"Fake Latin\" as a transcription language (thanks @ redweller)\n- Fixed excessive loading of sheets for GMs when initializing language system (thanks @ redweller)\n- Fixed custom grid units being un-saveable in page settings (thanks @ redweller)"
+	},
+	{
+		"ver": "1.35.4",
+		"date": "2023-08-27",
+		"txt": "- Updated menus to reflect latest Roll20 changes (thanks @ redweller)"
+	},
+	{
+		"ver": "1.35.5",
+		"date": "2023-10-23",
+		"txt": "(- Updated to latest 5etools dataset (thanks @ darthbeep))"
+	},
+	{
+		"ver": "1.35.6",
+		"date": "2023-10-24",
+		"txt": "(- Updated to latest 5etools libs (thanks @ darthbeep))"
+	},
+	{
+		"ver": "1.35.7",
+		"date": "2023-11-26",
+		"txt": "- Fixed crash/added warning when UI Redesign is enabled (thanks @ Redweller)\n- Fixed polygon tool when UI Redesign is disabled (thanks @ Redweller)"
+	},
+	{
+		"ver": "1.35.8",
+		"date": "2024-01-18",
+		"txt": "- Improved handling of UI Redesign/Beta Features (thanks @ redweller)\n  - Fixed page toolbar failing to display\n  - Fixed Beta UI chat notification being un-dismissible"
+	},
+	{
+		"ver": "1.35.9",
+		"date": "2024-09-08",
+		"txt": "- Update main site URL"
+	}
+]
