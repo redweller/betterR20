@@ -322,24 +322,28 @@ const betteR205etoolsMain = function () {
 	d20plus.pAddJson = async function () {
 		d20plus.ut.log("Load JSON");
 
-		await Promise.all(d20plus.json.map(async it => {
-			const data = await DataUtil.loadJSON(it.url);
+		try {
+			await Promise.all(d20plus.json.map(async it => {
+				const data = await DataUtil.loadJSON(it.url);
 
-			if (it.name === "class index") classDataUrls = data;
-			else if (it.name === "spell index") spellDataUrls = data;
-			else if (it.name === "spell metadata") spellMetaData = data;
-			else if (it.name === "bestiary index") monsterDataUrls = data;
-			else if (it.name === "bestiary fluff index") monsterFluffDataUrls = data;
-			else if (it.name === "bestiary metadata") monsterMetadata = data;
-			else if (it.name === "adventures index") adventureMetadata = data;
-			else if (it.name === "base items") {
-				data.itemProperty.forEach(p => Renderer.item._addProperty(p));
-				data.itemType.forEach(t => Renderer.item._addType(t));
-			} else if (it.name === "item modifiers") itemMetadata = data;
-			else throw new Error(`Unhandled data from JSON ${it.name} (${it.url})`);
+				if (it.name === "class index") classDataUrls = data;
+				else if (it.name === "spell index") spellDataUrls = data;
+				else if (it.name === "spell metadata") spellMetaData = data;
+				else if (it.name === "bestiary index") monsterDataUrls = data;
+				else if (it.name === "bestiary fluff index") monsterFluffDataUrls = data;
+				else if (it.name === "bestiary metadata") monsterMetadata = data;
+				else if (it.name === "adventures index") adventureMetadata = data;
+				else if (it.name === "base items") {
+					data.itemProperty.forEach(p => Renderer.item._addProperty(p));
+					data.itemType.forEach(t => Renderer.item._addType(t));
+				} else if (it.name === "item modifiers") itemMetadata = data;
+				else throw new Error(`Unhandled data from JSON ${it.name} (${it.url})`);
 
-			d20plus.ut.log(`JSON [${it.name}] Loaded`);
-		}));
+				d20plus.ut.log(`JSON [${it.name}] loading...`);
+			}));
+		} catch (e) {
+			d20plus.ut.log("Unhandled JSON load error", e);
+		}
 	};
 
 	// Bind Graphics Add on page
@@ -351,6 +355,8 @@ const betteR205etoolsMain = function () {
 				if (!page.thegraphics) {
 					page.fullyLoadPage();
 				}
+				// #TODO Convert callback to async and load attribs if absent
+				// Otherwise it won't add HP etc stats to new tokens, if sheet wasn't opened
 				page.thegraphics.on("add", function (e) {
 					let character = e.character;
 					if (character) {

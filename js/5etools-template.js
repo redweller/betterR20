@@ -3,17 +3,17 @@ const d20plusTemplate = function () {
 
 	d20plus.template5e._populateDropdown = function (dropdownId, inputFieldId, baseUrl, srcUrlObject, defaultSel, brewProps) {
 		const defaultUrl = defaultSel ? d20plus.formSrcUrl(baseUrl, srcUrlObject[defaultSel]) : "";
-		$(inputFieldId).val(defaultUrl);
 		const dropdown = $(dropdownId);
+		const inputField = $(inputFieldId);
 		$.each(Object.keys(srcUrlObject), function (i, src) {
 			dropdown.append($("<option>", {
-				value: d20plus.formSrcUrl(baseUrl, srcUrlObject[src]),
-				text: brewProps.includes("class") ? src.uppercaseFirst() : Parser.sourceJsonToFullCompactPrefix(src),
+				"data-url": d20plus.formSrcUrl(baseUrl, srcUrlObject[src]),
+				value: brewProps.includes("class") ? src.uppercaseFirst() : Parser.sourceJsonToFullCompactPrefix(src),
 			}));
 		});
 		dropdown.append($("<option>", {
-			value: "",
-			text: "Custom",
+			"data-url": "",
+			value: "Custom",
 		}));
 
 		const dataList = [];
@@ -32,32 +32,38 @@ const d20plusTemplate = function () {
 		});
 		dataList.sort((a, b) => SortUtil.ascSortLower(a.name, b.name)).forEach(it => {
 			dropdown.append($("<option>", {
-				value: `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
-				text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`,
+				"data-url": `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
+				value: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`,
 			}));
 		});
 
-		dropdown.val(defaultUrl);
-		dropdown.change(function () {
-			$(inputFieldId).val(this.value);
-		});
+		inputField
+			.val(defaultUrl)
+			.on("mousedown", () => {
+				inputField.val("");
+				inputField.attr("original-title", "");
+			}).on("change", () => d20plus.template5e._onDataURLChange({
+				queryInput:	inputFieldId,
+				queryList:	dropdownId,
+			}));
 	}
 
 	d20plus.template5e._populateBasicDropdown = function (dropdownId, inputFieldId, defaultSel, brewProps, addForPlayers) {
 		function doPopulate (dropdownId, inputFieldId) {
 			const $sel = $(dropdownId);
+			const $inputField = $(inputFieldId);
 			const existingItems = !!$sel.find(`option`).length;
 			if (defaultSel) {
 				$(inputFieldId).val(defaultSel);
 				$sel.append($("<option>", {
-					value: defaultSel,
-					text: "Official Sources",
+					"data-url": defaultSel,
+					value: "Official Sources",
 				}));
 			}
 			if (!existingItems) {
 				$sel.append($("<option>", {
-					value: "",
-					text: "Custom",
+					"data-url": "",
+					value: "Custom",
 				}));
 			}
 
@@ -77,15 +83,20 @@ const d20plusTemplate = function () {
 			});
 			dataList.sort((a, b) => SortUtil.ascSortLower(a.name, b.name)).forEach(it => {
 				$sel.append($("<option>", {
-					value: `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
-					text: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`,
+					"data-url": `${it.download_url}${d20plus.ut.getAntiCacheSuffix()}`,
+					value: `Homebrew: ${it.name.trim().replace(/\.json$/i, "")}`,
 				}));
 			});
 
-			$sel.val(defaultSel);
-			$sel.change(function () {
-				$(inputFieldId).val(this.value);
-			});
+			$inputField
+				.val(defaultSel)
+				.on("mousedown", () => {
+					$inputField.val("");
+					$inputField.attr("original-title", "");
+				}).on("change", () => d20plus.template5e._onDataURLChange({
+					queryInput:	inputFieldId,
+					queryList:	dropdownId,
+				}));
 		}
 
 		doPopulate(dropdownId, inputFieldId);
@@ -98,7 +109,7 @@ const d20plusTemplate = function () {
 		$iptUrl.val(defaultAdvUrl);
 		$iptUrl.data("id", "lmop");
 		const $sel = $("#button-adventures-select");
-		adventureMetadata.adventure.forEach(a => {
+		adventureMetadata.adventure?.forEach(a => {
 			$sel.append($("<option>", {
 				value: d20plus.formSrcUrl(ADVENTURE_DATA_DIR, `adventure-${a.id.toLowerCase()}.json|${a.id}`),
 				text: a.name,
@@ -115,6 +126,18 @@ const d20plusTemplate = function () {
 			$iptUrl.data("id", id);
 		});
 	}
+
+	d20plus.template5e._onDataURLChange = (data) => {
+		const $inputField = $(data.queryInput);
+		const $urlsList = $(data.queryList);
+		const val = $inputField.val();
+		const url = $urlsList.find(`[value="${val}"]`).data("url");
+		url && $inputField
+			.val(url)
+			.addClass("showtip tipsy-s")
+			.attr("original-title", val);
+		data.buttonCallback && data.buttonCallback(data.buttonArgument);
+	};
 
 	d20plus.template5e.addCustomHTML = function () {
 		// Object to get data urls because they get set after the categories object is created
@@ -155,7 +178,11 @@ const d20plusTemplate = function () {
 
 			// Bind buttons for GM import
 			IMPORT_CATEGORIES.forEach(ic => {
-				$(`a#import-${ic.plural}-load`).on(window.mousedowntype, () => d20plus[ic.plural].button());
+				$(`a#import-${ic.plural}-load`).on(window.mousedowntype, () => d20plus.template5e._onDataURLChange({
+					queryInput:	`#import-${ic.plural}-url`,
+					queryList:	`#${ic.plural}-list`,
+					buttonCallback: d20plus[ic.plural].button,
+				}));
 				if (ic.allImport) $(`a#import-${ic.plural}-load-all`).on(window.mousedowntype, () => d20plus[ic.plural].buttonAll());
 				if (ic.fileImport) $(`a#import-${ic.plural}-load-file`).on(window.mousedowntype, () => d20plus[ic.plural].buttonFile());
 			})
@@ -199,7 +226,12 @@ const d20plusTemplate = function () {
 		// Bind buttons for player import
 		$("select#import-mode-select-player").on("change", () => d20plus.importer.importModeSwitch());
 		IMPORT_CATEGORIES.filter(ic => ic.playerImport).forEach(ic => {
-			$(`a#import-${ic.plural}-load-player`).on(window.mousedowntype, () => d20plus[ic.plural].button(true));
+			$(`a#import-${ic.plural}-load-player`).on(window.mousedowntype, () => d20plus.template5e._onDataURLChange({
+				queryInput:	`#import-${ic.plural}-url-player`,
+				queryList:	`#${ic.plural}-list-player`,
+				buttonCallback: d20plus[ic.plural].button,
+				buttonArgument: true,
+			}));
 			if (ic.allImport) $(`a#import-${ic.plural}-load-all-player`).on(window.mousedowntype, () => d20plus[ic.plural].buttonAll(true));
 			if (ic.fileImport) $(`a#import-${ic.plural}-load-file-player`).on(window.mousedowntype, () => d20plus[ic.plural].buttonFile(true));
 		});
@@ -232,21 +264,21 @@ const d20plusTemplate = function () {
 		});
 
 		// add class subclasses to the subclasses dropdown(s)
-		d20plus.template5e._populateDropdown("#button-subclasses-select", "#import-subclasses-url", CLASS_DATA_DIR, classDataUrls, "", ["class"]);
-		d20plus.template5e._populateDropdown("#button-subclasses-select-player", "#import-subclasses-url-player", CLASS_DATA_DIR, classDataUrls, "", ["class"]);
+		d20plus.template5e._populateDropdown("#subclasses-list", "#import-subclasses-url", CLASS_DATA_DIR, classDataUrls, "", ["class"]);
+		d20plus.template5e._populateDropdown("#subclasses-list-player", "#import-subclasses-url-player", CLASS_DATA_DIR, classDataUrls, "", ["class"]);
 
 		// Populate all relevant dropdowns
 		IMPORT_CATEGORIES.forEach(ic => {
 			if (ic.defaultSource !== undefined) {
-				d20plus.template5e._populateDropdown(`#button-${ic.plural}-select`, `#import-${ic.plural}-url`,
+				d20plus.template5e._populateDropdown(`#${ic.plural}-list`, `#import-${ic.plural}-url`,
 					ic.baseUrl, dataUrls[ic.name], ic.defaultSource, [`${ic.name}`]);
 				if (ic.playerImport) {
-					d20plus.template5e._populateDropdown(`#button-${ic.plural}-select-player`, `#import-${ic.plural}-url-player`,
+					d20plus.template5e._populateDropdown(`#${ic.plural}-list-player`, `#import-${ic.plural}-url-player`,
 						ic.baseUrl, dataUrls[ic.name], ic.defaultSource, [`${ic.name}`]);
 				}
 			}
 			else if (!ic.uniqueImport) {
-				d20plus.template5e._populateBasicDropdown(`#button-${ic.plural}-select`, `#import-${ic.plural}-url`, ic.baseUrl, [`${ic.name}`], ic.playerImport);
+				d20plus.template5e._populateBasicDropdown(`#${ic.plural}-list`, `#import-${ic.plural}-url`, ic.baseUrl, [`${ic.name}`], ic.playerImport);
 			}
 		})
 
@@ -280,8 +312,8 @@ const d20plusTemplate = function () {
 <div class="importer-section" data-import-group="${category.name}">
 <h4>${category.titleSing || category.name.toTitleCase()} Importing</h4>
 <label for="import-${category.plural}-url">${category.titleSing || category.name.toTitleCase()} Data URL:</label>
-<select id="button-${category.plural}-select"><!-- populate with JS--></select>
-<input type="text" id="import-${category.plural}-url">
+<datalist id="${category.plural}-list"><!-- populate with JS--></datalist>
+<input type="text" id="import-${category.plural}-url" list="${category.plural}-list" placeholder="Start typing the source...">
 ${category.allImport ? "<p>" : ""}<a class="btn" href="#" id="import-${category.plural}-load">Import ${category.plural.toTitleCase()}</a>${category.allImport ? "</p>" : ""}
 ${allButton}
 ${fileButton}
@@ -300,8 +332,8 @@ ${finalText}
 <div class="importer-section" data-import-group="${category.name}">
 <h4>${category.titleSing || category.name.toTitleCase()} Importing</h4>
 <label for="import-${category.plural}-url-player">${category.titleSing || category.name.toTitleCase()} Data URL:</label>
-<select id="button-${category.plural}-select-player"><!-- populate with JS--></select>
-<input type="text" id="import-${category.plural}-url-player">
+<datalist id="${category.plural}-list-player"><!-- populate with JS--></datalist>
+<input type="text" id="import-${category.plural}-url-player" list="${category.plural}-list-player" placeholder="Start typing the source...">
 ${category.allImport ? "<p>" : ""}<a class="btn" href="#" id="import-${category.plural}-load-player">Import ${category.plural.toTitleCase()}</a>${category.allImport ? "</p>" : ""}
 ${allButton}
 ${fileButton}

@@ -248,7 +248,7 @@ function d20plusMonsters () {
 
 	d20plus.monsters.buttonFile = async function () {
 		// Get data from file
-		const data = await DataUtil.pUserUpload();
+		const data = await InputUiUtil.pGetUserUploadJson();
 
 		// Get the relevant information from the JSON
 		const monsterdata = data.jsons[0].monster ? data.jsons[0].monster : data.jsons[0];
