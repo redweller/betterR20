@@ -154,29 +154,6 @@ function d20plusEngine () {
 			}).addTouch();
 		}
 
-		if (!d20plus) { // Aug 2024 the New Page Toolbar is non-optional
-			// this should be executed only for the old Page Toolbar
-			overwriteDraggables();
-			$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
-
-			const originalFn = d20.pagetoolbar.refreshPageListing;
-			// original function is debounced at 100ms, so debounce this at 110ms and hope for the best
-			const debouncedOverwrite = _.debounce(() => {
-				overwriteDraggables();
-				// fire an event for other parts of the script to listen for
-				const pageChangeEvt = new Event(`VePageChange`);
-				d20plus.ut.log("Firing page-change event");
-				document.dispatchEvent(pageChangeEvt);
-			}, 110);
-			d20.pagetoolbar.refreshPageListing = () => {
-				originalFn();
-				debouncedOverwrite();
-			}
-		} else {
-			// #TODO Remove the old styling
-			$(`#page-toolbar`).hide(); // hide the old Page Toolbar that pops with b20 styling
-		}
-
 		$(`body`).on("mouseup", "li.dl", (evt) => {
 			// process Dynamic Lighting tabs
 			const $dynLightTab = $(evt.target).closest("li.dl");
