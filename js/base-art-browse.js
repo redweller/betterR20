@@ -39,7 +39,7 @@ function d20plusArtBrowser () {
 			];
 
 			const start = (new Date()).getTime();
-			const GH_PATH = `https://raw.githubusercontent.com/5etools-mirror-1/pab-index/main/`;
+			const GH_PATH = DATA_URL_ART_REPO;
 			const [enums, index] = await Promise.all([pGetJson(`${GH_PATH}_meta_enums.json`), pGetJson(`${GH_PATH}_meta_index.json`)]);
 			d20plus.ut.log(`Loaded metadata in ${((new Date()).getTime() - start) / 1000} secs.`);
 

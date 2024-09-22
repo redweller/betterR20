@@ -105,31 +105,6 @@ function baseCss () {
 			s: ".actions_menu.d20contextmenu > ul > li",
 			r: "max-width: 100px;",
 		},
-		// page view enhancement
-		{
-			s: "#page-toolbar",
-			r: "height: calc(90vh - 40px);",
-		},
-		{
-			s: "#page-toolbar .container",
-			r: "height: 100%; white-space: normal;",
-		},
-		{
-			s: "#page-toolbar .pages .availablepage",
-			r: "width: 100px; height: 100px;",
-		},
-		{
-			s: "#page-toolbar .pages .availablepage img.pagethumb",
-			r: "max-width: 60px; max-height: 60px;",
-		},
-		{
-			s: "#page-toolbar .pages .availablepage span",
-			r: "bottom: 1px;",
-		},
-		{
-			s: "#page-toolbar",
-			r: "background: #a8aaad80;",
-		},
 		// search
 		{
 			s: ".Vetoolsresult",
@@ -547,11 +522,6 @@ function baseCss () {
 				resize: vertical;
 			`
 		}, */
-		// Ensure page toolbar is displayed
-		{
-			s: `#page-toolbar`,
-			r: `display: block;`,
-		},
 		// Macro editor styles
 		{
 			s: `.jsdialog .actionhelp.r20, .jsdialog .commandhelp.r20`,
@@ -580,11 +550,6 @@ function baseCss () {
 		{
 			s: ".player-hidden",
 			r: "display: none !important;",
-		},
-		// Force-hide page toolbar
-		{
-			s: `#page-toolbar`,
-			r: `display: none;`,
 		},
 	];
 

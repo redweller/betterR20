@@ -1,10 +1,11 @@
 const betteR20Core = function () {
 	// Page fully loaded and visible
 	d20plus.Init = async () => {
-		d20plus.scriptName = `betteR20-core v${d20plus.version}`;
+		d20plus.scriptName = `betteR20-${B20_NAME} v${d20plus.version}`;
 		try {
 			d20plus.ut.log(`Init (v${d20plus.version})`);
-			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-core v${d20plus.version}</h3>`;
+			d20plus.ut.log(`Userscript (v${d20plus.version_user})`);
+			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-${B20_NAME} v${d20plus.version}</h3>`;
 
 			d20plus.engine.swapTemplates();
 

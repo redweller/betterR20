@@ -1,6 +1,49 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.35.185.2a";
+const SCRIPT_VERSION = "1.35.185.11";
+const SCRIPT_REPO = "https://raw.githubusercontent.com/redweller/betterR20/beta/dist/";
+
+const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
+-- Beta features overview:
+<strong>Mouseover hints on Conditions</strong>
+⦁ added hints to any chat message on standard D&D conditions
+⦁ can be disabled in b20 Config in Chat section
+<strong>Filter Imports by List</strong>
+⦁ when importing, you can filter by a list of items
+⦁ also filter by source, compatible with copying csvs from 5etools
+<strong>Layers</strong>
+⦁ add new Extra Layers toolbar as part of r20 newUI
+⦁ add show/hide layers toggles to b20 layers
+<strong>Miscellaneous</strong>
+⦁ change players' avatars size
+⦁ fixed context menu appearing on left click
+⦁ fixed the art repo
+<strong>Edit Token Images dialog</strong>
+⦁ manage token images at any moment via context menu
+⦁ a better Random Side randomizer (for seemingly more random results)
+⦁ edit token images directly from roll20 Token Editor
+<strong>Better token Actions & Automation</strong>
+⦁ new character menu in left top corner of the screen
+- new design, the menu works even when no character is selected
+- browse stats and actions for last selected token
+⦁ use available actions with custom roll templates
+- the damage/healing values are clickable and are applied on click
+- spell slots, items and resources are spent automatically 
+- auto roll saves, and show save/attack success or failure
+- view descriptions before you use a spell or a trait
+- filter prepared spells/useable traits etc.
+- upcast or use spells as ritual
+-- v.185.11 changes:
+⦁ warn about Jumpgate on startup
+⦁ "import source" selector rework
+⦁ community module imports fix
+⦁ fix crash on startup when 5e.tools is inaccessible
+⦁ new image URLs fixer
+⦁ new UVTT/DA walls data importer
+⦁ new multitoken parameters format
+- faster images loading due to less server requests
+- use "tools/URLs fixer" to convert your old multitokens
+`;
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -21,12 +64,12 @@ const analyticsBlocking = `
 `;
 
 const HEADER_CORE = `// ==UserScript==
-// @name         betteR20-alpha-core
+// @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-core.meta.js
-// @downloadURL  https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-core.user.js
+// @updateURL    ${SCRIPT_REPO}betteR20-core.meta.js
+// @downloadURL  ${SCRIPT_REPO}betteR20-core.user.js
 // @description  Enhance your Roll20 experience
 // @author       TheGiddyLimit
 ${matchString}
@@ -37,12 +80,12 @@ ${analyticsBlocking}
 `;
 
 const HEADER_5ETOOLS = `// ==UserScript==
-// @name         betteR20-alpha-5etools
+// @name         betteR20-beta-5etools
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-5etools.meta.js
-// @downloadURL  https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-5etools.user.js
+// @updateURL    ${SCRIPT_REPO}betteR20-5etools.meta.js
+// @downloadURL  ${SCRIPT_REPO}betteR20-5etools.user.js
 // @description  Enhance your Roll20 experience
 // @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne/Cucucc/Cee/oldewyrm/darthbeep/Mertang/Redweller
 ${matchString}
@@ -154,6 +197,8 @@ const SCRIPTS = {
 			"base-tool-module",
 			"base-tool-unlock",
 			"base-tool-animator",
+			"base-tool-dlimport",
+			"base-tool-urlfix",
 			"base-art",
 			"base-art-browse",
 			"overwrites/base",
@@ -200,6 +245,8 @@ const SCRIPTS = {
 			"base-tool-unlock",
 			"base-tool-animator",
 			"base-tool-table",
+			"base-tool-dlimport",
+			"base-tool-urlfix",
 			"base-art",
 			"base-art-browse",
 			"overwrites/base",
@@ -262,9 +309,29 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 	const metaFilename = `${BUILD_DIR}/betteR20-${k}.meta.js`;
 	const fullScript = joinParts(
 		v.header,
-		fs.readFileSync(`${JS_DIR}header.js`, "utf-8").toString(),
+		fs.readFileSync(`${JS_DIR}header.js`, "utf-8").toString()
+			.replace("%B20_NAME%", k)
+			.replace("%B20_VERSION%", SCRIPT_VERSION)
+			.replace("%B20_BASE_URL%", "https://5e.tools/")
+			.replace("%B20_REPO_URL%", SCRIPT_REPO),
 		...libJson.map(filePath => wrapLibData(filePath, fs.readFileSync(filePath, "utf-8"))),
-		...v.scripts.map(filename => fs.readFileSync(`${JS_DIR}${filename}.js`, "utf-8").toString()),
+		...v.scripts.map(filename => filename === "base-util"
+			? fs.readFileSync(`${JS_DIR}${filename}.js`, "utf-8").toString().replace("}, 6000);", `
+			d20plus.ut.sendHackerChat(\`
+				<div class="userscript-b20intro">
+					<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
+						Notes on b20 beta
+						<p style="font-size: 11px;line-height: 15px;color: rgb(32, 194, 14);">
+							<span style="color: rgb(194, 32, 14)">You are using preview version of betteR20</span><br>
+							Please read this carefully and give feedback in official betteR20 Discord server, 
+							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
+						</p>
+					</h1>
+					<p>${SCRIPT_BETA_DESCRIPTION.replaceAll("\n", "<br>").replace(/--([^<^>^-]*?)<br>/g, "<code>--$1</code><br>")}</p>
+				</div>
+			\`);
+			}, 6000);`)
+			: fs.readFileSync(`${JS_DIR}${filename}.js`, "utf-8").toString()),
 		...libScripts.map(filename => wrapLibScript(fs.readFileSync(`${LIB_DIR}${filename}`, "utf-8").toString())),
 		...libScriptsApi.map(filename => wrapLibScript(fs.readFileSync(`${LIB_DIR}${filename}`, "utf-8").toString(), true)),
 	);

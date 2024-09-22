@@ -20,7 +20,8 @@ const betteR20Base = function () {
 };
 
 const D20plus = function (version) {
-	d20plus.version = version;
+	d20plus.version_user = version;
+	d20plus.version = B20_VERSION;
 
 	// Window loaded
 	function doBootstrap () {

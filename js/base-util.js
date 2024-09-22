@@ -5,7 +5,7 @@ function baseUtil () {
 	d20plus.ut = {};
 
 	// d20plus.ut.WIKI_URL = "https://wiki.5e.tools"; // I'll be back ...
-	d20plus.ut.WIKI_URL = "https://web.archive.org/web/20210826155610/https://wiki.5e.tools";
+	d20plus.ut.WIKI_URL = "https://wiki.tercept.net/en/betteR20";
 
 	d20plus.ut.log = (...args) => {
 		// eslint-disable-next-line no-console
@@ -63,7 +63,7 @@ function baseUtil () {
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : "betteR20";
 		$.ajax({
-			url: `https://raw.githubusercontent.com/TheGiddyLimit/betterR20/development/dist/betteR20-version`,
+			url: `${B20_REPO_URL}betteR20-version`,
 			success: (data) => {
 				if (data) {
 					const curr = d20plus.version;
@@ -72,8 +72,8 @@ function baseUtil () {
 					if (cmp < 0) {
 						setTimeout(() => {
 							if (!isStreamer) {
-								const rawToolsInstallUrl = "https://github.com/redweller/betterR20/raw/run/betteR20-5etools.user.js";
-								const rawCoreInstallUrl = "https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js";
+								const rawToolsInstallUrl = `${B20_REPO_URL}betteR20-5etools.user.js`;
+								const rawCoreInstallUrl = `${B20_REPO_URL}betteR20-core.user.js`;
 								const msgVars = [scriptName, avail, rawToolsInstallUrl, rawCoreInstallUrl];
 								d20plus.ut.sendHackerChat(`
 									<div class="userscript-b20intro" style="border: 1px solid; background-color: #582124;">
@@ -766,12 +766,14 @@ function baseUtil () {
 		})
 	};
 
-	d20plus.ut.LAYERS = ["map", "background", "objects", "foreground", "gmlayer", "walls", "weather"];
+	d20plus.ut.LAYERS = ["map", "floors", "background", "objects", "roofs", "foreground", "gmlayer", "walls", "weather"];
 	d20plus.ut.layerToName = (l) => {
 		switch (l) {
 			case "map": return "Map";
+			case "floors": return "Floors";
 			case "background": return "Background";
 			case "objects": return "Objects & Tokens";
+			case "roofs": return "Roofs";
 			case "foreground": return "Foreground";
 			case "gmlayer": return "GM Info Overlay";
 			case "walls": return "Dynamic Lighting";
