@@ -1225,16 +1225,15 @@ function d20plusImporter () {
 		$winFilterList.dialog("open");
 		const $btnImport = $winFilterList.find(".btn");
 		const $winText = $winFilterList.find(".table-import-textarea");
-		
-		$btnImport.on("click", () => {
 
+		$btnImport.on("click", () => {
 			function filterList () {
 				const toSearch = $winText.val().toLowerCase().replaceAll(`"`, "").split("\n");
 				const firstLine = toSearch[0];
 				const filterUnofficial = !d20plus.cfg.getOrDefault("import", "allSourcesIncludeUnofficial");
 
 				// If no search terms are entered, reset the filter
-				if (toSearch.length == 1 && firstLine == '') {
+				if (toSearch.length === 1 && firstLine === "") {
 					importList.filter();
 					return;
 				}
@@ -1247,7 +1246,7 @@ function d20plusImporter () {
 						"name": items[0].trim(),
 						"source": items.length > 1 ? items[1].trim() : null,
 						// Some categories list their source in this format
-						"altsource": items.length > 1 ? `src[${items[1].trim()}]`: null,
+						"altsource": items.length > 1 ? `src[${items[1].trim()}]` : null,
 					}
 				})
 
@@ -1256,16 +1255,16 @@ function d20plusImporter () {
 				importList.filter(it => {
 					const name = it._values.name.toLowerCase();
 					const source = it._values.source.toLowerCase();
-					
+
 					if (!(name in searchDict)) return false;
 					if (!searchDict[name].source) return true;
 					if (searchDict[name].source === source || searchDict[name].altsource === source) return true;
 					return false;
 				});
 			}
-			
+
 			filterList();
-			
+
 			$winFilterList.dialog("close");
 		}).appendTo($winFilterList);
 	};
