@@ -213,6 +213,38 @@ function baseUtil () {
 		if (!window.DD_RUM) window.DD_RUM = {addAction: () => {} };
 	}
 
+	d20plus.ut.showFullScreenWarning = (msg) => {
+		const $body = $(`body`);
+		$body.addClass("ve-fswarn__body");
+		const $btnClose = $(`<button class="btn btn-danger ve-fswarn__btn-close">X</button>`)
+			.click(() => {
+				$overlay.remove();
+				$body.removeClass("ve-fswarn__body");
+			});
+		const $overlay = $(`<div class="flex-col flex-vh-center ve-fswarn__overlay"/>`);
+		$btnClose.appendTo($overlay);
+		$overlay.append(`<div class="flex-col flex-vh-center">
+			<div class="ve-fswarn__title mb-2">${msg.title || ""}</div>
+			<div><i>betterR20: ${msg.message || ""}.<br>
+			${msg.instructions || ""}</i></div>
+			<style type="text/css">
+				.ve-fswarn__body {overflow: hidden !important;}
+				.ve-fswarn__overlay {background: darkred;position: fixed; z-index: 99999; top: 0; right: 0;	bottom: 0; left: 0; width: 100vw; height: 100vh; color: white; font-family: monospace;}
+				.ve-fswarn__title {font-size: 72px;line-height: normal;}
+				.ve-fswarn__btn-close {position: absolute;top: 8px;right: 8px;font-size: 16px;}
+				.flex-col.flex-vh-center {display: flex;flex-direction: column;justify-content: center;align-items: center;}
+			</style>
+		</div>`).appendTo($body);
+
+		$(`.boring-chat`).remove();
+
+		d20?.textchat?.incoming(false, ({
+			who: "system",
+			type: "system",
+			content: `<span style="color: red;">betterR20: ${msg.message || "error occurred"}! Exiting...</span>`,
+		}));
+	}
+
 	d20plus.ut.sendHackerChat = (message, error = false) => {
 		const legacyStyle = !!d20plus.cfg.get("chat", "legacySystemMessagesStyle");
 		if (!message) return;

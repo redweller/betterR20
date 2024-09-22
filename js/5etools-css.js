@@ -72,37 +72,6 @@ function css5eTool () {
 			s: ".userscript-rd__b-inset--readaloud",
 			r: "background: #cbd6c688 !important",
 		},
-		// "No character sheet" message
-		{
-			s: ".ve-nosheet__body",
-			r: "overflow: hidden !important;",
-		},
-		{
-			s: ".ve-nosheet__overlay",
-			r: `
-			background: darkred;
-			position: fixed;
-			z-index: 99999;
-			top: 0;
-			right: 0;
-			bottom: 0;
-			left: 0;
-			width: 100vw;
-			height: 100vh;
-			color: white;
-			font-family: monospace;`,
-		},
-		{
-			s: ".ve-nosheet__title",
-			r: "font-size: 72px;",
-		},
-		{
-			s: ".ve-nosheet__btn-close",
-			r: `position: absolute;
-			top: 8px;
-			right: 8px;
-			font-size: 16px;`,
-		},
 	]);
 }
 SCRIPT_EXTENSIONS.push(css5eTool);
