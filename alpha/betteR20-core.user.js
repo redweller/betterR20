@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name         betteR20-alpha-core
+// @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.185.7a
-// @updateURL    https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-core.meta.js
-// @downloadURL  https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-core.user.js
+// @version      1.35.185.11
+// @updateURL    https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/betteR20-core.meta.js
+// @downloadURL  https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
-// @author       TheGiddyLimit
+// @author       TheGiddyLimit/Redweller
 
 // @match        https://app.roll20.net/editor
 // @match        https://app.roll20.net/editor#*
@@ -29,14 +29,21 @@
 ART_HANDOUT = "betteR20-art";
 CONFIG_HANDOUT = "betteR20-config";
 
+B20_NAME = `core`;
+B20_VERSION = `1.35.185.11`;
+B20_REPO_URL = `https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/`;
+
 // TODO automate to use mirror if main site is unavailable
-BASE_SITE_URL = "https://5e.tools/";
-// BASE_SITE_URL = "https://5etools-mirror-2.github.io/";
-BASE_IMG_REPO_URL = "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/";
+BASE_SITE_URL = `https://5e.tools/`; // "https://5e.tools/";
 
 SITE_JS_URL = `${BASE_SITE_URL}js/`;
 DATA_URL = `${BASE_SITE_URL}data/`;
+
 DATA_URL_MODULES = `https://raw.githubusercontent.com/5etools-mirror-1/roll20-module/master`;
+DATA_URL_IMG_REPO = `https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/`; // obsolete as of 1.35.11
+DATA_URL_ART_REPO = `https://raw.githubusercontent.com/5etools-mirror-1/pab-index/main/`;
+DATA_URL_PLAYLIST = `https://api.github.com/repos/ttrpg-resources/betterR20-playlist/contents`;
+DATA_URL_COMMUNITY_MODULES = `https://raw.githubusercontent.com/ttrpg-resources/betterR20-module/main/`;
 
 SCRIPT_EXTENSIONS = [];
 
@@ -96,7 +103,7 @@ function baseUtil () {
 	d20plus.ut = {};
 
 	// d20plus.ut.WIKI_URL = "https://wiki.5e.tools"; // I'll be back ...
-	d20plus.ut.WIKI_URL = "https://web.archive.org/web/20210826155610/https://wiki.5e.tools";
+	d20plus.ut.WIKI_URL = "https://wiki.tercept.net/en/betteR20";
 
 	d20plus.ut.log = (...args) => {
 		// eslint-disable-next-line no-console
@@ -154,21 +161,21 @@ function baseUtil () {
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : "betteR20";
 		$.ajax({
-			url: `https://raw.githubusercontent.com/TheGiddyLimit/betterR20/development/dist/betteR20-version`,
+			url: `${B20_REPO_URL}betteR20-version`,
 			success: (data) => {
 				if (data) {
 					const curr = d20plus.version;
-					d20plus.ut.avail = data;
-					const cmp = d20plus.ut.cmpVersions(curr, d20plus.ut.avail);
+					const avail = data;
+					const cmp = d20plus.ut.cmpVersions(curr, avail);
 					if (cmp < 0) {
 						setTimeout(() => {
 							if (!isStreamer) {
-								const rawToolsInstallUrl = "https://github.com/redweller/betterR20/raw/run/betteR20-5etools.user.js";
-								const rawCoreInstallUrl = "https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js";
-								const msgVars = [scriptName, d20plus.ut.avail, rawToolsInstallUrl, rawCoreInstallUrl];
+								const rawToolsInstallUrl = `${B20_REPO_URL}betteR20-5etools.user.js`;
+								const rawCoreInstallUrl = `${B20_REPO_URL}betteR20-core.user.js`;
+								const msgVars = [scriptName, avail, rawToolsInstallUrl, rawCoreInstallUrl];
 								d20plus.ut.sendHackerChat(`
 									<div class="userscript-b20intro" style="border: 1px solid; background-color: #582124;">
-									${`<br>A newer version of ${msgVars[0]} is available.<br>Get ${msgVars[1]} <a href="${msgVars[2]}">5etools</a> OR <a href="${msgVars[3]}">core</a>.<br><br>`}
+									<br>A newer version of ${msgVars[0]} is available.<br>Get ${msgVars[1]} <a href="${msgVars[2]}">5etools</a> OR <a href="${msgVars[3]}">core</a>.<br><br>
 									</div>
 								`);
 							} else {
@@ -208,11 +215,11 @@ function baseUtil () {
 		];
 		const welcomeTemplate = (b20v, vttv, faq) => `
 			<div class="${classname}">
-				<img src="" class="userscript-b20img" style="content: unset; width:30px;position: relative;top: 10px;float: right;">
+				<img src="" class="userscript-b20img" style="content: unset; width:30px;position: relative;top: 10px;float: right;margin-left:-20px">
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					betteR20 
 					<span style=" font-size: 13px ; font-weight: normal">by 5etools</span>
-					<p style="font-size: 11px;line-height: 15px;font-family: monospace;color: rgb(32, 194, 14);">${`VTTES ${vttv} detected<br>${b20v} loaded`}</p>
+					<p style="font-size: 11px;line-height: 15px;font-family: monospace;color: rgb(32, 194, 14);">VTTES ${vttv} detected<br>${b20v} loaded</p>
 				</h1>
 				<p>Need help? Visit our <a href="${faq}/index.php/BetteR20_FAQ"><strong>wiki</strong></a> or join our <a href="https://discord.gg/nGvRCDs"><strong>Discord</strong></a>.</p>
 				<span title="You'd think this would be obvious.">
@@ -253,29 +260,17 @@ function baseUtil () {
 			d20plus.ut.sendHackerChat(`
 				<div class="userscript-b20intro">
 					<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
-						Notes on b20 alpha
+						Notes on b20 beta
 						<p style="font-size: 11px;line-height: 15px;color: rgb(32, 194, 14);">
 							<span style="color: rgb(194, 32, 14)">You are using preview version of betteR20</span><br>
 							Please read this carefully and give feedback in official betteR20 Discord server, 
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- Beta features overview:</code><br>⦁ Mouseover hints on Conditions<br>⦁ Filter Imports by List<br>⦁ Extra Layers functionality<br>⦁ Token Images Editor<br>⦁ Better token Actions & Automation<br>⦁ Some fixes related to roll20 newUI<br>⦁ ArtRepo is restored from backup repo<br><code>-- Pre-release 185a:</code><br>⦁ Update libs and data to latest 5etools versions<br><code>-- v.185.5a:</code><br>⦁ URLs now point to the main site<br><code>-- v.185.6a:</code><br>⦁ Fix class import<br><code>-- v.185.7a:</code><br>⦁ Major 5etools data update<br></p>
+					<p>This version contains following changes<br><code>-- Beta features overview:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Layers</strong><br>⦁ add new Extra Layers toolbar as part of r20 newUI<br>⦁ add show/hide layers toggles to b20 layers<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br>⦁ fixed context menu appearing on LMB<br>⦁ fixed the art repo<br><strong>Edit Token Images dialog</strong><br>⦁ context menu token image editor<br>⦁ a better Random Side randomizer<br>⦁ edit images directly from r20 Token Editor<br><strong>Better token Actions & Automation</strong><br>⦁ new character menu in the top left:<br>- new design, the menu works even when no character is selected<br>- browse stats and actions for last selected token<br>⦁ use all actions with new roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots, items and resources are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>- view descriptions before you use a spell or a trait<br>- filter prepared spells/useable traits etc.<br>- upcast or use spells as ritual<br><code>-- v.185.11 changes:</code><br>⦁ warn about Jumpgate on startup<br>⦁ "import source" selector rework<br>⦁ community module imports fix<br>⦁ fix crash on startup when 5e.tools is inaccessible<br>⦁ new image URLs fixer<br>⦁ new UVTT/DA walls data importer<br>⦁ new multitoken parameters format:<br>- faster loading due to less server requests<br>- use "tools/URLs fixer" to fix old multitokens<br>⦁ 5etools v2.1.0 update:<br>- update data and libs<br>- separate userscript for 2014 rules only<br></p>
 				</div>
 			`);
-			if (d20plus.ut.cmpVersions("1.35.10", d20plus.ut.avail) < 0) d20plus.ut.sendHackerChat(`
-			<div class="userscript-b20intro">
-				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
-					New release detected
-					<p style="font-size: 11px;line-height: 15px;color: rgb(32, 194, 14);">Try switching back to release version</p>
-				</h1>
-				<p>The current public version of betteR20 is newer then the version of this beta's origin.
-				It sometimes means that the testing is over and the new features were successfully released.<br><br>
-				You can switch back to released script version in TamperMonkey or keep using this version. 
-				Check the <code>#testing</code> channel in Discord from time to time, if you want to participate in the future tests.</p>
-			</div>
-			`);
-		}, 6000);
+			}, 6000);
 	};
 
 	d20plus.ut.showInitMessage = () => {
@@ -328,6 +323,38 @@ function baseUtil () {
 		if (!window.enhancementSuiteEnabled) d20plus.ut.showHardDickMessage(scriptName);
 		// to get rid of an uncaught error that keeps appearing on timely basis
 		if (!window.DD_RUM) window.DD_RUM = {addAction: () => {} };
+	}
+
+	d20plus.ut.showFullScreenWarning = (msg) => {
+		const $body = $(`body`);
+		$body.addClass("ve-fswarn__body");
+		const $btnClose = $(`<button class="btn btn-danger ve-fswarn__btn-close">X</button>`)
+			.click(() => {
+				$overlay.remove();
+				$body.removeClass("ve-fswarn__body");
+			});
+		const $overlay = $(`<div class="flex-col flex-vh-center ve-fswarn__overlay"/>`);
+		$btnClose.appendTo($overlay);
+		$overlay.append(`<div class="flex-col flex-vh-center">
+			<div class="ve-fswarn__title mb-2">${msg.title || ""}</div>
+			<div><i>betterR20: ${msg.message || ""}.<br>
+			${msg.instructions || ""}</i></div>
+			<style type="text/css">
+				.ve-fswarn__body {overflow: hidden !important;}
+				.ve-fswarn__overlay {background: darkred;position: fixed; z-index: 99999; top: 0; right: 0;	bottom: 0; left: 0; width: 100vw; height: 100vh; color: white; font-family: monospace;}
+				.ve-fswarn__title {font-size: 72px;line-height: normal;}
+				.ve-fswarn__btn-close {position: absolute;top: 8px;right: 8px;font-size: 16px;}
+				.flex-col.flex-vh-center {display: flex;flex-direction: column;justify-content: center;align-items: center;}
+			</style>
+		</div>`).appendTo($body);
+
+		$(`.boring-chat`).remove();
+
+		d20?.textchat?.incoming(false, ({
+			who: "system",
+			type: "system",
+			content: `<span style="color: red;">betterR20: ${msg.message || "error occurred"}! Exiting...</span>`,
+		}));
 	}
 
 	d20plus.ut.sendHackerChat = (message, error = false) => {
@@ -851,12 +878,14 @@ function baseUtil () {
 		})
 	};
 
-	d20plus.ut.LAYERS = ["map", "background", "objects", "foreground", "gmlayer", "walls", "weather"];
+	d20plus.ut.LAYERS = ["map", "floors", "background", "objects", "roofs", "foreground", "gmlayer", "walls", "weather"];
 	d20plus.ut.layerToName = (l) => {
 		switch (l) {
 			case "map": return "Map";
+			case "floors": return "Floors";
 			case "background": return "Background";
 			case "objects": return "Objects & Tokens";
+			case "roofs": return "Roofs";
 			case "foreground": return "Foreground";
 			case "gmlayer": return "GM Info Overlay";
 			case "walls": return "Dynamic Lighting";
@@ -1941,13 +1970,14 @@ function baseConfig () {
 
 	d20plus.cfg.pLoadConfig = async () => {
 		d20plus.ut.log("Reading Config");
+		let configHandout = d20plus.cfg.getConfigHandout();
 
-		if (!await d20plus.cfg.checkConfigHandout()) {
+		if (!configHandout) {
 			d20plus.ut.log("No config found! Initialising new config...");
 			await d20plus.cfg.pMakeDefaultConfig();
 		}
 
-		const configHandout = d20plus.cfg.getConfigHandout();
+		configHandout = d20plus.cfg.getConfigHandout();
 		if (configHandout) {
 			configHandout.view.render();
 			return new Promise(resolve => {
@@ -2018,21 +2048,9 @@ function baseConfig () {
 		});
 	};
 
-	d20plus.cfg.checkConfigHandout = async () => {
-		d20plus.ut.getJournalFolderObj();	// ensure journal init
-		d20.Campaign.handouts.fetch();		// it's not async so it will become effective after b20 creates another handout
-		const configHandouts = await d20.Campaign.handouts.models
-			.pSerialAwaitFilter(handout => {
-				return handout.attributes.name === CONFIG_HANDOUT;
-			});
-		configHandouts.forEach((handout, i) => {
-			i > 0 && handout.destroy();		// clean the leftover handouts
-		})
-		return configHandouts.length;
-	}
-
 	d20plus.cfg.getConfigHandout = () => {
-		d20plus.ut.log("Getting config handout: ", Array.isArray(d20.Campaign.handouts.models));
+		d20plus.ut.getJournalFolderObj(); // ensure journal init
+
 		return d20.Campaign.handouts.models.find(function (handout) {
 			return handout.attributes.name === CONFIG_HANDOUT;
 		});
@@ -3003,95 +3021,6 @@ function baseTool () {
 			},
 		},
 		{
-			name: "Token Avatar URL Fixer",
-			desc: "Change the root URL for tokens en-masse.",
-			html: `
-				<div id="d20plus-avatar-fixer" title="Better20 - Avatar Fixer">
-				<p><b>Warning:</b> this thing doesn't really work.</p>
-				<p>Current URLs (view only): <select class="view-only"></select></p>
-				<p><label>Replace:<br><input name="search" value="https://5e.tools/"></label></p>
-				<p><label>With:<br><input name="replace" value="https://5etools-mirror-1.github.io/"></label></p>
-				<p><button class="btn">Go!</button></p>
-				</div>
-				`,
-			dialogFn: () => {
-				$("#d20plus-avatar-fixer").dialog({
-					autoOpen: false,
-					resizable: true,
-					width: 400,
-					height: 400,
-				});
-			},
-			openFn: () => {
-				function replaceAll (str, search, replacement) {
-					return str.split(search).join(replacement);
-				}
-
-				const $win = $("#d20plus-avatar-fixer");
-				$win.dialog("open");
-
-				const $selView = $win.find(`.view-only`);
-				const toView = [];
-				d20.Campaign.characters.toJSON().forEach(c => {
-					if (c.avatar && c.avatar.trim()) {
-						toView.push(c.avatar);
-					}
-				});
-				toView.sort(SortUtil.ascSort).forEach(url => $selView.append(`<option disabled>${url}</option>`));
-
-				const $btnGo = $win.find(`button`).off("click");
-				$btnGo.on("click", () => {
-					let count = 0;
-					$("a.ui-tabs-anchor[href='#journal']").trigger("click");
-
-					const search = $win.find(`[name="search"]`).val();
-					const replace = $win.find(`[name="replace"]`).val();
-
-					d20.Campaign.characters.toJSON().forEach(c => {
-						const id = c.id;
-
-						const realC = d20.Campaign.characters.get(id);
-
-						const curr = realC.get("avatar");
-						let toSave = false;
-						if (curr.includes(search)) {
-							count++;
-							realC.set("avatar", replaceAll(curr, search, replace));
-							toSave = true;
-						}
-						if (realC.get("defaulttoken")) {
-							realC._getLatestBlob("defaulttoken", (bl) => {
-								bl = bl && bl.trim() ? JSON.parse(bl) : {};
-								if (bl && bl.imgsrc && bl.imgsrc.includes(search)) {
-									count++;
-									realC.updateBlobs({imgsrc: replaceAll(bl.imgsrc, search, replace)});
-									toSave = true;
-								}
-							});
-						}
-
-						if (toSave) {
-							realC.save();
-						}
-
-						for (const page of d20.Campaign.pages.models) {
-							if (page.thegraphics && page.thegraphics.models) {
-								for (const token of page.thegraphics.models) {
-									const tokenImgsrc = token.get("imgsrc");
-									if (tokenImgsrc.includes(search)) {
-										token.set("imgsrc", tokenImgsrc.replace(search, replace));
-										token.save();
-										count++;
-									}
-								}
-							}
-						}
-					});
-					window.alert(`Replaced ${count} item${count === 0 || count > 1 ? "s" : ""}.`)
-				});
-			},
-		},
-		{
 			name: "Mass-Delete Pages",
 			desc: "Quickly delete multiple pages.",
 			html: `
@@ -3989,7 +3918,7 @@ function baseToolModule () {
 				$win5etools.dialog("open");
 				const $btnLoad = $win5etools.find(`.load`).off("click");
 				// url for the repo
-				const urlbase = "https://raw.githubusercontent.com/DMsGuild201/Roll20_resources/master/Module/";
+				const urlbase = DATA_URL_COMMUNITY_MODULES;
 
 				DataUtil.loadJSON(`${urlbase}index.json`).then(data => {
 					const $lst = $win5etools.find(`.list`);
@@ -4046,7 +3975,7 @@ function baseToolModule () {
 			// Load from file
 			const $btnLoadFile = $win.find(`[name="load-file"]`);
 			$btnLoadFile.off("click").click(async () => {
-				const data = await DataUtil.pUserUpload();
+				const data = await InputUiUtil.pGetUserUploadJson();
 				// Due to the new util functon, need to account for data being an array
 				data.jsons.forEach(d => handleLoadedData(d));
 			});
@@ -5921,7 +5850,7 @@ function baseToolAnimator () {
 		async _shared_doImport (prop, name, fnNextId, fnNextName, fnGetValidMsg, fnAdd, ...requiredProps) {
 			let data;
 			try {
-				data = await DataUtil.pUserUpload();
+				data = await InputUiUtil.pGetUserUploadJson();
 			} catch (e) {
 				d20plus.ut.chatLog("File was not valid JSON!");
 				// eslint-disable-next-line no-console
@@ -7639,6 +7568,1650 @@ function baseToolAnimator () {
 SCRIPT_EXTENSIONS.push(baseToolAnimator);
 
 
+function baseToolDLImport () {
+	const UniversalMapDLImporter = function () {
+		// Some constants
+
+		const defaultGridSize = 70;
+		const scriptName = `Universal DL Importer`;
+		const lightURL = "/images/editor/torch.svg";
+
+		const icon = {
+			"DA": "https://yt3.googleusercontent.com/qTpLXBxCdfX6x20z7Yifc-61rhFua6ixhxyRd4-j-j_p4AmZSn_GQPRRM1p9sT_NgZOiw_V4tA=s900-c-k-c0x00ffffff-no-rj",
+			"UVTT": "https://user-images.githubusercontent.com/2023640/142776957-46e7ea40-9809-4558-a5f7-c65de050ba40.png",
+			"default": "/images/character.png",
+		}
+
+		// Imitate API functions
+		const sendChat = (input) => {
+			d20.textchat.incoming(false, {
+				id: d20plus.ut.generateRowId(),
+				who: "DL Importer",
+				type: "general",
+				content: input,
+				playerid: window.currentPlayer.id,
+				avatar: icon[this.format] || icon.default,
+				inlinerolls: [],
+			});
+		};
+
+		const getObj = (type, id) => {
+			if (type === "player") return currentPlayer;
+			else if (type === "page") return d20.Campaign.activePage();
+			else if (type === "graphic") return d20plus.ut.getTokenById(id);
+		};
+
+		const findObjs = () => {
+			const graphics = d20.Campaign.activePage().thegraphics;
+			return graphics.filter((it) => it.get("layer") === "map");
+		};
+
+		const createObj = (objType, obj, ...others) => {
+			if (objType === "door" || objType === "window") {
+				const conf = this[`config${objType.toSentenceCase()}s`];
+				if (conf === "o") obj.isOpen = true;
+				else if (conf === "l") obj.isLocked = true;
+				else if (conf === "s") obj.isSecret = true;
+				else if (conf === "sl") { obj.isLocked = true; obj.isSecret = true; }
+				else if (conf === "so") { obj.isOpen = true; obj.isSecret = true; }
+			}
+			switch (objType) {
+				case "path": {
+					const page = d20.Campaign.activePage();
+					obj.scaleX = obj.scaleX || 1;
+					obj.scaleY = obj.scaleY || 1;
+					obj.path = obj.path || obj._path;
+					return page.thepaths.create(obj);
+				}
+				case "door": {
+					const page = d20.Campaign.activePage();
+					obj.path = obj.path || obj._path;
+					if (this.configDoors === "X") return;
+					return page.doors.create(obj);
+				}
+				case "window": {
+					const page = d20.Campaign.activePage();
+					obj.path = obj.path || obj._path;
+					if (this.configWindows === "X") return;
+					return page.windows.create(obj);
+				}
+				case "graphic": {
+					const page = d20.Campaign.activePage();
+					obj.path = obj.path || obj._path;
+					if (this.configLights === "X") return;
+					return page.thegraphics.create(obj);
+				}
+				default:
+					// eslint-disable-next-line no-console
+					console.error("Unhandled object type: ", objType, "with args", obj, others)
+					break;
+			}
+		};
+
+		// HTML for dialog
+		const dialog = `
+		  <div style="width: 350px;">
+		  <p>The ${scriptName} allows you to import map data (walls, portals and lights) from some mapmaking software into Roll20 Dynamic Lighting (DL) system.</p>
+		  <h4>What can be imported?</h4>
+		  <p>⦁ The UVTT (universal VTT format, .dd2tt) files from DungeonDraft<br>
+		  ⦁ Text data files (roll20 export, .txt) from DungeonAlchemist</p>
+		  <button type="button" class="btn load-file">Load from file</button>
+		  <a class="showtip pictos" original-title="Select file and it will be loaded to text editor below. The import format is determined automatically">?</a>
+		  <textarea
+			style="width:100%;height:100px;box-sizing:border-box;margin-top: 7px;"
+			placeholder="You can either\n- Paste map data here and press Import,\n- OR just press Load from file and select the data"
+			></textarea>
+		  <p style="height: 28px;">How to handle doors:
+		  <select class="doors-config" style="width:160px;float:right">${[
+		["d", "Default"],
+		["X", "Don't import"],
+		["o", "As opened doors"],
+		["l", "As locked doors"],
+		["s", "As secret doors"],
+		["sl", "As locked secret doors"],
+		["so", "As open secret doors"],
+		["LS", "As solid lines"],
+		["LT", "As transparent lines"],
+	].reduce((html, [v, o]) => {
+		return `${html}<option value="${v}">${o}</option>`
+	}, "")}
+		  </select></p>
+		  <p style="height: 28px;">How to handle windows:
+		  <select class="windows-config" style="width:160px;float:right">${[
+		["d", "Default"],
+		["X", "Don't import"],
+		["o", "As opened windows"],
+		["l", "As locked windows"],
+		["LS", "As solid lines"],
+		["LT", "As transparent lines"],
+	].reduce((html, [v, o]) => {
+		return `${html}<option value="${v}">${o}</option>`
+	}, "")}
+		  </select></p>
+		  <p style="height: 28px;">How to handle light sources:
+		  <select class="lights-config" style="width:160px;float:right">${[
+		["d", "Default"],
+		["X", "Don't import"],
+	].reduce((html, [v, o]) => {
+		return `${html}<option value="${v}">${o}</option>`
+	}, "")}
+		  </select></p>
+		  <p style="height: 28px;">Attempt to resize and fit the map
+		  <span style="width:160px;float:right;display: inline-block;">
+			<input type="checkbox" checked="true" class="resize-config" style="float:left">
+		  </span></p>
+		  <input class="vtt-export" style="display:none" type="file" name="file" accept=".txt, .dd2vtt"/>
+		  </div>
+		`;
+
+		// Service functions
+		const getMap = () => {
+			// simplest case - get the ONLY map graphic and use that one
+			const mapGraphics = findObjs();
+
+			// filter them all so we only consider the layer=map graphics
+			if (mapGraphics.length === 1) {
+				return mapGraphics[0];
+			}
+
+			// no map
+			if (mapGraphics.length === 0) {
+				sendChat(
+					"You need to upload your map image and put it in the Map Layer before importing the line-of-sight data. Make sure that your map is in the background layer by right clicking on it, selecting \"Layer\" and choosing \"Map Layer\".",
+				);
+				return null;
+			}
+
+			// otherwise, see if we selected one
+			const selected = d20.engine.selected();
+			if (selected === undefined
+				|| selected.length === 0
+				|| selected[0]?._model.get("layer") !== "map"
+			) {
+				sendChat(
+					"If you have more than one image in the map layer, you need to select the one that contains the Dungeon Alchemist map image before running the command.",
+				);
+				return null;
+			} else {
+				return selected[0]._model;
+			}
+		};
+
+		const resizeMap = (gridSize, grid, map) => {
+			if (!this.configResize) return;
+
+			if (grid.x === undefined) {
+				const fromString = grid.split(" ");
+				grid = {
+					x: parseInt(fromString[0]),
+					y: parseInt(fromString[1]),
+				}
+			}
+
+			const mapWidth = grid.x * gridSize;
+			const mapHeight = grid.y * gridSize;
+
+			grid.x && grid.y && this.page.set({
+				width: (grid.x * gridSize) / defaultGridSize,
+				height: (grid.y * gridSize) / defaultGridSize,
+			});
+
+			map.save({
+				width: mapWidth,
+				height: mapHeight,
+				top: mapHeight / 2,
+				left: mapWidth / 2,
+				layer: "map",
+			});
+		};
+
+		const prepareUVTT = (data, mapUnit) => {
+			data.walls = [];
+			data.line_of_sight
+				.concat(data.objects_line_of_sight)
+				.forEach(el => {
+					el.forEach((w, i) => {
+						if (el[i + 1]) { data.walls.push({
+							wallSection: "",
+							type: 0,
+							open: false,
+							wall3D: {
+								p1: {
+									top: {
+										x: w.x * mapUnit,
+										y: w.y * mapUnit,
+									},
+								},
+								p2: {
+									top: {
+										x: el[i + 1].x * mapUnit,
+										y: el[i + 1].y * mapUnit,
+									},
+								},
+							},
+						}); }
+					})
+				});
+			data.portals.forEach(el => {
+				data.walls.push({
+					wallSection: "",
+					type: el.closed ? 1 : 2,
+					open: false,
+					wall3D: {
+						p1: {
+							top: {
+								x: el.bounds[0].x * mapUnit,
+								y: el.bounds[0].y * mapUnit,
+							},
+						},
+						p2: {
+							top: {
+								x: el.bounds[1].x * mapUnit,
+								y: el.bounds[1].y * mapUnit,
+							},
+						},
+					},
+				});
+			});
+			data.lights.forEach(el => {
+				el.position.x = el.position.x * mapUnit;
+				el.position.y = el.position.y * mapUnit;
+				el.color = `#${el.color.toUpperCase()}`;
+				el.range = el.range * mapUnit;
+			})
+		};
+
+		const createWall = (wall, originalGridSize, gridSize) => {
+			// BEGIN MOD
+			if ((wall.type === 1 && this.configDoors === "LS")
+				|| (wall.type === 2 && this.configWindows === "LS")) {
+				wall.type = 0;
+			} else if ((wall.type === 1 && this.configDoors === "LT")
+				|| (wall.type === 2 && this.configWindows === "LT")) {
+				wall.type = 4;
+			}
+			// END MOD
+
+			let x1 = wall.wall3D.p1.top.x * gridSize / originalGridSize;
+			let y1 = wall.wall3D.p1.top.y * gridSize / originalGridSize;
+			let x2 = wall.wall3D.p2.top.x * gridSize / originalGridSize;
+			let y2 = wall.wall3D.p2.top.y * gridSize / originalGridSize;
+
+			const xCenter = (x1 + x2) * 0.5;
+			const yCenter = (y1 + y2) * 0.5;
+
+			const xMin = Math.min(x1, x2);
+			const yMin = Math.min(y1, y2);
+			const xMax = Math.max(x1, x2);
+			const yMax = Math.max(y1, y2);
+
+			const width = xMax - xMin;
+			const height = yMax - yMin;
+
+			// log("Center: ", wall, x1, y1, x2, y2, originalGridSize);
+
+			// because partial walls used to be exported as windows, we can't support them for older exports
+			const generateWindows = this.format === "UVTT" || this.version >= 2;
+
+			// new door/window API
+			if (wall.type === 1 || (wall.type === 2 && generateWindows)) {
+				const type = (wall.type === 1) ? "door" : "window";
+				const color = (wall.type === 1) ? "#00ff00" : "#00ffff";
+
+				x1 -= xCenter;
+				x2 -= xCenter;
+				y1 -= yCenter;
+				y2 -= yCenter;
+
+				let open = wall.open;
+				if (typeof (open) === "undefined") open = false;
+
+				let doorObj = {
+					pageid: this.page.get("_id"),
+					color: color,
+					x: xCenter,
+					y: -yCenter,
+					isOpen: open,
+					isLocked: false,
+					isSecret: false,
+					path: {
+						handle0: { x: x1, y: y1 },
+						handle1: { x: x2, y: y2 },
+					},
+				};
+				createObj(type, doorObj);
+				// log(doorObj);
+			}
+
+			// default
+			else if (wall.type === 0 || wall.type === 4 || (wall.type === 2 && !generateWindows)) {
+				x1 -= xMin;
+				x2 -= xMin;
+				y1 -= yMin;
+				y2 -= yMin;
+
+				const path = [
+					["M", x1, y1],
+					["L", x2, y2],
+				];
+
+				// different wall types have different colors - we use a color scheme compatible with WOTC modules and DoorKnocker
+				let color = "#0000ff";
+				let barrierType = "wall";
+				if (wall.type === 4) {
+					color = "#5555ff";
+					barrierType = "transparent";
+				}
+
+				// backwards compatibility
+				else if (wall.type === 2) {
+					color = "#00ffff"; // window (light blue)
+					barrierType = "transparent";
+				}
+
+				createObj("path", {
+					pageid: this.page.get("_id"),
+					stroke: color,
+					fill: "transparent",
+					left: xCenter,
+					top: yCenter,
+					width: width,
+					height: height,
+					rotation: 0,
+					scaleX: 1,
+					scaleY: 1,
+					stroke_width: 5,
+					layer: "walls",
+					path: JSON.stringify(path),
+					barrierType: barrierType,
+				});
+			}
+		};
+
+		const createLight = (light, originalGridSize, gridSize) => {
+			const x = light.position.x * gridSize / originalGridSize;
+			const y = light.position.y * gridSize / originalGridSize;
+
+			const range = light.range * 1.0;
+			let dim_radius = range;
+			let bright_radius = range / 2;
+
+			// convert to the local scale value
+			const scale_number = this.page.get("scale_number");
+			// log("Go from dim_radius " + dim_radius + " which has range " + range + " to per tile " + (dim_radius/originalGridSize) + " from original grid size " + originalGridSize + " and scale_number is " + scale_number);
+			dim_radius *= scale_number / originalGridSize;
+			bright_radius *= scale_number / originalGridSize;
+
+			const newObj = createObj("graphic", {
+				imgsrc: lightURL,
+				subtype: "token",
+				name: "", /* BEGIN MOD we don't need auras since we got original "torch" image
+				aura1_radius: 0.5,
+				aura1_color: "#" + light.color.substring(0, 6), */
+
+				// UDL
+				emits_bright_light: true,
+				emits_low_light: true,
+				bright_light_distance: bright_radius,
+				low_light_distance: dim_radius,
+
+				width: 70,
+				height: 70,
+				top: y,
+				left: x,
+				layer: "walls",
+				pageid: this.page.get("_id"),
+			});
+
+			// log("New obj light distance: " + newObj.get("bright_light_distance") + " / " + newObj.get("low_light_distance"));
+		};
+
+		// Main import function
+		const handleInput = (txt) => {
+			d20plus.ut.log("Handle VTT data input");
+			// log(txt);
+			if (!is_gm) return;
+
+			const endOfHeader = txt.indexOf("dungeonalchemist") !== -1 ? txt.indexOf(" ") : 0;
+
+			try {
+				const json = txt.substring(endOfHeader);
+				const data = JSON.parse(json);
+
+				// determine the version
+				this.format = data.version ? "DA" : "UVTT";
+				this.version = data.version || data.format || 1;
+
+				this.page = getObj("page");
+
+				// calculate the REAL grid size
+				const gridSize = defaultGridSize * this.page.get("snapping_increment");
+				const mapSize = data.grid || data?.resolution.map_size;
+				const mapUnit = data.pixelsPerTile || data?.resolution.pixels_per_grid;
+
+				// load and resize the map
+				const map = getMap();
+				if (map === null) return;
+				resizeMap(gridSize, mapSize, map);
+
+				// prepare data from UVTT format
+				if (this.format === "UVTT") {
+					prepareUVTT(data, mapUnit);
+				}
+
+				// spawn the walls & lights
+				for (const wall of data.walls) {
+					createWall(wall, mapUnit, gridSize);
+				}
+
+				for (const light of data.lights) {
+					createLight(light, mapUnit, gridSize);
+				}
+
+				sendChat(
+					"Succesfully imported map data!",
+				);
+			} catch (err) {
+				d20plus.ut.log(err, true);
+				sendChat(
+					`Failed to import Dungeon Alchemist map data: ${err}`,
+				);
+			}
+		};
+
+		const process = ($editor) => {
+			const txt = $editor.find("textarea").val();
+
+			this.configDoors = $editor.find(".doors-config").val();
+			this.configWindows = $editor.find(".windows-config").val();
+			this.configLights = $editor.find(".lights-config").val();
+			this.configResize = $editor.find(".resize-config").prop("checked");
+
+			handleInput(txt);
+			$editor.off();
+			$editor.dialog("destroy").remove();
+		};
+
+		const init = () => {
+			const $editor = $(dialog);
+			$editor.dialog({
+				autoopen: true,
+				title: scriptName,
+				width: 450,
+				open: () => {
+					const loadBtn = $editor.find(".load-file");
+					loadBtn.on("click", () => {
+						const fileSelect = $editor.find("input.vtt-export");
+						fileSelect.off("change");
+						fileSelect.on("change", () => {
+							const file = fileSelect[0].files[0];
+							const reader = new FileReader();
+							reader.addEventListener("load", (event) => {
+								const txt = event.target.result;
+								$editor.find("textarea").val(txt);
+							});
+							reader.readAsText(file);
+						});
+						fileSelect.click();
+					});
+				},
+				buttons: {
+					"Cancel": () => {
+						$editor.off();
+						$editor.dialog("destroy").remove();
+					},
+					"Import": () => {
+						process($editor);
+					},
+				},
+				close: () => { $editor.off(); $editor.dialog("destroy").remove() },
+			})
+		};
+
+		init();
+	};
+
+	d20plus.tool.tools.push({
+		toolId: "DLIMPORT",
+		name: "Universal DL Importer",
+		desc: "Import map data from DungeonDraft (UVTT) and Dungeon Alchemist",
+		html: ``,
+		dialogFn: () => {},
+		openFn: () => {
+			const importer = new UniversalMapDLImporter();
+		},
+	})
+}
+
+SCRIPT_EXTENSIONS.push(baseToolDLImport);
+
+
+function baseToolUrlFix () {
+	// b20-JS: Ultimate tokens & URLs fixer
+	// Run the macro, and it will show the list of images by domain
+	// and you'll be able to run default fixer scripts or create your own
+
+	// The full custom rules syntax below:
+
+	// <search>; <replace>[; <condition>[; <callback>[; <tabs(comma-separated)>]]]
+
+	// Each rule should begin with new line. Spaces/tabs after semicolon are ignored
+	// The <search> and <condition> support regular expressions if /wrapped in slashes/
+	// The interface deliberately omits the details beyond search/replace/condition,
+	// But if you're reading this you know what you're doing.
+
+	// Arguments and their explanations are listed below
+	// They work similarly for custom rules and [defaultRules]
+
+	// rule = {
+	//		name: "Name",					// Rule name (custom will be named #1, #2...)
+	//		search: /regexp/ || "str",		// Search string
+	//		replace: "string",				// Replacement (supports $N for regexp)
+	//		condition: [/regex/ || "str"],	// Only apply rule if the string has these ("&&")
+	//		callback: ["encodeURI"],		// One of the {callbacks} applied to the output
+	//										// ["encodeURI", "decodeURIComponent"]
+	//		tabs: ["placed"],				// Apply rule to specific image types
+	//										// ["placed", "default", "multi", "avatar"]
+	//		dns: ["domain"],				// Simpler conditioning for [defaultRules]
+	//		migrating: true,				// True if current rule results in domain change
+	// },
+
+	const lag = 50;
+	const previews = {
+		normal: 4,
+		extended: 8,
+		single: 16,
+		max: 128,
+	};
+	const cssHeight = {
+		checkboxes: 107,
+		textareaGrowth: 20,
+		configBlock: 110,
+	};
+
+	const defaultRules = [
+		{
+			name: "Discord.app links -> require attention",
+			search: /^https:\/\/cdn\.discordapp\.com\/attachments(.*?)$/,
+			replace: "",
+			callback: ["unfixableAskUser"],
+			dns: ["cdn.discordapp.com"],
+		},
+		{
+			name: "Extract from imgsrv.roll20.net",
+			search: /^https:\/\/imgsrv\.roll20\.net\/\?src=(.*?)&cb=(\d*?)$/,
+			replace: "$1",
+			callback: ["decodeURIComponent"],
+			dns: ["imgsrv.roll20.net"],
+			tabs: ["placed", "default", "multi"],
+			migrating: true,
+		},
+		{
+			name: "5etools-mirror-1 -> 5e.tools/bestiary",
+			search: /^https:\/\/5etools-mirror-1\.github\.io\/\/?img\/(?:bestiary\/|)(.*?)\/([^/]*?)\.([\w-]*?)(\?\d*|)$/,
+			replace: "https://5e.tools/img/bestiary/tokens/$1/$2.$3$4",
+			dns: ["5etools-mirror-1.github.io"],
+			migrating: true,
+		},
+		{
+			name: "5e.tools -> 5e.tools/bestiary",
+			search: /^https:\/\/5e.tools\/img\/([^/]*?)\/([^/]*?)\.([\w-]*?)(\?\d*|)$/,
+			replace: "https://5e.tools/img/bestiary/tokens/$1/$2.$3$4",
+			dns: ["5e.tools"],
+			migrating: true,
+		},
+		{
+			name: "5e.tools image -> .webp",
+			search: /\/(.*?)\.(png|jpg)(\?\d*|)$/,
+			replace: "/$1.webp$3",
+			dns: ["5etools-mirror-1.github.io", "5e.tools"],
+		},
+		{
+			name: "?multiside-parameters -> #multiside-parameters",
+			search: /\?roll20_(token_size|skip_token)=/g,
+			replace: "#roll20_$1=",
+			tabs: ["multi"],
+		},
+	];
+
+	const defaultFilter = ["", "s3.amazonaws.com"];
+
+	const callbacks = {
+		encodeURI,
+		encodeURIComponent,
+		decodeURIComponent,
+		getCurrentName: (urlPart, item) => {
+			return item.model.attributes.name;
+		},
+		unfixableAskUser: (urlPart, item) => {
+			item.error = true;
+			return urlPart;
+		},
+	};
+
+	const urls = {};
+	const config = {};
+	const $html = {};
+
+	const fixer = (() => {
+		const currentDns = (tab) => {
+			tab = tab || config.currentTab;
+			return Object.keys(tab.domains).filter(dn => {
+				return !tab.filter.includes(dn);
+			});
+		};
+
+		const parseRules = () => {
+			const text = $html.config.mask.val();
+			const regexp = /^\/(.*?)\/(\w*?)$/;
+
+			const rules = text.split("\n").map(r => {
+				const args = r.replace(/;[\t ]+/g, ";").split(";");
+				const rule = {name: args[0]};
+				const rcbs = (args[3] || "").split(",").filter(cb => !!callbacks[cb]);
+
+				rule.search = args[0];
+				rule.search.replace(regexp, (i, exp, p) => rule.search = new RegExp(exp, p));
+
+				rule.replace = args[1];
+
+				args[2] && (rule.condition = args[2]);
+				args[3] && !!rcbs.length && (rule.callback = rcbs);
+				args[4] && (rule.tabs = args[4].split(","));
+
+				if (rule.replace && rule.search) return rule;
+			}).filter(r => !!r);
+
+			rules.length && (config.rules = rules);
+			rules.length && (config.rulesCache = text);
+			return !!rules.length;
+		};
+
+		const summarizeRules = () => {
+			const tab = config.currentTab;
+			const summary = defaultRules.filter(r => {
+				const tabDns = currentDns(tab);
+				return (!r.dns || !!(r.dns || []).filter(dn => tabDns.includes(dn)).length)
+					&& (!r.tabs || r.tabs.includes(config.currentTab.name));
+			}).reduce((text, r) => {
+				return `${text}${r.name}\n`;
+			}, "");
+			if (config.defaults) {
+				const tempRules = config.rulesCache || $html.config.mask.val();
+				$html.config.mask.val("");
+				$html.config.mask.attr("placeholder", summary || "no rules for current selection");
+				tempRules && (config.rulesCache = tempRules);
+			} else {
+				$html.config.mask.val(config.rulesCache || "");
+				$html.config.mask.attr("placeholder", "<search>;<replace>[;<condition>]\n<search>;<replace>[;<condition>]");
+			}
+		};
+
+		const prepareRules = () => {
+			const tab = config.currentTab;
+			const activeRules = config.defaults
+				? [...defaultRules]
+				: config.rules || [];
+			let passThrough = true;
+			urls.rules = activeRules.filter((r, i) => {
+				const tabDns = currentDns(tab);
+				const activeDns = (r.dns || []).filter(dn => tabDns.includes(dn));
+
+				if ((!passThrough && r.dns && Object.keys(tab.domains).length && !activeDns.length)
+					|| (r.tabs && !r.tabs.includes(tab.name))) {
+					passThrough = false;
+					return false;
+				}
+				return true;
+			});
+		};
+
+		const processUrl = (item) => {
+			let processed = item.url;
+			let migrated = false;
+			let dn = item.dn;
+			item.error = false;
+
+			const applicable = (r) => {
+				return (!r.condition
+						|| processed.includes(r.condition))
+					&& (migrated
+						|| !r.dns?.length
+						|| r.dns.includes(dn));
+			}
+
+			urls.rules.forEach((r, n) => {
+				if (!applicable(r)) return;
+				const changed = (() => {
+					const initial = processed;
+					return () => processed !== initial;
+				})();
+				processed = processed.replace(r.search, (str) => {
+					r.replace.includes("$1")
+						? (str = str.replace(r.search, r.replace))
+						: (str = r.replace);
+					r.callback && r.callback.forEach(p => {
+						str = callbacks[p](str, item);
+					});
+					return str;
+				});
+				r.migrating
+					&& changed()
+					&& (dn = r20data.getDomainName(processed));
+			});
+			item.urlFix = processed !== item.url
+				? processed
+				: undefined;
+		};
+
+		const reProcessUrls = () => {
+			const tab = config.currentTab;
+			prepareRules();
+			tab.models.forEach(t => {
+				processUrl(t);
+			});
+		};
+
+		const init = async () => {
+			d20.Campaign.pages.models.find(p => !p.fullyLoaded)
+				&& await r20data.loadAllPages();
+
+			ui.initDialog();
+			ui.initHtmls();
+
+			["placed", "default", "multi", "avatar", "rules"]
+				.forEach(t => delete urls[t]);
+
+			Object.keys(config)
+				.forEach(o => delete config[o]);
+
+			config.addlag = true;
+			config.defaults = true;
+			config.previewsPerDomain = previews.normal;
+
+			ui.initEvents();
+		};
+
+		return {
+			parseRules,
+			prepareRules,
+			summarizeRules,
+			processUrl,
+			reProcessUrls,
+			currentDns,
+			init,
+		};
+	})();
+
+	const r20data = (() => {
+		const countDomains = (dn) => {
+			const list = config.currentTab?.domains;
+			list[dn] = list[dn] || {name: dn, count: 0};
+			list[dn].count++;
+		};
+
+		const getDomainName = (url) => {
+			const address = url.replace(/^https?:\/\/(www\.|)/, "");
+			return address.split("/")[0];
+		};
+
+		const loadAllPages = async () => {
+			const pages = d20.Campaign.pages.models;
+			for (const p of pages) {
+				!p.fullyLoaded && await p.fullyLoadPage();
+			}
+		}
+
+		const indexPlaced = () => {
+			return d20.Campaign
+				.pages.models
+				.map((p, i) => !p.attributes.archived
+					&& (!config.singlepage || i === d20.Campaign.activePageIndex)
+					&& (p.thegraphics?.models.filter(t => {
+						return t.attributes.type === "image"
+					}) || []))
+				.flatten()
+				.map(t => {
+					const it = {
+						id: t.id,
+						url: t.attributes.imgsrc,
+						model: t,
+						name: t.attributes.name,
+						dn: getDomainName(t.attributes.imgsrc),
+						layer: t.attributes.layer,
+						info: `on page ${t.collection.page.attributes.name}`,
+					};
+					config.currentTab._byId[t.id] = it;
+					countDomains(it.dn);
+					fixer.processUrl(it);
+					return it;
+				});
+		};
+
+		const indexDefault = () => {
+			return d20.Campaign.characters.models.filter(c => {
+				return c._blobcache.defaulttoken;
+			}).map(c => {
+				const t = JSON.parse(c._blobcache.defaulttoken);
+				const it = {
+					id: c.id,
+					url: t.imgsrc,
+					model: c,
+					cache: t,
+					name: t.name || c.attributes.name,
+					dn: getDomainName(t.imgsrc),
+					info: `default for ${c.attributes.name || c.attributes.charactersheetname}`,
+				};
+				config.currentTab._byId[c.id] = it;
+				countDomains(it.dn);
+				fixer.processUrl(it);
+				return it;
+			});
+		};
+
+		const indexMulti = () => {
+			return d20.Campaign
+				.pages.models
+				.filter(p => !p.attributes.archived)
+				.map(p => p.thegraphics?.models.filter(t => t.attributes.type === "image" && t.attributes.sides) || [])
+				.flatten()
+				.map(t => {
+					const imgs = t.attributes.sides.split("|");
+					return imgs.map((img, i) => {
+						img = decodeURIComponent(img);
+						const it = {
+							index: i,
+							id: `${t.id}#${i}`,
+							url: img,
+							model: t,
+							collection: imgs,
+							name: `${t.attributes.name}${i}`,
+							dn: getDomainName(img),
+							layer: t.attributes.layer,
+							info: `on page ${t.collection.page.attributes.name}`,
+						};
+						config.currentTab._byId[it.id] = it;
+						countDomains(it.dn);
+						fixer.processUrl(it);
+						return it;
+					});
+				}).concat(
+					...d20.Campaign.characters.models.filter(c => {
+						return c._blobcache?.defaulttoken?.includes(`"sides":`);
+					}).map(c => {
+						const t = JSON.parse(c._blobcache.defaulttoken);
+						const imgs = t.sides.split("|");
+						return imgs.map((img, i) => {
+							img = decodeURIComponent(img);
+							const it = {
+								index: i,
+								id: `${c.id}#${i}`,
+								url: img,
+								model: c,
+								cache: t,
+								collection: imgs,
+								name: `${t.name}${i}`,
+								dn: getDomainName(img),
+								info: `default for ${c.attributes.name || "Unnamed character"}`,
+							};
+							config.currentTab._byId[it.id] = it;
+							countDomains(it.dn);
+							fixer.processUrl(it);
+							return it;
+						});
+					}),
+				).flatten();
+		};
+
+		const indexAvatar = () => {
+			return d20.Campaign.characters.models.filter(c => {
+				return c.attributes.avatar;
+			}).map(c => {
+				const it = {
+					id: c.id,
+					url: c.attributes.avatar,
+					model: c,
+					name: c.attributes.name,
+					dn: getDomainName(c.attributes.avatar),
+					info: `avatar for ${c.attributes.name || "Unnamed character"}`,
+				};
+				config.currentTab._byId[c.id] = it;
+				countDomains(it.dn);
+				fixer.processUrl(it);
+				return it;
+			});
+		};
+
+		const indexUrls = (name) => {
+			urls[name] = {
+				_byId: {},
+				name,
+				models: [],
+				domains: {},
+				filter: [...defaultFilter],
+			};
+
+			config.currentTab = urls[name];
+			fixer.prepareRules(name);
+
+			urls[name].models = {
+				placed: indexPlaced,
+				default: indexDefault,
+				multi: indexMulti,
+				avatar: indexAvatar,
+			}[name]();
+		};
+
+		const reIndexUrls = async () => {
+			const tab = config.currentTab;
+			indexUrls(tab.name);
+			ui.drawDomainsList();
+			ui.drawPreviews();
+		};
+
+		const loadAllPlaced = () => {
+
+		}
+
+		const prepareMultisided = (stats) => {
+			const tab = config.currentTab;
+			const tokenModels = {};
+			stats.images = 0;
+
+			tab.models.forEach(i => {
+				if (!i.urlFix) return;
+				if (tab.filter.includes(i.dn)) return;
+
+				tokenModels[i.model.id] = tokenModels[i.model.id] || {
+					urlFix: false,
+					id: i.model.id,
+					collection: i.collection,
+					model: i.model,
+					cache: i.cache,
+				};
+
+				if (!i.error) {
+					tokenModels[i.model.id].urlFix = true;
+					tokenModels[i.model.id].collection[i.index] = i.urlFix;
+					stats.images++;
+				}
+			});
+
+			return Object.values(tokenModels);
+		}
+
+		const applyUpdateDefaultToken = (i) => {
+			!i.collection && (i.cache.imgsrc = i.urlFix);
+			i.collection && (i.cache.sides = i.collection.join("|"));
+
+			i.blobcache = JSON.stringify(i.cache);
+			i.model._blobcache.defaulttoken = i.blobcache;
+			i.model.updateBlobs({defaulttoken: i.blobcache});
+		}
+
+		const applyUpdateUrl = async (i, stats) => {
+			try {
+				const tab = config.currentTab;
+				switch (tab.name) {
+					case "placed":
+						i.model.save({imgsrc: i.urlFix});
+						break;
+					case "default":
+						applyUpdateDefaultToken(i);
+						break;
+					case "multi":
+						i.cache
+							? applyUpdateDefaultToken(i)
+							: i.model.save({sides: i.collection.join("|")});
+						break;
+					case "avatar":
+						i.model.save({avatar: i.urlFix});
+						break;
+				}
+
+				stats.count++;
+				stats.unique[i.urlFix] = true;
+				stats.$span.text(`Fixing ${stats.item} ${stats.count} of ${stats.total}`);
+			} catch (e) {
+				// eslint-disable-next-line no-console
+				console.error(e);
+				stats.errors++;
+			}
+		}
+
+		const applyUpdates = async () => {
+			const tab = config.currentTab;
+			const stats = {count: 0, unique: [], errors: 0, focus: 0};
+			const skip = (d) => d && tab.filter.includes(d);
+
+			const models = tab.name !== "multi"
+				? tab.models.filter((i, k) => {
+					return i.urlFix && !i.error && !skip(i.dn)
+						&& ++stats.focus
+						&& (!config.focusmode || stats.focus <= ui.getPreviewsPerSite());
+				})
+				: prepareMultisided(stats);
+
+			stats.total = models.length;
+			$html.statusBar.html(`<span>Fixing image 0 of ${stats.total}</span>`);
+			stats.$span = $html.statusBar.find("span");
+			stats.item = tab.name !== "multi" ? "image" : "token";
+
+			d20.engine.unselect();
+			$html.main.addClass("disabled");
+			$html.buttons.apply.attr("disabled", true);
+
+			for (const i of models) {
+				if (!i.urlFix || i.error) continue;
+				if (skip(i.dn)) continue;
+
+				await applyUpdateUrl(i, stats);
+				config.addlag && await new Promise(resolve => setTimeout(resolve, lag));
+			}
+
+			indexUrls(tab.name);
+			ui.drawPreviews();
+			ui.drawDomainsList();
+			// fixer.summarizeRules();
+			d20.engine.redrawScreenNextTick();
+
+			stats.multiSummary = tab.name !== "multi" ? "" : ` (${stats.images} of ${stats.total} images)`;
+			stats.singleSummary = tab.name === "multi" ? "" : ` of ${stats.total}`;
+			stats.summary = `Fixed ${stats.count} ${stats.singleSummary} ${stats.item}s${stats.multiSummary}`;
+			$html.main.removeClass("disabled");
+			$html.buttons.apply.attr("disabled", false);
+			$html.statusBar.html(`<span>${stats.summary}<br>Process finished with ${stats.errors} errors</span>`);
+		};
+
+		return {
+			getDomainName,
+			loadAllPages,
+			applyUpdates,
+			indexUrls,
+			reIndexUrls,
+		};
+	})();
+
+	const ui = (() => {
+		const closeCancel = () => {
+			$html.dialog.off(); $html.dialog.dialog("destroy").remove()
+		};
+
+		const closeCancelRoll20Editor = (char) => {
+			d20.utils.summernoteDeInit(char.editview.$el);
+			char.editview.$el.find(".attrib").trigger("doclose");
+			char.editview.$el.find(".abil.editing").trigger("doclose");
+			char.editview.$el.dialog("destroy");
+		}
+
+		const openRoll20CharacterEditor = (char) => {
+			char.editview.showDialog().then(() => {
+				const buttons = char.editview.$el
+					.dialog("option", "buttons").map(b => {
+						const hopeItsCancel = !b.class?.includes("save-button");
+						hopeItsCancel && (b.click = () => closeCancelRoll20Editor(char));
+						return b;
+					});
+				char.editview.$el.dialog({buttons});
+				char.editview.$el.dialog("option", "beforeClose", () => void 0);
+			});
+		}
+
+		const openRoll20Editor = (id) => {
+			const item = config.currentTab._byId[id];
+			item?.model.view.showDialog
+				? openRoll20CharacterEditor(item?.model)
+				: d20plus.menu.editToken(id.split("#")[0]);
+		};
+
+		const getPreviewsPerSite = () => {
+			return config.singlesite && fixer.currentDns().length <= 1
+				? (config.morepreviews ? previews.max : previews.single)
+				: (config.morepreviews ? previews.extended : previews.normal);
+		};
+
+		const drawDomainsList = () => {
+			const tab = config.currentTab;
+			const domains = Object.entries(tab.domains)
+				.map(([name, d]) => d);
+			const html = domains.reduce((html, it) => {
+				const name = it.name || "-roll20/";
+				const exclude = (!config.focusmode && defaultFilter.includes(it.name))
+					|| (config.focusmode && config.currentTab.filter.includes(it.name));
+				const checked = exclude ? "" : "checked";
+				return `${html}<li title="${name}">
+					<label>
+						<input type="checkbox" data-dn="${it.name}" ${checked}>
+						<span>${name}</span>
+					</label>
+					(${it.count})
+				</li>`;
+			}, "")
+			$html.lists[tab.name].html(html || "<li>Nothing found</li>");
+		}
+
+		const checkLoadedImages = (check) => {
+			const images = $html.preview.thumbs.find("img");
+			const loaded = !images.filter((i, img) => !img.complete).length;
+			if (loaded) clearInterval(check);
+
+			images
+				.filter((i, img) => {
+					if (!img.complete || !!img.naturalWidth) return false;
+					$(img).data("urlid") && $html.preview.texts
+						.find(`[data-urlid=${$(img).data("urlid")}]`)
+						.css({"background-color": "rgba(200,100,100,.5)"});
+					return true;
+				})
+				.parent().css({"background-color": "rgba(200,100,100,.5)"});
+		}
+
+		const drawPreviews = async () => {
+			const tab = config.currentTab;
+			const picked = {txt: "", thumb: ""};
+
+			for (const dom in tab?.domains || {}) {
+				if (tab.filter.includes(dom) && !config.singlepage) continue;
+				let checked = {};
+
+				const notDouble = (url) => checked[url] ? false : (checked[url] = true);
+				const filter = (it) => it.dn === dom
+					&& ((!config.focusmode && notDouble(it.url))
+						|| (config.focusmode && it.urlFix)
+						|| (config.singlepage));
+
+				const links = tab.models.filter(l => filter(l));
+				const pick = links.slice(0, getPreviewsPerSite());
+
+				pick.forEach(u => {
+					picked.txt += `<p${u.urlFix ? ` class="fixed"` : ""} data-id="${u.id}">
+						<span data-urlid="${u.model.id}orig"${u.error ? ` style="background: rgba(200,100,100,.5)"` : ""}>${u.url}</span>
+						${u.urlFix ? `<br><span data-urlid="${u.model.id}fix">${u.urlFix}</span>` : ""}
+					</p>`;
+					picked.thumb += `<div>
+						<div data-id="${u.id}">
+							<img data-urlid="${u.model.id}orig" src="${u.url}"${u.error ? ` style="background: rgba(200,100,100,.5)"` : ""}>
+							${u.urlFix ? `<div><img data-urlid="${u.model.id}fix" src="${u.urlFix}"></div>` : ""}
+						</div>
+						<span>${u.name}</span>
+					</div>`;
+				});
+			}
+
+			$html.preview.texts.html(picked.txt);
+			$html.preview.thumbs.html(picked.thumb);
+
+			setInterval(checkLoadedImages, 50);
+			statusUpdatePreviews();
+		};
+
+		const statusUpdateApply = () => {
+			const tab = config.currentTab;
+			const updated = tab.models.filter(t => t.urlFix && !t.error && !tab.filter.includes(t.dn));
+
+			if (updated.length) $html.buttons.apply.attr("disabled", false);
+			else $html.buttons.apply.attr("disabled", true);
+			$html.statusBar.html(`<span>Fixes available for ${updated.length} images</span>`);
+		};
+
+		const statusUpdatePreviews = () => {
+			const number = getPreviewsPerSite();
+			const site = config.singlesite && fixer.currentDns().length <= 1 ? "selected" : "each";
+			const image = config.focusmode ? " affected" : "";
+			const text = config.singlepage
+				? `Showing all images from current page`
+				: `Showing first ${number}${image} for ${site} site`
+			$html.preview.status.text(text);
+		}
+
+		const statusShowInfo = (() => {
+			let cache = false;
+			return (id) => {
+				const img = config.currentTab._byId[id];
+				if (!cache && img && img.error) {
+					cache = $html.statusBar.html();
+					$html.statusBar.html(`<span><a style="color: red;">The url can't be automatically fixed (${img.name || "Unnamed"})</a><br>${img.url}</span>`);
+				} else if (!cache && img) {
+					cache = $html.statusBar.html();
+					$html.statusBar.html(`<span>${img.name || "Unnamed"} (${img.info})<br>${img.url}</span>`);
+				} else if (cache) {
+					$html.statusBar.html(cache);
+					cache = false;
+				}
+			}
+		})();
+
+		const rulesEditingModeStop = () => {
+			clearTimeout(config.editingMode);
+			if (fixer.parseRules()) {
+				config.editingMode = undefined;
+				fixer.reProcessUrls();
+				drawPreviews();
+				$html.config.mask.blur();
+				statusUpdateApply();
+			}
+		};
+
+		const singlePageModeChanged = () => {
+			indexUrls("placed");
+			ui.drawPreviews();
+			ui.drawDomainsList();
+		}
+
+		const switchTab = async (tab) => {
+			if (!urls[tab]) r20data.indexUrls(tab);
+			else config.currentTab = urls[tab];
+
+			!config.previewTexts
+				&& $html.preview.thumbs.css("display", "grid");
+
+			$html.tabs.all.removeClass("current");
+			$html.tabs[tab].addClass("current");
+
+			drawDomainsList();
+			drawPreviews();
+			statusUpdateApply();
+			fixer.summarizeRules();
+		};
+
+		const toggle = {
+			dn: (tab, dn, state) => {
+				urls[tab].filter.remove(dn);
+				if (config.singlesite) {
+					$html.lists[tab].find("input:checkbox").prop("checked", false);
+					$html.lists[tab].find(`input[data-dn='${dn}']`).prop("checked", true);
+					urls[tab].filter = Object.keys(urls[tab].domains).filter(d => d !== dn);
+				} else {
+					!state && urls[tab].filter.push(dn);
+				}
+				if (tab === config.currentTab.name) {
+					drawPreviews();
+					statusUpdateApply();
+					fixer.summarizeRules();
+				}
+			},
+
+			config: (setting, state) => {
+				config[setting] = state;
+				if (setting === "defaults") {
+					$html.config.rules[state ? "addClass" : "removeClass"]("disabled");
+					fixer.summarizeRules();
+					fixer.reProcessUrls();
+					drawPreviews();
+					statusUpdateApply();
+				} else if (["morepreviews", "focusmode"].includes(setting)) {
+					drawPreviews();
+				} else if (setting === "stickyconfig") {
+					$html.config.menu.toggleClass("sticky", state);
+				} else if (setting === "singlesite") {
+					$html.tablist.toggleClass("singlesite", state);
+					$html.tablist.toggleClass("singlepage", false);
+					$html.config.singlepage.prop("checked", false);
+					config.singlepage = false;
+					drawPreviews();
+					drawDomainsList();
+					statusUpdateApply();
+				} else if (setting === "singlepage") {
+					$html.tablist.toggleClass("singlepage", state);
+					$html.tablist.toggleClass("singlesite", false);
+					$html.config.singlesite.prop("checked", false);
+					config.singlesite = false;
+					r20data.indexUrls("placed");
+					drawDomainsList();
+					drawPreviews();
+					statusUpdateApply();
+				}
+			},
+
+			previewMode: (mode, $btn) => {
+				$html.btns.all.removeClass("current");
+				$btn.addClass("current");
+				$html.preview.texts.toggle(mode === "texts");
+				$html.preview.thumbs.toggle(mode === "thumbs");
+
+				config.previewTexts = mode === "texts";
+				config.currentTab
+					&& mode === "thumbs"
+					&& $html.preview.thumbs.css("display", "grid");
+			},
+
+			rulesEditingMode: () => {
+				$html.buttons.apply.attr("disabled", true);
+				$html.statusBar.html(`<span>Finish editing the rules before continuing<br>Hit Esc or wait to apply the edits</span>`);
+				clearTimeout(config.editingMode);
+				config.editingMode = setTimeout(rulesEditingModeStop, 5000);
+			},
+		}
+
+		const initDialog = () => {
+			$html.dialog = $(dialogHtml);
+
+			$html.dialog.dialog({
+				autoopen: true,
+				width: 700,
+				height: 600,
+				minWidth: 550,
+				minHeight: 450,
+				title: "Ultimate tokens & URLs fixer",
+				buttons: {
+					cancel: {
+						text: "Cancel",
+						class: "btn btn-cancel",
+						click: closeCancel,
+					},
+					apply: {
+						text: "Apply",
+						class: "btn btn-primary",
+						click: r20data.applyUpdates,
+					},
+				},
+				open: () => {
+					$html.dialog.css({height: "100%"});
+					$html.dialog.parent().css({height: "600px"});
+				},
+				close: closeCancel,
+			});
+		};
+
+		const initHtmls = () => {
+			$html.preview = {};
+			$html.tablist = $html.dialog.find(".b20-token-fixer-list");
+			$html.main = $html.dialog.find(".b20-token-fixer");
+
+			$html.tabs = {all: $html.dialog.find(".b20-token-fixer-list > ul > li")};
+			$html.lists = {all: $html.dialog.find(".b20-token-fixer-list > ul > li > ul")};
+			$html.btns = {all: $html.dialog.find(".b20-token-fixer-preview .btn")};
+			$html.config = {all: $html.dialog.find(".b20-token-fixer-settings input:checkbox")};
+
+			$html.tabs.placed = $html.dialog.find(".b20tf-placed").parent();
+			$html.tabs.default = $html.dialog.find(".b20tf-default").parent();
+			$html.tabs.multi = $html.dialog.find(".b20tf-multi").parent();
+			$html.tabs.avatar = $html.dialog.find(".b20tf-avatar").parent();
+
+			$html.lists.placed = $html.dialog.find(".b20tf-placed");
+			$html.lists.default = $html.dialog.find(".b20tf-default");
+			$html.lists.multi = $html.dialog.find(".b20tf-multi");
+			$html.lists.avatar = $html.dialog.find(".b20tf-avatar");
+
+			$html.preview.texts = $html.dialog.find(".b20tf-texts");
+			$html.preview.thumbs = $html.dialog.find(".b20tf-thumbnails");
+			$html.preview.status = $html.dialog.find(".b20tf-preview-status");
+
+			$html.config.rules = $html.dialog.find(".b20tf-rules");
+			$html.config.menu = $html.dialog.find(".b20-token-fixer-settings");
+			$html.config.singlesite = $html.dialog.find("[value=singlesite]");
+			$html.config.singlepage = $html.dialog.find("[value=singlepage]");
+			$html.config.mask = $html.dialog.find(".b20tf-rules textarea");
+
+			$html.statusBar = $(`<div class="b20-token-fixer-status"><span>No updates</span></div>`);
+			$html.buttons = {pane: $html.dialog.parent().find(".ui-dialog-buttonpane")};
+
+			$html.buttons.apply = $html.buttons.pane.find(".btn-primary");
+			$html.buttons.cancel = $html.buttons.pane.find(".btn-cancel");
+
+			$html.buttons.pane.prepend($html.statusBar);
+			$html.buttons.pane.css({background: "rgba(100,100,100,.1)"})
+		};
+
+		const initEvents = () => {
+			$html.dialog.on("click", ".b20tf-tab-selector", (evt) => {
+				const tab = $(evt.currentTarget).data("tab");
+				switchTab(tab);
+			}).on("click", ".b20-token-fixer-list input:checkbox", (evt) => {
+				const $click = $(evt.currentTarget);
+				const tab = $click.closest("ul[data-tab]").data("tab");
+				const dn = $click.data("dn");
+				toggle.dn(tab, dn, $click.prop("checked"));
+			}).on("click", ".b20-token-fixer-settings input:checkbox", (evt) => {
+				const $click = $(evt.currentTarget);
+				const setting = $click.prop("value");
+				toggle.config(setting, $click.prop("checked"));
+			}).on("click", ".b20-token-fixer-preview .btn", (evt) => {
+				const $click = $(evt.currentTarget);
+				const mode = $click.data("mode");
+				toggle.previewMode(mode, $click);
+			}).on("click", ".b20tf-thumbnails [data-id]", (evt) => {
+				const id = $(evt.currentTarget).data("id");
+				openRoll20Editor(id);
+			}).on("click", ".b20tf-refresh", (evt) => {
+				config.currentTab && r20data.reIndexUrls();
+			}).on("mouseover", ".b20tf-thumbnails [data-id], .b20tf-texts [data-id]", (evt) => {
+				statusShowInfo($(evt.currentTarget).data("id"));
+			}).on("mouseout", ".b20tf-thumbnails [data-id], .b20tf-texts [data-id]", (evt) => {
+				statusShowInfo();
+			}).on("mouseover", ".b20tf-texts p span", evt => {
+				const $text = $(evt.target);
+				const max = $html.preview.texts.innerWidth();
+				const fact = $text.width();
+				fact > max && $text.css({display: "inline-block", left: max - fact});
+			}).on("mouseout", ".b20tf-texts p span", evt => {
+				const $text = $(evt.target);
+				$text.css("left", "");
+				setTimeout(() => !$text.attr("style")?.includes("left") && $text.css("display", ""), 4000);
+			}).on("keydown", ".b20tf-rules textarea", evt => {
+				if (evt.keyCode === 9) {
+					const el = evt.currentTarget;
+					el.setRangeText("\t", el.selectionStart, el.selectionStart, "end");
+					evt.preventDefault();
+				} else if (evt.keyCode === 27) {
+					evt.preventDefault();
+					config.editingMode && rulesEditingModeStop();
+					return;
+				}
+				toggle.rulesEditingMode();
+			}).on("blur", ".b20tf-rules textarea", evt => {
+				config.editingMode && rulesEditingModeStop();
+			});
+		};
+
+		const dialogTexts = {
+			welcome: {
+				header: "Welcome to the Tokens and image URLs fixer!",
+				subtext: "This tool is designed to automatically solve most known issues with non-roll20 hosted images. With built-in set of URL transformations, using it is as simple as:",
+				tldr: `<strong>TL;DR usage in 3 steps</strong><br>
+					<span>1.</span> Select a category on the left by clicking its name<br>
+					<span>2.</span> Browse the previews for broken and fixable images or text URLs<br>
+					<span>3.</span> If the previews seem OK (you can see the images), hit Apply.<br>
+					<span></span> Repeat for other categories if neccessary<br>`,
+				manual: [
+					"The categories on the left represent different types of images stored in roll20: tokens that appear on the maps, avatars that appear in journal, multisided token images, default tokens",
+					"Each of these categories needs to be processed independently. Ultimately, you need to check each of them for broken images, and try to fix them",
+					"Since urls usually break because of the server shutdowns or reorganizations, the images are grouped by domain names. The preview that will appear here will show examples of the few items for each domain linked in your images",
+					"The previews may be displayed as texts or thumbnails (the toggle is at the top right), and represent both the original image, and the result of applying the current set of rules, if any. The broken images, both initial and replaced, are indicated with red background. So the DESIRED effect on previews is green overlay with a picture over a red-overlayed broken image icon.",
+					"Check these previews to get the idea of what is broken, and what may be fixed. Click them to open the respective token or character settings. The status bar in the bottom will show the number of images with any replacement, no matter if it results in actually fixing the link or not",
+					"There are built-in default rules for common known issues. You may also manually enter any replacement rules you can imagine, even using regular expressions! If you need help, ask in 5etools Discord",
+					"Double check everything, and once you are sure the current settings are working, hit Apply!",
+				],
+			},
+			help: {
+				sources: "The list of categories. When you select a category, a list of web domains will be displayed. The domains selection affect both the previews and the actual execution of replacement when you hit Apply",
+				preview: "The url previews of the images with the current view and replacement settings. Buttons on the right allow switching between text and images",
+				config: "Check the previews and alter the settings here if neccessary. If you are satisfied with the estimated result, press Apply.",
+				rules: "Custom rule format: <br><a style='font-weight:100;font-family:monospace'>search; replace[; filter[; callback]]</a><br>The <a>search</a> clause supports /regexp/. Each rule starts on new line. Tabs and spaces after the ';' are ignored. Available callbacks are <a style='font-weight:100;font-family:monospace'>encodeURI, encodeURIComponent, decodeURIComponent, getCurrentName, unfixableAskUser</a>",
+			},
+			controls: {
+				defaults: "Default set of url replacement rules should automatically fix all known issues",
+				extend: `Show ${previews.extended} image preiews for each site instead of ${previews.normal} by default. For single site mode even more previews are shown (up to ${previews.max})`,
+				focus: "Only preiview items with changed URLs, and only apply fixes to items visible in previews. Allows for step by step fixing large quantities of images, checking each chunk of images before applying",
+				delay: "Add a small delay between saving to roll20 DB to ensure safe operation. It is generally advised to keep this ON, however, it may drastically slow the process on large (>100) quantities",
+				singlesite: "Only one domain selected when you click on them",
+				singlepage: "Disables singlesite and focus modes, and operates exclusively on tokens from current page, including showing all previews for all the tokens on that page (for placed tokens)",
+				nomaps: "Exclude tokens on map layer (for placed tokens) NOT WORKING/WIP",
+				stickyconfig: "Check this to prevent automatic collapsing of this config checkboxes block",
+			},
+		};
+
+		const dialogCss = `
+			.b20-token-fixer {display:flex; height:100%}
+			.b20-token-fixer.disabled {pointer-events: none; filter: opacity(0.7);}
+			.b20-token-fixer-list {width:200px; height:100%; border-right:1px solid; overflow:auto;box-sizing: border-box;}
+			.b20-token-fixer-manager {width:calc(100% - 200px); height:100%; padding-left:10px;box-sizing: border-box;overflow: clip;}
+			.b20-token-fixer-preview {width:100%; height:calc(100% - ${cssHeight.configBlock + 2}px); border-bottom:1px solid;box-sizing: border-box;transition: height 1s;}
+			.b20-token-fixer-settings {width:100%; height:160px;overflow: clip;transition: height 1s;}
+
+			.b20-token-fixer-list ul {margin: 0px; list-style:none;}
+			.b20-token-fixer-list > ul > li {margin-top:10px;}
+			.b20-token-fixer-list > ul > li > span {display:block; width:100%; padding:5px 0px; cursor:pointer; box-sizing:border-box;}
+			.b20-token-fixer-list > ul > li > span:hover {background-color:rgba(150,150,150,0.5); padding-left:2px;}
+			.b20-token-fixer-list > ul > li li {padding: 2px 0px; font-size:12px}
+			.b20-token-fixer-list > ul > li li:hover {background-color:rgba(150,150,150,0.5);}
+
+			.b20-token-fixer-list li > label {display: inline-block}
+			.b20-token-fixer-list li label input {width:12px;}
+			.b20-token-fixer-list li:not(.current) li label input{opacity:.5;filter:grayscale(1)}
+			.b20-token-fixer-list li > label > span {display:inline-block; width:125px; overflow:clip; text-overflow:ellipsis; white-space:nowrap;}
+
+			.b20-token-fixer-list > ul > li.current {border-left:1px solid;}
+			.b20-token-fixer-list > ul > li.current > span {padding-left:5px; font-weight:700;}
+			.b20-token-fixer-list > ul > li.current li {padding-left:5px;}
+			.b20-token-fixer-list.singlesite input[type="checkbox"]:not(:checked) {visibility: hidden;}
+			.b20-token-fixer-list.singlepage input[type="checkbox"] {visibility:hidden}
+			.b20-token-fixer-list.singlepage label {pointer-events:none}
+
+			html.dark .b20-token-fixer-list > ul > li.current > span {color:var(--grayscale-dark-base);}
+			html:not(.dark) .b20-token-fixer-list > ul > li.current > span {color:#333;}
+
+			.b20-token-fixer button.b20tf-refresh {font-size:15px;top:0px;right:5px}
+			.b20-token-fixer button {float:right;padding:3px;font-size:12px;position:relative;top:-15px;margin:0 0px -10px 5px;line-height:12px;}
+			.b20-token-fixer button:not(.current):not(:hover) {background-color:rgba(120,120,120,.5);color:unset}
+
+			.b20tf-thumbnails {display:grid;grid-template-columns:repeat(auto-fill,100px);grid-auto-rows: min-content;justify-content:space-between;width:100%;height:calc(100% - 40px);overflow:auto}
+			.b20tf-thumbnails>div {width:100px;margin:10px 0}
+			.b20tf-thumbnails>div>div {width:100px;height:100px;background-color:rgba(100,100,100,.2);text-align:center;line-height:100px;overflow:clip;}
+			.b20tf-thumbnails>div>div>img{max-width:100px;max-height:100px}
+			.b20tf-thumbnails>div>div>div {width:100px;height:100px;position:relative;top:-90px;background-color:rgba(150,200,150,.5);border-top:1px solid;border-radius:10px 10px;transition:top .5s;overflow:clip;}
+			.b20tf-thumbnails>div:hover>div>div {top:-20px}
+			.b20tf-thumbnails [data-id] { cursor: pointer;}
+			.b20tf-thumbnails > p > span {display:inline-block;width:1em}
+			.b20tf-thumbnails span {font-size:12px;white-space:nowrap;overflow:clip;text-overflow:ellipsis;width:100%;display:inline-block}
+
+			.b20tf-texts {width:100%;height:calc(100% - 40px);overflow-y:auto;white-space:nowrap;cursor:text;user-select:text;overflow-x:clip}
+			.b20tf-texts p {background-color:rgba(100,100,100,.2); max-width:100%; overflow:clip; text-overflow:ellipsis;user-select: text;}
+			.b20tf-texts p.fixed { background-color: rgba(150,200,150,.2); }
+			.b20tf-texts p span {position:relative;left:0;transition:left 5s;}
+
+			.b20tf-checkboxes {height:0;padding:0;box-sizing:border-box;transition:height 1s,padding 1s;overflow:clip}
+			.b20tf-checkboxes >div {width:calc(50% - 2px);display:inline-block;vertical-align:text-top;overflow:hidden;white-space:nowrap}
+			.b20tf-checkboxes >div>p {width:100%}
+			.b20-token-fixer-settings textarea {width: 100%; height: 50px; box-sizing: border-box; resize: vertical;white-space: pre;font-family: monospace;transition: height 1s}
+			.b20-token-fixer-settings:hover textarea, .b20-token-fixer-settings.sticky textarea {height: ${50 + cssHeight.textareaGrowth}px}
+
+			.b20-token-fixer-settings:hover .b20tf-checkboxes, .b20-token-fixer-settings.sticky .b20tf-checkboxes {height:${cssHeight.checkboxes - 1}px;padding:5px 0}
+			.b20-token-fixer-settings:hover, .b20-token-fixer-settings.sticky {height:${cssHeight.configBlock + cssHeight.checkboxes + cssHeight.textareaGrowth + 5}px}
+			.b20-token-fixer-preview:has(+div:hover), .b20-token-fixer-preview:has(+div.sticky) {height:calc(100% - ${cssHeight.configBlock + cssHeight.checkboxes + cssHeight.textareaGrowth + 1}px)}
+
+			.b20tf-preview-status {font-size:10px;float:right;font-weight:100;margin-right:106px;opacity:.7;box-sizing:border-box}
+			.b20-token-fixer-status {width:calc(100% - 135px);float:left;line-height:40px;opacity:.8;overflow:clip;text-overflow:ellipsis;white-space:nowrap;padding-left:5px}
+			.b20-token-fixer-status>span {display:inline-block;line-height:normal;vertical-align:middle}
+			.btn.btn-primary[disabled] {pointer-events:none;filter:grayscale(1)}
+
+			.b20tf-rules span{text-align:right;display:block;margin-top:5px}
+			.b20tf-rules.disabled {pointer-events:none; filter:grayscale(1) contrast(0.8) brightness(0.8)}
+			html.dark .b20-token-fixer input[type=checkbox] {accent-color:var(--primary-dark);}
+
+			.b20-token-fixer ::-webkit-scrollbar{width:4px;height: 4px;}
+			.b20-token-fixer ::-webkit-scrollbar-track{background:none}
+			.b20-token-fixer ::-webkit-scrollbar-thumb{background:rgba(100,100,100,.3);border-radius:3px}
+			.b20-token-fixer ::-webkit-scrollbar-thumb:hover{background:rgba(100,100,100,.7)}
+		`;
+
+		const dialogHtml = `
+		<div style="height:100%"><div class="b20-token-fixer">
+			<div class="b20-token-fixer-list">
+				<h4>Sources
+					<a class="tipsy-s showtip pictos" title="${dialogTexts.help.sources}">?</a>
+					<button class="btn b20tf-refresh tipsy-s showtip" title="Refresh all data for current category (e.g. if you manually edited a token)">↻</button>
+				</h4>
+				<ul>
+					<li>
+						<span class="b20tf-tab-selector" data-tab="placed">Placed tokens</span>
+						<ul class="b20tf-placed" data-tab="placed"><li>select to fetch & preview...</li></ul>
+					</li>
+					<li>
+						<span class="b20tf-tab-selector" data-tab="default">Default tokens</span>
+						<ul class="b20tf-default" data-tab="default"><li>select to fetch & preview...</li></ul>
+					</li>
+					<li>
+						<span class="b20tf-tab-selector" data-tab="multi">Token sides</span>
+						<ul class="b20tf-multi" data-tab="multi"><li>select to fetch & preview...</li></ul>
+					</li>
+					<li>
+						<span class="b20tf-tab-selector" data-tab="avatar">Journal avatars</span>
+						<ul class="b20tf-avatar" data-tab="avatar"><li>select to fetch & preview...</li></ul>
+					</li>
+				</ul>
+			</div>
+			<div class="b20-token-fixer-manager">
+				<div class="b20-token-fixer-preview">
+					<h4>
+						Preview
+						<a class="tipsy-s showtip pictos" title="${dialogTexts.help.preview}">?</a>
+						<span class="b20tf-preview-status">Select category to preview</span>
+					</h4>
+					<button class="btn current" data-mode="thumbs">Thumbnails</button>
+					<button class="btn" data-mode="texts">Text</button>
+					<div class="b20tf-thumbnails" style="display:block">
+						<img style="width:100px; float: right" src="https://images.fallout.wiki/3/39/FoS_Mister_Handy.png"><p>${dialogTexts.welcome.header}</p>
+						<p>${dialogTexts.welcome.subtext}</p>
+						<p>${dialogTexts.welcome.tldr}</p>
+						${dialogTexts.welcome.manual.reduce((t, p) => `${t}<p>${p}</p>`, "")}
+					</div>
+					<div class="b20tf-texts" style="display:none"></div>
+				</div>
+				<div class="b20-token-fixer-settings">
+					<div style="width: 100%;height: 0px;overflow: visible;text-align: center;box-sizing: border-box;">▼</div>
+					<h4 style="padding:10px 0px">Configuration <a class="tipsy-w showtip pictos" title="${dialogTexts.help.config}">?</a></h4>
+					<div class="b20tf-checkboxes">
+						<div>
+							<p><label class="tipsy-e showtip" title="${dialogTexts.controls.extend}"><input type="checkbox" value="morepreviews"> <span>More previews per site</span></label></p>
+							<p><label class="tipsy-e showtip" title="${dialogTexts.controls.focus}"><input type="checkbox" value="focusmode"> <span>Focus mode</span></label></p>
+							<p><label class="tipsy-e showtip" title="${dialogTexts.controls.delay}"><input type="checkbox" value="addlag" checked> <span>Delay between applying fixes</span></label></p>
+						</div>
+						<div>
+							<p><label class="tipsy-s showtip" title="${dialogTexts.controls.singlesite}"><input type="checkbox" value="singlesite"> <span>Single domain mode</span></label></p>
+							<p><label class="tipsy-n showtip" title="${dialogTexts.controls.singlepage}"><input type="checkbox" value="singlepage"> <span>Single page mode</span></label></p>
+							<p><label class="tipsy-n showtip" title="${dialogTexts.controls.nomaps}"><input type="checkbox" value="excludemaps"> <span>Exclude map layer</span></label></p>
+							<p><label class="tipsy-n showtip" title="${dialogTexts.controls.stickyconfig}"><input type="checkbox" value="stickyconfig"> <span>Sticky config</span></label></p>
+						</div>
+					</div>
+					<label style="float:left" class="tipsy-e showtip" title="${dialogTexts.controls.defaults}">
+						<input type="checkbox" checked value="defaults">
+						<span>Use the built-in set of rules</span>
+					</label>
+					<label class="b20tf-rules disabled">
+						<span>Replacement rules <a class="tipsy-n-right showtip pictos" title="${dialogTexts.help.rules}">?</a></span>
+						<textarea placeholder=""></textarea>
+					</label>
+				</div>
+			</div>
+			<style>${dialogCss}</style>
+		</div></div>
+		`;
+
+		return {
+			initDialog,
+			initHtmls,
+			initEvents,
+			getPreviewsPerSite,
+			drawDomainsList,
+			drawPreviews,
+		};
+	})();
+
+	d20plus.tool.tools.push({
+		toolId: "URLFIX",
+		name: "Token & avatar URL fixer",
+		desc: "Fix & restore broken image URLs en masse",
+		html: ``,
+		dialogFn: () => {},
+		openFn: () => {
+			fixer.init();
+		},
+	});
+}
+
+SCRIPT_EXTENSIONS.push(baseToolUrlFix);
+
 function d20plusArt () {
 	d20plus.art = {
 		button: () => {
@@ -8097,7 +9670,7 @@ function d20plusArtBrowser () {
 			];
 
 			const start = (new Date()).getTime();
-			const GH_PATH = `https://raw.githubusercontent.com/5etools-mirror-1/pab-index/main/`;
+			const GH_PATH = DATA_URL_ART_REPO;
 			const [enums, index] = await Promise.all([pGetJson(`${GH_PATH}_meta_enums.json`), pGetJson(`${GH_PATH}_meta_index.json`)]);
 			d20plus.ut.log(`Loaded metadata in ${((new Date()).getTime() - start) / 1000} secs.`);
 
@@ -12494,29 +14067,6 @@ function d20plusEngine () {
 			}).addTouch();
 		}
 
-		if (!d20plus) { // Aug 2024 the New Page Toolbar is non-optional
-			// this should be executed only for the old Page Toolbar
-			overwriteDraggables();
-			$(`#page-toolbar`).css("top", "calc(-90vh + 40px)");
-
-			const originalFn = d20.pagetoolbar.refreshPageListing;
-			// original function is debounced at 100ms, so debounce this at 110ms and hope for the best
-			const debouncedOverwrite = _.debounce(() => {
-				overwriteDraggables();
-				// fire an event for other parts of the script to listen for
-				const pageChangeEvt = new Event(`VePageChange`);
-				d20plus.ut.log("Firing page-change event");
-				document.dispatchEvent(pageChangeEvt);
-			}, 110);
-			d20.pagetoolbar.refreshPageListing = () => {
-				originalFn();
-				debouncedOverwrite();
-			}
-		} else {
-			// #TODO Remove the old styling
-			$(`#page-toolbar`).hide(); // hide the old Page Toolbar that pops with b20 styling
-		}
-
 		$(`body`).on("mouseup", "li.dl", (evt) => {
 			// process Dynamic Lighting tabs
 			const $dynLightTab = $(evt.target).closest("li.dl");
@@ -13489,8 +15039,8 @@ function baseMenu () {
 			lastSceneUid: null,
 		};
 
-		const tagSize = "?roll20_token_size=";
-		const tagSkip = "?roll20_skip_token=";
+		const tagSize = "#roll20_token_size=";
+		const tagSkip = "#roll20_skip_token=";
 
 		/* eslint-disable */
 
@@ -14312,7 +15862,7 @@ function baseMenu () {
 
 		d20plus.menu.editToken = (tokenId) => {
 			const selection = tokenId
-				? d20.engine.canvas._objects.filter(t => t.model.id === tokenId)
+				? [{model: d20plus.ut.getTokenById(tokenId)}].filter(t => !!t.model?.attributes)
 				: d20.engine.selected().filter(t => t.type === "image");
 			if (!selection.length) return;
 			const images = [];
@@ -15764,31 +17314,6 @@ function baseCss () {
 			s: ".actions_menu.d20contextmenu > ul > li",
 			r: "max-width: 100px;",
 		},
-		// page view enhancement
-		{
-			s: "#page-toolbar",
-			r: "height: calc(90vh - 40px);",
-		},
-		{
-			s: "#page-toolbar .container",
-			r: "height: 100%; white-space: normal;",
-		},
-		{
-			s: "#page-toolbar .pages .availablepage",
-			r: "width: 100px; height: 100px;",
-		},
-		{
-			s: "#page-toolbar .pages .availablepage img.pagethumb",
-			r: "max-width: 60px; max-height: 60px;",
-		},
-		{
-			s: "#page-toolbar .pages .availablepage span",
-			r: "bottom: 1px;",
-		},
-		{
-			s: "#page-toolbar",
-			r: "background: #a8aaad80;",
-		},
 		// search
 		{
 			s: ".Vetoolsresult",
@@ -16206,11 +17731,6 @@ function baseCss () {
 				resize: vertical;
 			`
 		}, */
-		// Ensure page toolbar is displayed
-		{
-			s: `#page-toolbar`,
-			r: `display: block;`,
-		},
 		// Macro editor styles
 		{
 			s: `.jsdialog .actionhelp.r20, .jsdialog .commandhelp.r20`,
@@ -16239,11 +17759,6 @@ function baseCss () {
 		{
 			s: ".player-hidden",
 			r: "display: none !important;",
-		},
-		// Force-hide page toolbar
-		{
-			s: `#page-toolbar`,
-			r: `display: none;`,
 		},
 	];
 
@@ -26023,7 +27538,7 @@ SCRIPT_EXTENSIONS.push(baseBetterActions);
 function remoteLibre () {
 	d20plus.remoteLibre = {
 		getRemotePlaylists () {
-			return fetch("https://api.github.com/repos/DMsGuild201/Roll20_resources/contents/playlist")
+			return fetch(DATA_URL_PLAYLIST)
 				.then(response => response.json())
 				.then(data => {
 					if (!data.filter) return;
@@ -26289,10 +27804,11 @@ SCRIPT_EXTENSIONS.push(jukeboxWidget);
 const betteR20Core = function () {
 	// Page fully loaded and visible
 	d20plus.Init = async () => {
-		d20plus.scriptName = `betteR20-core v${d20plus.version}`;
+		d20plus.scriptName = `betteR20-${B20_NAME} v${d20plus.version}`;
 		try {
 			d20plus.ut.log(`Init (v${d20plus.version})`);
-			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-core v${d20plus.version}</h3>`;
+			d20plus.ut.log(`Userscript (v${d20plus.version_user})`);
+			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-${B20_NAME} v${d20plus.version}</h3>`;
 
 			d20plus.engine.swapTemplates();
 
@@ -26395,7 +27911,8 @@ const betteR20Base = function () {
 };
 
 const D20plus = function (version) {
-	d20plus.version = version;
+	d20plus.version_user = version;
+	d20plus.version = B20_VERSION;
 
 	// Window loaded
 	function doBootstrap () {
@@ -26415,6 +27932,14 @@ const D20plus = function (version) {
 					if ((typeof window.d20 !== "undefined" || window.currentPlayer?.d20) && !$("#loading-overlay").is(":visible") && !hasRunInit) {
 						hasRunInit = true;
 						if (!window.d20) window.d20 = window.currentPlayer.d20;
+						if (!d20.engine?.canvas) {
+							d20plus.ut.showFullScreenWarning({
+								title: "JUMPGATE IS NOT SUPPORTED",
+								message: "Your game appears to run on Jumpgate that is not supported",
+								instructions: "Jumpgate can't be disabled or enabled for a game, it is chosen upon the game creation. Please either disable betteR20, or switch to a game that utilizes the old roll20 engine",
+							});
+							return;
+						}
 						d20plus.Init();
 					} else {
 						setTimeout(waitForD20, 50);
@@ -26523,7 +28048,7 @@ Parser._parse_bToA = function (abMap, b, fallback) {
 };
 
 Parser.attrChooseToFull = function (attList) {
-	if (attList.length === 1) return `${Parser.attAbvToFull(attList[0])} modifier`;
+	if (attList.length === 1) return `${Parser.attAbvToFull(attList[0])}${attList[0] === "spellcasting" ? " ability" : ""} modifier`;
 	else {
 		const attsTemp = [];
 		for (let i = 0; i < attList.length; ++i) {
@@ -26754,10 +28279,12 @@ Parser.getAbilityModifier = function (abilityScore) {
 	return `${modifier}`;
 };
 
-Parser.getSpeedString = (ent, {isMetric = false, isSkipZeroWalk = false} = {}) => {
+Parser.getSpeedString = (ent, {isMetric = false, isSkipZeroWalk = false, isLongForm = false} = {}) => {
 	if (ent.speed == null) return "\u2014";
 
-	const unit = isMetric ? Parser.metric.getMetricUnit({originalUnit: "ft.", isShortForm: true}) : "ft.";
+	const unit = isMetric
+		? Parser.metric.getMetricUnit({originalUnit: "ft.", isShortForm: !isLongForm})
+		: isLongForm ? "feet" : "ft.";
 	if (typeof ent.speed === "object") {
 		const stack = [];
 		let joiner = ", ";
@@ -26813,10 +28340,6 @@ Parser.speedToProgressive = function (prop) {
 	return Parser._parse_aToB(Parser.SPEED_TO_PROGRESSIVE, prop);
 };
 
-Parser._addCommas = function (intNum) {
-	return `${intNum}`.replace(/(\d)(?=(\d{3})+$)/g, "$1,");
-};
-
 Parser.raceCreatureTypesToFull = function (creatureTypes) {
 	const hasSubOptions = creatureTypes.some(it => it.choose);
 	return creatureTypes
@@ -26831,7 +28354,7 @@ Parser.raceCreatureTypesToFull = function (creatureTypes) {
 };
 
 Parser.crToXp = function (cr, {isDouble = false} = {}) {
-	if (cr != null && cr.xp) return Parser._addCommas(`${isDouble ? cr.xp * 2 : cr.xp}`);
+	if (cr != null && cr.xp) return (isDouble ? cr.xp * 2 : cr.xp).toLocaleString();
 
 	const toConvert = cr ? (cr.cr || cr) : null;
 	if (toConvert === "Unknown" || toConvert == null || !Parser.XP_CHART_ALT[toConvert]) return "Unknown";
@@ -26839,7 +28362,7 @@ Parser.crToXp = function (cr, {isDouble = false} = {}) {
 	//   Exceptions, such as MM's Frog and Sea Horse, have their XP set to 0 on the creature
 	if (toConvert === "0") return "10";
 	const xp = Parser.XP_CHART_ALT[toConvert];
-	return Parser._addCommas(`${isDouble ? 2 * xp : xp}`);
+	return (isDouble ? 2 * xp : xp).toLocaleString();
 };
 
 Parser.crToXpNumber = function (cr) {
@@ -26993,10 +28516,10 @@ Parser.LANGUAGES_ALL = [
 	...Parser.LANGUAGES_SECRET,
 ].sort();
 
-Parser.acToFull = function (ac, renderer) {
+Parser.acToFull = function (ac, {renderer = null, isHideFrom = false} = {}) {
 	if (typeof ac === "string") return ac; // handle classic format
 
-	renderer = renderer || Renderer.get();
+	renderer ||= Renderer.get();
 
 	let stack = "";
 	let inBraces = false;
@@ -27018,7 +28541,7 @@ Parser.acToFull = function (ac, renderer) {
 
 			stack += cur.ac;
 
-			if (cur.from) {
+			if (!isHideFrom && cur.from) {
 				// always brace nested braces
 				if (cur.braces) {
 					stack += " (";
@@ -27174,11 +28697,11 @@ Parser.sourceJsonToStylePart = function (source) {
 	return "";
 };
 
-Parser.sourceJsonToMarkerHtml = function (source, {isList = true, additionalStyles = ""} = {}) {
+Parser.sourceJsonToMarkerHtml = function (source, {isList = true, isAddBrackets = null, additionalStyles = ""} = {}) {
 	source = Parser._getSourceStringFromSource(source);
 	// TODO(Future) consider enabling this
 	// if (SourceUtil.isPartneredSourceWotc(source)) return `<span class="help-subtle ve-source-marker ${isList ? `ve-source-marker--list` : ""} ve-source-marker--partnered ${additionalStyles}" title="D&amp;D Partnered Source">${isList ? "" : "["}✦${isList ? "" : "]"}</span>`;
-	if (SourceUtil.isLegacySourceWotc(source)) return `<span class="help-subtle ve-source-marker ${isList ? `ve-source-marker--list` : ""} ve-source-marker--legacy ${additionalStyles}" title="Legacy Source">${isList ? "" : "["}ʟ${isList ? "" : "]"}</span>`;
+	if (SourceUtil.isLegacySourceWotc(source)) return `<span class="help-subtle ve-source-marker ${isList ? `ve-source-marker--list` : ""} ve-source-marker--legacy ${additionalStyles}" title="Legacy Source">${isList && !isAddBrackets ? "" : "["}ʟ${isList && !isAddBrackets ? "" : "]"}</span>`;
 	return "";
 };
 
@@ -27388,6 +28911,154 @@ Parser.itemMiscTagToFull = function (type) {
 	return Parser._parse_aToB(Parser.ITEM_MISC_TAG_TO_FULL, type);
 };
 
+Parser.ITM_PROP_ABV__TWO_HANDED = "2H";
+Parser.ITM_PROP_ABV__AMMUNITION = "A";
+Parser.ITM_PROP_ABV__AMMUNITION_FUTURISTIC = "AF";
+Parser.ITM_PROP_ABV__BURST_FIRE = "BF";
+Parser.ITM_PROP_ABV__EXTENDED_REACH = "ER";
+Parser.ITM_PROP_ABV__FINESSE = "F";
+Parser.ITM_PROP_ABV__HEAVY = "H";
+Parser.ITM_PROP_ABV__LIGHT = "L";
+Parser.ITM_PROP_ABV__LOADING = "LD";
+Parser.ITM_PROP_ABV__OTHER = "OTH";
+Parser.ITM_PROP_ABV__REACH = "R";
+Parser.ITM_PROP_ABV__RELOAD = "RLD";
+Parser.ITM_PROP_ABV__SPECIAL = "S";
+Parser.ITM_PROP_ABV__THROWN = "T";
+Parser.ITM_PROP_ABV__VERSATILE = "V";
+Parser.ITM_PROP_ABV__VESTIGE_OF_DIVERGENCE = "Vst";
+
+Parser.ITM_PROP__TWO_HANDED = "2H";
+Parser.ITM_PROP__AMMUNITION = "A";
+Parser.ITM_PROP__AMMUNITION_FUTURISTIC = "AF|DMG";
+Parser.ITM_PROP__BURST_FIRE = "BF|DMG";
+Parser.ITM_PROP__EXTENDED_REACH = "ER|TDCSR";
+Parser.ITM_PROP__FINESSE = "F";
+Parser.ITM_PROP__HEAVY = "H";
+Parser.ITM_PROP__LIGHT = "L";
+Parser.ITM_PROP__LOADING = "LD";
+Parser.ITM_PROP__OTHER = "OTH";
+Parser.ITM_PROP__REACH = "R";
+Parser.ITM_PROP__RELOAD = "RLD|DMG";
+Parser.ITM_PROP__SPECIAL = "S";
+Parser.ITM_PROP__THROWN = "T";
+Parser.ITM_PROP__VERSATILE = "V";
+Parser.ITM_PROP__VESTIGE_OF_DIVERGENCE = "Vst|TDCSR";
+
+Parser.ITM_PROP__ODND_TWO_HANDED = "2H|XPHB";
+Parser.ITM_PROP__ODND_AMMUNITION = "A|XPHB";
+Parser.ITM_PROP__ODND_FINESSE = "F|XPHB";
+Parser.ITM_PROP__ODND_HEAVY = "H|XPHB";
+Parser.ITM_PROP__ODND_LIGHT = "L|XPHB";
+Parser.ITM_PROP__ODND_LOADING = "LD|XPHB";
+Parser.ITM_PROP__ODND_REACH = "R|XPHB";
+Parser.ITM_PROP__ODND_THROWN = "T|XPHB";
+Parser.ITM_PROP__ODND_VERSATILE = "V|XPHB";
+
+Parser.ITM_TYP_ABV__TREASURE = "$";
+Parser.ITM_TYP_ABV__TREASURE_ART_OBJECT = "$A";
+Parser.ITM_TYP_ABV__TREASURE_COINAGE = "$C";
+Parser.ITM_TYP_ABV__TREASURE_GEMSTONE = "$G";
+Parser.ITM_TYP_ABV__AMMUNITION = "A";
+Parser.ITM_TYP_ABV__AMMUNITION_FUTURISTIC = "AF";
+Parser.ITM_TYP_ABV__VEHICLE_AIR = "AIR";
+Parser.ITM_TYP_ABV__ARTISAN_TOOL = "AT";
+Parser.ITM_TYP_ABV__EXPLOSIVE = "EXP";
+Parser.ITM_TYP_ABV__FOOD_AND_DRINK = "FD";
+Parser.ITM_TYP_ABV__ADVENTURING_GEAR = "G";
+Parser.ITM_TYP_ABV__GAMING_SET = "GS";
+Parser.ITM_TYP_ABV__GENERIC_VARIANT = "GV";
+Parser.ITM_TYP_ABV__HEAVY_ARMOR = "HA";
+Parser.ITM_TYP_ABV__ILLEGAL_DRUG = "IDG";
+Parser.ITM_TYP_ABV__INSTRUMENT = "INS";
+Parser.ITM_TYP_ABV__LIGHT_ARMOR = "LA";
+Parser.ITM_TYP_ABV__MELEE_WEAPON = "M";
+Parser.ITM_TYP_ABV__MEDIUM_ARMOR = "MA";
+Parser.ITM_TYP_ABV__MOUNT = "MNT";
+Parser.ITM_TYP_ABV__OTHER = "OTH";
+Parser.ITM_TYP_ABV__POTION = "P";
+Parser.ITM_TYP_ABV__RANGED_WEAPON = "R";
+Parser.ITM_TYP_ABV__ROD = "RD";
+Parser.ITM_TYP_ABV__RING = "RG";
+Parser.ITM_TYP_ABV__SHIELD = "S";
+Parser.ITM_TYP_ABV__SCROLL = "SC";
+Parser.ITM_TYP_ABV__SPELLCASTING_FOCUS = "SCF";
+Parser.ITM_TYP_ABV__VEHICLE_WATER = "SHP";
+Parser.ITM_TYP_ABV__VEHICLE_SPACE = "SPC";
+Parser.ITM_TYP_ABV__TOOL = "T";
+Parser.ITM_TYP_ABV__TACK_AND_HARNESS = "TAH";
+Parser.ITM_TYP_ABV__TRADE_GOOD = "TG";
+Parser.ITM_TYP_ABV__VEHICLE_LAND = "VEH";
+Parser.ITM_TYP_ABV__WAND = "WD";
+
+Parser.ITM_TYP__TREASURE = "$|DMG";
+Parser.ITM_TYP__TREASURE_ART_OBJECT = "$A|DMG";
+Parser.ITM_TYP__TREASURE_COINAGE = "$C";
+Parser.ITM_TYP__TREASURE_GEMSTONE = "$G|DMG";
+Parser.ITM_TYP__AMMUNITION = "A";
+Parser.ITM_TYP__AMMUNITION_FUTURISTIC = "AF|DMG";
+Parser.ITM_TYP__VEHICLE_AIR = "AIR|DMG";
+Parser.ITM_TYP__ARTISAN_TOOL = "AT";
+Parser.ITM_TYP__EXPLOSIVE = "EXP|DMG";
+Parser.ITM_TYP__FOOD_AND_DRINK = "FD";
+Parser.ITM_TYP__ADVENTURING_GEAR = "G";
+Parser.ITM_TYP__GAMING_SET = "GS";
+Parser.ITM_TYP__GENERIC_VARIANT = "GV|DMG";
+Parser.ITM_TYP__HEAVY_ARMOR = "HA";
+Parser.ITM_TYP__ILLEGAL_DRUG = "IDG|TDCSR";
+Parser.ITM_TYP__INSTRUMENT = "INS";
+Parser.ITM_TYP__LIGHT_ARMOR = "LA";
+Parser.ITM_TYP__MELEE_WEAPON = "M";
+Parser.ITM_TYP__MEDIUM_ARMOR = "MA";
+Parser.ITM_TYP__MOUNT = "MNT";
+Parser.ITM_TYP__OTHER = "OTH";
+Parser.ITM_TYP__POTION = "P";
+Parser.ITM_TYP__RANGED_WEAPON = "R";
+Parser.ITM_TYP__ROD = "RD|DMG";
+Parser.ITM_TYP__RING = "RG|DMG";
+Parser.ITM_TYP__SHIELD = "S";
+Parser.ITM_TYP__SCROLL = "SC|DMG";
+Parser.ITM_TYP__SPELLCASTING_FOCUS = "SCF";
+Parser.ITM_TYP__VEHICLE_WATER = "SHP";
+Parser.ITM_TYP__VEHICLE_SPACE = "SPC|AAG";
+Parser.ITM_TYP__TOOL = "T";
+Parser.ITM_TYP__TACK_AND_HARNESS = "TAH";
+Parser.ITM_TYP__TRADE_GOOD = "TG";
+Parser.ITM_TYP__VEHICLE_LAND = "VEH";
+Parser.ITM_TYP__WAND = "WD|DMG";
+
+Parser.ITM_TYP__ODND_TREASURE_ART_OBJECT = "$A|XDMG";
+Parser.ITM_TYP__ODND_TREASURE_COINAGE = "$C|XPHB";
+Parser.ITM_TYP__ODND_TREASURE_GEMSTONE = "$G|XDMG";
+Parser.ITM_TYP__ODND_AMMUNITION = "A|XPHB";
+Parser.ITM_TYP__ODND_AMMUNITION_FUTURISTIC = "AF|XDMG";
+Parser.ITM_TYP__ODND_VEHICLE_AIR = "AIR|XPHB";
+Parser.ITM_TYP__ODND_ARTISAN_TOOL = "AT|XPHB";
+Parser.ITM_TYP__ODND_EXPLOSIVE = "EXP|XDMG";
+Parser.ITM_TYP__ODND_FOOD_AND_DRINK = "FD|XPHB";
+Parser.ITM_TYP__ODND_ADVENTURING_GEAR = "G|XPHB";
+Parser.ITM_TYP__ODND_GAMING_SET = "GS|XPHB";
+Parser.ITM_TYP__ODND_GENERIC_VARIANT = "GV|XDMG";
+Parser.ITM_TYP__ODND_HEAVY_ARMOR = "HA|XPHB";
+Parser.ITM_TYP__ODND_INSTRUMENT = "INS|XPHB";
+Parser.ITM_TYP__ODND_LIGHT_ARMOR = "LA|XPHB";
+Parser.ITM_TYP__ODND_MELEE_WEAPON = "M|XPHB";
+Parser.ITM_TYP__ODND_MEDIUM_ARMOR = "MA|XPHB";
+Parser.ITM_TYP__ODND_MOUNT = "MNT|XPHB";
+Parser.ITM_TYP__ODND_POTION = "P|XPHB";
+Parser.ITM_TYP__ODND_RANGED_WEAPON = "R|XPHB";
+Parser.ITM_TYP__ODND_ROD = "RD|XDMG";
+Parser.ITM_TYP__ODND_RING = "RG|XDMG";
+Parser.ITM_TYP__ODND_SHIELD = "S|XPHB";
+Parser.ITM_TYP__ODND_SCROLL = "SC|XPHB";
+Parser.ITM_TYP__ODND_SPELLCASTING_FOCUS = "SCF|XPHB";
+Parser.ITM_TYP__ODND_VEHICLE_WATER = "SHP|XPHB";
+Parser.ITM_TYP__ODND_TOOL = "T|XPHB";
+Parser.ITM_TYP__ODND_TACK_AND_HARNESS = "TAH|XPHB";
+Parser.ITM_TYP__ODND_TRADE_GOOD = "TG|XDMG";
+Parser.ITM_TYP__ODND_VEHICLE_LAND = "VEH|XPHB";
+Parser.ITM_TYP__ODND_WAND = "WD|XDMG";
+
 Parser._decimalSeparator = (0.1).toLocaleString().substring(1, 2);
 Parser._numberCleanRegexp = Parser._decimalSeparator === "." ? new RegExp(/[\s,]*/g, "g") : new RegExp(/[\s.]*/g, "g");
 Parser._costSplitRegexp = Parser._decimalSeparator === "." ? new RegExp(/(\d+(\.\d+)?)([csegp]p)/) : new RegExp(/(\d+(,\d+)?)([csegp]p)/);
@@ -27420,7 +29091,11 @@ Parser.dmgTypeToFull = function (dmgType) {
 	return Parser._parse_aToB(Parser.DMGTYPE_JSON_TO_FULL, dmgType);
 };
 
-Parser.skillProficienciesToFull = function (skillProficiencies) {
+Parser.skillProficienciesToFull = function (skillProficiencies, {styleHint = null} = {}) {
+	styleHint ||= VetoolsConfig.get("styleSwitcher", "style");
+
+	const ptSource = styleHint === "classic" ? Parser.SRC_PHB : Parser.SRC_XPHB;
+
 	function renderSingle (skProf) {
 		if (skProf.any) {
 			skProf = MiscUtil.copyFast(skProf);
@@ -27434,27 +29109,31 @@ Parser.skillProficienciesToFull = function (skillProficiencies) {
 		if (~ixChoose) keys.splice(ixChoose, 1);
 
 		const baseStack = [];
-		keys.filter(k => skProf[k]).forEach(k => baseStack.push(Renderer.get().render(`{@skill ${k.toTitleCase()}}`)));
+		keys.filter(k => skProf[k]).forEach(k => baseStack.push(Renderer.get().render(`{@skill ${k.toTitleCase()}|${ptSource}}`)));
 
-		const chooseStack = [];
+		let ptChoose = "";
 		if (~ixChoose) {
 			const chObj = skProf.choose;
+			const count = chObj.count ?? 1;
 			if (chObj.from.length === 18) {
-				chooseStack.push(`choose any ${!chObj.count || chObj.count === 1 ? "skill" : chObj.count}`);
+				ptChoose = styleHint === "classic"
+					? `choose any ${count === 1 ? "skill" : chObj.count}`
+					: `Choose ${chObj.count}`;
 			} else {
-				chooseStack.push(`choose ${chObj.count || 1} from ${chObj.from.map(it => Renderer.get().render(`{@skill ${it.toTitleCase()}}`)).joinConjunct(", ", " and ")}`);
+				ptChoose = styleHint === "classic"
+					? `choose ${count} from ${chObj.from.map(it => Renderer.get().render(`{@skill ${it.toTitleCase()}|${ptSource}}`)).joinConjunct(", ", " and ")}`
+					: Renderer.get().render(`{@i Choose ${count}:} ${chObj.from.map(it => `{@skill ${it.toTitleCase()}|${ptSource}}`).joinConjunct(", ", " or ")}`);
 			}
 		}
 
 		const base = baseStack.joinConjunct(", ", " and ");
-		const choose = chooseStack.join(""); // this should currently only ever be 1-length
 
-		if (baseStack.length && chooseStack.length) return `${base}; and ${choose}`;
+		if (baseStack.length && ptChoose.length) return `${base}; and ${ptChoose}`;
 		else if (baseStack.length) return base;
-		else if (chooseStack.length) return choose;
+		else if (ptChoose.length) return ptChoose;
 	}
 
-	return skillProficiencies.map(renderSingle).join(" <i>or</i> ");
+	return skillProficiencies.map(renderSingle).join(` <i>or</i> `);
 };
 
 // sp-prefix functions are for parsing spell data, and shared with the roll20 script
@@ -27550,27 +29229,137 @@ Parser.spMetaToFull = function (meta) {
 	return "";
 };
 
-Parser.spLevelSchoolMetaToFull = function (level, school, meta, subschools) {
-	const levelPart = level === 0 ? Parser.spLevelToFull(level).toLowerCase() : `${Parser.spLevelToFull(level)}-level`;
-	const levelSchoolStr = level === 0 ? `${Parser.spSchoolAbvToFull(school)} ${levelPart}` : `${levelPart} ${Parser.spSchoolAbvToFull(school).toLowerCase()}`;
+Parser._spLevelSchoolMetaToFull_level = ({level, styleHint}) => {
+	if (styleHint === "classic") return level === 0 ? Parser.spLevelToFull(level).toLowerCase() : `${Parser.spLevelToFull(level)}-level`;
+	return level === 0 ? Parser.spLevelToFull(level) : `Level ${level}`;
+};
 
-	const metaArr = Parser.spMetaToArr(meta);
-	if (metaArr.length || (subschools && subschools.length)) {
-		const metaAndSubschoolPart = [
-			(subschools || []).map(sub => Parser.spSchoolAbvToFull(sub)).join(", "),
-			metaArr.join(", "),
-		].filter(Boolean).join("; ").toLowerCase();
-		return `${levelSchoolStr} (${metaAndSubschoolPart})`;
+Parser._spLevelSchoolMetaToFull_levelSchool = ({level, school, styleHint, ptLevel}) => {
+	if (level === 0) return `${Parser.spSchoolAbvToFull(school)} ${ptLevel}`;
+
+	if (styleHint === "classic") return `${ptLevel} ${Parser.spSchoolAbvToFull(school).toLowerCase()}`;
+	return `${ptLevel} ${Parser.spSchoolAbvToFull(school)}`;
+};
+
+Parser.spLevelSchoolMetaToFull = function (level, school, meta, subschools, {styleHint = null} = {}) {
+	styleHint ||= VetoolsConfig.get("styleSwitcher", "style");
+
+	const ptLevel = Parser._spLevelSchoolMetaToFull_level({level, styleHint});
+	const ptLevelSchool = Parser._spLevelSchoolMetaToFull_levelSchool({level, school, styleHint, ptLevel});
+
+	const metaArr = Parser.spMetaToArr(meta, {styleHint})
+		.filter(k => styleHint === "classic" || k !== "ritual");
+
+	if (metaArr.length || subschools?.length) {
+		const ptMetaAndSubschools = [
+			(subschools || [])
+				.map(sub => Parser.spSchoolAbvToFull(sub))
+				.join(", "),
+			metaArr
+				.join(", "),
+		]
+			.filter(Boolean)
+			.join("; ");
+
+		if (styleHint === "classic") return `${ptLevelSchool} (${ptMetaAndSubschools.toLowerCase()})`;
+		return `${ptLevelSchool} (${ptMetaAndSubschools})`;
 	}
-	return levelSchoolStr;
+
+	return ptLevelSchool;
 };
 
-Parser.spTimeListToFull = function (times, isStripTags) {
-	return times.map(t => `${Parser.getTimeToFull(t)}${t.condition ? `, ${isStripTags ? Renderer.stripTags(t.condition) : Renderer.get().render(t.condition)}` : ""}`).join(" or ");
+Parser.SP_TM_ACTION = "action";
+Parser.SP_TM_B_ACTION = "bonus";
+Parser.SP_TM_REACTION = "reaction";
+Parser.SP_TM_ROUND = "round";
+Parser.SP_TM_MINS = "minute";
+Parser.SP_TM_HRS = "hour";
+Parser.SP_TM_SPECIAL = "special";
+Parser.SP_TIME_SINGLETONS = [Parser.SP_TM_ACTION, Parser.SP_TM_B_ACTION, Parser.SP_TM_REACTION, Parser.SP_TM_ROUND];
+Parser.SP_TIME_TO_FULL = {
+	[Parser.SP_TM_ACTION]: "Action",
+	[Parser.SP_TM_B_ACTION]: "Bonus Action",
+	[Parser.SP_TM_REACTION]: "Reaction",
+	[Parser.SP_TM_ROUND]: "Rounds",
+	[Parser.SP_TM_MINS]: "Minutes",
+	[Parser.SP_TM_HRS]: "Hours",
+	[Parser.SP_TM_SPECIAL]: "Special",
+};
+Parser.spTimeUnitToFull = function (timeUnit) {
+	return Parser._parse_aToB(Parser.SP_TIME_TO_FULL, timeUnit);
 };
 
-Parser.getTimeToFull = function (time) {
-	return `${time.number ? `${time.number} ` : ""}${time.unit === "bonus" ? "bonus action" : time.unit}${time.number > 1 ? "s" : ""}`;
+Parser.SP_TIME_TO_SHORT = {
+	[Parser.SP_TM_ROUND]: "Rnd.",
+	[Parser.SP_TM_MINS]: "Min.",
+	[Parser.SP_TM_HRS]: "Hr.",
+};
+Parser.spTimeUnitToShort = function (timeUnit) {
+	return Parser._parse_aToB(Parser.SP_TIME_TO_SHORT, timeUnit);
+};
+
+Parser.SP_TIME_TO_ABV = {
+	[Parser.SP_TM_ACTION]: "A",
+	[Parser.SP_TM_B_ACTION]: "BA",
+	[Parser.SP_TM_REACTION]: "R",
+	[Parser.SP_TM_ROUND]: "rnd",
+	[Parser.SP_TM_MINS]: "min",
+	[Parser.SP_TM_HRS]: "hr",
+	[Parser.SP_TM_SPECIAL]: "SPC",
+};
+Parser.spTimeUnitToAbv = function (timeUnit) {
+	return Parser._parse_aToB(Parser.SP_TIME_TO_ABV, timeUnit);
+};
+
+Parser.spTimeToShort = function (time, isHtml) {
+	if (!time) return "";
+	return (time.number === 1 && Parser.SP_TIME_SINGLETONS.includes(time.unit))
+		? `${Parser.spTimeUnitToAbv(time.unit).uppercaseFirst()}${time.condition ? "*" : ""}`
+		: `${time.number} ${isHtml ? `<span class="ve-small">` : ""}${Parser.spTimeUnitToAbv(time.unit)}${isHtml ? `</span>` : ""}${time.condition ? "*" : ""}`;
+};
+
+Parser.spTimeListToFull = function (times, meta, {isStripTags = false, styleHint = null} = {}) {
+	styleHint ||= VetoolsConfig.get("styleSwitcher", "style");
+
+	return [
+		...times,
+		...styleHint === "classic" || !meta?.ritual
+			? []
+			: [{"number": 1, "unit": "ritual"}],
+	]
+		.map(time => {
+			return [
+				Parser.getTimeToFull(time, {styleHint}),
+				time.condition ? `, ${isStripTags ? Renderer.stripTags(time.condition) : Renderer.get().render(time.condition)}` : "",
+				time.note ? ` (${isStripTags ? Renderer.stripTags(time.note) : Renderer.get().render(time.note)})` : "",
+			]
+				.filter(Boolean)
+				.join("");
+		})
+		.joinConjunct(", ", " or ");
+};
+
+Parser._TIME_UNITS_SHORTHAND = new Set([
+	Parser.SP_TM_ACTION,
+	Parser.SP_TM_B_ACTION,
+	Parser.SP_TM_REACTION,
+	"ritual", // faux unit added during rendering
+]);
+
+Parser._getTimeToFull_number = ({time, styleHint}) => {
+	if (!time.number) return "";
+	if (styleHint === "classic") return `${time.number} `;
+
+	if (time.number === 1 && Parser._TIME_UNITS_SHORTHAND.has(time.unit)) return "";
+	return `${time.number} `;
+};
+
+Parser.getTimeToFull = function (time, {styleHint = null} = {}) {
+	styleHint ||= VetoolsConfig.get("styleSwitcher", "style");
+
+	const ptNumber = Parser._getTimeToFull_number({time, styleHint});
+	const ptUnit = (time.unit === Parser.SP_TM_B_ACTION ? "bonus action" : time.unit)[(styleHint === "classic" || ptNumber) ? "toString" : "uppercaseFirst"]();
+	return `${ptNumber}${ptUnit}${time.number > 1 ? "s" : ""}`;
 };
 
 Parser.getMinutesToFull = function (mins, {isShort = false} = {}) {
@@ -27593,6 +29382,7 @@ Parser.RNG_POINT = "point";
 Parser.RNG_LINE = "line";
 Parser.RNG_CUBE = "cube";
 Parser.RNG_CONE = "cone";
+Parser.RNG_EMANATION = "emanation";
 Parser.RNG_RADIUS = "radius";
 Parser.RNG_SPHERE = "sphere";
 Parser.RNG_HEMISPHERE = "hemisphere";
@@ -27608,6 +29398,7 @@ Parser.SP_RANGE_TYPE_TO_FULL = {
 	[Parser.RNG_LINE]: "Line",
 	[Parser.RNG_CUBE]: "Cube",
 	[Parser.RNG_CONE]: "Cone",
+	[Parser.RNG_EMANATION]: "Emanation",
 	[Parser.RNG_RADIUS]: "Radius",
 	[Parser.RNG_SPHERE]: "Sphere",
 	[Parser.RNG_HEMISPHERE]: "Hemisphere",
@@ -27651,6 +29442,7 @@ Parser.SP_RANGE_TO_ICON = {
 	[Parser.RNG_LINE]: "fa-grip-lines-vertical",
 	[Parser.RNG_CUBE]: "fa-cube",
 	[Parser.RNG_CONE]: "fa-traffic-cone",
+	[Parser.RNG_EMANATION]: "fa-hockey-puck",
 	[Parser.RNG_RADIUS]: "fa-hockey-puck",
 	[Parser.RNG_SPHERE]: "fa-globe",
 	[Parser.RNG_HEMISPHERE]: "fa-globe",
@@ -27673,6 +29465,7 @@ Parser.spRangeToShortHtml = function (range) {
 		case Parser.RNG_LINE:
 		case Parser.RNG_CUBE:
 		case Parser.RNG_CONE:
+		case Parser.RNG_EMANATION:
 		case Parser.RNG_RADIUS:
 		case Parser.RNG_SPHERE:
 		case Parser.RNG_HEMISPHERE:
@@ -27711,6 +29504,7 @@ Parser.spRangeToFull = function (range) {
 		case Parser.RNG_LINE:
 		case Parser.RNG_CUBE:
 		case Parser.RNG_CONE:
+		case Parser.RNG_EMANATION:
 		case Parser.RNG_RADIUS:
 		case Parser.RNG_SPHERE:
 		case Parser.RNG_HEMISPHERE:
@@ -27779,6 +29573,7 @@ Parser.RANGE_TYPES = [
 	{type: Parser.RNG_LINE, hasDistance: true, isRequireAmount: true},
 	{type: Parser.RNG_CUBE, hasDistance: true, isRequireAmount: true},
 	{type: Parser.RNG_CONE, hasDistance: true, isRequireAmount: true},
+	{type: Parser.RNG_EMANATION, hasDistance: true, isRequireAmount: true},
 	{type: Parser.RNG_RADIUS, hasDistance: true, isRequireAmount: true},
 	{type: Parser.RNG_SPHERE, hasDistance: true, isRequireAmount: true},
 	{type: Parser.RNG_HEMISPHERE, hasDistance: true, isRequireAmount: true},
@@ -27824,25 +29619,29 @@ Parser.spEndTypeToFull = function (type) {
 
 Parser.spDurationToFull = function (dur) {
 	let hasSubOr = false;
-	const outParts = dur.map(d => {
-		switch (d.type) {
-			case "special":
-				return "Special";
-			case "instant":
-				return `Instantaneous${d.condition ? ` (${d.condition})` : ""}`;
-			case "timed":
-				return `${d.concentration ? "Concentration, " : ""}${d.concentration ? "u" : d.duration.upTo ? "U" : ""}${d.concentration || d.duration.upTo ? "p to " : ""}${d.duration.amount} ${d.duration.amount === 1 ? d.duration.type : `${d.duration.type}s`}`;
-			case "permanent": {
-				if (d.ends) {
+
+	const outParts = dur
+		.map(d => {
+			const ptCondition = d.condition ? ` (${d.condition})` : "";
+
+			switch (d.type) {
+				case "special":
+					if (d.concentration) return `Concentration${ptCondition}`;
+					return `Special${ptCondition}`;
+				case "instant":
+					return `Instantaneous${ptCondition}`;
+				case "timed":
+					return `${d.concentration ? "Concentration, " : ""}${d.concentration ? "u" : d.duration.upTo ? "U" : ""}${d.concentration || d.duration.upTo ? "p to " : ""}${d.duration.amount} ${d.duration.amount === 1 ? d.duration.type : `${d.duration.type}s`}${ptCondition}`;
+				case "permanent": {
+					if (!d.ends) return `Permanent${ptCondition}`;
+
 					const endsToJoin = d.ends.map(m => Parser.spEndTypeToFull(m));
 					hasSubOr = hasSubOr || endsToJoin.length > 1;
-					return `Until ${endsToJoin.joinConjunct(", ", " or ")}`;
-				} else {
-					return "Permanent";
+					return `Until ${endsToJoin.joinConjunct(", ", " or ")}${ptCondition}`;
 				}
 			}
-		}
-	});
+		});
+
 	return `${outParts.joinConjunct(hasSubOr ? "; " : ", ", " or ")}${dur.length > 1 ? " (see below)" : ""}`;
 };
 
@@ -27873,13 +29672,16 @@ Parser.spClassesToFull = function (sp, {isTextOnly = false, subclassLookup = {}}
 
 Parser.spMainClassesToFull = function (fromClassList, {isTextOnly = false} = {}) {
 	return fromClassList
-		.map(c => ({hash: UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](c), c}))
-		.filter(it => !ExcludeUtil.isInitialised || !ExcludeUtil.isExcluded(it.hash, "class", it.c.source))
-		.sort((a, b) => SortUtil.ascSort(a.c.name, b.c.name))
+		.map(clsStub => ({hash: UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](clsStub), clsStub}))
+		.filter(it => !ExcludeUtil.isInitialised || !ExcludeUtil.isExcluded(it.hash, "class", it.clsStub.source))
+		.sort((a, b) => SortUtil.ascSort(a.clsStub.name, b.clsStub.name))
 		.map(it => {
-			if (isTextOnly) return it.c.name;
+			if (isTextOnly) return it.clsStub.name;
 
-			return `<span title="${it.c.definedInSource ? `Class source` : "Source"}: ${Parser.sourceJsonToFull(it.c.source)}${it.c.definedInSource ? `. Spell list defined in: ${Parser.sourceJsonToFull(it.c.definedInSource)}.` : ""}">${Renderer.get().render(`{@class ${it.c.name}|${it.c.source}}`)}</span>`;
+			const definedInSource = it.clsStub.definedInSource || it.clsStub.source;
+			const ptLink = Renderer.get().render(`{@class ${it.clsStub.name}|${it.clsStub.source}}`);
+			const ptTitle = definedInSource === it.clsStub.source ? `Class source/spell list defined in: ${Parser.sourceJsonToFull(definedInSource)}.` : `Class source: ${Parser.sourceJsonToFull(it.clsStub.source)}. Spell list defined in: ${Parser.sourceJsonToFull(definedInSource)}.`;
+			return `<span title="${ptTitle.qq()}">${ptLink}</span>`;
 		})
 		.join(", ") || "";
 };
@@ -28074,32 +29876,19 @@ Parser.monTypeFromPlural = function (type) {
 	return Parser._parse_bToA(Parser.MON_TYPE_TO_PLURAL, type);
 };
 
-Parser.monCrToFull = function (cr, {xp = null, isMythic = false} = {}) {
-	if (cr == null) return "";
-
-	if (typeof cr === "string") {
-		if (Parser.crToNumber(cr) >= VeCt.CR_CUSTOM) return `${cr}${xp != null ? ` (${xp} XP)` : ""}`;
-
-		xp = xp != null ? Parser._addCommas(xp) : Parser.crToXp(cr);
-		return `${cr} (${xp} XP${isMythic ? `, or ${Parser.crToXp(cr, {isDouble: true})} XP as a mythic encounter` : ""})`;
-	} else {
-		const stack = [Parser.monCrToFull(cr.cr, {xp: cr.xp, isMythic})];
-		if (cr.lair) stack.push(`${Parser.monCrToFull(cr.lair)} when encountered in lair`);
-		if (cr.coven) stack.push(`${Parser.monCrToFull(cr.coven)} when part of a coven`);
-		return stack.joinConjunct(", ", " or ");
-	}
-};
-
-Parser.getFullImmRes = function (toParse, {isPlainText = false} = {}) {
+Parser.getFullImmRes = function (toParse, {isPlainText = false, isTitleCase = false} = {}) {
 	if (!toParse?.length) return "";
 
 	let maxDepth = 0;
 
-	const renderString = str => isPlainText ? Renderer.stripTags(`${str}`) : Renderer.get().render(`${str}`);
+	const renderString = (str, {isTitleCase = false} = {}) => {
+		if (isTitleCase) str = str.toTitleCase();
+		return isPlainText ? Renderer.stripTags(`${str}`) : Renderer.get().render(`${str}`);
+	};
 
 	const render = (val, depth = 0) => {
 		maxDepth = Math.max(maxDepth, depth);
-		if (typeof val === "string") return renderString(val);
+		if (typeof val === "string") return renderString(val, {isTitleCase});
 
 		if (val.special) return renderString(val.special);
 
@@ -28110,7 +29899,7 @@ Parser.getFullImmRes = function (toParse, {isPlainText = false} = {}) {
 		const prop = val.immune ? "immune" : val.resist ? "resist" : val.vulnerable ? "vulnerable" : null;
 		if (prop) {
 			const toJoin = val[prop].length === Parser.DMG_TYPES.length && CollectionUtil.deepEquals(Parser.DMG_TYPES, val[prop])
-				? ["all damage"]
+				? ["all damage"[isTitleCase ? "toTitleCase" : "toString"]()]
 				: val[prop].map(nxt => render(nxt, depth + 1));
 			stack.push(renderString(depth ? toJoin.join(maxDepth ? "; " : ", ") : toJoin.joinConjunct(", ", " and ")));
 		}
@@ -28139,12 +29928,13 @@ Parser.getFullImmRes = function (toParse, {isPlainText = false} = {}) {
 	return out;
 };
 
-Parser.getFullCondImm = function (condImm, {isPlainText = false, isEntry = false} = {}) {
+Parser.getFullCondImm = function (condImm, {isPlainText = false, isEntry = false, isTitleCase = false} = {}) {
 	if (isPlainText && isEntry) throw new Error(`Options "isPlainText" and "isEntry" are mutually exclusive!`);
 
 	if (!condImm?.length) return "";
 
 	const render = condition => {
+		if (isTitleCase) condition = condition.toTitleCase();
 		if (isPlainText) return condition;
 		const ent = `{@condition ${condition}}`;
 		if (isEntry) return ent;
@@ -28153,7 +29943,7 @@ Parser.getFullCondImm = function (condImm, {isPlainText = false, isEntry = false
 
 	return condImm
 		.map(it => {
-			if (it.special) return it.special;
+			if (it.special) return Renderer.get().render(it.special);
 			if (it.conditionImmune) return `${it.preNote ? `${it.preNote} ` : ""}${it.conditionImmune.map(render).join(", ")}${it.note ? ` ${it.note}` : ""}`;
 			return render(it);
 		})
@@ -28198,6 +29988,8 @@ Parser.MON_MISC_TAG_TO_FULL = {
 	"HPR": "Has HP Reduction",
 	"MW": "Has Weapon Attacks, Melee",
 	"RW": "Has Weapon Attacks, Ranged",
+	"MA": "Has Attacks, Melee",
+	"RA": "Has Attacks, Ranged",
 	"MLW": "Has Melee Weapons",
 	"RNG": "Has Ranged Weapons",
 	"RCH": "Has Reach Attacks",
@@ -28289,19 +30081,36 @@ Parser.prereqPatronToShort = function (patron) {
 	return patron;
 };
 
+Parser.FEAT_CATEGORY_TO_FULL = {
+	"G": "General",
+	"O": "Origin",
+	"FS": "Fighting Style",
+	"FS:P": "Fighting Style Replacement (Paladin)",
+	"FS:R": "Fighting Style Replacement (Ranger)",
+	"EB": "Epic Boon",
+};
+
+Parser.featCategoryToFull = (category) => {
+	return Parser._parse_aToB(Parser.FEAT_CATEGORY_TO_FULL, category) || category;
+};
+
+Parser.featCategoryFromFull = (full) => {
+	return Parser._parse_bToA(Parser.FEAT_CATEGORY_TO_FULL, full.trim().toTitleCase()) || full;
+};
+
 // NOTE: These need to be reflected in omnidexer.js to be indexed
 Parser.OPT_FEATURE_TYPE_TO_FULL = {
-	AI: "Artificer Infusion",
-	ED: "Elemental Discipline",
-	EI: "Eldritch Invocation",
-	MM: "Metamagic",
+	"AI": "Artificer Infusion",
+	"ED": "Elemental Discipline",
+	"EI": "Eldritch Invocation",
+	"MM": "Metamagic",
 	"MV": "Maneuver",
 	"MV:B": "Maneuver, Battle Master",
 	"MV:C2-UA": "Maneuver, Cavalier V2 (UA)",
 	"AS:V1-UA": "Arcane Shot, V1 (UA)",
 	"AS:V2-UA": "Arcane Shot, V2 (UA)",
 	"AS": "Arcane Shot",
-	OTH: "Other",
+	"OTH": "Other",
 	"FS:F": "Fighting Style; Fighter",
 	"FS:B": "Fighting Style; Bard",
 	"FS:P": "Fighting Style; Paladin",
@@ -28310,6 +30119,7 @@ Parser.OPT_FEATURE_TYPE_TO_FULL = {
 	"OR": "Onomancy Resonant",
 	"RN": "Rune Knight Rune",
 	"AF": "Alchemical Formula",
+	"TT": "Traveler's Trick",
 };
 
 Parser.optFeatureTypeToFull = function (type) {
@@ -28465,6 +30275,7 @@ Parser.CAT_ID_SKILLS = 50;
 Parser.CAT_ID_SENSES = 51;
 Parser.CAT_ID_DECK = 52;
 Parser.CAT_ID_CARD = 53;
+Parser.CAT_ID_ITEM_MASTERY = 54;
 
 Parser.CAT_ID_TO_FULL = {};
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_CREATURE] = "Bestiary";
@@ -28476,15 +30287,15 @@ Parser.CAT_ID_TO_FULL[Parser.CAT_ID_CONDITION] = "Condition";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_FEAT] = "Feat";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_ELDRITCH_INVOCATION] = "Eldritch Invocation";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_PSIONIC] = "Psionic";
-Parser.CAT_ID_TO_FULL[Parser.CAT_ID_RACE] = "Race";
+Parser.CAT_ID_TO_FULL[Parser.CAT_ID_RACE] = "Species";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_OTHER_REWARD] = "Other Reward";
-Parser.CAT_ID_TO_FULL[Parser.CAT_ID_VARIANT_OPTIONAL_RULE] = "Variant/Optional Rule";
+Parser.CAT_ID_TO_FULL[Parser.CAT_ID_VARIANT_OPTIONAL_RULE] = "Rule";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_ADVENTURE] = "Adventure";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_DEITY] = "Deity";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_OBJECT] = "Object";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_TRAP] = "Trap";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_HAZARD] = "Hazard";
-Parser.CAT_ID_TO_FULL[Parser.CAT_ID_QUICKREF] = "Quick Reference";
+Parser.CAT_ID_TO_FULL[Parser.CAT_ID_QUICKREF] = "Quick Reference (2014)";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_CULT] = "Cult";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_BOON] = "Boon";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_DISEASE] = "Disease";
@@ -28521,6 +30332,7 @@ Parser.CAT_ID_TO_FULL[Parser.CAT_ID_DECK] = "Deck";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_CARD] = "Card";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_SKILLS] = "Skill";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_SENSES] = "Sense";
+Parser.CAT_ID_TO_FULL[Parser.CAT_ID_ITEM_MASTERY] = "Item Mastery";
 
 Parser.pageCategoryToFull = function (catId) {
 	return Parser._parse_aToB(Parser.CAT_ID_TO_FULL, catId);
@@ -28581,6 +30393,7 @@ Parser.CAT_ID_TO_PROP[Parser.CAT_ID_DECK] = "deck";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_CARD] = "card";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_SKILLS] = "skill";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_SENSES] = "sense";
+Parser.CAT_ID_TO_PROP[Parser.CAT_ID_ITEM_MASTERY] = "itemMastery";
 
 Parser.pageCategoryToProp = function (catId) {
 	return Parser._parse_aToB(Parser.CAT_ID_TO_PROP, catId);
@@ -28809,56 +30622,6 @@ Parser.SKL_ABVS = [
 	Parser.SKL_ABV_TRA,
 ];
 
-Parser.SP_TM_ACTION = "action";
-Parser.SP_TM_B_ACTION = "bonus";
-Parser.SP_TM_REACTION = "reaction";
-Parser.SP_TM_ROUND = "round";
-Parser.SP_TM_MINS = "minute";
-Parser.SP_TM_HRS = "hour";
-Parser.SP_TM_SPECIAL = "special";
-Parser.SP_TIME_SINGLETONS = [Parser.SP_TM_ACTION, Parser.SP_TM_B_ACTION, Parser.SP_TM_REACTION, Parser.SP_TM_ROUND];
-Parser.SP_TIME_TO_FULL = {
-	[Parser.SP_TM_ACTION]: "Action",
-	[Parser.SP_TM_B_ACTION]: "Bonus Action",
-	[Parser.SP_TM_REACTION]: "Reaction",
-	[Parser.SP_TM_ROUND]: "Rounds",
-	[Parser.SP_TM_MINS]: "Minutes",
-	[Parser.SP_TM_HRS]: "Hours",
-	[Parser.SP_TM_SPECIAL]: "Special",
-};
-Parser.spTimeUnitToFull = function (timeUnit) {
-	return Parser._parse_aToB(Parser.SP_TIME_TO_FULL, timeUnit);
-};
-
-Parser.SP_TIME_TO_SHORT = {
-	[Parser.SP_TM_ROUND]: "Rnd.",
-	[Parser.SP_TM_MINS]: "Min.",
-	[Parser.SP_TM_HRS]: "Hr.",
-};
-Parser.spTimeUnitToShort = function (timeUnit) {
-	return Parser._parse_aToB(Parser.SP_TIME_TO_SHORT, timeUnit);
-};
-
-Parser.SP_TIME_TO_ABV = {
-	[Parser.SP_TM_ACTION]: "A",
-	[Parser.SP_TM_B_ACTION]: "BA",
-	[Parser.SP_TM_REACTION]: "R",
-	[Parser.SP_TM_ROUND]: "rnd",
-	[Parser.SP_TM_MINS]: "min",
-	[Parser.SP_TM_HRS]: "hr",
-	[Parser.SP_TM_SPECIAL]: "SPC",
-};
-Parser.spTimeUnitToAbv = function (timeUnit) {
-	return Parser._parse_aToB(Parser.SP_TIME_TO_ABV, timeUnit);
-};
-
-Parser.spTimeToShort = function (time, isHtml) {
-	if (!time) return "";
-	return (time.number === 1 && Parser.SP_TIME_SINGLETONS.includes(time.unit))
-		? `${Parser.spTimeUnitToAbv(time.unit).uppercaseFirst()}${time.condition ? "*" : ""}`
-		: `${time.number} ${isHtml ? `<span class="ve-small">` : ""}${Parser.spTimeUnitToAbv(time.unit)}${isHtml ? `</span>` : ""}${time.condition ? "*" : ""}`;
-};
-
 Parser.SKL_ABJ = "Abjuration";
 Parser.SKL_EVO = "Evocation";
 Parser.SKL_ENC = "Enchantment";
@@ -28995,6 +30758,7 @@ Parser.ARMOR_ABV_TO_FULL = {
 	"l.": "light",
 	"m.": "medium",
 	"h.": "heavy",
+	"s.": "shield",
 };
 
 Parser.WEAPON_ABV_TO_FULL = {
@@ -29023,6 +30787,7 @@ Parser.CONDITION_TO_COLOR = {
 };
 
 Parser.RULE_TYPE_TO_FULL = {
+	"C": "Core",
 	"O": "Optional",
 	"P": "Prerelease",
 	"V": "Variant",
@@ -29169,6 +30934,9 @@ Parser.SRC_DoDk = "DoDk";
 Parser.SRC_HWCS = "HWCS";
 Parser.SRC_HWAitW = "HWAitW";
 Parser.SRC_ToB1_2023 = "ToB1-2023";
+Parser.SRC_XPHB = "XPHB";
+Parser.SRC_XDMG = "XDMG";
+Parser.SRC_XMM = "XMM";
 Parser.SRC_TD = "TD";
 Parser.SRC_SCREEN = "Screen";
 Parser.SRC_SCREEN_WILDERNESS_KIT = "ScreenWildernessKit";
@@ -29177,6 +30945,7 @@ Parser.SRC_SCREEN_SPELLJAMMER = "ScreenSpelljammer";
 Parser.SRC_HF = "HF";
 Parser.SRC_HFFotM = "HFFotM";
 Parser.SRC_HFStCM = "HFStCM";
+Parser.SRC_PaF = "PaF";
 Parser.SRC_CM = "CM";
 Parser.SRC_NRH = "NRH";
 Parser.SRC_NRH_TCMC = "NRH-TCMC";
@@ -29242,15 +31011,15 @@ Parser.MisMVX_PREFIX = "Misplaced Monsters: Volume ";
 Parser.AA_PREFIX = "Adventure Atlas: ";
 
 Parser.SOURCE_JSON_TO_FULL = {};
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PHB] = "Player's Handbook (2014)";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_DMG] = "Dungeon Master's Guide (2014)";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_MM] = "Monster Manual (2014)";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_CoS] = "Curse of Strahd";
-Parser.SOURCE_JSON_TO_FULL[Parser.SRC_DMG] = "Dungeon Master's Guide";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_EEPC] = "Elemental Evil Player's Companion";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_EET] = "Elemental Evil: Trinkets";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HotDQ] = "Hoard of the Dragon Queen";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_LMoP] = "Lost Mine of Phandelver";
-Parser.SOURCE_JSON_TO_FULL[Parser.SRC_MM] = "Monster Manual";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_OotA] = "Out of the Abyss";
-Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PHB] = "Player's Handbook";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PotA] = "Princes of the Apocalypse";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_RoT] = "The Rise of Tiamat";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_RoTOS] = "The Rise of Tiamat Online Supplement";
@@ -29351,6 +31120,9 @@ Parser.SOURCE_JSON_TO_FULL[Parser.SRC_DoDk] = "Dungeons of Drakkenheim";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HWCS] = "Humblewood Campaign Setting";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HWAitW] = "Humblewood: Adventure in the Wood";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_ToB1_2023] = "Tome of Beasts 1 (2023 Edition)";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_XPHB] = "Player's Handbook (2024)";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_XDMG] = "Dungeon Master's Guide (2024)";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_XMM] = "Monster Manual (2025)";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_TD] = "Tarot Deck";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCREEN] = "Dungeon Master's Screen";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCREEN_WILDERNESS_KIT] = "Dungeon Master's Screen: Wilderness Kit";
@@ -29359,6 +31131,7 @@ Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCREEN_SPELLJAMMER] = "Dungeon Master's Sc
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HF] = "Heroes' Feast";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HFFotM] = "Heroes' Feast: Flavors of the Multiverse";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HFStCM] = "Heroes' Feast: Saving the Childrens Menu";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PaF] = "Puncheons and Flagons";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_CM] = "Candlekeep Mysteries";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_NRH] = Parser.NRH_NAME;
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_NRH_TCMC] = `${Parser.NRH_NAME}: The Candy Mountain Caper`;
@@ -29399,15 +31172,15 @@ Parser.SOURCE_JSON_TO_FULL[Parser.SRC_MisMV1] = `${Parser.MisMVX_PREFIX}1`;
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_AATM] = `${Parser.AA_PREFIX}The Mortuary`;
 
 Parser.SOURCE_JSON_TO_ABV = {};
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PHB] = "PHB'14";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_DMG] = "DMG'14";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_MM] = "MM'14";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_CoS] = "CoS";
-Parser.SOURCE_JSON_TO_ABV[Parser.SRC_DMG] = "DMG";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_EEPC] = "EEPC";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_EET] = "EET";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HotDQ] = "HotDQ";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_LMoP] = "LMoP";
-Parser.SOURCE_JSON_TO_ABV[Parser.SRC_MM] = "MM";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_OotA] = "OotA";
-Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PHB] = "PHB";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PotA] = "PotA";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_RoT] = "RoT";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_RoTOS] = "RoTOS";
@@ -29508,6 +31281,9 @@ Parser.SOURCE_JSON_TO_ABV[Parser.SRC_DoDk] = "DoDk";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HWCS] = "HWCS";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HWAitW] = "HWAitW";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_ToB1_2023] = "ToB1'23";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_XPHB] = "PHB'24";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_XDMG] = "DMG'24";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_XMM] = "MM'25";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_TD] = "TD";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCREEN] = "Screen";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCREEN_WILDERNESS_KIT] = "ScWild";
@@ -29516,6 +31292,7 @@ Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCREEN_SPELLJAMMER] = "ScSJ";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HF] = "HF";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HFFotM] = "HFFotM";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HFStCM] = "HFStCM";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PaF] = "PaF";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_CM] = "CM";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_NRH] = "NRH";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_NRH_TCMC] = "NRH-TCMC";
@@ -29556,15 +31333,15 @@ Parser.SOURCE_JSON_TO_ABV[Parser.SRC_MisMV1] = "MisMV1";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_AATM] = "AATM";
 
 Parser.SOURCE_JSON_TO_DATE = {};
-Parser.SOURCE_JSON_TO_DATE[Parser.SRC_CoS] = "2016-03-15";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PHB] = "2014-08-19";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_DMG] = "2014-12-09";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_MM] = "2014-09-30";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_CoS] = "2016-03-15";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_EEPC] = "2015-03-10";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_EET] = "2015-03-10";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HotDQ] = "2014-08-19";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_LMoP] = "2014-07-15";
-Parser.SOURCE_JSON_TO_DATE[Parser.SRC_MM] = "2014-09-30";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_OotA] = "2015-09-15";
-Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PHB] = "2014-08-19";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PotA] = "2015-04-07";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_RoT] = "2014-11-04";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_RoTOS] = "2014-11-04";
@@ -29664,6 +31441,9 @@ Parser.SOURCE_JSON_TO_DATE[Parser.SRC_DoDk] = "2023-12-21";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HWCS] = "2019-06-17";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HWAitW] = "2019-06-17";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_ToB1_2023] = "2023-05-31";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_XPHB] = "2024-09-17";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_XDMG] = "2024-11-12";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_XMM] = "2025-02-18";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_TD] = "2022-05-24";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCREEN] = "2015-01-20";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCREEN_WILDERNESS_KIT] = "2020-11-17";
@@ -29672,6 +31452,7 @@ Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCREEN_SPELLJAMMER] = "2022-08-16";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HF] = "2020-10-27";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HFFotM] = "2023-11-07";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HFStCM] = "2023-11-21";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PaF] = "2024-08-27";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_CM] = "2021-03-16";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_NRH] = "2021-09-01";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_NRH_TCMC] = "2021-09-01";
@@ -29865,6 +31646,9 @@ Parser.SOURCES_PARTNERED_WOTC = new Set([
 	Parser.SRC_LRDT,
 ]);
 Parser.SOURCES_LEGACY_WOTC = new Set([
+	Parser.SRC_PHB,
+	// Parser.SRC_DMG, // TODO(XDMG)
+	// Parser.SRC_MM, // TODO(XMM)
 	Parser.SRC_EEPC,
 	Parser.SRC_VGM,
 	Parser.SRC_MTF,
@@ -29872,9 +31656,12 @@ Parser.SOURCES_LEGACY_WOTC = new Set([
 
 // An opinionated set of source that could be considered "core-core"
 Parser.SOURCES_VANILLA = new Set([
-	Parser.SRC_DMG,
-	Parser.SRC_MM,
-	Parser.SRC_PHB,
+	// Parser.SRC_DMG, // "Legacy" source, removed in favor of XDMG
+	// Parser.SRC_MM, // "Legacy" source, removed in favor of XMM
+	// Parser.SRC_PHB, // "Legacy" source, removed in favor of XPHB
+	Parser.SRC_XDMG,
+	Parser.SRC_XMM,
+	Parser.SRC_XPHB,
 	Parser.SRC_SCAG,
 	// Parser.SRC_TTP, // "Legacy" source, removed in favor of MPMM
 	// Parser.SRC_VGM, // "Legacy" source, removed in favor of MPMM
@@ -29994,10 +31781,14 @@ Parser.SOURCES_AVAILABLE_DOCS_BOOK = {};
 	Parser.SRC_MPP,
 	Parser.SRC_HF,
 	Parser.SRC_HFFotM,
+	Parser.SRC_PaF,
 	Parser.SRC_BMT,
 	Parser.SRC_DMTCRG,
 	Parser.SRC_HWCS,
 	Parser.SRC_ToB1_2023,
+	Parser.SRC_XPHB,
+	Parser.SRC_XMM,
+	Parser.SRC_XDMG,
 	Parser.SRC_TD,
 ].forEach(src => {
 	Parser.SOURCES_AVAILABLE_DOCS_BOOK[src] = src;
@@ -30122,7 +31913,6 @@ Parser.PROP_TO_TAG = {
 	"baseitem": "item",
 	"itemGroup": "item",
 	"magicvariant": "item",
-	"subclass": "class",
 };
 Parser.getPropTag = function (prop) {
 	if (Parser.PROP_TO_TAG[prop]) return Parser.PROP_TO_TAG[prop];
@@ -30130,7 +31920,7 @@ Parser.getPropTag = function (prop) {
 };
 
 Parser.PROP_TO_DISPLAY_NAME = {
-	"variantrule": "Variant Rule",
+	"variantrule": "Rule",
 	"optionalfeature": "Option/Feature",
 	"magicvariant": "Magic Item Variant",
 	"baseitem": "Item (Base)",
@@ -30158,46 +31948,6 @@ Parser.getPropDisplayName = function (prop, {suffix = ""} = {}) {
 	if (mFoundry) return Parser.getPropDisplayName(mFoundry.groups.prop.lowercaseFirst(), {suffix: " Foundry Data"});
 
 	return `${prop.split(/([A-Z][a-z]+)/g).filter(Boolean).join(" ").uppercaseFirst()}${suffix}`;
-};
-
-Parser.ITEM_TYPE_JSON_TO_ABV = {
-	"A": "ammunition",
-	"AF": "ammunition",
-	"AT": "artisan's tools",
-	"EM": "eldritch machine",
-	"EXP": "explosive",
-	"FD": "food and drink",
-	"G": "adventuring gear",
-	"GS": "gaming set",
-	"HA": "heavy armor",
-	"IDG": "illegal drug",
-	"INS": "instrument",
-	"LA": "light armor",
-	"M": "melee weapon",
-	"MA": "medium armor",
-	"MNT": "mount",
-	"MR": "master rune",
-	"GV": "generic variant",
-	"P": "potion",
-	"R": "ranged weapon",
-	"RD": "rod",
-	"RG": "ring",
-	"S": "shield",
-	"SC": "scroll",
-	"SCF": "spellcasting focus",
-	"OTH": "other",
-	"T": "tools",
-	"TAH": "tack and harness",
-	"TG": "trade good",
-	"$": "treasure",
-	"$A": "treasure (art object)",
-	"$C": "treasure (coinage)",
-	"$G": "treasure (gemstone)",
-	"VEH": "vehicle (land)",
-	"SHP": "vehicle (water)",
-	"AIR": "vehicle (air)",
-	"SPC": "vehicle (space)",
-	"WD": "wand",
 };
 
 Parser.DMGTYPE_JSON_TO_FULL = {
@@ -30289,7 +32039,7 @@ Parser.mapGridTypeToFull = function (gridType) {
 EXT_LIB_SCRIPTS.push((function lib_script_4 () {
 // in deployment, `IS_DEPLOYED = "<version number>";` should be set below.
 globalThis.IS_DEPLOYED = undefined;
-globalThis.VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.209.3"/* 5ETOOLS_VERSION__CLOSE */;
+globalThis.VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"2.1.0"/* 5ETOOLS_VERSION__CLOSE */;
 globalThis.DEPLOYED_IMG_ROOT = undefined;
 // for the roll20 script to set
 globalThis.IS_VTT = false;
@@ -30559,6 +32309,10 @@ String.prototype.trimAnyChar = String.prototype.trimAnyChar || function (chars) 
 	return (start > 0 || end < this.length) ? this.substring(start, end) : this;
 };
 
+String.prototype.countSubstring = String.prototype.countSubstring || function (term) {
+	return (this.match(new RegExp(term.escapeRegexp(), "g")) || []).length;
+};
+
 Array.prototype.joinConjunct || Object.defineProperty(Array.prototype, "joinConjunct", {
 	enumerable: false,
 	writable: true,
@@ -30581,12 +32335,13 @@ Array.prototype.joinConjunct || Object.defineProperty(Array.prototype, "joinConj
 globalThis.StrUtil = {
 	COMMAS_NOT_IN_PARENTHESES_REGEX: /,\s?(?![^(]*\))/g,
 	COMMA_SPACE_NOT_IN_PARENTHESES_REGEX: /, (?![^(]*\))/g,
+	SEMICOLON_SPACE_NOT_IN_PARENTHESES_REGEX: /; (?![^(]*\))/g,
 
 	uppercaseFirst: function (string) {
 		return string.uppercaseFirst();
 	},
 	// Certain minor words should be left lowercase unless they are the first or last words in the string
-	TITLE_LOWER_WORDS: ["a", "an", "the", "and", "but", "or", "for", "nor", "as", "at", "by", "for", "from", "in", "into", "near", "of", "on", "onto", "to", "with", "over", "von"],
+	TITLE_LOWER_WORDS: ["a", "an", "the", "and", "but", "or", "for", "nor", "as", "at", "by", "for", "from", "in", "into", "near", "of", "on", "onto", "to", "with", "over", "von", "between", "per"],
 	// Certain words such as initialisms or acronyms should be left uppercase
 	TITLE_UPPER_WORDS: ["Id", "Tv", "Dm", "Ok", "Npc", "Pc", "Tpk", "Wip", "Dc", "D&d"],
 	TITLE_UPPER_WORDS_PLURAL: ["Ids", "Tvs", "Dms", "Oks", "Npcs", "Pcs", "Tpks", "Wips", "Dcs", "D&d"], // (Manually pluralize, to avoid infinite loop)
@@ -30636,6 +32391,15 @@ globalThis.StrUtil = {
 
 	toTitleCase (str) { return str.toTitleCase(); },
 	qq (str) { return (str = str || "").qq(); },
+
+	getNextDuplicateName (str) {
+		if (str == null) return null;
+
+		// Get the root name without trailing numbers, e.g. "Goblin (2)" -> "Goblin"
+		const m = /^(?<name>.*?) \((?<ordinal>\d+)\)$/.exec(str.trim());
+		if (!m) return `${str} (1)`;
+		return `${m.groups.name} (${Number(m.groups.ordinal) + 1})`;
+	},
 };
 
 globalThis.NumberUtil = class {
@@ -30817,6 +32581,13 @@ globalThis.SourceUtil = class {
 			|| Parser.SOURCES_NON_STANDARD_WOTC.has(source);
 	}
 
+	static _CLASSIC_THRESHOLD_TIMESTAMP = null;
+
+	static isClassicSource (source) {
+		this._CLASSIC_THRESHOLD_TIMESTAMP ||= new Date(Parser.sourceJsonToDate(Parser.SRC_XPHB));
+		return new Date(Parser.sourceJsonToDate(source)) < this._CLASSIC_THRESHOLD_TIMESTAMP;
+	}
+
 	static FILTER_GROUP_STANDARD = 0;
 	static FILTER_GROUP_PARTNERED = 1;
 	static FILTER_GROUP_NON_STANDARD = 2;
@@ -30847,20 +32618,33 @@ globalThis.SourceUtil = class {
 		if (!source) return null;
 		source = source.toLowerCase();
 
-		// TODO this could be made to work with homebrew
-		let docPage, mappedSource;
-		if (Parser.SOURCES_AVAILABLE_DOCS_BOOK[source]) {
-			docPage = UrlUtil.PG_BOOK;
-			mappedSource = Parser.SOURCES_AVAILABLE_DOCS_BOOK[source];
-		} else if (Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[source]) {
-			docPage = UrlUtil.PG_ADVENTURE;
-			mappedSource = Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[source];
-		}
-		if (!docPage) return null;
+		const meta = this._getAdventureBookSourceHref_fromSite({source})
+			|| this._getAdventureBookSourceHref_fromPrerelease({source})
+			|| this._getAdventureBookSourceHref_fromBrew({source});
+		if (!meta) return;
 
-		mappedSource = mappedSource.toLowerCase();
+		const {docPage, mappedSource} = meta;
 
 		return `${docPage}#${[mappedSource, page ? `page:${page}` : null].filter(Boolean).join(HASH_PART_SEP)}`;
+	}
+
+	static _getAdventureBookSourceHref_fromSite ({source}) {
+		if (Parser.SOURCES_AVAILABLE_DOCS_BOOK[source]) return {docPage: UrlUtil.PG_BOOK, mappedSource: Parser.SOURCES_AVAILABLE_DOCS_BOOK[source]};
+		if (Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[source]) return {docPage: UrlUtil.PG_ADVENTURE, mappedSource: Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[source]};
+		return null;
+	}
+
+	static _getAdventureBookSourceHref_fromPrerelease ({source}) { return this._getAdventureBookSourceHref_fromPrereleaseBrew({source, brewUtil: PrereleaseUtil}); }
+	static _getAdventureBookSourceHref_fromBrew ({source}) { return this._getAdventureBookSourceHref_fromPrereleaseBrew({source, brewUtil: BrewUtil2}); }
+
+	static _getAdventureBookSourceHref_fromPrereleaseBrew ({source, brewUtil}) {
+		const contentsAdventure = (brewUtil.getBrewProcessedFromCache("adventure") || []).filter(ent => ent.source.toLowerCase() === source);
+		const contentsBook = (brewUtil.getBrewProcessedFromCache("book") || []).filter(ent => ent.source.toLowerCase() === source);
+
+		// If there exists more than one adventure/book for this source, do not assume a mapping from source -> ID
+		if ((contentsAdventure.length + contentsBook.length) !== 1) return null;
+
+		return {docPage: contentsAdventure.length ? UrlUtil.PG_ADVENTURE : UrlUtil.PG_BOOK, mappedSource: Parser.sourceJsonToJson(source)};
 	}
 
 	static getEntitySource (it) { return it.source || it.inherits?.source; }
@@ -31060,8 +32844,8 @@ class TemplateUtil {
 	static initVanilla () {
 		/**
 		 * Template strings which can contain DOM elements.
-		 * Usage: ee`<div>Press this button: ${btn}</div>`
-		 * or:    ee(ele)`<div>Press this button: ${btn}</div>`
+		 * Usage: ee`<div>Press this button: ${ve-btn}</div>`
+		 * or:    ee(ele)`<div>Press this button: ${ve-btn}</div>`
 		 * @return {HTMLElementModified}
 		 */
 		globalThis.ee = (parts, ...args) => {
@@ -31196,8 +32980,8 @@ globalThis.JqueryUtil = {
 		};
 	},
 
-	showCopiedEffect (eleOr$Ele, text = "Copied!", bubble) {
-		const $ele = eleOr$Ele instanceof $ ? eleOr$Ele : $(eleOr$Ele);
+	showCopiedEffect ($_ele, text = "Copied!", bubble) {
+		const $ele = $_ele instanceof $ ? $_ele : $($_ele);
 
 		const top = $(window).scrollTop();
 		const pos = $ele.offset();
@@ -31295,7 +33079,7 @@ globalThis.JqueryUtil = {
 					children: [
 						e_({
 							tag: "button",
-							clazz: "btn toast__btn-close",
+							clazz: "ve-btn toast__btn-close",
 							children: [
 								e_({
 									tag: "span",
@@ -31390,7 +33174,7 @@ globalThis.ElementUtil = {
 	 * @property {function(): HTMLElementModified} detach
 	 *
 	 * @property {function(string, string): HTMLElementModified} attr
-	 * @property {function(*=): *} val
+	 * @property {function(*=, ?object): *} val
 	 *
 	 * @property {function(?string): (HTMLElementModified|string)} html
 	 * @property {function(?string): (HTMLElementModified|string)} txt
@@ -31628,13 +33412,17 @@ globalThis.ElementUtil = {
 		return this;
 	},
 
-	_val (val) {
+	_val (val, {isSetAttribute = false} = {}) {
 		if (val !== undefined) {
 			switch (this.tagName) {
 				case "SELECT": {
 					let selectedIndexNxt = -1;
 					for (let i = 0, len = this.options.length; i < len; ++i) {
-						if (this.options[i]?.value === val) { selectedIndexNxt = i; break; }
+						if (this.options[i]?.value === val) {
+							selectedIndexNxt = i;
+							if (isSetAttribute) this.options[i].setAttribute("selected", "selected");
+							break;
+						}
 					}
 					this.selectedIndex = selectedIndexNxt;
 					return this;
@@ -32205,7 +33993,7 @@ globalThis.MiscUtil = class {
 		return new Promise(resolve => setTimeout(() => resolve(resolveAs), msecs));
 	}
 
-	static GENERIC_WALKER_ENTRIES_KEY_BLOCKLIST = new Set(["caption", "type", "colLabels", "colLabelGroups", "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path"]);
+	static GENERIC_WALKER_ENTRIES_KEY_BLOCKLIST = new Set(["caption", "type", "colLabels", "colLabelGroups", "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path", "source"]);
 
 	/**
 	 * @param [opts]
@@ -32534,6 +34322,8 @@ globalThis.MiscUtil = class {
 globalThis.EventUtil = class {
 	static _mouseX = 0;
 	static _mouseY = 0;
+	static _isKeydownShift = false;
+	static _isKeydownCtrlMeta = false;
 	static _isUsingTouch = false;
 	static _isSetCssVars = false;
 
@@ -32545,6 +34335,20 @@ globalThis.EventUtil = class {
 		});
 		document.addEventListener("touchstart", () => {
 			EventUtil._isUsingTouch = true;
+		});
+		document.addEventListener("keydown", evt => {
+			switch (evt.key) {
+				case "Shift": return EventUtil._isKeydownShift = true;
+				case "Control": return EventUtil._isKeydownCtrlMeta = true;
+				case "Meta": return EventUtil._isKeydownCtrlMeta = true;
+			}
+		});
+		document.addEventListener("keyup", evt => {
+			switch (evt.key) {
+				case "Shift": return EventUtil._isKeydownShift = false;
+				case "Control": return EventUtil._isKeydownCtrlMeta = false;
+				case "Meta": return EventUtil._isKeydownCtrlMeta = false;
+			}
 		});
 	}
 
@@ -32573,6 +34377,12 @@ globalThis.EventUtil = class {
 	static getMousePos () {
 		return {x: EventUtil._mouseX, y: EventUtil._mouseY};
 	}
+
+	/* -------------------------------------------- */
+
+	static isShiftDown () { return EventUtil._isKeydownShift; }
+
+	static isCtrlMetaDown () { return EventUtil._isKeydownCtrlMeta; }
 
 	/* -------------------------------------------- */
 
@@ -33520,7 +35330,7 @@ UrlUtil.URL_TO_HASH_BUILDER["legendaryGroup"] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER["itemEntry"] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER["itemProperty"] = (it) => UrlUtil.encodeArrayForHash(it.abbreviation, it.source);
 UrlUtil.URL_TO_HASH_BUILDER["itemType"] = (it) => UrlUtil.encodeArrayForHash(it.abbreviation, it.source);
-UrlUtil.URL_TO_HASH_BUILDER["itemTypeAdditionalEntries"] = (it) => UrlUtil.encodeArrayForHash(it.appliesTo, it.source);
+UrlUtil.URL_TO_HASH_BUILDER["itemTypeAdditionalEntries"] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER["itemMastery"] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER["skill"] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER["sense"] = UrlUtil.URL_TO_HASH_GENERIC;
@@ -33557,16 +35367,16 @@ UrlUtil.PG_TO_NAME[UrlUtil.PG_CONDITIONS_DISEASES] = "Conditions & Diseases";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_FEATS] = "Feats";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_OPT_FEATURES] = "Other Options and Features";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_PSIONICS] = "Psionics";
-UrlUtil.PG_TO_NAME[UrlUtil.PG_RACES] = "Races";
+UrlUtil.PG_TO_NAME[UrlUtil.PG_RACES] = "Species";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_REWARDS] = "Supernatural Gifts & Rewards";
-UrlUtil.PG_TO_NAME[UrlUtil.PG_VARIANTRULES] = "Optional, Variant, and Expanded Rules";
+UrlUtil.PG_TO_NAME[UrlUtil.PG_VARIANTRULES] = "Rules Glossary";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_ADVENTURES] = "Adventures";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_BOOKS] = "Books";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_DEITIES] = "Deities";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_CULTS_BOONS] = "Cults & Supernatural Boons";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_OBJECTS] = "Objects";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_TRAPS_HAZARDS] = "Traps & Hazards";
-UrlUtil.PG_TO_NAME[UrlUtil.PG_QUICKREF] = "Quick Reference";
+UrlUtil.PG_TO_NAME[UrlUtil.PG_QUICKREF] = "Quick Reference (2014)";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_MANAGE_BREW] = "Homebrew Manager";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_MANAGE_PRERELEASE] = "Prerelease Content Manager";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_MAKE_BREW] = "Homebrew Builder";
@@ -33650,6 +35460,7 @@ UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_CARD] = "card";
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_SKILLS] = "skill";
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_SENSES] = "sense";
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_LEGENDARY_GROUP] = "legendaryGroup";
+UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_ITEM_MASTERY] = "itemMastery";
 
 UrlUtil.CAT_TO_HOVER_PAGE = {};
 UrlUtil.CAT_TO_HOVER_PAGE[Parser.CAT_ID_CLASS_FEATURE] = "classfeature";
@@ -33658,6 +35469,7 @@ UrlUtil.CAT_TO_HOVER_PAGE[Parser.CAT_ID_CARD] = "card";
 UrlUtil.CAT_TO_HOVER_PAGE[Parser.CAT_ID_SKILLS] = "skill";
 UrlUtil.CAT_TO_HOVER_PAGE[Parser.CAT_ID_SENSES] = "sense";
 UrlUtil.CAT_TO_HOVER_PAGE[Parser.CAT_ID_LEGENDARY_GROUP] = "legendaryGroup";
+UrlUtil.CAT_TO_HOVER_PAGE[Parser.CAT_ID_ITEM_MASTERY] = "itemMastery";
 
 UrlUtil.HASH_START_CREATURE_SCALED = `${VeCt.HASH_SCALED}${HASH_SUB_KV_SEP}`;
 UrlUtil.HASH_START_CREATURE_SCALED_SPELL_SUMMON = `${VeCt.HASH_SCALED_SPELL_SUMMON}${HASH_SUB_KV_SEP}`;
@@ -33707,7 +35519,7 @@ if (!IS_DEPLOYED && !IS_VTT && typeof window !== "undefined") {
 		if (EventUtil.noModifierKeys(e) && typeof d20 === "undefined") {
 			if (e.key === "#") {
 				const spl = window.location.href.split("/");
-				window.prompt("Copy to clipboard: Ctrl+C, Enter", `https://5etools-mirror-2.github.io/${spl[spl.length - 1]}`);
+				window.prompt("Copy to clipboard: Ctrl+C, Enter", `https://5e.tools/${spl[spl.length - 1]}`);
 			}
 		}
 	});
@@ -33759,6 +35571,13 @@ globalThis.SortUtil = {
 		return SortUtil.ascSort(aNum, bNum);
 	},
 
+	_RE_SORT_NUM: /\d+/g,
+	ascSortLowerPropNumeric (prop, a, b) {
+		a._sortName ||= (a[prop] || "").replace(SortUtil._RE_SORT_NUM, (...m) => `${m[0].padStart(10, "0")}`);
+		b._sortName ||= (b[prop] || "").replace(SortUtil._RE_SORT_NUM, (...m) => `${m[0].padStart(10, "0")}`);
+		return SortUtil.ascSortLower(a._sortName, b._sortName);
+	},
+
 	_ascSort: (a, b) => {
 		if (b === a) return 0;
 		return b < a ? 1 : -1;
@@ -33769,7 +35588,7 @@ globalThis.SortUtil = {
 	},
 
 	ascSortDateString (a, b) {
-		return SortUtil.ascSortDate(new Date(a || "1970-01-0"), new Date(b || "1970-01-0"));
+		return SortUtil.ascSortDate(new Date(a || "1970-01-01"), new Date(b || "1970-01-01"));
 	},
 
 	compareListNames (a, b) { return SortUtil._ascSort(a.name.toLowerCase(), b.name.toLowerCase()); },
@@ -34136,7 +35955,7 @@ globalThis.DataUtil = {
 	_merging: {},
 	_merged: {},
 
-	async _pLoad ({url, id, isBustCache = false}) {
+	async _pLoad ({url, id, isBustCache = false}) { console.log("_pLoad >", url)
 		if (DataUtil._loading[id] && !isBustCache) {
 			await DataUtil._loading[id];
 			return DataUtil._loaded[id];
@@ -34374,7 +36193,24 @@ globalThis.DataUtil = {
 		return `${toCsv(headers)}\n${rows.map(r => toCsv(r)).join("\n")}`;
 	},
 
-	userDownload (filename, data, {fileType = null, isSkipAdditionalMetadata = false, propVersion = "siteVersion", valVersion = VERSION_NUMBER} = {}) {
+	/**
+	 * @param {string} filename
+	 * @param {*} data
+	 * @param {?string} fileType
+	 * @param {?boolean} isSkipAdditionalMetadata
+	 * @param {?string} propVersion
+	 * @param {?string} valVersion
+	 */
+	userDownload (
+		filename,
+		data,
+		{
+			fileType = null,
+			isSkipAdditionalMetadata = false,
+			propVersion = "siteVersion",
+			valVersion = VERSION_NUMBER,
+		} = {},
+	) {
 		filename = `${filename}.json`;
 		if (isSkipAdditionalMetadata || data instanceof Array) return DataUtil._userDownload(filename, JSON.stringify(data, null, "\t"), "text/json");
 
@@ -34569,7 +36405,9 @@ globalThis.DataUtil = {
 			page: true,
 			otherSources: true,
 			srd: true,
+			srd52: true,
 			basicRules: true,
+			freeRules2024: true,
 			reprintedAs: true,
 			hasFluff: true,
 			hasFluffImages: true,
@@ -34590,6 +36428,9 @@ globalThis.DataUtil = {
 			if (opts.isLower) uid = uid.toLowerCase();
 			let [name, source, displayText, ...others] = uid.split("|").map(Function.prototype.call.bind(String.prototype.trim));
 
+			// If "ambiguous" source, allow linking to version-dependent entity
+			const isAllowRedirect = !source;
+
 			source = source || Parser.getTagSource(tag, source);
 			if (opts.isLower) source = source.toLowerCase();
 
@@ -34598,6 +36439,7 @@ globalThis.DataUtil = {
 				source,
 				displayText,
 				others,
+				isAllowRedirect,
 			};
 		},
 
@@ -35597,26 +37439,26 @@ globalThis.DataUtil = {
 		},
 	},
 
-	proxy: {
-		getVersions (prop, ent, {isExternalApplicationIdentityOnly = false} = {}) {
+	proxy: class {
+		static getVersions (prop, ent, {isExternalApplicationIdentityOnly = false} = {}) {
 			if (DataUtil[prop]?.getVersions) return DataUtil[prop]?.getVersions(ent, {isExternalApplicationIdentityOnly});
 			return DataUtil.generic.getVersions(ent, {isExternalApplicationIdentityOnly});
-		},
+		}
 
-		unpackUid (prop, uid, tag, opts) {
+		static unpackUid (prop, uid, tag, opts) {
 			if (DataUtil[prop]?.unpackUid) return DataUtil[prop]?.unpackUid(uid, tag, opts);
 			return DataUtil.generic.unpackUid(uid, tag, opts);
-		},
+		}
 
-		getNormalizedUid (prop, uid, tag, opts) {
+		static getNormalizedUid (prop, uid, tag, opts) {
 			if (DataUtil[prop]?.getNormalizedUid) return DataUtil[prop].getNormalizedUid(uid, tag, opts);
 			return DataUtil.generic.getNormalizedUid(uid, tag, opts);
-		},
+		}
 
-		getUid (prop, ent, opts) {
+		static getUid (prop, ent, opts) {
 			if (DataUtil[prop]?.getUid) return DataUtil[prop].getUid(ent, opts);
 			return DataUtil.generic.getUid(ent, opts);
-		},
+		}
 	},
 
 	monster: class extends _DataUtilPropConfigMultiSource {
@@ -35636,7 +37478,7 @@ globalThis.DataUtil = {
 		static _PROP = "monster";
 
 		static async loadJSON () {
-			await DataUtil.monster.pPreloadMeta();
+			await DataUtil.monster.pPreloadLegendaryGroups();
 			return super.loadJSON();
 		}
 
@@ -35699,24 +37541,24 @@ globalThis.DataUtil = {
 				.filter(Boolean);
 		}
 
-		static async pPreloadMeta () {
-			DataUtil.monster._pLoadMeta = DataUtil.monster._pLoadMeta || ((async () => {
-				const legendaryGroups = await DataUtil.legendaryGroup.pLoadAll();
-				DataUtil.monster.populateMetaReference({legendaryGroup: legendaryGroups});
-			})());
-			await DataUtil.monster._pLoadMeta;
+		static _pLoadLegendaryGroups = null;
+		static async pPreloadLegendaryGroups () {
+			return (
+				DataUtil.monster._pLoadLegendaryGroups ||= ((async () => {
+					const legendaryGroups = await DataUtil.legendaryGroup.pLoadAll();
+					DataUtil.monster.populateMetaReference({legendaryGroup: legendaryGroups});
+				})())
+			);
 		}
 
-		static _pLoadMeta = null;
-		static metaGroupMap = {};
-		static getMetaGroup (mon) {
+		static legendaryGroupLookup = {};
+		static getLegendaryGroup (mon) {
 			if (!mon.legendaryGroup || !mon.legendaryGroup.source || !mon.legendaryGroup.name) return null;
-			return (DataUtil.monster.metaGroupMap[mon.legendaryGroup.source] || {})[mon.legendaryGroup.name];
+			return DataUtil.monster.legendaryGroupLookup[mon.legendaryGroup.source]?.[mon.legendaryGroup.name];
 		}
 		static populateMetaReference (data) {
 			(data.legendaryGroup || []).forEach(it => {
-				(DataUtil.monster.metaGroupMap[it.source] =
-					DataUtil.monster.metaGroupMap[it.source] || {})[it.name] = it;
+				(DataUtil.monster.legendaryGroupLookup[it.source] ||= {})[it.name] = it;
 			});
 		}
 	},
@@ -36052,6 +37894,64 @@ globalThis.DataUtil = {
 
 	itemType: class extends _DataUtilPropConfig {
 		static _PAGE = "itemType";
+
+		/**
+		 * @param uid
+		 * @param [opts]
+		 * @param [opts.isLower] If the returned values should be lowercase.
+		 */
+		static unpackUid (uid, opts) {
+			opts = opts || {};
+			if (opts.isLower) uid = uid.toLowerCase();
+			let [abbreviation, source] = uid.split("|").map(it => it.trim());
+			source ||= opts.isLower ? Parser.SRC_PHB.toLowerCase() : Parser.SRC_PHB;
+			return {
+				abbreviation,
+				source,
+			};
+		}
+
+		static getUid (ent, {isMaintainCase = false, isRetainDefault = false} = {}) {
+			// <abbreviation>|<source>
+			const sourceDefault = Parser.SRC_PHB;
+			const out = [
+				ent.abbreviation,
+				!isRetainDefault && (ent.source || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : ent.source,
+			].join("|").replace(/\|+$/, ""); // Trim trailing pipes
+			if (isMaintainCase) return out;
+			return out.toLowerCase();
+		}
+	},
+
+	itemProperty: class extends _DataUtilPropConfig {
+		static _PAGE = "itemProperty";
+
+		/**
+		 * @param uid
+		 * @param [opts]
+		 * @param [opts.isLower] If the returned values should be lowercase.
+		 */
+		static unpackUid (uid, opts) {
+			opts = opts || {};
+			if (opts.isLower) uid = uid.toLowerCase();
+			let [abbreviation, source] = uid.split("|").map(it => it.trim());
+			source ||= opts.isLower ? Parser.SRC_PHB.toLowerCase() : Parser.SRC_PHB;
+			return {
+				abbreviation,
+				source,
+			};
+		}
+
+		static getUid (ent, {isMaintainCase = false, isRetainDefault = false} = {}) {
+			// <abbreviation>|<source>
+			const sourceDefault = Parser.SRC_PHB;
+			const out = [
+				ent.abbreviation,
+				!isRetainDefault && (ent.source || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : ent.source,
+			].join("|").replace(/\|+$/, ""); // Trim trailing pipes
+			if (isMaintainCase) return out;
+			return out.toLowerCase();
+		}
 	},
 
 	language: class extends _DataUtilPropConfigSingleSource {
@@ -36308,14 +38208,35 @@ globalThis.DataUtil = {
 		}
 
 		static packUidSubclass (it) {
-			// <name>|<className>|<classSource>|<source>
-			const sourceDefault = Parser.getTagSource("subclass");
+			// <shortName>|<className>|<classSource>|<source>
+			const sourceDefault = Parser.getTagSource("class");
 			return [
-				it.name,
+				it.shortName,
 				it.className,
 				(it.classSource || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : it.classSource,
 				(it.source || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : it.source,
 			].join("|").replace(/\|+$/, ""); // Trim trailing pipes
+		}
+
+		/**
+		 * @param uid
+		 * @param [opts]
+		 * @param [opts.isLower] If the returned values should be lowercase.
+		 */
+		static unpackUidSubclass (uid, opts) {
+			opts = opts || {};
+			if (opts.isLower) uid = uid.toLowerCase();
+			let [shortName, className, classSource, source, displayText] = uid.split("|").map(it => it.trim());
+			classSource = classSource || (opts.isLower ? Parser.SRC_PHB.toLowerCase() : Parser.SRC_PHB);
+			source = source || (opts.isLower ? Parser.SRC_PHB.toLowerCase() : Parser.SRC_PHB);
+			return {
+				name: shortName, // (For display purposes only)
+				shortName,
+				className,
+				classSource,
+				source,
+				displayText,
+			};
 		}
 
 		/**
@@ -36414,6 +38335,12 @@ globalThis.DataUtil = {
 		// endregion
 	},
 
+	classFeature: class extends _DataUtilPropConfigMultiSource {
+		static _PAGE = "classFeature";
+		static _DIR = "class";
+		static _PROP = "classFeature";
+	},
+
 	classFluff: class extends _DataUtilPropConfigMultiSource {
 		static _PAGE = UrlUtil.PG_CLASSES;
 		static _DIR = "class";
@@ -36427,6 +38354,16 @@ globalThis.DataUtil = {
 		static async loadJSON () {
 			return DataUtil.class.loadJSON();
 		}
+
+		static unpackUid (uid, opts) {
+			return DataUtil.class.unpackUidSubclass(uid, opts);
+		}
+	},
+
+	subclassFeature: class extends _DataUtilPropConfigMultiSource {
+		static _PAGE = "subclassFeature";
+		static _DIR = "class";
+		static _PROP = "subclassFeature";
 	},
 
 	subclassFluff: class extends _DataUtilPropConfigMultiSource {
@@ -36493,6 +38430,10 @@ globalThis.DataUtil = {
 		static getNormalizedUid (uid, tag) {
 			const {name, pantheon, source} = this.unpackUidDeity(uid, tag, {isLower: true});
 			return [name, pantheon, source].join("|");
+		}
+
+		static unpackUid (uid, opts) {
+			return this.unpackUidDeity(uid, opts);
 		}
 
 		static unpackUidDeity (uid, opts) {
@@ -36647,6 +38588,11 @@ globalThis.DataUtil = {
 	hazardFluff: class extends _DataUtilPropConfigSingleSource {
 		static _PAGE = UrlUtil.PG_TRAPS_HAZARDS;
 		static _FILENAME = "fluff-trapshazards.json";
+	},
+
+	action: class extends _DataUtilPropConfigSingleSource {
+		static _PAGE = UrlUtil.PG_ACTIONS;
+		static _FILENAME = "actions.json";
 	},
 
 	quickreference: {
@@ -37415,6 +39361,48 @@ globalThis.CollectionUtil = {
 	// endregion
 };
 
+class _TrieNode {
+	constructor () {
+		this.children = {};
+		this.isEndOfRun = false;
+	}
+}
+
+globalThis.Trie = class {
+	constructor () {
+		this.root = new _TrieNode();
+	}
+
+	add (tokens, node) {
+		node ||= this.root;
+		const [head, ...tail] = tokens;
+		const nodeNxt = node.children[head] ||= new _TrieNode();
+		if (!tail.length) return nodeNxt.isEndOfRun = true;
+		this.add(tail, nodeNxt);
+	}
+
+	findLongestComplete (tokens, node, accum, found) {
+		node ||= this.root;
+		accum ||= [];
+		found ||= [];
+
+		const [head, ...tail] = tokens;
+		const nodeNxt = node.children[head];
+		if (!nodeNxt) {
+			if (found.length) {
+				const [out] = found.sort(SortUtil.ascSortProp.bind(SortUtil, "length")).reverse();
+				return out;
+			}
+			return null;
+		}
+
+		accum.push(head);
+
+		if (nodeNxt.isEndOfRun) found.push([...accum]);
+		return this.findLongestComplete(tail, nodeNxt, accum, found);
+	}
+};
+
 Array.prototype.last || Object.defineProperty(Array.prototype, "last", {
 	enumerable: false,
 	writable: true,
@@ -37725,8 +39713,9 @@ globalThis.ExcludeUtil = {
 
 		ExcludeUtil.pSave = MiscUtil.throttle(ExcludeUtil._pSave, 50);
 		try {
-			ExcludeUtil._excludes = await StorageUtil.pGet(VeCt.STORAGE_EXCLUDES) || [];
-			ExcludeUtil._excludes = ExcludeUtil._excludes.filter(it => it.hash); // remove legacy rows
+			ExcludeUtil._excludes = ExcludeUtil._getValidExcludes(
+				await StorageUtil.pGet(VeCt.STORAGE_EXCLUDES) || [],
+			);
 		} catch (e) {
 			JqueryUtil.doToast({
 				content: "Error when loading content blocklist! Purged blocklist data. (See the log for more information.)",
@@ -37742,6 +39731,12 @@ globalThis.ExcludeUtil = {
 			setTimeout(() => { throw e; });
 		}
 		ExcludeUtil.isInitialised = true;
+	},
+
+	_getValidExcludes (excludes) {
+		return excludes
+			.filter(it => it.hash) // remove legacy rows
+			.filter(it => it.hash != null && it.category != null && it.source != null); // remove invalid rows
 	},
 
 	getList () {
@@ -37845,7 +39840,7 @@ globalThis.ExcludeUtil = {
 	},
 
 	isAllContentExcluded (list) { return (!list.length && ExcludeUtil._excludeCount) || (list.length > 0 && list.length === ExcludeUtil._excludeCount); },
-	getAllContentBlocklistedHtml () { return `<div class="initial-message">(All content <a href="blocklist.html">blocklisted</a>)</div>`; },
+	getAllContentBlocklistedHtml () { return `<div class="initial-message initial-message--med">(All content <a href="blocklist.html">blocklisted</a>)</div>`; },
 
 	async _pSave () {
 		return StorageUtil.pSet(VeCt.STORAGE_EXCLUDES, ExcludeUtil._excludes);
@@ -37934,18 +39929,6 @@ globalThis.ExtensionUtil = class {
 	/* -------------------------------------------- */
 };
 if (typeof window !== "undefined") window.addEventListener("rivet.active", () => ExtensionUtil.ACTIVE = true);
-
-// TOKENS ==============================================================================================================
-globalThis.TokenUtil = {
-	handleStatblockScroll (event, ele) {
-		$(`#token_image`)
-			.toggle(ele.scrollTop < 32)
-			.css({
-				opacity: (32 - ele.scrollTop) / 32,
-				top: -ele.scrollTop,
-			});
-	},
-};
 
 // LOCKS ===============================================================================================================
 /**
@@ -38085,6 +40068,19 @@ globalThis.EditorUtil = {
 			...additionalOpts,
 		});
 
+		if (additionalOpts.mode === "ace/mode/json") {
+			// Escape backslashes when pasting JSON, unless CTRL+SHIFT are pressed
+			editor.on("paste", (evt) => {
+				if (EventUtil.isShiftDown() && EventUtil.isCtrlMetaDown()) return;
+				try {
+					// If valid JSON (ignoring trailing comma), we assume slashes are already escaped
+					JSON.parse(evt.text.replace(/,?\s*/, ""));
+				} catch (e) {
+					evt.text = evt.text.replace(/\\/g, "\\\\");
+				}
+			});
+		}
+
 		styleSwitcher.addFnOnChange(() => editor.setOptions({theme: EditorUtil.getTheme()}));
 
 		return editor;
@@ -38176,17 +40172,6 @@ if (!IS_VTT && typeof window !== "undefined") {
 	// 	$(`.cancer__sidebar-rhs-inner--top`).append(`<div class="TEST_RHS_TOP"></div>`)
 	// 	$(`.cancer__sidebar-rhs-inner--bottom`).append(`<div class="TEST_RHS_BOTTOM"></div>`)
 	// });
-
-	// TODO(img) remove this in future
-	window.addEventListener("load", () => {
-		if (window.location?.host !== "5etools-mirror-1.github.io") return;
-
-		JqueryUtil.doToast({
-			type: "warning",
-			isAutoHide: false,
-			content: $(`<div>This mirror is no longer being updated/maintained, and will be shut down on March 1st 2024.<br>Please use <a href="https://5etools-mirror-2.github.io/" rel="noopener noreferrer">5etools-mirror-2.github.io</a> instead, and <a href="https://gist.github.com/5etools-mirror-2/40d6d80f40205882d3fa5006fae963a4" rel="noopener noreferrer">migrate your data</a>.</div>`),
-		});
-	});
 }
 
 }).toString());
@@ -38429,7 +40414,7 @@ class UiUtil {
 		return string === "true" ? true : string === "false" ? false : opts.fallbackOnNaB;
 	}
 
-	static intToBonus (int, {isPretty = false} = {}) { return `${int >= 0 ? "+" : int < 0 ? (isPretty ? "\u2012" : "-") : ""}${Math.abs(int)}`; }
+	static intToBonus (int, {isPretty = false} = {}) { return `${int >= 0 ? "+" : int < 0 ? (isPretty ? "\u2212" : "-") : ""}${Math.abs(int)}`; }
 
 	static getEntriesAsText (entryArray) {
 		if (!entryArray || !entryArray.length) return "";
@@ -38478,7 +40463,6 @@ class UiUtil {
 
 	/**
 	 * @param {Object} [opts] Options object.
-	 * @param {string} [opts.title] Modal title.
 	 *
 	 * @param {string} [opts.title] Modal title.
 	 *
@@ -38502,7 +40486,7 @@ class UiUtil {
 	 * @param {boolean} [opts.isIndestructible] If the modal elements should be detached, not removed.
 	 * @param {boolean} [opts.isClosed] If the modal should start off closed.
 	 * @param {boolean} [opts.isEmpty] If the modal should contain no content.
-	 * @param {boolean} [opts.headerType]
+	 * @param {number} [opts.headerType]
 	 * @param {boolean} [opts.hasFooter] If the modal has a footer.
 	 * @returns {object}
 	 */
@@ -38572,7 +40556,7 @@ class UiUtil {
 
 		const btnCloseModal = opts.isFullscreenModal ? e_({
 			tag: "button",
-			clazz: `btn btn-danger btn-xs`,
+			clazz: `ve-btn ve-btn-danger ve-btn-xs`,
 			html: `<span class="glyphicon glyphicon-remove></span>`,
 			click: pHandleCloseClick(false),
 		}) : null;
@@ -38788,12 +40772,13 @@ class UiUtil {
 		return out;
 	}
 
-	static bindTypingEnd ({$ipt, fnKeyup, fnKeypress, fnKeydown, fnClick} = {}) {
+	static bindTypingEnd ({$ipt, fnKeyup, fnKeypress, fnKeydown, fnClick, timeout} = {}) {
 		let timerTyping;
 		$ipt
 			.on("keyup search paste", evt => {
 				clearTimeout(timerTyping);
-				timerTyping = setTimeout(() => { fnKeyup(evt); }, UiUtil.TYPE_TIMEOUT_MS);
+				if (evt.key === "Enter") return fnKeyup(evt);
+				timerTyping = setTimeout(() => { fnKeyup(evt); }, timeout ?? UiUtil.TYPE_TIMEOUT_MS);
 			})
 			// Trigger on blur, as tabbing out of a field triggers the keyup on the element which was tabbed into. Our
 			//   intent. however, is to trigger on any keyup which began in this field.
@@ -38832,11 +40817,12 @@ class UiUtil {
 }
 UiUtil.SEARCH_RESULTS_CAP = 75;
 UiUtil.TYPE_TIMEOUT_MS = 100; // auto-search after 100ms
+UiUtil.TYPE_TIMEOUT_LAZY_MS = 1500;
 UiUtil._MODAL_STACK = null;
 UiUtil._MODAL_LAST_MOUSEDOWN = null;
 
 class ListSelectClickHandlerBase {
-	static _EVT_PASS_THOUGH_TAGS = new Set(["A", "BUTTON"]);
+	static _EVT_PASS_THOUGH_TAGS = new Set(["A", "BUTTON", "INPUT", "TEXTAREA"]);
 
 	constructor () {
 		this._firstSelection = null;
@@ -38883,7 +40869,7 @@ class ListSelectClickHandlerBase {
 		if (opts.isPassThroughEvents) {
 			const evtPath = evt.composedPath();
 			const subEles = evtPath.slice(0, evtPath.indexOf(evt.currentTarget));
-			if (subEles.some(ele => this.constructor._EVT_PASS_THOUGH_TAGS.has(ele?.tagName))) return;
+			if (subEles.some(ele => ele?.type !== "checkbox" && this.constructor._EVT_PASS_THOUGH_TAGS.has(ele?.tagName))) return;
 		}
 
 		evt.preventDefault();
@@ -38896,7 +40882,9 @@ class ListSelectClickHandlerBase {
 			if (this._lastSelection === item) {
 				// on double-tapping the end of the selection, toggle it on/off
 
-				this._setCheckbox(item, {...opts, toVal: !cb.checked});
+				const toVal = !cb.checked;
+				this._setCheckbox(item, {...opts, toVal});
+				this._setHighlighted(item, {toVal});
 			} else if (this._firstSelection === item && this._lastSelection) {
 				// If the item matches the last clicked, clear all checkboxes from our last selection
 
@@ -38905,11 +40893,13 @@ class ListSelectClickHandlerBase {
 
 				const [ixStart, ixEnd] = [ix1, ix2].sort(SortUtil.ascSort);
 				for (let i = ixStart; i <= ixEnd; ++i) {
-					const it = this._visibleItems[i];
-					this._setCheckbox(it, {...opts, toVal: false});
+					const item = this._visibleItems[i];
+					this._setCheckbox(item, {...opts, toVal: false});
+					this._setHighlighted(item, {toVal: false});
 				}
 
 				this._setCheckbox(item, opts);
+				this._setHighlighted(item, opts);
 			} else {
 				// on a shift-click, toggle all the checkboxes to the value of the initial item...
 				this._selectionInitialValue = this._getCb(this._firstSelection, opts).checked;
@@ -38921,8 +40911,9 @@ class ListSelectClickHandlerBase {
 				const [ixStart, ixEnd] = [ix1, ix2].sort(SortUtil.ascSort);
 				const nxtOpts = {...opts, toVal: this._selectionInitialValue};
 				for (let i = ixStart; i <= ixEnd; ++i) {
-					const it = this._visibleItems[i];
-					this._setCheckbox(it, nxtOpts);
+					const item = this._visibleItems[i];
+					this._setCheckbox(item, nxtOpts);
+					this._setHighlighted(item, nxtOpts);
 				}
 
 				// ...except when selecting; for those between the last selection and this selection, those to unchecked
@@ -38930,14 +40921,16 @@ class ListSelectClickHandlerBase {
 					if (ix2Prev > ixEnd) {
 						const nxtOpts = {...opts, toVal: !this._selectionInitialValue};
 						for (let i = ixEnd + 1; i <= ix2Prev; ++i) {
-							const it = this._visibleItems[i];
-							this._setCheckbox(it, nxtOpts);
+							const item = this._visibleItems[i];
+							this._setCheckbox(item, nxtOpts);
+							this._setHighlighted(item, nxtOpts);
 						}
 					} else if (ix2Prev < ixStart) {
 						const nxtOpts = {...opts, toVal: !this._selectionInitialValue};
 						for (let i = ix2Prev; i < ixStart; ++i) {
-							const it = this._visibleItems[i];
-							this._setCheckbox(it, nxtOpts);
+							const item = this._visibleItems[i];
+							this._setCheckbox(item, nxtOpts);
+							this._setHighlighted(item, nxtOpts);
 						}
 					}
 				}
@@ -38954,11 +40947,11 @@ class ListSelectClickHandlerBase {
 				if (opts.fnOnSelectionChange) opts.fnOnSelectionChange(item, cbMaster.checked);
 
 				if (!opts.isNoHighlightSelection) {
-					this._setHighlighted(item, cbMaster.checked);
+					this._setHighlighted(item, {toVal: cbMaster.checked});
 				}
 			} else {
 				if (!opts.isNoHighlightSelection) {
-					this._setHighlighted(item, false);
+					this._setHighlighted(item, {toVal: false});
 				}
 			}
 
@@ -38985,12 +40978,34 @@ class ListSelectClickHandlerBase {
 				//   be filtered/hidden, the browser won't necessarily update them all. Therefore, forcibly set
 				//   `checked = false` below.
 				cb.checked = true;
-				this._setHighlighted(itemOther, true);
+				this._setHighlighted(itemOther, {toVal: true});
 			} else {
 				cb.checked = false;
-				this._setHighlighted(itemOther, false);
+				this._setHighlighted(itemOther, {toVal: false});
 			}
 		});
+	}
+
+	bindSelectAllCheckbox ($_cbAll) {
+		const cbAll = $_cbAll instanceof jQuery ? $_cbAll[0] : $_cbAll;
+		if (!cbAll) return;
+		cbAll
+			.addEventListener("change", () => {
+				const isChecked = cbAll.checked;
+				this.setCheckboxes({isChecked});
+			});
+	}
+
+	setCheckboxes ({isChecked, isIncludeHidden}) {
+		(isIncludeHidden ? this._allItems : this._visibleItems)
+			.forEach(item => {
+				const cb = this._getCb(item);
+
+				if (cb?.disabled) return;
+				if (cb) cb.checked = isChecked;
+
+				this._setHighlighted(item, {toVal: isChecked});
+			});
 	}
 }
 
@@ -39008,53 +41023,65 @@ class ListSelectClickHandler extends ListSelectClickHandlerBase {
 
 	_getCb (item, opts = {}) { return opts.fnGetCb ? opts.fnGetCb(item) : item.data.cbSel; }
 
-	_setCheckbox (item, opts = {}) { return this.setCheckbox(item, opts); }
+	_setCheckbox (item, {fnGetCb, fnOnSelectionChange, isNoHighlightSelection, toVal = true} = {}) {
+		const cbSlave = this._getCb(item, {fnGetCb, fnOnSelectionChange, isNoHighlightSelection});
 
-	_setHighlighted (item, isHighlighted) {
-		if (isHighlighted) item.ele instanceof $ ? item.ele.addClass("list-multi-selected") : item.ele.classList.add("list-multi-selected");
+		if (!cbSlave || cbSlave.disabled) return;
+
+		cbSlave.checked = toVal;
+		if (fnOnSelectionChange) fnOnSelectionChange(item, toVal);
+	}
+
+	_setHighlighted (item, {toVal = false} = {}) {
+		if (toVal) item.ele instanceof $ ? item.ele.addClass("list-multi-selected") : item.ele.classList.add("list-multi-selected");
 		else item.ele instanceof $ ? item.ele.removeClass("list-multi-selected") : item.ele.classList.remove("list-multi-selected");
 	}
 
 	/* -------------------------------------------- */
 
 	setCheckbox (item, {fnGetCb, fnOnSelectionChange, isNoHighlightSelection, toVal = true} = {}) {
-		const cbSlave = this._getCb(item, {fnGetCb, fnOnSelectionChange, isNoHighlightSelection});
-
-		if (cbSlave?.disabled) return;
-
-		if (cbSlave) {
-			cbSlave.checked = toVal;
-			if (fnOnSelectionChange) fnOnSelectionChange(item, toVal);
-		}
+		this._setCheckbox(item, {fnGetCb, fnOnSelectionChange, isNoHighlightSelection, toVal});
 
 		if (isNoHighlightSelection) return;
 
-		this._setHighlighted(item, toVal);
-	}
-
-	/**
-	 * (Public method for Plutonium use)
-	 */
-	bindSelectAllCheckbox ($cbAll) {
-		$cbAll.change(() => {
-			const isChecked = $cbAll.prop("checked");
-			this.setCheckboxes({isChecked});
-		});
-	}
-
-	setCheckboxes ({isChecked, isIncludeHidden}) {
-		(isIncludeHidden ? this._list.items : this._list.visibleItems)
-			.forEach(item => {
-				if (item.data.cbSel?.disabled) return;
-
-				if (item.data.cbSel) item.data.cbSel.checked = isChecked;
-
-				this._setHighlighted(item, isChecked);
-			});
+		this._setHighlighted(item, {toVal});
 	}
 }
 
 globalThis.ListSelectClickHandler = ListSelectClickHandler;
+
+class RenderableCollectionSelectClickHandler extends ListSelectClickHandlerBase {
+	constructor ({comp, prop, namespace = null}) {
+		super();
+		this._comp = comp;
+		this._prop = prop;
+		this._namespace = namespace;
+	}
+
+	_getCb (item, opts) {
+		return item.cbSel;
+	}
+
+	_setCheckbox (item, opts) {
+		item.cbSel.checked = opts.toVal;
+	}
+
+	_setHighlighted (item, {toVal = false} = {}) {
+		item.$wrpRow.toggleClass("list-multi-selected", toVal);
+	}
+
+	get _allItems () {
+		const rendereds = this._comp._getRenderedCollection({prop: this._prop, namespace: this._namespace});
+		return this._comp._state[this._prop]
+			.map(ent => rendereds[ent.id]);
+	}
+
+	get _visibleItems () {
+		return this._allItems;
+	}
+}
+
+globalThis.RenderableCollectionSelectClickHandler = RenderableCollectionSelectClickHandler;
 
 class ListUiUtil {
 	static bindPreviewButton (page, allData, item, btnShowHidePreview, {$fnGetPreviewStats} = {}) {
@@ -39263,7 +41290,7 @@ class ListUiUtil {
 	// ==================
 }
 ListUiUtil.HTML_GLYPHICON_EXPAND = `[+]`;
-ListUiUtil.HTML_GLYPHICON_CONTRACT = `[\u2012]`;
+ListUiUtil.HTML_GLYPHICON_CONTRACT = `[\u2212]`;
 
 globalThis.ListUiUtil = ListUiUtil;
 
@@ -39493,11 +41520,12 @@ TabUiUtilBase._DEFAULT_TAB_GROUP = "_default";
 TabUiUtilBase._DEFAULT_PROP_PROXY = "meta";
 
 TabUiUtilBase.TabMeta = class {
-	constructor ({name, icon = null, type = null, buttons = null} = {}) {
+	constructor ({name, icon = null, type = null, buttons = null, isSplitStart = false} = {}) {
 		this.name = name;
 		this.icon = icon;
 		this.type = type;
 		this.buttons = buttons;
+		this.isSplitStart = isSplitStart;
 	}
 };
 
@@ -39506,7 +41534,7 @@ class TabUiUtil extends TabUiUtilBase {
 		super.decorate(obj, {isInitMeta});
 
 		obj.__$getBtnTab = function ({tabMeta, _propProxy, propActive, ixTab}) {
-			return $(`<button class="btn btn-default ui-tab__btn-tab-head pt-2p px-4p pb-0 ${tabMeta.isHeadHidden ? "ve-hidden" : ""}">${tabMeta.name.qq()}</button>`)
+			return $(`<button class="ve-btn ve-btn-default ui-tab__btn-tab-head pt-2p px-4p pb-0 ${tabMeta.isHeadHidden ? "ve-hidden" : ""}">${tabMeta.name.qq()}</button>`)
 				.click(() => obj[_propProxy][propActive] = ixTab);
 		};
 
@@ -39523,12 +41551,12 @@ class TabUiUtil extends TabUiUtilBase {
 
 		obj.__renderTypedTabMeta_buttons = function ({tabMeta, ixTab}) {
 			const $btns = tabMeta.buttons.map((meta, j) => {
-				const $btn = $(`<button class="btn ui-tab__btn-tab-head pt-2p px-4p pb-0 bbr-0 bbl-0 ${meta.type ? `btn-${meta.type}` : "btn-primary"}" ${meta.title ? `title="${meta.title.qq()}"` : ""}>${meta.html}</button>`)
+				const $btn = $(`<button class="ve-btn ui-tab__btn-tab-head pt-2p px-4p pb-0 bbr-0 bbl-0 ${meta.type ? `ve-btn-${meta.type}` : "ve-btn-primary"}" ${meta.title ? `title="${meta.title.qq()}"` : ""}>${meta.html}</button>`)
 					.click(evt => meta.pFnClick(evt, $btn));
 				return $btn;
 			});
 
-			const $btnTab = $$`<div class="btn-group ve-flex-v-right ve-flex-h-right ml-2 w-100">${$btns}</div>`;
+			const $btnTab = $$`<div class="ve-btn-group ve-flex-v-center ${tabMeta.isSplitStart ? "ml-auto" : "ml-2"}">${$btns}</div>`;
 
 			return {
 				...tabMeta,
@@ -39559,7 +41587,7 @@ class TabUiUtilSide extends TabUiUtilBase {
 		super.decorate(obj, {isInitMeta});
 
 		obj.__$getBtnTab = function ({isSingleTab, tabMeta, _propProxy, propActive, ixTab}) {
-			return isSingleTab ? null : $(`<button class="btn btn-default btn-sm ui-tab-side__btn-tab mb-2 br-0 btr-0 bbr-0 text-left ve-flex-v-center" title="${tabMeta.name.qq()}"><div class="${tabMeta.icon} ui-tab-side__icon-tab mr-2 mobile-lg__mr-0 ve-text-center"></div><div class="mobile-lg__hidden">${tabMeta.name.qq()}</div></button>`)
+			return isSingleTab ? null : $(`<button class="ve-btn ve-btn-default ve-btn-sm ui-tab-side__btn-tab mb-2 br-0 btr-0 bbr-0 ve-text-left ve-flex-v-center" title="${tabMeta.name.qq()}"><div class="${tabMeta.icon} ui-tab-side__icon-tab mr-2 mobile-lg__mr-0 ve-text-center"></div><div class="mobile-lg__hidden">${tabMeta.name.qq()}</div></button>`)
 				.click(() => this[_propProxy][propActive] = ixTab);
 		};
 
@@ -39586,7 +41614,7 @@ class TabUiUtilSide extends TabUiUtilBase {
 
 		obj.__renderTypedTabMeta_buttons = function ({tabMeta, ixTab}) {
 			const $btns = tabMeta.buttons.map((meta, j) => {
-				const $btn = $(`<button class="btn ${meta.type ? `btn-${meta.type}` : "btn-primary"} btn-sm" ${meta.title ? `title="${meta.title.qq()}"` : ""}>${meta.html}</button>`)
+				const $btn = $(`<button class="ve-btn ${meta.type ? `ve-btn-${meta.type}` : "ve-btn-primary"} ve-btn-sm" ${meta.title ? `title="${meta.title.qq()}"` : ""}>${meta.html}</button>`)
 					.click(evt => meta.pFnClick(evt, $btn));
 
 				if (j === tabMeta.buttons.length - 1) $btn.addClass(`br-0 btr-0 bbr-0`);
@@ -39594,7 +41622,7 @@ class TabUiUtilSide extends TabUiUtilBase {
 				return $btn;
 			});
 
-			const $btnTab = $$`<div class="btn-group ve-flex-v-center ve-flex-h-right mb-2">${$btns}</div>`;
+			const $btnTab = $$`<div class="ve-btn-group ve-flex-v-center ve-flex-h-right mb-2">${$btns}</div>`;
 
 			return {
 				...tabMeta,
@@ -39747,6 +41775,7 @@ class SearchWidget {
 	 * @param $iptSearch input element
 	 * @param opts Options object.
 	 * @param opts.fnSearch Function which runs the search.
+	 * @param opts.pFnSearch Function which runs the search.
 	 * @param opts.fnShowWait Function which displays loading dots
 	 * @param opts.flags Flags object; modified during user interaction.
 	 * @param opts.flags.isWait Flag tracking "waiting for user to stop typing"
@@ -39755,6 +41784,15 @@ class SearchWidget {
 	 * @param opts.$ptrRows Pointer to array of rows.
 	 */
 	static bindAutoSearch ($iptSearch, opts) {
+		if (opts.fnSearch && opts.pFnSearch) throw new Error(`Options "fnSearch" and "pFnSearch" are mutually exclusive!`);
+
+		// Chain each search from the previous, to ensure the last search wins
+		let pSearching = null;
+		const addSearchPromiseTask = () => {
+			if (pSearching) pSearching = pSearching.then(() => opts.pFnSearch());
+			else pSearching = opts.pFnSearch();
+		};
+
 		UiUtil.bindTypingEnd({
 			$ipt: $iptSearch,
 			fnKeyup: evt => {
@@ -39770,6 +41808,7 @@ class SearchWidget {
 				}
 
 				opts.fnSearch && opts.fnSearch();
+				if (opts.pFnSearch) addSearchPromiseTask();
 			},
 			fnKeypress: evt => {
 				switch (evt.key) {
@@ -39780,6 +41819,7 @@ class SearchWidget {
 					case "Enter": {
 						opts.flags.doClickFirst = true;
 						opts.fnSearch && opts.fnSearch();
+						if (opts.pFnSearch) addSearchPromiseTask();
 					}
 				}
 			},
@@ -39809,7 +41849,11 @@ class SearchWidget {
 				}
 			},
 			fnClick: () => {
-				if (opts.fnSearch && $iptSearch.val() && $iptSearch.val().trim().length) opts.fnSearch();
+				if (!opts.fnSearch && !opts.pFnSearch) return;
+				if (!$iptSearch.val() && !$iptSearch.val().trim().length) return;
+
+				if (opts.fnSearch) opts.fnSearch();
+				if (opts.pFnSearch) addSearchPromiseTask();
 			},
 		});
 	}
@@ -39917,7 +41961,10 @@ class SearchWidget {
 	}
 
 	get $wrpSearch () {
-		if (!this._$rendered) this._render();
+		if (!this._$rendered) {
+			this._render();
+			this.__pDoSearch().then(null);
+		}
 		return this._$rendered;
 	}
 
@@ -39935,11 +41982,11 @@ class SearchWidget {
 		this._$wrpResults.empty().append(SearchWidget.getSearchNoResults());
 	}
 
-	__doSearch () {
+	async __pDoSearch () {
 		const searchInput = this._$iptSearch.val().trim();
 
 		const index = this._indexes[this._cat];
-		const results = index.search(searchInput, this.__getSearchOptions());
+		const results = await Omnisearch.pGetFilteredResults(index.search(searchInput, this.__getSearchOptions()));
 
 		const {toProcess, resultCount} = (() => {
 			if (results.length) {
@@ -40023,9 +42070,9 @@ class SearchWidget {
 				${Object.keys(this._indexes).sort().filter(it => it !== "ALL").map(it => `<option value="${it}">${SearchWidget.__getCatOptionText(it)}</option>`).join("")}
 			</select>`)
 				.appendTo($wrpControls).toggle(Object.keys(this._indexes).length !== 1)
-				.on("change", () => {
+				.on("change", async () => {
 					this._cat = this._$selCat.val();
-					this.__doSearch();
+					await this.__pDoSearch();
 				});
 
 			this._$iptSearch = $(`<input class="ui-search__ipt-search search form-control" autocomplete="off" placeholder="Search...">`).appendTo($wrpControls);
@@ -40034,7 +42081,7 @@ class SearchWidget {
 			let lastSearchTerm = "";
 			SearchWidget.bindAutoSearch(this._$iptSearch, {
 				flags: this._flags,
-				fnSearch: this.__doSearch.bind(this),
+				pFnSearch: this.__pDoSearch.bind(this),
 				fnShowWait: this.__showMsgWait.bind(this),
 				$ptrRows: this._$ptrRows,
 			});
@@ -40048,8 +42095,6 @@ class SearchWidget {
 					lastSearchTerm = this._$iptSearch.val();
 				}
 			});
-
-			this.__doSearch();
 		}
 	}
 
@@ -40203,7 +42248,7 @@ class SearchWidget {
 		};
 		await SearchWidget.pLoadCustomIndex({
 			contentIndexName: "entity_Races",
-			errorName: "races",
+			errorName: "species",
 			customIndexSubSpecs: [
 				new SearchWidget.CustomIndexSubSpec({
 					dataSource,
@@ -40215,7 +42260,7 @@ class SearchWidget {
 		});
 
 		return SearchWidget.pGetUserEntitySearch(
-			"Select Race",
+			"Select Species",
 			"entity_Races",
 			{
 				fnTransform: doc => {
@@ -40338,7 +42383,7 @@ class SearchWidget {
 			const allItems = (await Renderer.item.pBuildList()).filter(it => !it._isItemGroup);
 			return {
 				item: allItems.filter(it => {
-					if (it.type === "GV") return false;
+					if (it.type && DataUtil.itemType.unpackUid(it.type).abbreviation === Parser.ITM_TYP_ABV__GENERIC_VARIANT) return false;
 					if (isBasicIndex == null) return true;
 					const isBasic = it.rarity === "none" || it.rarity === "unknown" || it._category === "basic";
 					return isBasicIndex ? isBasic : !isBasic;
@@ -40480,6 +42525,7 @@ class SearchWidget {
 				...(brew[subSpec.prop] || []),
 			]
 				.pSerialAwaitMap(async ent => {
+					const src = SourceUtil.getEntitySource(ent);
 					const doc = {
 						id: id++,
 						c: subSpec.catId,
@@ -40487,8 +42533,9 @@ class SearchWidget {
 						h: 1,
 						n: ent.name,
 						q: subSpec.page,
-						s: ent.source,
+						s: src,
 						u: UrlUtil.URL_TO_HASH_BUILDER[subSpec.page](ent),
+						dP: SourceUtil.isPartneredSourceWotc(src),
 					};
 					if (subSpec.pFnGetDocExtras) Object.assign(doc, await subSpec.pFnGetDocExtras({ent, doc, subSpec}));
 					index.addDoc(doc);
@@ -40515,7 +42562,7 @@ class InputUiUtil {
 	}
 
 	static _$getBtnOk ({comp = null, opts, doClose}) {
-		return $(`<button class="btn btn-primary mr-2">${opts.buttonText || "OK"}</button>`)
+		return $(`<button class="ve-btn ve-btn-primary mr-2">${opts.buttonText || "OK"}</button>`)
 			.click(evt => {
 				evt.stopPropagation();
 				if (comp && !comp._state.isValid) return JqueryUtil.doToast({content: `Please enter valid input!`, type: "warning"});
@@ -40524,7 +42571,7 @@ class InputUiUtil {
 	}
 
 	static _$getBtnCancel ({comp = null, opts, doClose}) {
-		return $(`<button class="btn btn-default">Cancel</button>`)
+		return $(`<button class="ve-btn ve-btn-default">Cancel</button>`)
 			.click(evt => {
 				evt.stopPropagation();
 				doClose(false);
@@ -40532,7 +42579,7 @@ class InputUiUtil {
 	}
 
 	static _$getBtnSkip ({comp = null, opts, doClose}) {
-		return !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
+		return !opts.isSkippable ? null : $(`<button class="ve-btn ve-btn-default ml-3">Skip</button>`)
 			.click(evt => {
 				evt.stopPropagation();
 				doClose(VeCt.SYM_UI_SKIP);
@@ -40565,7 +42612,7 @@ class InputUiUtil {
 		$getBtn ({doClose, fnRemember, isGlobal, storageKey}) {
 			if (this._isRemember && !storageKey && !fnRemember) throw new Error(`No "storageKey" or "fnRemember" provided for button with saveable value!`);
 
-			return $(`<button class="btn ${this._isPrimary ? "btn-primary" : "btn-default"} ${this._isSmall ? "btn-sm" : ""} ve-flex-v-center mr-3">
+			return $(`<button class="ve-btn ${this._isPrimary ? "ve-btn-primary" : "ve-btn-default"} ${this._isSmall ? "ve-btn-sm" : ""} ve-flex-v-center mr-3">
 				<span class="${this._clazzIcon} mr-2"></span><span>${this._text}</span>
 			</button>`)
 				.on("click", evt => {
@@ -40611,7 +42658,7 @@ class InputUiUtil {
 
 		const $btns = buttons.map(btnInfo => btnInfo.$getBtn({doClose, fnRemember, isGlobal, storageKey}));
 
-		const $btnSkip = !isSkippable ? null : $(`<button class="btn btn-default btn-sm ml-3"><span class="glyphicon glyphicon-forward"></span><span>${textSkip || "Skip"}</span></button>`)
+		const $btnSkip = !isSkippable ? null : $(`<button class="ve-btn ve-btn-default ve-btn-sm ml-3"><span class="glyphicon glyphicon-forward"></span><span>${textSkip || "Skip"}</span></button>`)
 			.click(evt => {
 				evt.stopPropagation();
 				doClose(VeCt.SYM_UI_SKIP);
@@ -40748,7 +42795,7 @@ class InputUiUtil {
 			if (prev != null) defaultVal = prev;
 		}
 
-		const $iptNumber = $(`<input class="form-control mb-2 text-right" ${opts.min ? `min="${opts.min}"` : ""} ${opts.max ? `max="${opts.max}"` : ""}>`)
+		const $iptNumber = $(`<input class="form-control mb-2 ve-text-right" ${opts.min ? `min="${opts.min}"` : ""} ${opts.max ? `max="${opts.max}"` : ""}>`)
 			.keydown(evt => {
 				if (evt.key === "Escape") { $iptNumber.blur(); return; }
 
@@ -40985,7 +43032,7 @@ class InputUiUtil {
 		});
 
 		$$`<div class="ve-flex ve-flex-wrap ve-flex-h-center mb-2">${opts.values.map((v, i) => {
-			const $btn = $$`<div class="m-2 btn ${v.buttonClass || "btn-default"} ui__btn-xxl-square ve-flex-col ve-flex-h-center">
+			const $btn = $$`<div class="m-2 ve-btn ${v.buttonClass || "ve-btn-default"} ui__btn-xxl-square ve-flex-col ve-flex-h-center">
 					${v.iconClass ? `<div class="ui-icn__wrp-icon ${v.iconClass} mb-1"></div>` : ""}
 					${v.iconContent ? v.iconContent : ""}
 					<div class="whitespace-normal w-100">${v.name}</div>
@@ -40996,12 +43043,12 @@ class InputUiUtil {
 				})
 				.toggleClass(v.buttonClassActive || "active", opts.default === i);
 			if (v.buttonClassActive && opts.default === i) {
-				$btn.removeClass("btn-default").addClass(v.buttonClassActive);
+				$btn.removeClass("ve-btn-default").addClass(v.buttonClassActive);
 			}
 
 			onclicks.push(() => {
 				$btn.toggleClass(v.buttonClassActive || "active", lastIx === i);
-				if (v.buttonClassActive) $btn.toggleClass("btn-default", lastIx !== i);
+				if (v.buttonClassActive) $btn.toggleClass("ve-btn-default", lastIx !== i);
 			});
 			return $btn;
 		})}</div>`.appendTo($modalInner);
@@ -41277,7 +43324,7 @@ class InputUiUtil {
 				const x = CONTROLS_RADIUS * Math.cos(theta);
 				const y = CONTROLS_RADIUS * Math.sin(theta);
 				$btns.push(
-					$(`<button class="btn btn-default btn-xxs absolute">${steps[i]}</button>`)
+					$(`<button class="ve-btn ve-btn-default ve-btn-xxs absolute">${steps[i]}</button>`)
 						.css({
 							top: y + CONTROLS_RADIUS - (BTN_STEP_SIZE / 2),
 							left: x + CONTROLS_RADIUS - (BTN_STEP_SIZE / 2),
@@ -41738,7 +43785,7 @@ class SourceUiUtil {
 			.keydown(evt => { if (evt.key === "Escape") $iptConverters.blur(); });
 		if (options.source) $iptConverters.val((options.source.convertedBy || []).join(", "));
 
-		const $btnOk = $(`<button class="btn btn-primary">OK</button>`)
+		const $btnOk = $(`<button class="ve-btn ve-btn-primary">OK</button>`)
 			.click(async () => {
 				let incomplete = false;
 				[$iptName, $iptAbv, $iptJson].forEach($ipt => {
@@ -41777,9 +43824,9 @@ class SourceUiUtil {
 
 		const $btnCancel = options.isRequired && !isEditMode
 			? null
-			: $(`<button class="btn btn-default ml-2">Cancel</button>`).click(() => options.cbCancel());
+			: $(`<button class="ve-btn ve-btn-default ml-2">Cancel</button>`).click(() => options.cbCancel());
 
-		const $btnUseExisting = $(`<button class="btn btn-default">Use an Existing Source</button>`)
+		const $btnUseExisting = $(`<button class="ve-btn ve-btn-default">Use an Existing Source</button>`)
 			.click(() => {
 				$stageInitial.hideVe();
 				$stageExisting.showVe();
@@ -41834,7 +43881,7 @@ class SourceUiUtil {
 		</select>`.change(() => $selExisting.removeClass("form-control--error"));
 		$selExisting[0].selectedIndex = 0;
 
-		const $btnConfirmExisting = $(`<button class="btn btn-default btn-sm">Confirm</button>`)
+		const $btnConfirmExisting = $(`<button class="ve-btn ve-btn-default ve-btn-sm">Confirm</button>`)
 			.click(async () => {
 				if ($selExisting[0].selectedIndex === 0) {
 					$selExisting.addClass("form-control--error");
@@ -41851,7 +43898,7 @@ class SourceUiUtil {
 				$stageInitial.showVe();
 			});
 
-		const $btnBackExisting = $(`<button class="btn btn-default btn-sm mr-2">Back</button>`)
+		const $btnBackExisting = $(`<button class="ve-btn ve-btn-default ve-btn-sm mr-2">Back</button>`)
 			.click(() => {
 				$selExisting[0].selectedIndex = 0;
 				$stageExisting.hideVe();
@@ -41957,7 +44004,7 @@ function MixinBaseComponent (Cls) {
 		 * @param opts.prop The state property.
 		 * @param [opts.namespace] The render namespace.
 		 */
-		_getRenderedCollection (opts) {
+		_getRenderedCollection (opts = null) {
 			opts = opts || {};
 			const renderedLookupProp = opts.namespace ? `${opts.namespace}.${opts.prop}` : opts.prop;
 			return (this.__rendered[renderedLookupProp] = this.__rendered[renderedLookupProp] || {});
@@ -42346,8 +44393,12 @@ class _RenderableCollectionGenericRowsSyncAsyncUtils {
 	/* -------------------------------------------- */
 
 	$getBtnDelete ({entity, title = "Delete"}) {
-		return $(`<button class="btn btn-xxs btn-danger" title="${title.qq()}"><span class="glyphicon glyphicon-trash"></span></button>`)
-			.click(() => this.doDelete({entity}));
+		return $(this.getBtnDelete(...arguments));
+	}
+
+	getBtnDelete ({entity, title = "Delete"}) {
+		return ee`<button class="ve-btn ve-btn-xxs ve-btn-danger" title="${title.qq()}"><span class="glyphicon glyphicon-trash"></span></button>`
+			.onn("click", () => this.doDelete({entity}));
 	}
 
 	doDelete ({entity}) {
@@ -42380,6 +44431,7 @@ class _RenderableCollectionGenericRowsSyncAsyncUtils {
 	}
 }
 
+/** @abstract */
 class RenderableCollectionGenericRows extends RenderableCollectionBase {
 	/**
 	 * @param comp
@@ -42426,10 +44478,15 @@ class RenderableCollectionGenericRows extends RenderableCollectionBase {
 	}
 
 	_$getWrpRow () {
-		return $(`<div class="ve-flex-v-center w-100"></div>`);
+		return $(this._getWrpRow());
+	}
+
+	_getWrpRow () {
+		return ee`<div class="ve-flex-v-center w-100"></div>`;
 	}
 
 	/**
+	 * @abstract
 	 * @return {?object}
 	 */
 	_populateRow ({comp, $wrpRow, entity}) {
@@ -42628,7 +44685,7 @@ class ComponentUiUtil {
 			$ipt.val(val);
 		};
 
-		const $ipt = (opts.$ele || $(opts.html || `<input class="form-control input-xs form-control--minimal text-right">`)).disableSpellcheck()
+		const $ipt = (opts.$ele || $(opts.html || `<input class="form-control input-xs form-control--minimal ve-text-right">`)).disableSpellcheck()
 			.keydown(evt => { if (evt.key === "Escape") $ipt.blur(); })
 			.change(() => {
 				const raw = $ipt.val().trim();
@@ -42771,10 +44828,10 @@ class ComponentUiUtil {
 					$ipt.focus();
 				};
 
-				const $btnUp = $(`<button class="btn btn-default ui-ideco__btn-ticker p-0 bold no-select">+</button>`)
+				const $btnUp = $(`<button class="ve-btn ve-btn-default ui-ideco__btn-ticker p-0 bold no-select">+</button>`)
 					.click(() => handleClick(1));
 
-				const $btnDown = $(`<button class="btn btn-default ui-ideco__btn-ticker p-0 bold no-select">\u2012</button>`)
+				const $btnDown = $(`<button class="ve-btn ve-btn-default ui-ideco__btn-ticker p-0 bold no-select">\u2212</button>`)
 					.click(() => handleClick(-1));
 
 				return $$`<div class="ui-ideco__wrp ui-ideco__wrp--${side} ve-flex-vh-center ve-flex-col">
@@ -42857,7 +44914,7 @@ class ComponentUiUtil {
 		const btn = (ele ? e_({ele}) : e_({
 			ele: ele,
 			tag: "button",
-			clazz: "btn btn-xs btn-default",
+			clazz: "ve-btn ve-btn-xs ve-btn-default",
 			text: opts.text || "Toggle",
 		}))
 			.onClick(() => component[stateProp][prop] = !component[stateProp][prop])
@@ -43711,7 +45768,7 @@ class ComponentUiUtil {
 			Object.entries(this._state).forEach(([k, v]) => {
 				if (v === false) return;
 
-				const $btnRemove = $(`<button class="btn btn-danger ui-pick__btn-remove ve-text-center">×</button>`)
+				const $btnRemove = $(`<button class="ve-btn ve-btn-danger ui-pick__btn-remove ve-text-center">×</button>`)
 					.click(() => this._state[k] = false)
 					.prop("disabled", this._meta.isDisabled);
 
@@ -43814,7 +45871,7 @@ class ComponentUiUtil {
 
 		let menu = getMenu();
 
-		const $btnAdd = $(`<button class="btn btn-xxs btn-default ui-pick__btn-add ve-flex-vh-center">+</button>`)
+		const $btnAdd = $(`<button class="ve-btn ve-btn-xxs ve-btn-default ui-pick__btn-add ve-flex-vh-center">+</button>`)
 			.click(evt => ContextUtil.pOpenMenu(evt, menu));
 
 		const {
@@ -43869,7 +45926,7 @@ class ComponentUiUtil {
 	static $getPickString (comp, prop, opts) {
 		opts = opts || {};
 
-		const $btnAdd = $(`<button class="btn btn-xxs btn-default ui-pick__btn-add ve-flex-vh-center">+</button>`)
+		const $btnAdd = $(`<button class="ve-btn ve-btn-xxs ve-btn-default ui-pick__btn-add ve-flex-vh-center">+</button>`)
 			.click(async () => {
 				const input = await InputUiUtil.pGetUserString();
 				if (input == null || input === VeCt.SYM_UI_SKIP) return;
@@ -43963,7 +46020,7 @@ class ComponentUiUtil {
 				}
 			});
 
-		const $btnAdd = $(`<button class="btn btn-xs btn-default ve-self-flex-stretch"><span class="glyphicon glyphicon-plus"></span></button>`)
+		const $btnAdd = $(`<button class="ve-btn ve-btn-xs ve-btn-default ve-self-flex-stretch"><span class="glyphicon glyphicon-plus"></span></button>`)
 			.on("click", () => {
 				addInputValue();
 			});

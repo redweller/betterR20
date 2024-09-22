@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name         betteR20-alpha-core
+// @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.185.7a
-// @updateURL    https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-core.meta.js
-// @downloadURL  https://github.com/redweller/betterR20/raw/beta/alpha/betteR20-core.user.js
+// @version      1.35.185.11
+// @updateURL    https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/betteR20-core.meta.js
+// @downloadURL  https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
-// @author       TheGiddyLimit
+// @author       TheGiddyLimit/Redweller
 
 // @match        https://app.roll20.net/editor
 // @match        https://app.roll20.net/editor#*
