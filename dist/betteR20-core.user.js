@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name         betteR20-core
+// @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.11
-// @updateURL    https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.meta.js
-// @downloadURL  https://github.com/TheGiddyLimit/betterR20/raw/development/dist/betteR20-core.user.js
+// @version      1.35.186.11
+// @updateURL    https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/betteR20-core.meta.js
+// @downloadURL  https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
-// @author       TheGiddyLimit
+// @author       TheGiddyLimit/Redweller
 
 // @match        https://app.roll20.net/editor
 // @match        https://app.roll20.net/editor#*
@@ -29,13 +29,21 @@
 ART_HANDOUT = "betteR20-art";
 CONFIG_HANDOUT = "betteR20-config";
 
+B20_NAME = `core`;
+B20_VERSION = `1.35.186.11`;
+B20_REPO_URL = `https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/`;
+
 // TODO automate to use mirror if main site is unavailable
-BASE_SITE_URL = "https://5e.tools/";
-// BASE_SITE_URL = "https://5etools-mirror-1.github.io/";
+BASE_SITE_URL = `https://5e.tools/`; // "https://5e.tools/";
 
 SITE_JS_URL = `${BASE_SITE_URL}js/`;
 DATA_URL = `${BASE_SITE_URL}data/`;
+
 DATA_URL_MODULES = `https://raw.githubusercontent.com/5etools-mirror-1/roll20-module/master`;
+DATA_URL_IMG_REPO = `https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/`; // obsolete as of 1.35.11
+DATA_URL_ART_REPO = `https://raw.githubusercontent.com/5etools-mirror-1/pab-index/main/`;
+DATA_URL_PLAYLIST = `https://api.github.com/repos/ttrpg-resources/betterR20-playlist/contents`;
+DATA_URL_COMMUNITY_MODULES = `https://raw.githubusercontent.com/ttrpg-resources/betterR20-module/main/`;
 
 SCRIPT_EXTENSIONS = [];
 
@@ -95,7 +103,7 @@ function baseUtil () {
 	d20plus.ut = {};
 
 	// d20plus.ut.WIKI_URL = "https://wiki.5e.tools"; // I'll be back ...
-	d20plus.ut.WIKI_URL = "https://web.archive.org/web/20210826155610/https://wiki.5e.tools";
+	d20plus.ut.WIKI_URL = "https://wiki.tercept.net/en/betteR20";
 
 	d20plus.ut.log = (...args) => {
 		// eslint-disable-next-line no-console
@@ -153,7 +161,7 @@ function baseUtil () {
 		const isStreamer = !!d20plus.cfg.get("chat", "streamerChatTag");
 		const scriptName = isStreamer ? "Script" : "betteR20";
 		$.ajax({
-			url: `https://raw.githubusercontent.com/TheGiddyLimit/betterR20/development/dist/betteR20-version`,
+			url: `${B20_REPO_URL}betteR20-version`,
 			success: (data) => {
 				if (data) {
 					const curr = d20plus.version;
@@ -162,9 +170,14 @@ function baseUtil () {
 					if (cmp < 0) {
 						setTimeout(() => {
 							if (!isStreamer) {
-								const rawToolsInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-5etools.user.js?raw=true";
-								const rawCoreInstallUrl = "https://github.com/TheGiddyLimit/betterR20/blob/development/dist/betteR20-core.user.js?raw=true";
-								d20plus.ut.sendHackerChat(`<br>A newer version of ${scriptName} is available.<br>Get ${avail} <a href="${rawToolsInstallUrl}">5etools</a> OR <a href="${rawCoreInstallUrl}">core</a>.<br><br>`);
+								const rawToolsInstallUrl = `${B20_REPO_URL}betteR20-5etools.user.js`;
+								const rawCoreInstallUrl = `${B20_REPO_URL}betteR20-core.user.js`;
+								const msgVars = [scriptName, avail, rawToolsInstallUrl, rawCoreInstallUrl];
+								d20plus.ut.sendHackerChat(`
+									<div class="userscript-b20intro" style="border: 1px solid; background-color: #582124;">
+									<br>A newer version of ${msgVars[0]} is available.<br>Get ${msgVars[1]} <a href="${msgVars[2]}">5etools</a> OR <a href="${msgVars[3]}">core</a>.<br><br>
+									</div>
+								`);
 							} else {
 								d20plus.ut.sendHackerChat(`<br>A newer version of ${scriptName} is available.<br><br>`);
 							}
@@ -202,7 +215,7 @@ function baseUtil () {
 		];
 		const welcomeTemplate = (b20v, vttv, faq) => `
 			<div class="${classname}">
-				<img src="" class="userscript-b20img" style="content: unset; width:30px;position: relative;top: 10px;float: right;">
+				<img src="" class="userscript-b20img" style="content: unset; width:30px;position: relative;top: 10px;float: right;margin-left:-20px">
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					betteR20 
 					<span style=" font-size: 13px ; font-weight: normal">by 5etools</span>
@@ -243,7 +256,21 @@ function baseUtil () {
 				$bored.remove();
 				clearInterval(d20plus.ut.cursor);
 			}, 2000);
-		}, 6000);
+		
+			d20plus.ut.sendHackerChat(`
+				<div class="userscript-b20intro">
+					<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
+						Notes on b20 beta
+						<p style="font-size: 11px;line-height: 15px;color: rgb(32, 194, 14);">
+							<span style="color: rgb(194, 32, 14)">You are using preview version of betteR20</span><br>
+							Please read this carefully and give feedback in official betteR20 Discord server, 
+							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
+						</p>
+					</h1>
+					<p>This version contains following changes<br><code>-- Beta features overview:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Layers</strong><br>⦁ add new Extra Layers toolbar as part of r20 newUI<br>⦁ add show/hide layers toggles to b20 layers<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br>⦁ fixed context menu appearing on LMB<br>⦁ fixed the art repo<br><strong>Edit Token Images dialog</strong><br>⦁ context menu token image editor<br>⦁ a better Random Side randomizer<br>⦁ edit images directly from r20 Token Editor<br><strong>Better token Actions & Automation</strong><br>⦁ new character menu in the top left:<br>- new design, the menu works even when no character is selected<br>- browse stats and actions for last selected token<br>⦁ use all actions with new roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots, items and resources are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>- view descriptions before you use a spell or a trait<br>- filter prepared spells/useable traits etc.<br>- upcast or use spells as ritual<br><code>-- v.186.11 changes:</code><br>⦁ warn about Jumpgate on startup<br>⦁ "import source" selector rework<br>⦁ community module imports fix<br>⦁ fix crash on startup when 5e.tools is inaccessible<br>⦁ new image URLs fixer<br>⦁ new UVTT/DA walls data importer<br>⦁ new multitoken parameters format:<br>- faster loading due to less server requests<br>- use "tools/URLs fixer" to fix old multitokens<br>⦁ 5etools v2.1.0 update:<br>- update data and libs<br>- separate userscript for 2014 rules only<br></p>
+				</div>
+			`);
+			}, 6000);
 	};
 
 	d20plus.ut.showInitMessage = () => {
@@ -298,6 +325,38 @@ function baseUtil () {
 		if (!window.DD_RUM) window.DD_RUM = {addAction: () => {} };
 	}
 
+	d20plus.ut.showFullScreenWarning = (msg) => {
+		const $body = $(`body`);
+		$body.addClass("ve-fswarn__body");
+		const $btnClose = $(`<button class="btn btn-danger ve-fswarn__btn-close">X</button>`)
+			.click(() => {
+				$overlay.remove();
+				$body.removeClass("ve-fswarn__body");
+			});
+		const $overlay = $(`<div class="flex-col flex-vh-center ve-fswarn__overlay"/>`);
+		$btnClose.appendTo($overlay);
+		$overlay.append(`<div class="flex-col flex-vh-center">
+			<div class="ve-fswarn__title mb-2">${msg.title || ""}</div>
+			<div><i>betterR20: ${msg.message || ""}.<br>
+			${msg.instructions || ""}</i></div>
+			<style type="text/css">
+				.ve-fswarn__body {overflow: hidden !important;}
+				.ve-fswarn__overlay {background: darkred;position: fixed; z-index: 99999; top: 0; right: 0;	bottom: 0; left: 0; width: 100vw; height: 100vh; color: white; font-family: monospace;}
+				.ve-fswarn__title {font-size: 72px;line-height: normal;}
+				.ve-fswarn__btn-close {position: absolute;top: 8px;right: 8px;font-size: 16px;}
+				.flex-col.flex-vh-center {display: flex;flex-direction: column;justify-content: center;align-items: center;}
+			</style>
+		</div>`).appendTo($body);
+
+		$(`.boring-chat`).remove();
+
+		d20?.textchat?.incoming(false, ({
+			who: "system",
+			type: "system",
+			content: `<span style="color: red;">betterR20: ${msg.message || "error occurred"}! Exiting...</span>`,
+		}));
+	}
+
 	d20plus.ut.sendHackerChat = (message, error = false) => {
 		const legacyStyle = !!d20plus.cfg.get("chat", "legacySystemMessagesStyle");
 		if (!message) return;
@@ -324,9 +383,10 @@ function baseUtil () {
 	d20plus.ut.parseVersionInfo = (raw) => {
 		const info = JSON.parse(decodeURI(atob(raw)));
 		const time = d20plus.ut.timeAgo(info.date);
-		const phdm = info.phdm ? "<br>Detected DarkMode script" : "";
-		const dnd20 = info.dnd20 ? "<br>Detected Beyond20 extension" : "";
-		let html = `Detected betteR20-${info.b20n} v${info.b20v}<br>Detected VTTES v${info.vtte}${phdm}${dnd20}<br>Info updated ${time}`;
+		const phdm = info.phdm ? `<br>Detected DarkMode script` : "";
+		const vttes = info.vtte ? `<br>Detected VTTES v${info.vtte}` : "";
+		const dnd20 = info.dnd20 ? `<br>Detected Beyond20 extension` : "";
+		let html = `Detected betteR20-${info.b20n} v${info.b20v}${vttes}${phdm}${dnd20}<br>Info updated ${time}`;
 		if (d20plus.ut.cmpVersions(info.b20v, d20plus.version) < 0) html += `<br>Player's betteR20 may be outdated`;
 		if (d20plus.ut.cmpVersions(info.vtte, window.r20es?.hooks?.welcomeScreen?.config?.previousVersion) < 0) html += `<br>Player's VTTES may be outdated`;
 		return html;
@@ -434,9 +494,12 @@ function baseUtil () {
 		return JSON.parse(journalFolder);
 	};
 
-	d20plus.ut.fetchCharAttribs = async (char) => {
+	d20plus.ut.fetchCharAttribs = async (char, keepSync) => {
 		const attribs = char?.attribs;
 		if (!attribs) return false;
+		if (keepSync && !attribs.backboneFirebase) {
+			attribs.backboneFirebase = new BackboneFirebase(attribs)
+		}
 		if (attribs.length) {
 			return char;
 		}
@@ -547,6 +610,26 @@ function baseUtil () {
 		}
 	};
 
+	d20plus.ut.getTokensDistanceText = (tokenAmodel, tokenBmodel) => {
+		if (!tokenAmodel?.attributes || !tokenBmodel?.attributes) return "";
+		const page = d20.Campaign.activePage().attributes;
+		const tokenA = tokenAmodel.attributes;
+		const tokenB = tokenBmodel.attributes;
+		const distX = Math.abs(tokenA.left - tokenB.left) - tokenA.width / 2 - tokenB.width / 2 + 70;
+		const distY = Math.abs(tokenA.top - tokenB.top) - tokenA.height / 2 - tokenB.height / 2 + 70;
+		const distMapUnits = (dist) => Math.round(dist / 70 * (page.scale_number || 5));
+		if (page.diagonaltype === "foure") {
+			const maxDist = Math.max(distX, distY);
+			return `${distMapUnits(maxDist)} ${page.scale_units || "ft."}`;
+		} else if (page.diagonaltype === "manhattan") {
+			const totDist = distX + distY;
+			return `${distMapUnits(totDist)} ${page.scale_units || "ft."}`;
+		} else {
+			const distPixels = Math.sqrt(distX ** 2 + distY ** 2);
+			return `${distMapUnits(distPixels)} ${page.scale_units || "ft."}`;
+		}
+	};
+
 	d20plus.ut.getPathById = (pathId) => {
 		return d20plus.ut._getCanvasElementById(pathId, "thepaths");
 	};
@@ -577,9 +660,44 @@ function baseUtil () {
 		return null;
 	};
 
+	d20plus.ut.getCharacter = (charRef) => {
+		if (charRef === "selected") return d20.engine.selected()[0]?.model?.character;
+		const characters = d20.Campaign.characters;
+		if (charRef.id) return characters._byId[charRef.id];
+		return characters._byId[charRef]
+			|| characters.models.find(char => char.attributes.name === charRef);
+	}
+
 	d20plus.ut.getCharAttribByName = (char, attribName) => {
 		return char.attribs?.models?.find(prop => prop?.attributes?.name === attribName);
 	};
+
+	d20plus.ut.getCharAbilityByName = (char, abilbName) => {
+		return char.abilities?.models?.find(prop => prop?.attributes?.name === abilbName);
+	};
+
+	d20plus.ut.getCharMetaAttribByName = (char, attribNamePart, caseInsensitive) => {
+		const extract = /^repeating_(?:attack|inventory|proficiencies|resource|spell_(?:\d?|cantrip)|traits)_[^_]*(?:_resource_(?:right|left)|)/;
+		const toFind = caseInsensitive ? attribNamePart.toLowerCase() : attribNamePart;
+		const metaAttrib = {_ref: {}};
+		char.attribs?.models.forEach(prop => {
+			const find = caseInsensitive
+				? prop.attributes?.name.toLowerCase().includes(toFind)
+				: prop.attributes?.name.includes(toFind);
+			if (!find) return;
+			metaAttrib._ref._id = metaAttrib._ref._id
+				|| prop.attributes.name.match(extract)?.last()
+				|| attribNamePart;
+			const attribName = prop.attributes.name.replace(metaAttrib._ref._id, "").slice(1);
+			metaAttrib[attribName || "current"] = prop.attributes.current;
+			metaAttrib._ref[attribName || "current"] = prop;
+			if (prop.attributes.max) {
+				metaAttrib[`${attribName}max`] = prop.attributes.max;
+				metaAttrib._ref[`${attribName}max`] = prop;
+			}
+		});
+		if (Object.entries(metaAttrib).length > 1) return metaAttrib;
+	}
 
 	d20plus.ut._BYTE_UNITS = ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 	d20plus.ut.getReadableFileSizeString = (fileSizeInBytes) => {
@@ -760,12 +878,14 @@ function baseUtil () {
 		})
 	};
 
-	d20plus.ut.LAYERS = ["map", "background", "objects", "foreground", "gmlayer", "walls", "weather"];
+	d20plus.ut.LAYERS = ["map", "floors", "background", "objects", "roofs", "foreground", "gmlayer", "walls", "weather"];
 	d20plus.ut.layerToName = (l) => {
 		switch (l) {
 			case "map": return "Map";
+			case "floors": return "Floors";
 			case "background": return "Background";
 			case "objects": return "Objects & Tokens";
+			case "roofs": return "Roofs";
 			case "foreground": return "Foreground";
 			case "gmlayer": return "GM Info Overlay";
 			case "walls": return "Dynamic Lighting";
@@ -1680,8 +1800,25 @@ function baseConfig () {
 			"default": false,
 			"_type": "boolean",
 		},
-	},
-	);
+		"compactMarkersMenu": {
+			"name": "Compact token markers menu",
+			"default": true,
+			"_type": "boolean",
+		},
+		"showTokenMenu": {
+			"name": "Add Quick Token Actions",
+			"default": "char",
+			"_type": "_enum",
+			"_player": true,
+			"__values": ["none", "char-anim", "char", "anim"],
+			"__texts": [
+				"Disabled",
+				"Enabled",
+				"Only character menu",
+				"Only animation menu",
+			],
+		},
+	});
 	addConfigOptions("canvas", {
 		"_name": "Canvas",
 		"_player": true,
@@ -1692,32 +1829,53 @@ function baseConfig () {
 			"__values": ["0.25", "0.5", "1"],
 			"_player": true,
 		},
-		"scaleNamesStatuses": {
-			"name": "Scaled Names and Status Icons",
+		"extraLayerButtons": {
+			"name": "Add Extra Layer Buttons panel",
 			"default": true,
 			"_type": "boolean",
-			"_player": true,
+		},
+		"allowHideExtraLayers": {
+			"name": "Show toggles to hide Extra Layers",
+			"default": true,
+			"_type": "boolean",
+		},
+		"showFloors": {
+			"name": "-- Include the Floors layer (reload to apply changes)",
+			"default": false,
+			"_type": "boolean",
+			"_player": false,
 		},
 		"showBackground": {
-			"name": "Include the Background layer (reload to apply changes)",
+			"name": "-- Include the Background layer (reload to apply changes)",
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
 		},
+		"showRoofs": {
+			"name": "-- Include the Roofs layer (reload to apply changes)",
+			"default": false,
+			"_type": "boolean",
+			"_player": false,
+		},
 		"showForeground": {
-			"name": "Include the Foreground layer (reload to apply changes)",
+			"name": "-- Include the Foreground layer (reload to apply changes)",
 			"default": true,
 			"_type": "boolean",
 			"_player": false,
 		},
 		"showWeather": {
 			"name": "Include the Weather layer and settings (reload to apply changes)",
-			"default": true,
+			"default": false,
 			"_type": "boolean",
 			"_player": false,
 		},
-	},
-	);
+		"scaleNamesStatuses": {
+			"name": "Scaled Names and Status Icons",
+			"default": false,
+			"_type": "boolean",
+			"_player": true,
+		},
+	});
 	addConfigOptions("import", {
 		"_name": "Import",
 		"importIntervalMap": {
@@ -1741,31 +1899,6 @@ function baseConfig () {
 			"_type": "_slider",
 			"__sliderMin": 1,
 			"__sliderMax": 100,
-			"__sliderStep": 1,
-		},
-		"hideDarkModeSwitch": {
-			"name": "Hide Roll20's Dark Mode switch",
-			"default": false,
-			"_type": "boolean",
-			"_player": true,
-		},
-		"hideHelpButton": {
-			"name": "Hide Help Button on floating toolbar",
-			"default": false,
-			"_type": "boolean",
-			"_player": true,
-		},
-		"quickLayerButtons": {
-			"name": "Add Quick Layer Buttons",
-			"default": true,
-			"_type": "boolean",
-		},
-		"quickLayerButtonsPosition": {
-			"name": "-- Quick Layer Buttons position (left/right)",
-			"default": 0,
-			"_type": "_slider",
-			"__sliderMin": 0,
-			"__sliderMax": 1,
 			"__sliderStep": 1,
 		},
 		"quickInitButtons": {
@@ -1794,6 +1927,15 @@ function baseConfig () {
 	addConfigOptions("chat", {
 		"_name": "Chat",
 		"_player": true,
+		"playerPortraitSize": {
+			"name": "Set Player List size (0 - don't change)",
+			"default": 30,
+			"_type": "_slider",
+			"__sliderMin": 30,
+			"__sliderMax": 250,
+			"__sliderStep": 20,
+			"_player": true,
+		},
 		"streamerChatTag": {
 			"name": "Streamer-Friendly Chat Tags",
 			"default": false,
@@ -1815,6 +1957,12 @@ function baseConfig () {
 		"languages": {
 			"name": "Enable in-game languages (via social panel or /in)",
 			"default": true,
+			"_type": "boolean",
+			"_player": true,
+		},
+		"showDNDHints": {
+			"name": "Show DND status hints in chat",
+			"default": false,
 			"_type": "boolean",
 			"_player": true,
 		},
@@ -2418,6 +2566,25 @@ function baseConfig () {
 	};
 	*/
 
+	d20plus.cfg.handlePlayerImgSize = () => {
+		const setSize = d20plus.cfg.getOrDefault("chat", "playerPortraitSize");
+		const dynamicStyle = d20plus.ut.dynamicStyles("players");
+		if (setSize === 30) {
+			dynamicStyle.html("");
+		} else {
+			// the "magic numbers" are just quotients handpicked so that resulting sizes look good together
+			const setFont = Math.round((setSize / 150) * 16);
+			const setCol = Math.round((setSize / 150) * 24);
+			const setLine = Math.round((setSize / 150) * 18);
+			const setStyle = `
+				#playerzone .player .playername {width: ${setSize}px !important; font-size: ${setFont}px !important;line-height:${setLine}px}
+				#playerzone .player .video {width: ${setSize}px; height: ${setSize}px; }
+				#playerzone .player .playercolor, .player .color_picker {width: ${setCol}px; height: ${setCol}px; }
+			`;
+			dynamicStyle.html(setStyle);
+		}
+	}
+
 	d20plus.cfg.handleInitiativeShrink = () => {
 		const doShrink = d20plus.cfg.getOrDefault("interface", "minifyTracker");
 		const dynamicStyle = d20plus.ut.dynamicStyles("tracker");
@@ -2429,16 +2596,34 @@ function baseConfig () {
 	}
 
 	d20plus.cfg.HandleCss = () => {
-		// properly align layer toolbar
-		const $wrpDmModeSw = $(`.dark-mode-switch`);
-		const $wrpBtnsMain = $(`#floatingtoolbar`);
-		const $ulBtns = $(`#floatinglayerbar`);
-		const darkModeShift = $wrpDmModeSw.css("display") === "none" || $wrpDmModeSw.css("visibility") === "hidden" ? 0 : 54;
-		$ulBtns.css({top: $wrpBtnsMain.height() + darkModeShift + 40});
-		$wrpDmModeSw.css({top: $wrpBtnsMain.height() + 40});
+
+		const showHints = d20plus.cfg.getOrDefault("chat", "showDNDHints");
+		const hintStyle = d20plus.ut.dynamicStyles("hints");
+		if (showHints) hintStyle.html(d20plus.css.clickableConditionHints);
+		else hintStyle.html("");
+
+		const compactMarkers = d20plus.cfg.getOrDefault("token", "compactMarkersMenu");
+		const markerMenuStyle = d20plus.ut.dynamicStyles("markerMenu");
+		const vttesRadiant = window.r20es?.hooks?.alternativeRadialMenu?.config.enabled;
+		if (compactMarkers && !vttesRadiant) markerMenuStyle.html(d20plus.css.betterTokenMarkersMenu);
+		else markerMenuStyle.html("");
+
+		const amOn = d20plus.cfg.getOrDefault("chat", "showTokenMenu") !== "none";
+		const amStyle = d20plus.ut.dynamicStyles("actions");
+		if (amOn) amStyle.html(d20plus.css.actionMenu);
+		else amStyle.html("");
+
+		const extraLayers = d20plus.cfg.getOrDefault("canvas", "extraLayerButtons");
+		const extraLayersToggle = d20plus.cfg.getOrDefault("canvas", "allowHideExtraLayers");
+		const layerBarStyle = d20plus.ut.dynamicStyles("extralrs");
+		const layerToggleStyle = d20plus.ut.dynamicStyles("togglelrs");
+		if (extraLayers) layerBarStyle.html(d20plus.css.layerToolbar);
+		if (extraLayersToggle) layerToggleStyle.html("");
+		else layerToggleStyle.html(d20plus.css.hideExtraLayersToggle);
 	}
 
 	d20plus.cfg.baseHandleConfigChange = () => {
+		d20plus.cfg.handlePlayerImgSize();
 		d20plus.cfg.handleInitiativeShrink();
 
 		if (d20plus.cfg.has("interface", "toolbarOpacity")) {
@@ -2446,12 +2631,6 @@ function baseConfig () {
 			$(`#secondary-toolbar`).css({opacity: v * 0.01});
 		}
 
-		$(`#floatinglayerbar`).toggle(d20plus.cfg.getOrDefault("interface", "quickLayerButtons"));
-		$(`#floatinglayerbar`).toggleClass("right", !!d20plus.cfg.getOrDefault("interface", "quickLayerButtonsPosition"));
-		$(`#init-quick-sort-desc`).toggle(d20plus.cfg.getOrDefault("interface", "quickInitButtons"));
-		$(`input[placeholder="Search by tag or name..."]`).parent().toggle(!d20plus.cfg.getOrDefault("interface", "hideDefaultJournalSearch"))
-		$(`.dark-mode-switch`).toggle(!d20plus.cfg.get("interface", "hideDarkModeSwitch"));
-		$(`#helpsite`).toggle(!d20plus.cfg.getOrDefault("interface", "hideHelpButton"));
 		$(`#langpanel`).toggle(d20plus.cfg.getOrDefault("chat", "languages"));
 
 		d20plus.cfg.HandleCss();
@@ -2839,95 +3018,6 @@ function baseTool () {
 				});
 
 				$btnClearAll.on("click", () => $pnlMessages.find(`button.msg-clear`).click());
-			},
-		},
-		{
-			name: "Token Avatar URL Fixer",
-			desc: "Change the root URL for tokens en-masse.",
-			html: `
-				<div id="d20plus-avatar-fixer" title="Better20 - Avatar Fixer">
-				<p><b>Warning:</b> this thing doesn't really work.</p>
-				<p>Current URLs (view only): <select class="view-only"></select></p>
-				<p><label>Replace:<br><input name="search" value="https://5e.tools/"></label></p>
-				<p><label>With:<br><input name="replace" value="https://5etools-mirror-1.github.io/"></label></p>
-				<p><button class="btn">Go!</button></p>
-				</div>
-				`,
-			dialogFn: () => {
-				$("#d20plus-avatar-fixer").dialog({
-					autoOpen: false,
-					resizable: true,
-					width: 400,
-					height: 400,
-				});
-			},
-			openFn: () => {
-				function replaceAll (str, search, replacement) {
-					return str.split(search).join(replacement);
-				}
-
-				const $win = $("#d20plus-avatar-fixer");
-				$win.dialog("open");
-
-				const $selView = $win.find(`.view-only`);
-				const toView = [];
-				d20.Campaign.characters.toJSON().forEach(c => {
-					if (c.avatar && c.avatar.trim()) {
-						toView.push(c.avatar);
-					}
-				});
-				toView.sort(SortUtil.ascSort).forEach(url => $selView.append(`<option disabled>${url}</option>`));
-
-				const $btnGo = $win.find(`button`).off("click");
-				$btnGo.on("click", () => {
-					let count = 0;
-					$("a.ui-tabs-anchor[href='#journal']").trigger("click");
-
-					const search = $win.find(`[name="search"]`).val();
-					const replace = $win.find(`[name="replace"]`).val();
-
-					d20.Campaign.characters.toJSON().forEach(c => {
-						const id = c.id;
-
-						const realC = d20.Campaign.characters.get(id);
-
-						const curr = realC.get("avatar");
-						let toSave = false;
-						if (curr.includes(search)) {
-							count++;
-							realC.set("avatar", replaceAll(curr, search, replace));
-							toSave = true;
-						}
-						if (realC.get("defaulttoken")) {
-							realC._getLatestBlob("defaulttoken", (bl) => {
-								bl = bl && bl.trim() ? JSON.parse(bl) : {};
-								if (bl && bl.imgsrc && bl.imgsrc.includes(search)) {
-									count++;
-									realC.updateBlobs({imgsrc: replaceAll(bl.imgsrc, search, replace)});
-									toSave = true;
-								}
-							});
-						}
-
-						if (toSave) {
-							realC.save();
-						}
-
-						for (const page of d20.Campaign.pages.models) {
-							if (page.thegraphics && page.thegraphics.models) {
-								for (const token of page.thegraphics.models) {
-									const tokenImgsrc = token.get("imgsrc");
-									if (tokenImgsrc.includes(search)) {
-										token.set("imgsrc", tokenImgsrc.replace(search, replace));
-										token.save();
-										count++;
-									}
-								}
-							}
-						}
-					});
-					window.alert(`Replaced ${count} item${count === 0 || count > 1 ? "s" : ""}.`)
-				});
 			},
 		},
 		{
@@ -3828,7 +3918,7 @@ function baseToolModule () {
 				$win5etools.dialog("open");
 				const $btnLoad = $win5etools.find(`.load`).off("click");
 				// url for the repo
-				const urlbase = "https://raw.githubusercontent.com/DMsGuild201/Roll20_resources/master/Module/";
+				const urlbase = DATA_URL_COMMUNITY_MODULES;
 
 				DataUtil.loadJSON(`${urlbase}index.json`).then(data => {
 					const $lst = $win5etools.find(`.list`);
@@ -7478,6 +7568,1650 @@ function baseToolAnimator () {
 SCRIPT_EXTENSIONS.push(baseToolAnimator);
 
 
+function baseToolDLImport () {
+	const UniversalMapDLImporter = function () {
+		// Some constants
+
+		const defaultGridSize = 70;
+		const scriptName = `Universal DL Importer`;
+		const lightURL = "/images/editor/torch.svg";
+
+		const icon = {
+			"DA": "https://yt3.googleusercontent.com/qTpLXBxCdfX6x20z7Yifc-61rhFua6ixhxyRd4-j-j_p4AmZSn_GQPRRM1p9sT_NgZOiw_V4tA=s900-c-k-c0x00ffffff-no-rj",
+			"UVTT": "https://user-images.githubusercontent.com/2023640/142776957-46e7ea40-9809-4558-a5f7-c65de050ba40.png",
+			"default": "/images/character.png",
+		}
+
+		// Imitate API functions
+		const sendChat = (input) => {
+			d20.textchat.incoming(false, {
+				id: d20plus.ut.generateRowId(),
+				who: "DL Importer",
+				type: "general",
+				content: input,
+				playerid: window.currentPlayer.id,
+				avatar: icon[this.format] || icon.default,
+				inlinerolls: [],
+			});
+		};
+
+		const getObj = (type, id) => {
+			if (type === "player") return currentPlayer;
+			else if (type === "page") return d20.Campaign.activePage();
+			else if (type === "graphic") return d20plus.ut.getTokenById(id);
+		};
+
+		const findObjs = () => {
+			const graphics = d20.Campaign.activePage().thegraphics;
+			return graphics.filter((it) => it.get("layer") === "map");
+		};
+
+		const createObj = (objType, obj, ...others) => {
+			if (objType === "door" || objType === "window") {
+				const conf = this[`config${objType.toSentenceCase()}s`];
+				if (conf === "o") obj.isOpen = true;
+				else if (conf === "l") obj.isLocked = true;
+				else if (conf === "s") obj.isSecret = true;
+				else if (conf === "sl") { obj.isLocked = true; obj.isSecret = true; }
+				else if (conf === "so") { obj.isOpen = true; obj.isSecret = true; }
+			}
+			switch (objType) {
+				case "path": {
+					const page = d20.Campaign.activePage();
+					obj.scaleX = obj.scaleX || 1;
+					obj.scaleY = obj.scaleY || 1;
+					obj.path = obj.path || obj._path;
+					return page.thepaths.create(obj);
+				}
+				case "door": {
+					const page = d20.Campaign.activePage();
+					obj.path = obj.path || obj._path;
+					if (this.configDoors === "X") return;
+					return page.doors.create(obj);
+				}
+				case "window": {
+					const page = d20.Campaign.activePage();
+					obj.path = obj.path || obj._path;
+					if (this.configWindows === "X") return;
+					return page.windows.create(obj);
+				}
+				case "graphic": {
+					const page = d20.Campaign.activePage();
+					obj.path = obj.path || obj._path;
+					if (this.configLights === "X") return;
+					return page.thegraphics.create(obj);
+				}
+				default:
+					// eslint-disable-next-line no-console
+					console.error("Unhandled object type: ", objType, "with args", obj, others)
+					break;
+			}
+		};
+
+		// HTML for dialog
+		const dialog = `
+		  <div style="width: 350px;">
+		  <p>The ${scriptName} allows you to import map data (walls, portals and lights) from some mapmaking software into Roll20 Dynamic Lighting (DL) system.</p>
+		  <h4>What can be imported?</h4>
+		  <p>⦁ The UVTT (universal VTT format, .dd2tt) files from DungeonDraft<br>
+		  ⦁ Text data files (roll20 export, .txt) from DungeonAlchemist</p>
+		  <button type="button" class="btn load-file">Load from file</button>
+		  <a class="showtip pictos" original-title="Select file and it will be loaded to text editor below. The import format is determined automatically">?</a>
+		  <textarea
+			style="width:100%;height:100px;box-sizing:border-box;margin-top: 7px;"
+			placeholder="You can either\n- Paste map data here and press Import,\n- OR just press Load from file and select the data"
+			></textarea>
+		  <p style="height: 28px;">How to handle doors:
+		  <select class="doors-config" style="width:160px;float:right">${[
+		["d", "Default"],
+		["X", "Don't import"],
+		["o", "As opened doors"],
+		["l", "As locked doors"],
+		["s", "As secret doors"],
+		["sl", "As locked secret doors"],
+		["so", "As open secret doors"],
+		["LS", "As solid lines"],
+		["LT", "As transparent lines"],
+	].reduce((html, [v, o]) => {
+		return `${html}<option value="${v}">${o}</option>`
+	}, "")}
+		  </select></p>
+		  <p style="height: 28px;">How to handle windows:
+		  <select class="windows-config" style="width:160px;float:right">${[
+		["d", "Default"],
+		["X", "Don't import"],
+		["o", "As opened windows"],
+		["l", "As locked windows"],
+		["LS", "As solid lines"],
+		["LT", "As transparent lines"],
+	].reduce((html, [v, o]) => {
+		return `${html}<option value="${v}">${o}</option>`
+	}, "")}
+		  </select></p>
+		  <p style="height: 28px;">How to handle light sources:
+		  <select class="lights-config" style="width:160px;float:right">${[
+		["d", "Default"],
+		["X", "Don't import"],
+	].reduce((html, [v, o]) => {
+		return `${html}<option value="${v}">${o}</option>`
+	}, "")}
+		  </select></p>
+		  <p style="height: 28px;">Attempt to resize and fit the map
+		  <span style="width:160px;float:right;display: inline-block;">
+			<input type="checkbox" checked="true" class="resize-config" style="float:left">
+		  </span></p>
+		  <input class="vtt-export" style="display:none" type="file" name="file" accept=".txt, .dd2vtt"/>
+		  </div>
+		`;
+
+		// Service functions
+		const getMap = () => {
+			// simplest case - get the ONLY map graphic and use that one
+			const mapGraphics = findObjs();
+
+			// filter them all so we only consider the layer=map graphics
+			if (mapGraphics.length === 1) {
+				return mapGraphics[0];
+			}
+
+			// no map
+			if (mapGraphics.length === 0) {
+				sendChat(
+					"You need to upload your map image and put it in the Map Layer before importing the line-of-sight data. Make sure that your map is in the background layer by right clicking on it, selecting \"Layer\" and choosing \"Map Layer\".",
+				);
+				return null;
+			}
+
+			// otherwise, see if we selected one
+			const selected = d20.engine.selected();
+			if (selected === undefined
+				|| selected.length === 0
+				|| selected[0]?._model.get("layer") !== "map"
+			) {
+				sendChat(
+					"If you have more than one image in the map layer, you need to select the one that contains the Dungeon Alchemist map image before running the command.",
+				);
+				return null;
+			} else {
+				return selected[0]._model;
+			}
+		};
+
+		const resizeMap = (gridSize, grid, map) => {
+			if (!this.configResize) return;
+
+			if (grid.x === undefined) {
+				const fromString = grid.split(" ");
+				grid = {
+					x: parseInt(fromString[0]),
+					y: parseInt(fromString[1]),
+				}
+			}
+
+			const mapWidth = grid.x * gridSize;
+			const mapHeight = grid.y * gridSize;
+
+			grid.x && grid.y && this.page.set({
+				width: (grid.x * gridSize) / defaultGridSize,
+				height: (grid.y * gridSize) / defaultGridSize,
+			});
+
+			map.save({
+				width: mapWidth,
+				height: mapHeight,
+				top: mapHeight / 2,
+				left: mapWidth / 2,
+				layer: "map",
+			});
+		};
+
+		const prepareUVTT = (data, mapUnit) => {
+			data.walls = [];
+			data.line_of_sight
+				.concat(data.objects_line_of_sight)
+				.forEach(el => {
+					el.forEach((w, i) => {
+						if (el[i + 1]) { data.walls.push({
+							wallSection: "",
+							type: 0,
+							open: false,
+							wall3D: {
+								p1: {
+									top: {
+										x: w.x * mapUnit,
+										y: w.y * mapUnit,
+									},
+								},
+								p2: {
+									top: {
+										x: el[i + 1].x * mapUnit,
+										y: el[i + 1].y * mapUnit,
+									},
+								},
+							},
+						}); }
+					})
+				});
+			data.portals.forEach(el => {
+				data.walls.push({
+					wallSection: "",
+					type: el.closed ? 1 : 2,
+					open: false,
+					wall3D: {
+						p1: {
+							top: {
+								x: el.bounds[0].x * mapUnit,
+								y: el.bounds[0].y * mapUnit,
+							},
+						},
+						p2: {
+							top: {
+								x: el.bounds[1].x * mapUnit,
+								y: el.bounds[1].y * mapUnit,
+							},
+						},
+					},
+				});
+			});
+			data.lights.forEach(el => {
+				el.position.x = el.position.x * mapUnit;
+				el.position.y = el.position.y * mapUnit;
+				el.color = `#${el.color.toUpperCase()}`;
+				el.range = el.range * mapUnit;
+			})
+		};
+
+		const createWall = (wall, originalGridSize, gridSize) => {
+			// BEGIN MOD
+			if ((wall.type === 1 && this.configDoors === "LS")
+				|| (wall.type === 2 && this.configWindows === "LS")) {
+				wall.type = 0;
+			} else if ((wall.type === 1 && this.configDoors === "LT")
+				|| (wall.type === 2 && this.configWindows === "LT")) {
+				wall.type = 4;
+			}
+			// END MOD
+
+			let x1 = wall.wall3D.p1.top.x * gridSize / originalGridSize;
+			let y1 = wall.wall3D.p1.top.y * gridSize / originalGridSize;
+			let x2 = wall.wall3D.p2.top.x * gridSize / originalGridSize;
+			let y2 = wall.wall3D.p2.top.y * gridSize / originalGridSize;
+
+			const xCenter = (x1 + x2) * 0.5;
+			const yCenter = (y1 + y2) * 0.5;
+
+			const xMin = Math.min(x1, x2);
+			const yMin = Math.min(y1, y2);
+			const xMax = Math.max(x1, x2);
+			const yMax = Math.max(y1, y2);
+
+			const width = xMax - xMin;
+			const height = yMax - yMin;
+
+			// log("Center: ", wall, x1, y1, x2, y2, originalGridSize);
+
+			// because partial walls used to be exported as windows, we can't support them for older exports
+			const generateWindows = this.format === "UVTT" || this.version >= 2;
+
+			// new door/window API
+			if (wall.type === 1 || (wall.type === 2 && generateWindows)) {
+				const type = (wall.type === 1) ? "door" : "window";
+				const color = (wall.type === 1) ? "#00ff00" : "#00ffff";
+
+				x1 -= xCenter;
+				x2 -= xCenter;
+				y1 -= yCenter;
+				y2 -= yCenter;
+
+				let open = wall.open;
+				if (typeof (open) === "undefined") open = false;
+
+				let doorObj = {
+					pageid: this.page.get("_id"),
+					color: color,
+					x: xCenter,
+					y: -yCenter,
+					isOpen: open,
+					isLocked: false,
+					isSecret: false,
+					path: {
+						handle0: { x: x1, y: y1 },
+						handle1: { x: x2, y: y2 },
+					},
+				};
+				createObj(type, doorObj);
+				// log(doorObj);
+			}
+
+			// default
+			else if (wall.type === 0 || wall.type === 4 || (wall.type === 2 && !generateWindows)) {
+				x1 -= xMin;
+				x2 -= xMin;
+				y1 -= yMin;
+				y2 -= yMin;
+
+				const path = [
+					["M", x1, y1],
+					["L", x2, y2],
+				];
+
+				// different wall types have different colors - we use a color scheme compatible with WOTC modules and DoorKnocker
+				let color = "#0000ff";
+				let barrierType = "wall";
+				if (wall.type === 4) {
+					color = "#5555ff";
+					barrierType = "transparent";
+				}
+
+				// backwards compatibility
+				else if (wall.type === 2) {
+					color = "#00ffff"; // window (light blue)
+					barrierType = "transparent";
+				}
+
+				createObj("path", {
+					pageid: this.page.get("_id"),
+					stroke: color,
+					fill: "transparent",
+					left: xCenter,
+					top: yCenter,
+					width: width,
+					height: height,
+					rotation: 0,
+					scaleX: 1,
+					scaleY: 1,
+					stroke_width: 5,
+					layer: "walls",
+					path: JSON.stringify(path),
+					barrierType: barrierType,
+				});
+			}
+		};
+
+		const createLight = (light, originalGridSize, gridSize) => {
+			const x = light.position.x * gridSize / originalGridSize;
+			const y = light.position.y * gridSize / originalGridSize;
+
+			const range = light.range * 1.0;
+			let dim_radius = range;
+			let bright_radius = range / 2;
+
+			// convert to the local scale value
+			const scale_number = this.page.get("scale_number");
+			// log("Go from dim_radius " + dim_radius + " which has range " + range + " to per tile " + (dim_radius/originalGridSize) + " from original grid size " + originalGridSize + " and scale_number is " + scale_number);
+			dim_radius *= scale_number / originalGridSize;
+			bright_radius *= scale_number / originalGridSize;
+
+			const newObj = createObj("graphic", {
+				imgsrc: lightURL,
+				subtype: "token",
+				name: "", /* BEGIN MOD we don't need auras since we got original "torch" image
+				aura1_radius: 0.5,
+				aura1_color: "#" + light.color.substring(0, 6), */
+
+				// UDL
+				emits_bright_light: true,
+				emits_low_light: true,
+				bright_light_distance: bright_radius,
+				low_light_distance: dim_radius,
+
+				width: 70,
+				height: 70,
+				top: y,
+				left: x,
+				layer: "walls",
+				pageid: this.page.get("_id"),
+			});
+
+			// log("New obj light distance: " + newObj.get("bright_light_distance") + " / " + newObj.get("low_light_distance"));
+		};
+
+		// Main import function
+		const handleInput = (txt) => {
+			d20plus.ut.log("Handle VTT data input");
+			// log(txt);
+			if (!is_gm) return;
+
+			const endOfHeader = txt.indexOf("dungeonalchemist") !== -1 ? txt.indexOf(" ") : 0;
+
+			try {
+				const json = txt.substring(endOfHeader);
+				const data = JSON.parse(json);
+
+				// determine the version
+				this.format = data.version ? "DA" : "UVTT";
+				this.version = data.version || data.format || 1;
+
+				this.page = getObj("page");
+
+				// calculate the REAL grid size
+				const gridSize = defaultGridSize * this.page.get("snapping_increment");
+				const mapSize = data.grid || data?.resolution.map_size;
+				const mapUnit = data.pixelsPerTile || data?.resolution.pixels_per_grid;
+
+				// load and resize the map
+				const map = getMap();
+				if (map === null) return;
+				resizeMap(gridSize, mapSize, map);
+
+				// prepare data from UVTT format
+				if (this.format === "UVTT") {
+					prepareUVTT(data, mapUnit);
+				}
+
+				// spawn the walls & lights
+				for (const wall of data.walls) {
+					createWall(wall, mapUnit, gridSize);
+				}
+
+				for (const light of data.lights) {
+					createLight(light, mapUnit, gridSize);
+				}
+
+				sendChat(
+					"Succesfully imported map data!",
+				);
+			} catch (err) {
+				d20plus.ut.log(err, true);
+				sendChat(
+					`Failed to import Dungeon Alchemist map data: ${err}`,
+				);
+			}
+		};
+
+		const process = ($editor) => {
+			const txt = $editor.find("textarea").val();
+
+			this.configDoors = $editor.find(".doors-config").val();
+			this.configWindows = $editor.find(".windows-config").val();
+			this.configLights = $editor.find(".lights-config").val();
+			this.configResize = $editor.find(".resize-config").prop("checked");
+
+			handleInput(txt);
+			$editor.off();
+			$editor.dialog("destroy").remove();
+		};
+
+		const init = () => {
+			const $editor = $(dialog);
+			$editor.dialog({
+				autoopen: true,
+				title: scriptName,
+				width: 450,
+				open: () => {
+					const loadBtn = $editor.find(".load-file");
+					loadBtn.on("click", () => {
+						const fileSelect = $editor.find("input.vtt-export");
+						fileSelect.off("change");
+						fileSelect.on("change", () => {
+							const file = fileSelect[0].files[0];
+							const reader = new FileReader();
+							reader.addEventListener("load", (event) => {
+								const txt = event.target.result;
+								$editor.find("textarea").val(txt);
+							});
+							reader.readAsText(file);
+						});
+						fileSelect.click();
+					});
+				},
+				buttons: {
+					"Cancel": () => {
+						$editor.off();
+						$editor.dialog("destroy").remove();
+					},
+					"Import": () => {
+						process($editor);
+					},
+				},
+				close: () => { $editor.off(); $editor.dialog("destroy").remove() },
+			})
+		};
+
+		init();
+	};
+
+	d20plus.tool.tools.push({
+		toolId: "DLIMPORT",
+		name: "Universal DL Importer",
+		desc: "Import map data from DungeonDraft (UVTT) and Dungeon Alchemist",
+		html: ``,
+		dialogFn: () => {},
+		openFn: () => {
+			const importer = new UniversalMapDLImporter();
+		},
+	})
+}
+
+SCRIPT_EXTENSIONS.push(baseToolDLImport);
+
+
+function baseToolUrlFix () {
+	// b20-JS: Ultimate tokens & URLs fixer
+	// Run the macro, and it will show the list of images by domain
+	// and you'll be able to run default fixer scripts or create your own
+
+	// The full custom rules syntax below:
+
+	// <search>; <replace>[; <condition>[; <callback>[; <tabs(comma-separated)>]]]
+
+	// Each rule should begin with new line. Spaces/tabs after semicolon are ignored
+	// The <search> and <condition> support regular expressions if /wrapped in slashes/
+	// The interface deliberately omits the details beyond search/replace/condition,
+	// But if you're reading this you know what you're doing.
+
+	// Arguments and their explanations are listed below
+	// They work similarly for custom rules and [defaultRules]
+
+	// rule = {
+	//		name: "Name",					// Rule name (custom will be named #1, #2...)
+	//		search: /regexp/ || "str",		// Search string
+	//		replace: "string",				// Replacement (supports $N for regexp)
+	//		condition: [/regex/ || "str"],	// Only apply rule if the string has these ("&&")
+	//		callback: ["encodeURI"],		// One of the {callbacks} applied to the output
+	//										// ["encodeURI", "decodeURIComponent"]
+	//		tabs: ["placed"],				// Apply rule to specific image types
+	//										// ["placed", "default", "multi", "avatar"]
+	//		dns: ["domain"],				// Simpler conditioning for [defaultRules]
+	//		migrating: true,				// True if current rule results in domain change
+	// },
+
+	const lag = 50;
+	const previews = {
+		normal: 4,
+		extended: 8,
+		single: 16,
+		max: 128,
+	};
+	const cssHeight = {
+		checkboxes: 107,
+		textareaGrowth: 20,
+		configBlock: 110,
+	};
+
+	const defaultRules = [
+		{
+			name: "Discord.app links -> require attention",
+			search: /^https:\/\/cdn\.discordapp\.com\/attachments(.*?)$/,
+			replace: "",
+			callback: ["unfixableAskUser"],
+			dns: ["cdn.discordapp.com"],
+		},
+		{
+			name: "Extract from imgsrv.roll20.net",
+			search: /^https:\/\/imgsrv\.roll20\.net\/\?src=(.*?)&cb=(\d*?)$/,
+			replace: "$1",
+			callback: ["decodeURIComponent"],
+			dns: ["imgsrv.roll20.net"],
+			tabs: ["placed", "default", "multi"],
+			migrating: true,
+		},
+		{
+			name: "5etools-mirror-1 -> 5e.tools/bestiary",
+			search: /^https:\/\/5etools-mirror-1\.github\.io\/\/?img\/(?:bestiary\/|)(.*?)\/([^/]*?)\.([\w-]*?)(\?\d*|)$/,
+			replace: "https://5e.tools/img/bestiary/tokens/$1/$2.$3$4",
+			dns: ["5etools-mirror-1.github.io"],
+			migrating: true,
+		},
+		{
+			name: "5e.tools -> 5e.tools/bestiary",
+			search: /^https:\/\/5e.tools\/img\/([^/]*?)\/([^/]*?)\.([\w-]*?)(\?\d*|)$/,
+			replace: "https://5e.tools/img/bestiary/tokens/$1/$2.$3$4",
+			dns: ["5e.tools"],
+			migrating: true,
+		},
+		{
+			name: "5e.tools image -> .webp",
+			search: /\/(.*?)\.(png|jpg)(\?\d*|)$/,
+			replace: "/$1.webp$3",
+			dns: ["5etools-mirror-1.github.io", "5e.tools"],
+		},
+		{
+			name: "?multiside-parameters -> #multiside-parameters",
+			search: /\?roll20_(token_size|skip_token)=/g,
+			replace: "#roll20_$1=",
+			tabs: ["multi"],
+		},
+	];
+
+	const defaultFilter = ["", "s3.amazonaws.com"];
+
+	const callbacks = {
+		encodeURI,
+		encodeURIComponent,
+		decodeURIComponent,
+		getCurrentName: (urlPart, item) => {
+			return item.model.attributes.name;
+		},
+		unfixableAskUser: (urlPart, item) => {
+			item.error = true;
+			return urlPart;
+		},
+	};
+
+	const urls = {};
+	const config = {};
+	const $html = {};
+
+	const fixer = (() => {
+		const currentDns = (tab) => {
+			tab = tab || config.currentTab;
+			return Object.keys(tab.domains).filter(dn => {
+				return !tab.filter.includes(dn);
+			});
+		};
+
+		const parseRules = () => {
+			const text = $html.config.mask.val();
+			const regexp = /^\/(.*?)\/(\w*?)$/;
+
+			const rules = text.split("\n").map(r => {
+				const args = r.replace(/;[\t ]+/g, ";").split(";");
+				const rule = {name: args[0]};
+				const rcbs = (args[3] || "").split(",").filter(cb => !!callbacks[cb]);
+
+				rule.search = args[0];
+				rule.search.replace(regexp, (i, exp, p) => rule.search = new RegExp(exp, p));
+
+				rule.replace = args[1];
+
+				args[2] && (rule.condition = args[2]);
+				args[3] && !!rcbs.length && (rule.callback = rcbs);
+				args[4] && (rule.tabs = args[4].split(","));
+
+				if (rule.replace && rule.search) return rule;
+			}).filter(r => !!r);
+
+			rules.length && (config.rules = rules);
+			rules.length && (config.rulesCache = text);
+			return !!rules.length;
+		};
+
+		const summarizeRules = () => {
+			const tab = config.currentTab;
+			const summary = defaultRules.filter(r => {
+				const tabDns = currentDns(tab);
+				return (!r.dns || !!(r.dns || []).filter(dn => tabDns.includes(dn)).length)
+					&& (!r.tabs || r.tabs.includes(config.currentTab.name));
+			}).reduce((text, r) => {
+				return `${text}${r.name}\n`;
+			}, "");
+			if (config.defaults) {
+				const tempRules = config.rulesCache || $html.config.mask.val();
+				$html.config.mask.val("");
+				$html.config.mask.attr("placeholder", summary || "no rules for current selection");
+				tempRules && (config.rulesCache = tempRules);
+			} else {
+				$html.config.mask.val(config.rulesCache || "");
+				$html.config.mask.attr("placeholder", "<search>;<replace>[;<condition>]\n<search>;<replace>[;<condition>]");
+			}
+		};
+
+		const prepareRules = () => {
+			const tab = config.currentTab;
+			const activeRules = config.defaults
+				? [...defaultRules]
+				: config.rules || [];
+			let passThrough = true;
+			urls.rules = activeRules.filter((r, i) => {
+				const tabDns = currentDns(tab);
+				const activeDns = (r.dns || []).filter(dn => tabDns.includes(dn));
+
+				if ((!passThrough && r.dns && Object.keys(tab.domains).length && !activeDns.length)
+					|| (r.tabs && !r.tabs.includes(tab.name))) {
+					passThrough = false;
+					return false;
+				}
+				return true;
+			});
+		};
+
+		const processUrl = (item) => {
+			let processed = item.url;
+			let migrated = false;
+			let dn = item.dn;
+			item.error = false;
+
+			const applicable = (r) => {
+				return (!r.condition
+						|| processed.includes(r.condition))
+					&& (migrated
+						|| !r.dns?.length
+						|| r.dns.includes(dn));
+			}
+
+			urls.rules.forEach((r, n) => {
+				if (!applicable(r)) return;
+				const changed = (() => {
+					const initial = processed;
+					return () => processed !== initial;
+				})();
+				processed = processed.replace(r.search, (str) => {
+					r.replace.includes("$1")
+						? (str = str.replace(r.search, r.replace))
+						: (str = r.replace);
+					r.callback && r.callback.forEach(p => {
+						str = callbacks[p](str, item);
+					});
+					return str;
+				});
+				r.migrating
+					&& changed()
+					&& (dn = r20data.getDomainName(processed));
+			});
+			item.urlFix = processed !== item.url
+				? processed
+				: undefined;
+		};
+
+		const reProcessUrls = () => {
+			const tab = config.currentTab;
+			prepareRules();
+			tab.models.forEach(t => {
+				processUrl(t);
+			});
+		};
+
+		const init = async () => {
+			d20.Campaign.pages.models.find(p => !p.fullyLoaded)
+				&& await r20data.loadAllPages();
+
+			ui.initDialog();
+			ui.initHtmls();
+
+			["placed", "default", "multi", "avatar", "rules"]
+				.forEach(t => delete urls[t]);
+
+			Object.keys(config)
+				.forEach(o => delete config[o]);
+
+			config.addlag = true;
+			config.defaults = true;
+			config.previewsPerDomain = previews.normal;
+
+			ui.initEvents();
+		};
+
+		return {
+			parseRules,
+			prepareRules,
+			summarizeRules,
+			processUrl,
+			reProcessUrls,
+			currentDns,
+			init,
+		};
+	})();
+
+	const r20data = (() => {
+		const countDomains = (dn) => {
+			const list = config.currentTab?.domains;
+			list[dn] = list[dn] || {name: dn, count: 0};
+			list[dn].count++;
+		};
+
+		const getDomainName = (url) => {
+			const address = url.replace(/^https?:\/\/(www\.|)/, "");
+			return address.split("/")[0];
+		};
+
+		const loadAllPages = async () => {
+			const pages = d20.Campaign.pages.models;
+			for (const p of pages) {
+				!p.fullyLoaded && await p.fullyLoadPage();
+			}
+		}
+
+		const indexPlaced = () => {
+			return d20.Campaign
+				.pages.models
+				.map((p, i) => !p.attributes.archived
+					&& (!config.singlepage || i === d20.Campaign.activePageIndex)
+					&& (p.thegraphics?.models.filter(t => {
+						return t.attributes.type === "image"
+					}) || []))
+				.flatten()
+				.map(t => {
+					const it = {
+						id: t.id,
+						url: t.attributes.imgsrc,
+						model: t,
+						name: t.attributes.name,
+						dn: getDomainName(t.attributes.imgsrc),
+						layer: t.attributes.layer,
+						info: `on page ${t.collection.page.attributes.name}`,
+					};
+					config.currentTab._byId[t.id] = it;
+					countDomains(it.dn);
+					fixer.processUrl(it);
+					return it;
+				});
+		};
+
+		const indexDefault = () => {
+			return d20.Campaign.characters.models.filter(c => {
+				return c._blobcache.defaulttoken;
+			}).map(c => {
+				const t = JSON.parse(c._blobcache.defaulttoken);
+				const it = {
+					id: c.id,
+					url: t.imgsrc,
+					model: c,
+					cache: t,
+					name: t.name || c.attributes.name,
+					dn: getDomainName(t.imgsrc),
+					info: `default for ${c.attributes.name || c.attributes.charactersheetname}`,
+				};
+				config.currentTab._byId[c.id] = it;
+				countDomains(it.dn);
+				fixer.processUrl(it);
+				return it;
+			});
+		};
+
+		const indexMulti = () => {
+			return d20.Campaign
+				.pages.models
+				.filter(p => !p.attributes.archived)
+				.map(p => p.thegraphics?.models.filter(t => t.attributes.type === "image" && t.attributes.sides) || [])
+				.flatten()
+				.map(t => {
+					const imgs = t.attributes.sides.split("|");
+					return imgs.map((img, i) => {
+						img = decodeURIComponent(img);
+						const it = {
+							index: i,
+							id: `${t.id}#${i}`,
+							url: img,
+							model: t,
+							collection: imgs,
+							name: `${t.attributes.name}${i}`,
+							dn: getDomainName(img),
+							layer: t.attributes.layer,
+							info: `on page ${t.collection.page.attributes.name}`,
+						};
+						config.currentTab._byId[it.id] = it;
+						countDomains(it.dn);
+						fixer.processUrl(it);
+						return it;
+					});
+				}).concat(
+					...d20.Campaign.characters.models.filter(c => {
+						return c._blobcache?.defaulttoken?.includes(`"sides":`);
+					}).map(c => {
+						const t = JSON.parse(c._blobcache.defaulttoken);
+						const imgs = t.sides.split("|");
+						return imgs.map((img, i) => {
+							img = decodeURIComponent(img);
+							const it = {
+								index: i,
+								id: `${c.id}#${i}`,
+								url: img,
+								model: c,
+								cache: t,
+								collection: imgs,
+								name: `${t.name}${i}`,
+								dn: getDomainName(img),
+								info: `default for ${c.attributes.name || "Unnamed character"}`,
+							};
+							config.currentTab._byId[it.id] = it;
+							countDomains(it.dn);
+							fixer.processUrl(it);
+							return it;
+						});
+					}),
+				).flatten();
+		};
+
+		const indexAvatar = () => {
+			return d20.Campaign.characters.models.filter(c => {
+				return c.attributes.avatar;
+			}).map(c => {
+				const it = {
+					id: c.id,
+					url: c.attributes.avatar,
+					model: c,
+					name: c.attributes.name,
+					dn: getDomainName(c.attributes.avatar),
+					info: `avatar for ${c.attributes.name || "Unnamed character"}`,
+				};
+				config.currentTab._byId[c.id] = it;
+				countDomains(it.dn);
+				fixer.processUrl(it);
+				return it;
+			});
+		};
+
+		const indexUrls = (name) => {
+			urls[name] = {
+				_byId: {},
+				name,
+				models: [],
+				domains: {},
+				filter: [...defaultFilter],
+			};
+
+			config.currentTab = urls[name];
+			fixer.prepareRules(name);
+
+			urls[name].models = {
+				placed: indexPlaced,
+				default: indexDefault,
+				multi: indexMulti,
+				avatar: indexAvatar,
+			}[name]();
+		};
+
+		const reIndexUrls = async () => {
+			const tab = config.currentTab;
+			indexUrls(tab.name);
+			ui.drawDomainsList();
+			ui.drawPreviews();
+		};
+
+		const loadAllPlaced = () => {
+
+		}
+
+		const prepareMultisided = (stats) => {
+			const tab = config.currentTab;
+			const tokenModels = {};
+			stats.images = 0;
+
+			tab.models.forEach(i => {
+				if (!i.urlFix) return;
+				if (tab.filter.includes(i.dn)) return;
+
+				tokenModels[i.model.id] = tokenModels[i.model.id] || {
+					urlFix: false,
+					id: i.model.id,
+					collection: i.collection,
+					model: i.model,
+					cache: i.cache,
+				};
+
+				if (!i.error) {
+					tokenModels[i.model.id].urlFix = true;
+					tokenModels[i.model.id].collection[i.index] = i.urlFix;
+					stats.images++;
+				}
+			});
+
+			return Object.values(tokenModels);
+		}
+
+		const applyUpdateDefaultToken = (i) => {
+			!i.collection && (i.cache.imgsrc = i.urlFix);
+			i.collection && (i.cache.sides = i.collection.join("|"));
+
+			i.blobcache = JSON.stringify(i.cache);
+			i.model._blobcache.defaulttoken = i.blobcache;
+			i.model.updateBlobs({defaulttoken: i.blobcache});
+		}
+
+		const applyUpdateUrl = async (i, stats) => {
+			try {
+				const tab = config.currentTab;
+				switch (tab.name) {
+					case "placed":
+						i.model.save({imgsrc: i.urlFix});
+						break;
+					case "default":
+						applyUpdateDefaultToken(i);
+						break;
+					case "multi":
+						i.cache
+							? applyUpdateDefaultToken(i)
+							: i.model.save({sides: i.collection.join("|")});
+						break;
+					case "avatar":
+						i.model.save({avatar: i.urlFix});
+						break;
+				}
+
+				stats.count++;
+				stats.unique[i.urlFix] = true;
+				stats.$span.text(`Fixing ${stats.item} ${stats.count} of ${stats.total}`);
+			} catch (e) {
+				// eslint-disable-next-line no-console
+				console.error(e);
+				stats.errors++;
+			}
+		}
+
+		const applyUpdates = async () => {
+			const tab = config.currentTab;
+			const stats = {count: 0, unique: [], errors: 0, focus: 0};
+			const skip = (d) => d && tab.filter.includes(d);
+
+			const models = tab.name !== "multi"
+				? tab.models.filter((i, k) => {
+					return i.urlFix && !i.error && !skip(i.dn)
+						&& ++stats.focus
+						&& (!config.focusmode || stats.focus <= ui.getPreviewsPerSite());
+				})
+				: prepareMultisided(stats);
+
+			stats.total = models.length;
+			$html.statusBar.html(`<span>Fixing image 0 of ${stats.total}</span>`);
+			stats.$span = $html.statusBar.find("span");
+			stats.item = tab.name !== "multi" ? "image" : "token";
+
+			d20.engine.unselect();
+			$html.main.addClass("disabled");
+			$html.buttons.apply.attr("disabled", true);
+
+			for (const i of models) {
+				if (!i.urlFix || i.error) continue;
+				if (skip(i.dn)) continue;
+
+				await applyUpdateUrl(i, stats);
+				config.addlag && await new Promise(resolve => setTimeout(resolve, lag));
+			}
+
+			indexUrls(tab.name);
+			ui.drawPreviews();
+			ui.drawDomainsList();
+			// fixer.summarizeRules();
+			d20.engine.redrawScreenNextTick();
+
+			stats.multiSummary = tab.name !== "multi" ? "" : ` (${stats.images} of ${stats.total} images)`;
+			stats.singleSummary = tab.name === "multi" ? "" : ` of ${stats.total}`;
+			stats.summary = `Fixed ${stats.count} ${stats.singleSummary} ${stats.item}s${stats.multiSummary}`;
+			$html.main.removeClass("disabled");
+			$html.buttons.apply.attr("disabled", false);
+			$html.statusBar.html(`<span>${stats.summary}<br>Process finished with ${stats.errors} errors</span>`);
+		};
+
+		return {
+			getDomainName,
+			loadAllPages,
+			applyUpdates,
+			indexUrls,
+			reIndexUrls,
+		};
+	})();
+
+	const ui = (() => {
+		const closeCancel = () => {
+			$html.dialog.off(); $html.dialog.dialog("destroy").remove()
+		};
+
+		const closeCancelRoll20Editor = (char) => {
+			d20.utils.summernoteDeInit(char.editview.$el);
+			char.editview.$el.find(".attrib").trigger("doclose");
+			char.editview.$el.find(".abil.editing").trigger("doclose");
+			char.editview.$el.dialog("destroy");
+		}
+
+		const openRoll20CharacterEditor = (char) => {
+			char.editview.showDialog().then(() => {
+				const buttons = char.editview.$el
+					.dialog("option", "buttons").map(b => {
+						const hopeItsCancel = !b.class?.includes("save-button");
+						hopeItsCancel && (b.click = () => closeCancelRoll20Editor(char));
+						return b;
+					});
+				char.editview.$el.dialog({buttons});
+				char.editview.$el.dialog("option", "beforeClose", () => void 0);
+			});
+		}
+
+		const openRoll20Editor = (id) => {
+			const item = config.currentTab._byId[id];
+			item?.model.view.showDialog
+				? openRoll20CharacterEditor(item?.model)
+				: d20plus.menu.editToken(id.split("#")[0]);
+		};
+
+		const getPreviewsPerSite = () => {
+			return config.singlesite && fixer.currentDns().length <= 1
+				? (config.morepreviews ? previews.max : previews.single)
+				: (config.morepreviews ? previews.extended : previews.normal);
+		};
+
+		const drawDomainsList = () => {
+			const tab = config.currentTab;
+			const domains = Object.entries(tab.domains)
+				.map(([name, d]) => d);
+			const html = domains.reduce((html, it) => {
+				const name = it.name || "-roll20/";
+				const exclude = (!config.focusmode && defaultFilter.includes(it.name))
+					|| (config.focusmode && config.currentTab.filter.includes(it.name));
+				const checked = exclude ? "" : "checked";
+				return `${html}<li title="${name}">
+					<label>
+						<input type="checkbox" data-dn="${it.name}" ${checked}>
+						<span>${name}</span>
+					</label>
+					(${it.count})
+				</li>`;
+			}, "")
+			$html.lists[tab.name].html(html || "<li>Nothing found</li>");
+		}
+
+		const checkLoadedImages = (check) => {
+			const images = $html.preview.thumbs.find("img");
+			const loaded = !images.filter((i, img) => !img.complete).length;
+			if (loaded) clearInterval(check);
+
+			images
+				.filter((i, img) => {
+					if (!img.complete || !!img.naturalWidth) return false;
+					$(img).data("urlid") && $html.preview.texts
+						.find(`[data-urlid=${$(img).data("urlid")}]`)
+						.css({"background-color": "rgba(200,100,100,.5)"});
+					return true;
+				})
+				.parent().css({"background-color": "rgba(200,100,100,.5)"});
+		}
+
+		const drawPreviews = async () => {
+			const tab = config.currentTab;
+			const picked = {txt: "", thumb: ""};
+
+			for (const dom in tab?.domains || {}) {
+				if (tab.filter.includes(dom) && !config.singlepage) continue;
+				let checked = {};
+
+				const notDouble = (url) => checked[url] ? false : (checked[url] = true);
+				const filter = (it) => it.dn === dom
+					&& ((!config.focusmode && notDouble(it.url))
+						|| (config.focusmode && it.urlFix)
+						|| (config.singlepage));
+
+				const links = tab.models.filter(l => filter(l));
+				const pick = links.slice(0, getPreviewsPerSite());
+
+				pick.forEach(u => {
+					picked.txt += `<p${u.urlFix ? ` class="fixed"` : ""} data-id="${u.id}">
+						<span data-urlid="${u.model.id}orig"${u.error ? ` style="background: rgba(200,100,100,.5)"` : ""}>${u.url}</span>
+						${u.urlFix ? `<br><span data-urlid="${u.model.id}fix">${u.urlFix}</span>` : ""}
+					</p>`;
+					picked.thumb += `<div>
+						<div data-id="${u.id}">
+							<img data-urlid="${u.model.id}orig" src="${u.url}"${u.error ? ` style="background: rgba(200,100,100,.5)"` : ""}>
+							${u.urlFix ? `<div><img data-urlid="${u.model.id}fix" src="${u.urlFix}"></div>` : ""}
+						</div>
+						<span>${u.name}</span>
+					</div>`;
+				});
+			}
+
+			$html.preview.texts.html(picked.txt);
+			$html.preview.thumbs.html(picked.thumb);
+
+			setInterval(checkLoadedImages, 50);
+			statusUpdatePreviews();
+		};
+
+		const statusUpdateApply = () => {
+			const tab = config.currentTab;
+			const updated = tab.models.filter(t => t.urlFix && !t.error && !tab.filter.includes(t.dn));
+
+			if (updated.length) $html.buttons.apply.attr("disabled", false);
+			else $html.buttons.apply.attr("disabled", true);
+			$html.statusBar.html(`<span>Fixes available for ${updated.length} images</span>`);
+		};
+
+		const statusUpdatePreviews = () => {
+			const number = getPreviewsPerSite();
+			const site = config.singlesite && fixer.currentDns().length <= 1 ? "selected" : "each";
+			const image = config.focusmode ? " affected" : "";
+			const text = config.singlepage
+				? `Showing all images from current page`
+				: `Showing first ${number}${image} for ${site} site`
+			$html.preview.status.text(text);
+		}
+
+		const statusShowInfo = (() => {
+			let cache = false;
+			return (id) => {
+				const img = config.currentTab._byId[id];
+				if (!cache && img && img.error) {
+					cache = $html.statusBar.html();
+					$html.statusBar.html(`<span><a style="color: red;">The url can't be automatically fixed (${img.name || "Unnamed"})</a><br>${img.url}</span>`);
+				} else if (!cache && img) {
+					cache = $html.statusBar.html();
+					$html.statusBar.html(`<span>${img.name || "Unnamed"} (${img.info})<br>${img.url}</span>`);
+				} else if (cache) {
+					$html.statusBar.html(cache);
+					cache = false;
+				}
+			}
+		})();
+
+		const rulesEditingModeStop = () => {
+			clearTimeout(config.editingMode);
+			if (fixer.parseRules()) {
+				config.editingMode = undefined;
+				fixer.reProcessUrls();
+				drawPreviews();
+				$html.config.mask.blur();
+				statusUpdateApply();
+			}
+		};
+
+		const singlePageModeChanged = () => {
+			indexUrls("placed");
+			ui.drawPreviews();
+			ui.drawDomainsList();
+		}
+
+		const switchTab = async (tab) => {
+			if (!urls[tab]) r20data.indexUrls(tab);
+			else config.currentTab = urls[tab];
+
+			!config.previewTexts
+				&& $html.preview.thumbs.css("display", "grid");
+
+			$html.tabs.all.removeClass("current");
+			$html.tabs[tab].addClass("current");
+
+			drawDomainsList();
+			drawPreviews();
+			statusUpdateApply();
+			fixer.summarizeRules();
+		};
+
+		const toggle = {
+			dn: (tab, dn, state) => {
+				urls[tab].filter.remove(dn);
+				if (config.singlesite) {
+					$html.lists[tab].find("input:checkbox").prop("checked", false);
+					$html.lists[tab].find(`input[data-dn='${dn}']`).prop("checked", true);
+					urls[tab].filter = Object.keys(urls[tab].domains).filter(d => d !== dn);
+				} else {
+					!state && urls[tab].filter.push(dn);
+				}
+				if (tab === config.currentTab.name) {
+					drawPreviews();
+					statusUpdateApply();
+					fixer.summarizeRules();
+				}
+			},
+
+			config: (setting, state) => {
+				config[setting] = state;
+				if (setting === "defaults") {
+					$html.config.rules[state ? "addClass" : "removeClass"]("disabled");
+					fixer.summarizeRules();
+					fixer.reProcessUrls();
+					drawPreviews();
+					statusUpdateApply();
+				} else if (["morepreviews", "focusmode"].includes(setting)) {
+					drawPreviews();
+				} else if (setting === "stickyconfig") {
+					$html.config.menu.toggleClass("sticky", state);
+				} else if (setting === "singlesite") {
+					$html.tablist.toggleClass("singlesite", state);
+					$html.tablist.toggleClass("singlepage", false);
+					$html.config.singlepage.prop("checked", false);
+					config.singlepage = false;
+					drawPreviews();
+					drawDomainsList();
+					statusUpdateApply();
+				} else if (setting === "singlepage") {
+					$html.tablist.toggleClass("singlepage", state);
+					$html.tablist.toggleClass("singlesite", false);
+					$html.config.singlesite.prop("checked", false);
+					config.singlesite = false;
+					r20data.indexUrls("placed");
+					drawDomainsList();
+					drawPreviews();
+					statusUpdateApply();
+				}
+			},
+
+			previewMode: (mode, $btn) => {
+				$html.btns.all.removeClass("current");
+				$btn.addClass("current");
+				$html.preview.texts.toggle(mode === "texts");
+				$html.preview.thumbs.toggle(mode === "thumbs");
+
+				config.previewTexts = mode === "texts";
+				config.currentTab
+					&& mode === "thumbs"
+					&& $html.preview.thumbs.css("display", "grid");
+			},
+
+			rulesEditingMode: () => {
+				$html.buttons.apply.attr("disabled", true);
+				$html.statusBar.html(`<span>Finish editing the rules before continuing<br>Hit Esc or wait to apply the edits</span>`);
+				clearTimeout(config.editingMode);
+				config.editingMode = setTimeout(rulesEditingModeStop, 5000);
+			},
+		}
+
+		const initDialog = () => {
+			$html.dialog = $(dialogHtml);
+
+			$html.dialog.dialog({
+				autoopen: true,
+				width: 700,
+				height: 600,
+				minWidth: 550,
+				minHeight: 450,
+				title: "Ultimate tokens & URLs fixer",
+				buttons: {
+					cancel: {
+						text: "Cancel",
+						class: "btn btn-cancel",
+						click: closeCancel,
+					},
+					apply: {
+						text: "Apply",
+						class: "btn btn-primary",
+						click: r20data.applyUpdates,
+					},
+				},
+				open: () => {
+					$html.dialog.css({height: "100%"});
+					$html.dialog.parent().css({height: "600px"});
+				},
+				close: closeCancel,
+			});
+		};
+
+		const initHtmls = () => {
+			$html.preview = {};
+			$html.tablist = $html.dialog.find(".b20-token-fixer-list");
+			$html.main = $html.dialog.find(".b20-token-fixer");
+
+			$html.tabs = {all: $html.dialog.find(".b20-token-fixer-list > ul > li")};
+			$html.lists = {all: $html.dialog.find(".b20-token-fixer-list > ul > li > ul")};
+			$html.btns = {all: $html.dialog.find(".b20-token-fixer-preview .btn")};
+			$html.config = {all: $html.dialog.find(".b20-token-fixer-settings input:checkbox")};
+
+			$html.tabs.placed = $html.dialog.find(".b20tf-placed").parent();
+			$html.tabs.default = $html.dialog.find(".b20tf-default").parent();
+			$html.tabs.multi = $html.dialog.find(".b20tf-multi").parent();
+			$html.tabs.avatar = $html.dialog.find(".b20tf-avatar").parent();
+
+			$html.lists.placed = $html.dialog.find(".b20tf-placed");
+			$html.lists.default = $html.dialog.find(".b20tf-default");
+			$html.lists.multi = $html.dialog.find(".b20tf-multi");
+			$html.lists.avatar = $html.dialog.find(".b20tf-avatar");
+
+			$html.preview.texts = $html.dialog.find(".b20tf-texts");
+			$html.preview.thumbs = $html.dialog.find(".b20tf-thumbnails");
+			$html.preview.status = $html.dialog.find(".b20tf-preview-status");
+
+			$html.config.rules = $html.dialog.find(".b20tf-rules");
+			$html.config.menu = $html.dialog.find(".b20-token-fixer-settings");
+			$html.config.singlesite = $html.dialog.find("[value=singlesite]");
+			$html.config.singlepage = $html.dialog.find("[value=singlepage]");
+			$html.config.mask = $html.dialog.find(".b20tf-rules textarea");
+
+			$html.statusBar = $(`<div class="b20-token-fixer-status"><span>No updates</span></div>`);
+			$html.buttons = {pane: $html.dialog.parent().find(".ui-dialog-buttonpane")};
+
+			$html.buttons.apply = $html.buttons.pane.find(".btn-primary");
+			$html.buttons.cancel = $html.buttons.pane.find(".btn-cancel");
+
+			$html.buttons.pane.prepend($html.statusBar);
+			$html.buttons.pane.css({background: "rgba(100,100,100,.1)"})
+		};
+
+		const initEvents = () => {
+			$html.dialog.on("click", ".b20tf-tab-selector", (evt) => {
+				const tab = $(evt.currentTarget).data("tab");
+				switchTab(tab);
+			}).on("click", ".b20-token-fixer-list input:checkbox", (evt) => {
+				const $click = $(evt.currentTarget);
+				const tab = $click.closest("ul[data-tab]").data("tab");
+				const dn = $click.data("dn");
+				toggle.dn(tab, dn, $click.prop("checked"));
+			}).on("click", ".b20-token-fixer-settings input:checkbox", (evt) => {
+				const $click = $(evt.currentTarget);
+				const setting = $click.prop("value");
+				toggle.config(setting, $click.prop("checked"));
+			}).on("click", ".b20-token-fixer-preview .btn", (evt) => {
+				const $click = $(evt.currentTarget);
+				const mode = $click.data("mode");
+				toggle.previewMode(mode, $click);
+			}).on("click", ".b20tf-thumbnails [data-id]", (evt) => {
+				const id = $(evt.currentTarget).data("id");
+				openRoll20Editor(id);
+			}).on("click", ".b20tf-refresh", (evt) => {
+				config.currentTab && r20data.reIndexUrls();
+			}).on("mouseover", ".b20tf-thumbnails [data-id], .b20tf-texts [data-id]", (evt) => {
+				statusShowInfo($(evt.currentTarget).data("id"));
+			}).on("mouseout", ".b20tf-thumbnails [data-id], .b20tf-texts [data-id]", (evt) => {
+				statusShowInfo();
+			}).on("mouseover", ".b20tf-texts p span", evt => {
+				const $text = $(evt.target);
+				const max = $html.preview.texts.innerWidth();
+				const fact = $text.width();
+				fact > max && $text.css({display: "inline-block", left: max - fact});
+			}).on("mouseout", ".b20tf-texts p span", evt => {
+				const $text = $(evt.target);
+				$text.css("left", "");
+				setTimeout(() => !$text.attr("style")?.includes("left") && $text.css("display", ""), 4000);
+			}).on("keydown", ".b20tf-rules textarea", evt => {
+				if (evt.keyCode === 9) {
+					const el = evt.currentTarget;
+					el.setRangeText("\t", el.selectionStart, el.selectionStart, "end");
+					evt.preventDefault();
+				} else if (evt.keyCode === 27) {
+					evt.preventDefault();
+					config.editingMode && rulesEditingModeStop();
+					return;
+				}
+				toggle.rulesEditingMode();
+			}).on("blur", ".b20tf-rules textarea", evt => {
+				config.editingMode && rulesEditingModeStop();
+			});
+		};
+
+		const dialogTexts = {
+			welcome: {
+				header: "Welcome to the Tokens and image URLs fixer!",
+				subtext: "This tool is designed to automatically solve most known issues with non-roll20 hosted images. With built-in set of URL transformations, using it is as simple as:",
+				tldr: `<strong>TL;DR usage in 3 steps</strong><br>
+					<span>1.</span> Select a category on the left by clicking its name<br>
+					<span>2.</span> Browse the previews for broken and fixable images or text URLs<br>
+					<span>3.</span> If the previews seem OK (you can see the images), hit Apply.<br>
+					<span></span> Repeat for other categories if neccessary<br>`,
+				manual: [
+					"The categories on the left represent different types of images stored in roll20: tokens that appear on the maps, avatars that appear in journal, multisided token images, default tokens",
+					"Each of these categories needs to be processed independently. Ultimately, you need to check each of them for broken images, and try to fix them",
+					"Since urls usually break because of the server shutdowns or reorganizations, the images are grouped by domain names. The preview that will appear here will show examples of the few items for each domain linked in your images",
+					"The previews may be displayed as texts or thumbnails (the toggle is at the top right), and represent both the original image, and the result of applying the current set of rules, if any. The broken images, both initial and replaced, are indicated with red background. So the DESIRED effect on previews is green overlay with a picture over a red-overlayed broken image icon.",
+					"Check these previews to get the idea of what is broken, and what may be fixed. Click them to open the respective token or character settings. The status bar in the bottom will show the number of images with any replacement, no matter if it results in actually fixing the link or not",
+					"There are built-in default rules for common known issues. You may also manually enter any replacement rules you can imagine, even using regular expressions! If you need help, ask in 5etools Discord",
+					"Double check everything, and once you are sure the current settings are working, hit Apply!",
+				],
+			},
+			help: {
+				sources: "The list of categories. When you select a category, a list of web domains will be displayed. The domains selection affect both the previews and the actual execution of replacement when you hit Apply",
+				preview: "The url previews of the images with the current view and replacement settings. Buttons on the right allow switching between text and images",
+				config: "Check the previews and alter the settings here if neccessary. If you are satisfied with the estimated result, press Apply.",
+				rules: "Custom rule format: <br><a style='font-weight:100;font-family:monospace'>search; replace[; filter[; callback]]</a><br>The <a>search</a> clause supports /regexp/. Each rule starts on new line. Tabs and spaces after the ';' are ignored. Available callbacks are <a style='font-weight:100;font-family:monospace'>encodeURI, encodeURIComponent, decodeURIComponent, getCurrentName, unfixableAskUser</a>",
+			},
+			controls: {
+				defaults: "Default set of url replacement rules should automatically fix all known issues",
+				extend: `Show ${previews.extended} image preiews for each site instead of ${previews.normal} by default. For single site mode even more previews are shown (up to ${previews.max})`,
+				focus: "Only preiview items with changed URLs, and only apply fixes to items visible in previews. Allows for step by step fixing large quantities of images, checking each chunk of images before applying",
+				delay: "Add a small delay between saving to roll20 DB to ensure safe operation. It is generally advised to keep this ON, however, it may drastically slow the process on large (>100) quantities",
+				singlesite: "Only one domain selected when you click on them",
+				singlepage: "Disables singlesite and focus modes, and operates exclusively on tokens from current page, including showing all previews for all the tokens on that page (for placed tokens)",
+				nomaps: "Exclude tokens on map layer (for placed tokens) NOT WORKING/WIP",
+				stickyconfig: "Check this to prevent automatic collapsing of this config checkboxes block",
+			},
+		};
+
+		const dialogCss = `
+			.b20-token-fixer {display:flex; height:100%}
+			.b20-token-fixer.disabled {pointer-events: none; filter: opacity(0.7);}
+			.b20-token-fixer-list {width:200px; height:100%; border-right:1px solid; overflow:auto;box-sizing: border-box;}
+			.b20-token-fixer-manager {width:calc(100% - 200px); height:100%; padding-left:10px;box-sizing: border-box;overflow: clip;}
+			.b20-token-fixer-preview {width:100%; height:calc(100% - ${cssHeight.configBlock + 2}px); border-bottom:1px solid;box-sizing: border-box;transition: height 1s;}
+			.b20-token-fixer-settings {width:100%; height:160px;overflow: clip;transition: height 1s;}
+
+			.b20-token-fixer-list ul {margin: 0px; list-style:none;}
+			.b20-token-fixer-list > ul > li {margin-top:10px;}
+			.b20-token-fixer-list > ul > li > span {display:block; width:100%; padding:5px 0px; cursor:pointer; box-sizing:border-box;}
+			.b20-token-fixer-list > ul > li > span:hover {background-color:rgba(150,150,150,0.5); padding-left:2px;}
+			.b20-token-fixer-list > ul > li li {padding: 2px 0px; font-size:12px}
+			.b20-token-fixer-list > ul > li li:hover {background-color:rgba(150,150,150,0.5);}
+
+			.b20-token-fixer-list li > label {display: inline-block}
+			.b20-token-fixer-list li label input {width:12px;}
+			.b20-token-fixer-list li:not(.current) li label input{opacity:.5;filter:grayscale(1)}
+			.b20-token-fixer-list li > label > span {display:inline-block; width:125px; overflow:clip; text-overflow:ellipsis; white-space:nowrap;}
+
+			.b20-token-fixer-list > ul > li.current {border-left:1px solid;}
+			.b20-token-fixer-list > ul > li.current > span {padding-left:5px; font-weight:700;}
+			.b20-token-fixer-list > ul > li.current li {padding-left:5px;}
+			.b20-token-fixer-list.singlesite input[type="checkbox"]:not(:checked) {visibility: hidden;}
+			.b20-token-fixer-list.singlepage input[type="checkbox"] {visibility:hidden}
+			.b20-token-fixer-list.singlepage label {pointer-events:none}
+
+			html.dark .b20-token-fixer-list > ul > li.current > span {color:var(--grayscale-dark-base);}
+			html:not(.dark) .b20-token-fixer-list > ul > li.current > span {color:#333;}
+
+			.b20-token-fixer button.b20tf-refresh {font-size:15px;top:0px;right:5px}
+			.b20-token-fixer button {float:right;padding:3px;font-size:12px;position:relative;top:-15px;margin:0 0px -10px 5px;line-height:12px;}
+			.b20-token-fixer button:not(.current):not(:hover) {background-color:rgba(120,120,120,.5);color:unset}
+
+			.b20tf-thumbnails {display:grid;grid-template-columns:repeat(auto-fill,100px);grid-auto-rows: min-content;justify-content:space-between;width:100%;height:calc(100% - 40px);overflow:auto}
+			.b20tf-thumbnails>div {width:100px;margin:10px 0}
+			.b20tf-thumbnails>div>div {width:100px;height:100px;background-color:rgba(100,100,100,.2);text-align:center;line-height:100px;overflow:clip;}
+			.b20tf-thumbnails>div>div>img{max-width:100px;max-height:100px}
+			.b20tf-thumbnails>div>div>div {width:100px;height:100px;position:relative;top:-90px;background-color:rgba(150,200,150,.5);border-top:1px solid;border-radius:10px 10px;transition:top .5s;overflow:clip;}
+			.b20tf-thumbnails>div:hover>div>div {top:-20px}
+			.b20tf-thumbnails [data-id] { cursor: pointer;}
+			.b20tf-thumbnails > p > span {display:inline-block;width:1em}
+			.b20tf-thumbnails span {font-size:12px;white-space:nowrap;overflow:clip;text-overflow:ellipsis;width:100%;display:inline-block}
+
+			.b20tf-texts {width:100%;height:calc(100% - 40px);overflow-y:auto;white-space:nowrap;cursor:text;user-select:text;overflow-x:clip}
+			.b20tf-texts p {background-color:rgba(100,100,100,.2); max-width:100%; overflow:clip; text-overflow:ellipsis;user-select: text;}
+			.b20tf-texts p.fixed { background-color: rgba(150,200,150,.2); }
+			.b20tf-texts p span {position:relative;left:0;transition:left 5s;}
+
+			.b20tf-checkboxes {height:0;padding:0;box-sizing:border-box;transition:height 1s,padding 1s;overflow:clip}
+			.b20tf-checkboxes >div {width:calc(50% - 2px);display:inline-block;vertical-align:text-top;overflow:hidden;white-space:nowrap}
+			.b20tf-checkboxes >div>p {width:100%}
+			.b20-token-fixer-settings textarea {width: 100%; height: 50px; box-sizing: border-box; resize: vertical;white-space: pre;font-family: monospace;transition: height 1s}
+			.b20-token-fixer-settings:hover textarea, .b20-token-fixer-settings.sticky textarea {height: ${50 + cssHeight.textareaGrowth}px}
+
+			.b20-token-fixer-settings:hover .b20tf-checkboxes, .b20-token-fixer-settings.sticky .b20tf-checkboxes {height:${cssHeight.checkboxes - 1}px;padding:5px 0}
+			.b20-token-fixer-settings:hover, .b20-token-fixer-settings.sticky {height:${cssHeight.configBlock + cssHeight.checkboxes + cssHeight.textareaGrowth + 5}px}
+			.b20-token-fixer-preview:has(+div:hover), .b20-token-fixer-preview:has(+div.sticky) {height:calc(100% - ${cssHeight.configBlock + cssHeight.checkboxes + cssHeight.textareaGrowth + 1}px)}
+
+			.b20tf-preview-status {font-size:10px;float:right;font-weight:100;margin-right:106px;opacity:.7;box-sizing:border-box}
+			.b20-token-fixer-status {width:calc(100% - 135px);float:left;line-height:40px;opacity:.8;overflow:clip;text-overflow:ellipsis;white-space:nowrap;padding-left:5px}
+			.b20-token-fixer-status>span {display:inline-block;line-height:normal;vertical-align:middle}
+			.btn.btn-primary[disabled] {pointer-events:none;filter:grayscale(1)}
+
+			.b20tf-rules span{text-align:right;display:block;margin-top:5px}
+			.b20tf-rules.disabled {pointer-events:none; filter:grayscale(1) contrast(0.8) brightness(0.8)}
+			html.dark .b20-token-fixer input[type=checkbox] {accent-color:var(--primary-dark);}
+
+			.b20-token-fixer ::-webkit-scrollbar{width:4px;height: 4px;}
+			.b20-token-fixer ::-webkit-scrollbar-track{background:none}
+			.b20-token-fixer ::-webkit-scrollbar-thumb{background:rgba(100,100,100,.3);border-radius:3px}
+			.b20-token-fixer ::-webkit-scrollbar-thumb:hover{background:rgba(100,100,100,.7)}
+		`;
+
+		const dialogHtml = `
+		<div style="height:100%"><div class="b20-token-fixer">
+			<div class="b20-token-fixer-list">
+				<h4>Sources
+					<a class="tipsy-s showtip pictos" title="${dialogTexts.help.sources}">?</a>
+					<button class="btn b20tf-refresh tipsy-s showtip" title="Refresh all data for current category (e.g. if you manually edited a token)">↻</button>
+				</h4>
+				<ul>
+					<li>
+						<span class="b20tf-tab-selector" data-tab="placed">Placed tokens</span>
+						<ul class="b20tf-placed" data-tab="placed"><li>select to fetch & preview...</li></ul>
+					</li>
+					<li>
+						<span class="b20tf-tab-selector" data-tab="default">Default tokens</span>
+						<ul class="b20tf-default" data-tab="default"><li>select to fetch & preview...</li></ul>
+					</li>
+					<li>
+						<span class="b20tf-tab-selector" data-tab="multi">Token sides</span>
+						<ul class="b20tf-multi" data-tab="multi"><li>select to fetch & preview...</li></ul>
+					</li>
+					<li>
+						<span class="b20tf-tab-selector" data-tab="avatar">Journal avatars</span>
+						<ul class="b20tf-avatar" data-tab="avatar"><li>select to fetch & preview...</li></ul>
+					</li>
+				</ul>
+			</div>
+			<div class="b20-token-fixer-manager">
+				<div class="b20-token-fixer-preview">
+					<h4>
+						Preview
+						<a class="tipsy-s showtip pictos" title="${dialogTexts.help.preview}">?</a>
+						<span class="b20tf-preview-status">Select category to preview</span>
+					</h4>
+					<button class="btn current" data-mode="thumbs">Thumbnails</button>
+					<button class="btn" data-mode="texts">Text</button>
+					<div class="b20tf-thumbnails" style="display:block">
+						<img style="width:100px; float: right" src="https://images.fallout.wiki/3/39/FoS_Mister_Handy.png"><p>${dialogTexts.welcome.header}</p>
+						<p>${dialogTexts.welcome.subtext}</p>
+						<p>${dialogTexts.welcome.tldr}</p>
+						${dialogTexts.welcome.manual.reduce((t, p) => `${t}<p>${p}</p>`, "")}
+					</div>
+					<div class="b20tf-texts" style="display:none"></div>
+				</div>
+				<div class="b20-token-fixer-settings">
+					<div style="width: 100%;height: 0px;overflow: visible;text-align: center;box-sizing: border-box;">▼</div>
+					<h4 style="padding:10px 0px">Configuration <a class="tipsy-w showtip pictos" title="${dialogTexts.help.config}">?</a></h4>
+					<div class="b20tf-checkboxes">
+						<div>
+							<p><label class="tipsy-e showtip" title="${dialogTexts.controls.extend}"><input type="checkbox" value="morepreviews"> <span>More previews per site</span></label></p>
+							<p><label class="tipsy-e showtip" title="${dialogTexts.controls.focus}"><input type="checkbox" value="focusmode"> <span>Focus mode</span></label></p>
+							<p><label class="tipsy-e showtip" title="${dialogTexts.controls.delay}"><input type="checkbox" value="addlag" checked> <span>Delay between applying fixes</span></label></p>
+						</div>
+						<div>
+							<p><label class="tipsy-s showtip" title="${dialogTexts.controls.singlesite}"><input type="checkbox" value="singlesite"> <span>Single domain mode</span></label></p>
+							<p><label class="tipsy-n showtip" title="${dialogTexts.controls.singlepage}"><input type="checkbox" value="singlepage"> <span>Single page mode</span></label></p>
+							<p><label class="tipsy-n showtip" title="${dialogTexts.controls.nomaps}"><input type="checkbox" value="excludemaps"> <span>Exclude map layer</span></label></p>
+							<p><label class="tipsy-n showtip" title="${dialogTexts.controls.stickyconfig}"><input type="checkbox" value="stickyconfig"> <span>Sticky config</span></label></p>
+						</div>
+					</div>
+					<label style="float:left" class="tipsy-e showtip" title="${dialogTexts.controls.defaults}">
+						<input type="checkbox" checked value="defaults">
+						<span>Use the built-in set of rules</span>
+					</label>
+					<label class="b20tf-rules disabled">
+						<span>Replacement rules <a class="tipsy-n-right showtip pictos" title="${dialogTexts.help.rules}">?</a></span>
+						<textarea placeholder=""></textarea>
+					</label>
+				</div>
+			</div>
+			<style>${dialogCss}</style>
+		</div></div>
+		`;
+
+		return {
+			initDialog,
+			initHtmls,
+			initEvents,
+			getPreviewsPerSite,
+			drawDomainsList,
+			drawPreviews,
+		};
+	})();
+
+	d20plus.tool.tools.push({
+		toolId: "URLFIX",
+		name: "Token & avatar URL fixer",
+		desc: "Fix & restore broken image URLs en masse",
+		html: ``,
+		dialogFn: () => {},
+		openFn: () => {
+			fixer.init();
+		},
+	});
+}
+
+SCRIPT_EXTENSIONS.push(baseToolUrlFix);
+
 function d20plusArt () {
 	d20plus.art = {
 		button: () => {
@@ -7936,7 +9670,7 @@ function d20plusArtBrowser () {
 			];
 
 			const start = (new Date()).getTime();
-			const GH_PATH = `https://raw.githubusercontent.com/5etools-mirror-1/pab-index/main/`;
+			const GH_PATH = DATA_URL_ART_REPO;
 			const [enums, index] = await Promise.all([pGetJson(`${GH_PATH}_meta_enums.json`), pGetJson(`${GH_PATH}_meta_index.json`)]);
 			d20plus.ut.log(`Loaded metadata in ${((new Date()).getTime() - start) / 1000} secs.`);
 
@@ -8966,6 +10700,14 @@ function initHTMLTokenEditor () {
 						<h2>Dynamic Lighting</h2>
 					</a>
 				</li>
+				<!-- BEGIN MOD -->
+				<li class='nav-tabs--beta'>
+					<span class="label label-info">bR20</span>
+					<a class='go_to_image_editor' data-tab='image' href='javascript:void(0);'>
+						<h2>Edit Image</h2>
+					</a>
+				</li>
+				<!-- END MOD -->
 			</ul>
 			<div class='tab-content'>
 				<div class='basic tab-pane tokeneditor__details'>
@@ -9066,6 +10808,10 @@ function initHTMLTokenEditor () {
 							<div class='tokeneditor__row'>
 								<button class='btn btn-primary update_default_token'>Update Default Token</button>
 								<a class='showtip pictos' title='Copy a snapshot of this token’s image and settings as the default token for this character.'>?</a>
+							</div>
+							<div class='tokeneditor__row'>
+								<button class='btn btn-primary go_to_character'>Open Character Sheet</button>
+								<a class='showtip pictos' title='Open the character sheet linked to this token (alt + double click on token).'>?</a>
 							</div>
 							<$ } $>
 							<!-- Tint Color -->
@@ -9592,7 +11338,7 @@ function initHTMLTokenEditor () {
 				<!-- Dynamic Lighting -- Legacy lighting is under Advanced within this. -->
 				<div class='prototype tab-pane'>
 					<div class='alert alert-info' role='alert'>
-						<p><a href="https://help.roll20.net/hc/en-us/articles/360051754954-Token-Settings" target='' _blank''>Easily convert your legacy settings with the Convert Lighting tool </a></p>
+						<p><a href="https://help.roll20.net/hc/articles/360051754954-Token-Settings" target='' _blank''>Easily convert your legacy settings with the Convert Lighting tool </a></p>
 					</div>
 					<div class='token_vision'>
 						<p class='token_vision_title'>Token Vision</p>
@@ -10028,6 +11774,30 @@ function initHTMLTokenEditor () {
 							</div>
 						</div>
 					</div>
+				</div>
+				<div class='image tab-pane'>
+					<div class='modal-tokeneditor-header'>
+						<h3 class='d-inline'>Edit Token Image</h3>
+					</div>
+					<div class="modal-tokeneditor-body">
+						<div class='tokeneditor__row'>
+							<button class='btn btn-primary go_to_image_editor'>Load Image Editor</button>
+							<a class='showtip pictos' title='Load editor for image or multiple images stored in this token.'>?</a>
+						</div>
+					</div>
+					<style type="text/css">
+						.modal-tokeneditor-body .ui-dialog-titlebar {
+							display: none
+						}
+
+						.modal-tokeneditor-body .ui-dialog-buttonset {
+							display: none
+						}
+
+						.modal-tokeneditor-body h4 {
+							display: block
+						}
+					</style>
 				</div>
 			</div>
 		</div>
@@ -10716,6 +12486,7 @@ function initHTMLroll20actionsMenu () {
 						<$ } $>
 
 						<$ if(this.get && this.get("type") == "image") { $>
+						<li data-action-type='edittokenimages'>Edit Image</li>
 						<li data-action-type='copy-tokenid'>View Token ID</li>
 						<$ } $>
 						<$ if(this.get && this.get("type") == "path") { $>
@@ -10729,12 +12500,18 @@ function initHTMLroll20actionsMenu () {
 					<ul class='submenu' data-menuname='positioning'>
 						<li data-action-type="tolayer_map" class='<$ if(this && this.get && this.get("layer") == "map") { $>active<$ } $>'><span class="pictos ctx__layer-icon">@</span> Map Layer</li>
 						<!-- BEGIN MOD -->
+						<$ if(this?.get && this.get("layer") == "floors" || d20plus.cfg.getOrDefault("canvas", "showFloors")) { $>
+						<li data-action-type="tolayer_floors" class='<$ if(this && this.get && this.get("layer") == "floors") { $>active<$ } $>'><span class="pictos ctx__layer-icon">I</span> Floors Layer</li>
+						<$ } $>
 						<$ if(this?.get && this.get("layer") == "background" || d20plus.cfg.getOrDefault("canvas", "showBackground")) { $>
 						<li data-action-type="tolayer_background" class='<$ if(this && this.get && this.get("layer") == "background") { $>active<$ } $>'><span class="pictos ctx__layer-icon">a</span> Background Layer</li>
 						<$ } $>
 						<!-- END MOD -->
 						<li data-action-type="tolayer_objects" class='<$ if(this && this.get && this.get("layer") == "objects") { $>active<$ } $>'><span class="pictos ctx__layer-icon">b</span> Token Layer</li>
 						<!-- BEGIN MOD -->
+						<$ if(this?.get && this.get("layer") == "roofs" || d20plus.cfg.getOrDefault("canvas", "showRoofs")) { $>
+						<li data-action-type="tolayer_roofs" class='<$ if(this && this.get && this.get("layer") == "roofs") { $>active<$ } $>'><span class="pictos ctx__layer-icon">H</span> Roofs Layer</li>
+						<$ } $>
 						<$ if(this?.get && this.get("layer") == "foreground" || d20plus.cfg.getOrDefault("canvas", "showForeground")) { $>
 						<li data-action-type="tolayer_foreground" class='<$ if(this && this.get && this.get("layer") == "foreground") { $>active<$ } $>'><span class="pictos ctx__layer-icon">B</span> Foreground Layer</li>
 						<$ } $>
@@ -10754,7 +12531,7 @@ function initHTMLroll20actionsMenu () {
 					<ul class='submenu' data-menuname='multiside'>
 						<li data-action-type='side_random'>Random Side</li>
 						<li data-action-type='side_choose'>Choose Side</li>
-						<li data-action-type='rollertokenresize'>Set Side Size</li>
+						<li data-action-type='edittokenimages'>Edit Sides</li>
 					</ul>
 				</li>
 				<$ } $>
@@ -11632,6 +13409,320 @@ function initHTMLbaseMisc () {
 		}
 	</style>
 	`;
+
+	d20plus.html.tokenImageEditor = `
+	<div class="dialog largedialog edittokenimages">
+		<h4 class="edittitle">Token name</h4>
+		<span class="editlabel">
+			Currently this token is represented by a single image. Add more images to convert it to multi-sided token
+		</span>
+		<div class="tokenlist"></div>
+		<hr>
+		<button class="addimageurl btn" style="float: right;margin-left:5px;">Add From URL...</button>
+		<h4>Images</h4>
+		You can drop a file or a character below
+		<div class="clear" style="height: 7px;"></div>
+		<table class="table table-striped tokenimagelist">
+			<tbody>
+			</tbody>
+		</table>
+		<style>
+			.tokenimage img {
+				max-width: 70px;
+				max-height: 70px;
+			}
+
+			.tokenimage select {
+				width: 100px;
+				margin-right: 10px;
+			}
+
+			.tokenimage input {
+				width: 25px;
+			}
+
+			.tokenimage input.face {
+				margin: 30px 0px 0px 5px;
+				width: unset;
+			}
+
+			.tokenimage input.face:indeterminate {
+				opacity: 0.8;
+				filter: grayscale(0.7);
+			}
+
+			.tokenimage .btn {
+				font-family: pictos;
+				margin-top: 26px;
+			}
+
+			.tokenimage .dropbox {
+				height: 70px;
+				width: 70px;
+				padding: 0px;
+				box-sizing: content-box;
+			}
+
+			.tokenimage .inner {
+				display: inline-block;
+				vertical-align: middle;
+				line-height: 67px;
+			}
+
+			.tokenimage .remove {
+				background: none;
+			}
+
+			.tokenimage .remove span {
+				line-height: initial;
+				display: inline-block;
+				font-weight: bold;
+				background: white;
+				vertical-align: bottom;
+			}
+
+			.tokenimage .dropbox.filled {
+				border: 4px solid transparent;
+			}
+
+			.ui-dropping .dropbox.filled {
+				border: 4px dashed #d1d1d1;
+			}
+
+			.tokenimagelist .ui-dropping .tokenimage {
+				background: rgba(155, 155, 155, 0.5);
+			}
+
+			.tokenimagelist .ui-dropping .dropbox {
+				background: gray;
+				border: 4px dashed rgba(155, 155, 155, 0.5);
+			}
+
+			.tokenimage .ui-droppable.drop-highlight {
+				border: 4px dashed;
+			}
+
+			.tokenimage.lastone .face,
+			.tokenimage.lastone .skippable,
+			.tokenimage.lastone .btn.delete {
+				display: none;
+			}
+
+			.tokenimage .custom {
+				visibility: hidden;
+			}
+
+			.tokenimage .custom.set {
+				visibility: visible;
+			}
+
+			.tokenimage input.toskip {
+				margin: 0px;
+				width: unset;
+			}
+
+			.tokenimage .skippable {
+				display: block;
+				margin: 0px;
+			}
+
+			.tokenimagelist .tokenimage:not(.lastone).skipped td {
+				background-color: rgba(155, 0, 0, 0.1);
+			}
+
+			.tokenlist {
+				position: sticky;
+				top: -11px;
+				padding: 5px 0px;
+				background: inherit;
+				z-index: 1;
+				overflow-x: auto;
+				white-space: nowrap;
+			}
+
+			.tokenlist .tokenbox {
+				display: inline-block;
+				position: relative;
+				border: 4px solid transparent;
+				width: 60px;
+				height: 60px;
+				cursor: pointer;
+				vertical-align: bottom;
+			}
+
+			.tokenlist .tokenbox img {
+				max-width: 60px;
+				max-height: 60px;
+			}
+
+			.tokenlist .tokenbox .inner {
+				text-align: center;
+			}
+
+			.tokenbox .name {
+				display: none;
+				position: absolute;
+				bottom: 0px;
+				background-color: rgba(155, 155, 155, 0.7);
+				padding: 3px;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				white-space: nowrap;
+				box-sizing: border-box;
+				color: white;
+				width: 100%;
+			}
+
+			.tokenbox:hover .name {
+				display: block;
+			}
+
+			.tokenbox.selected {
+				border: 4px solid gray;
+			}
+		</style>
+	</div>
+	`;
+
+	d20plus.html.bActionsMenu = `
+	<div id="ba-panel">
+		<button aria-disabled="false" type="button" style="" class="el-button large page-button">
+			<span><span style="font-family: Pictos;font-size: 21px;">U</span></span>
+		</button>
+		<div class="ba-menu" style="display:none">
+			<div class="ba-title">
+				<span class="ba-token" data-action="findtoken"><img src="https://img.icons8.com/ios-glyphs/30/multicultural-people.png"></span>
+				<span class="ba-name">Selected</span>
+				<span class="ba-title-actions">
+					<button data-action="collapsew" title="Collapse/expand"></button>
+					<button data-action="expandh" title="Lock/unlock menu height"></button>
+					<button data-action="close" title="Close this menu">*</button>
+					<!--<button data-action="speakas" title="Speak as character">w</button>
+						<button data-action="opensheet" title="Open character sheet">U</button>
+						<button data-action="openchar" title="Open character settings">x</button><br>-->
+				</span>
+			</div>
+			<ul class="ba-tabs nav nav-tabs">
+				<li class="nav-tabs active" data-tab="general"><a>
+						<img src="https://img.icons8.com/ios-glyphs/30/pulse.png">
+						<span>General</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="stats" style="display:none;"><a>
+						<img src="https://img.icons8.com/external-kmg-design-glyph-kmg-design/32/external-muscle-gym-kmg-design-glyph-kmg-design.png">
+						<span>Abilities</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="skills" style="display:none;"><a>
+						<img src="https://img.icons8.com/external-icongeek26-glyph-icongeek26/64/external-Lute-music-icongeek26-glyph-icongeek26.png">
+						<span>Skills</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="attacks" style="display:none;"><a>
+						<img src="https://img.icons8.com/external-prettycons-solid-prettycons/60/external-swords-games-prettycons-solid-prettycons.png">
+						<span>Attacks</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="traits" style="display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/exercise.png">
+						<span>Traits</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="spells" style="display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/fantasy.png">
+						<span>Spells</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="items" style="display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/red-purse.png">
+						<span>Items</span></a>
+				</li>
+				<li class="nav-tabs" data-tab="animations" style="float:right;display:none;"><a>
+						<img src="https://img.icons8.com/ios-filled/50/service.png">
+						<span>Animations</span></a>
+				</li>
+			</ul>
+			<div class="ba-main">
+				<div class="ba-list content-left">
+					<ul class="active" data-list="general"></ul>
+					<ul data-list="stats"></ul>
+					<ul class="uneven" data-list="skills"></ul>
+					<ul data-list="attacks"></ul>
+					<ul data-list="traits"></ul>
+					<ul data-list="spells"></ul>
+					<ul data-list="items"></ul>
+					<ul data-list="animations"></ul>
+				</div>
+				<div class="ba-info content-right">
+					<ul class="active" data-pane="general">
+						<li>You don't seem to have controllable tokens on this map. Please select something to begin</li>
+					</ul>
+					<ul data-pane="stats">
+						<li> </li>
+					</ul>
+					<ul data-pane="skills">
+						<li> </li>
+					</ul>
+					<ul data-pane="attacks">
+						<li> </li>
+					</ul>
+					<ul data-pane="traits">
+						<li> </li>
+					</ul>
+					<ul data-pane="spells">
+						<li> </li>
+					</ul>
+					<ul data-pane="items">
+						<li> </li>
+					</ul>
+					<ul data-pane="context" style="font-size: 12px; line-height: 15px; font-weight: 100;">
+						<li> </li>
+					</ul>
+					<ul data-pane="animations">
+						<li>Animations are set in the betteR20 tools menu</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	`;
+
+	d20plus.html.layerExtrasButton = `
+	<div class="toolbar-button-outer b20" style="color: var(--vtt-toolbar-active-selection-color);" id="extra-layer-button">
+		<div class="toolbar-button-mid">
+			<div class="toolbar-button-inner" tabindex="0">
+				<div style="" class="icon-slot icon-circle">
+					<span style="font-size: 1.5em;font-family: Pictos;" class="grimoire__roll20-icon">|</span>
+				</div>
+				<div class="submenu-caret"></div>
+			</div>
+			<span class="label" style="">EXTRA</span>
+		</div>
+		<div class="toolbar-tooltip-outer" style="filter: initial; --0c2fd930: 6px;">
+			<div class="toolbar-tooltip-caret"></div>
+			<div class="toolbar-tooltip-inner">
+				<span class="toolbar-tooltip-label text-sm-medium">Extra editable layers</span>
+				<span class="toolbar-shortcut-label">[b20]</span>
+			</div>
+		</div>
+		<span class="decoration" style="color: inherit;"></span>
+	</div>
+	`;
+
+	d20plus.html.layerSecondaryPanel = (l) => `
+		<div class="toolbar-button-outer b20" style="color: var(--vtt-toolbar-active-selection-color);" id="${l.name.toLowerCase()}-layer-button">
+			<div class="toolbar-button-mid">
+				<div class="toolbar-button-inner" data-layer="${l.id}" tabindex="0">
+					<div style="" class="icon-slot icon-circle">
+						<span style="font-size: 1.5em;font-family: Pictos;" class="grimoire__roll20-icon">${l.icon}</span>
+					</div>
+				</div>
+				<span class="layer-toggle">E</span>
+				<span class="label" style="">${l.name}</span>
+			</div>
+			<div class="toolbar-tooltip-outer" style="filter: initial; top: 6px;">
+				<div class="toolbar-tooltip-caret"></div>
+				<div  class="toolbar-tooltip-inner">
+					<span class="toolbar-tooltip-label text-sm-medium">${l.tooltip}</span>
+					<span class="toolbar-shortcut-label">[b20]</span>
+				</div>
+			</div>
+		</div>
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(initHTMLbaseMisc);
@@ -11997,6 +14088,23 @@ function d20plusEngine () {
 			d20plus.engine._populatePageCustomOptions();
 		}).on("click keyup", ".weather input, .weather .slider", () => {
 			d20plus.engine._updatePageCustomOptions();
+		}).on("click", ".go_to_image_editor", (evt) => {
+			const {currentTarget: target} = evt;
+			const $modal = $(target).closest(`[data-tokenid]`);
+			if (!$modal.find(".btn.go_to_image_editor").length) return;
+			const tokenId = $modal.data("tokenid");
+			const $tokenEdit = d20plus.menu.editToken(tokenId);
+			$modal.find(".modal-tokeneditor-body")
+				.empty()
+				.append($tokenEdit.parent("div").css({
+					display: "block",
+					position: "initial",
+					width: "auto",
+					"box-shadow": "none",
+				}).attr("style", (i, css) => css.replace("initial", "initial !important")));
+			$modal.parent("div")
+				.find(".ui-dialog-buttonset .btn-primary")
+				.on("mousedown", $tokenEdit.dialog("option", "buttons").save.click);
 		});
 	};
 
@@ -12384,6 +14492,141 @@ function d20plusEngine () {
 
 	/* eslint-enable */
 
+	d20plus.engine.expendResources = async (expend) => {
+		const character = d20.Campaign.characters._byId[expend.charID];
+		if (!character || !character?.currentPlayerControls()) return;
+		const fetched = await d20plus.ut.fetchCharAttribs(character);
+		if (!fetched) return;
+		const getAttribVal = () => {
+			const vals = {
+				spell: {cur: "expended", id: `lvl${expend.lvl}_slots`},
+				resource: {cur: "current", link: "itemid", id: `${expend.res}_resource`},
+				repeated: {cur: "current", link: "itemid", exp: /repeating_resource_(.*?)_resource_(?<pos>right|left)_name/},
+				item: {cur: "itemcount", link: "itemresourceid", exp: /repeating_inventory_(.*?)_itemname/},
+			}[expend.type];
+			vals.id = vals.id || character.attribs?.models
+				?.find(prop => prop?.attributes?.current === expend.name && prop?.attributes?.name.match(vals.exp))
+				?.attributes.name.replace(/_(name|itemname)$/, "");
+			return vals;
+		};
+		d20plus.ut.log(expend);
+		const playerName = d20plus.ut.getPlayerNameById(d20_player_id);
+		const characterName = character.get("name");
+		const refs = getAttribVal();
+		const attrib = d20plus.ut.getCharMetaAttribByName(character, refs.id);
+		if (!attrib) return;
+		const syncWeight = (ref) => {
+			const ignNonequipped = !!d20plus.ut.getCharAttribByName(character, "ingore_non_equipped_weight")?.attributes.current;
+			const isAccounted = (!ignNonequipped || ref.equipped !== "0") && ref.itemweight > 0;
+			if (!isAccounted) return;
+			const totalWeight = d20plus.ut.getCharAttribByName(character, "weighttotal");
+			if (!totalWeight?.attributes.current) return;
+			const weightDelta = ((expend.restore || attrib._new) - attrib._cur) * ref.itemweight;
+			const weightResult = totalWeight.attributes.current + weightDelta;
+			totalWeight.save({current: weightResult});
+		}
+		const syncSheet = () => {
+			if (attrib.itemweight) syncWeight(attrib);
+			if (!refs.link || !attrib[refs.link]) return;
+			const toSync = d20plus.ut.getCharMetaAttribByName(character, attrib[refs.link], true);
+			const toSyncRef = toSync?._ref?.current || toSync?._ref?.itemcount;
+			toSyncRef?.save({current: expend.restore || attrib._new});
+			if (toSync?.itemweight) syncWeight(toSync);
+		}
+		const getMsgText = () => {
+			if (expend.type === "spell") return `lvl${expend.lvl} slots`;
+			else if (expend.name) return `of ${expend.name}`;
+			else if (attrib.name) return `of ${attrib.name}`;
+			else return `class resource`;
+		};
+		expend.amt = expend.amt || 1;
+		attrib._cur = attrib[refs.cur];
+		d20plus.ut.log(attrib);
+		if (isNaN(attrib._cur)) return;
+		if (expend.restore !== undefined) {
+			attrib._ref[refs.cur].save({current: String(expend.restore)});
+			attrib._msg = `/w "${characterName}" ${characterName} has ${expend.restore} ${getMsgText()} again`;
+			syncSheet();
+		} else if (attrib._cur - expend.amt >= 0) {
+			attrib._new = attrib._cur - expend.amt;
+			attrib._ref[refs.cur].save({current: String(attrib._new)});
+			attrib._undo = {...expend}; attrib._undo.restore = attrib._cur;
+			attrib._msg = `/w "${characterName}" ${characterName} now has ${attrib._new} ${getMsgText()} left`;
+			syncSheet();
+		} else {
+			attrib._msg = `/w "${characterName}" ${characterName} already had zero ${getMsgText()}`;
+		}
+		const transport = {type: "automation"};
+		if (expend.restore) transport.author = `${playerName} restored some ${getMsgText()}`;
+		else transport.author = `${playerName} tried using ${expend.amt} ${getMsgText()}`;
+		if (attrib._undo) transport.undo = attrib._undo;
+		d20.textchat.doChatInput(attrib._msg, undefined, transport);
+	}
+
+	d20plus.engine.alterTokensHP = (alter) => {
+		const barID = Number(d20plus.cfg.getOrDefault("chat", "dmgTokenBar"));
+		const bar = {
+			val: `bar${barID}_value`,
+			link: `bar${barID}_link`,
+			max: `bar${barID}_max`,
+		};
+		const calcHP = (token) => {
+			if (!token?.get) return false;
+			const current = token.get(bar.val);
+			const max = token.get(bar.max);
+			if (isNaN(max) || isNaN(current) || current === "") return false;
+			const hp = {old: current, new: current - alter.dmg};
+			if (hp.new < 0) hp.new = 0;
+			if (max !== "") {
+				if (hp.new > max) hp.new = max;
+				if (hp.new <= -max) hp.dead = true;
+				if (hp.old <= 0 && hp.new > 0) hp.alive = true;
+			}
+			return hp;
+		}
+		const playerName = d20plus.ut.getPlayerNameById(d20_player_id);
+		const author = `${playerName} applied ${alter.dmg} damage`;
+		const transport = {type: "automation", author};
+		const targets = alter.targets || d20.engine.selected();
+		d20.engine.unselect();
+		targets.forEach(async token => {
+			if (typeof token === "string") token = d20plus.ut.getTokenById(token);
+			else if (token.model) token = token.model;
+			const hp = calcHP(token);
+			if (!hp) return d20plus.ut.sendHackerChat("You have to select proper token bar in the settings", true);
+			if (!token.currentPlayerControls()) return;
+			if (alter.restore !== undefined) hp.new = alter.restore;
+			const barLinked = token.get(bar.link);
+			const tokenName = token.get("name");
+			if (barLinked) {
+				if (!token.character?.currentPlayerControls()) return;
+				const charID = token.character?.id;
+				const fetched = await d20plus.ut.fetchCharAttribs(token.character);
+				if (fetched && charID) {
+					const attrib = token.character.attribs.get(barLinked);
+					const charName = token.character.get("name");
+					attrib.save({current: hp.new});
+					attrib.syncTokenBars();
+					hp.msg = `/w "${charName}" ${tokenName} from ${hp.old} to ${hp.new} HP`;
+					if (alter.restore !== undefined) hp.msg = `/w "${charName}" ${tokenName} HP back to ${hp.new}`;
+				}
+			} else {
+				token.save({[bar.val]: hp.new});
+				hp.msg = `/w gm ${tokenName} from ${hp.old} to ${hp.new} HP`;
+				if (alter.restore !== undefined) hp.msg = `/w gm ${tokenName} HP back to ${hp.new}`;
+			}
+			if (hp.msg) {
+				hp.undo = {type: "hp", dmg: alter.dmg, restore: hp.old, targets: [token.id]};
+				if (alter.restore === undefined) hp.transport = Object.assign({undo: hp.undo}, transport);
+				else transport.author = `${playerName} restored HP to ${alter.restore}`;
+				d20.textchat.doChatInput(hp.msg, undefined, hp.transport || transport);
+				if (hp.dead) d20.textchat.doChatInput(`${tokenName} is instantly dead`, undefined, transport);
+				else if (hp.alive) d20.textchat.doChatInput(`${tokenName} is conscious again`, undefined, transport);
+				else if (hp.new === 0) d20.textchat.doChatInput(`${tokenName} falls unconscious`, undefined, transport);
+			}
+		})
+	}
+
 	d20plus.engine.addLineCutterTool = () => {
 		// The code in /overwrites/canvas-handler.js doesn't work
 		const $btnTextTool = $(`.choosetext`);
@@ -12539,45 +14782,181 @@ function d20plusEngine () {
 		})
 	};
 
-	d20plus.engine.addLayers = () => {
-		d20plus.ut.log("Adding layers");
+	d20plus.engine.layersIsMarkedAsHidden = (layer) => {
+		const page = d20.Campaign.activePage();
+		return page?.get(`bR20cfg_hidden`)?.search(layer) > -1;
+	}
 
-		d20plus.mod.editingLayerOnclick();
-		if (window.is_gm) {
-			// Add layers to layer dropdown
-			$(`#floatingtoolbar .choosemap`).html(`<span class="pictos" style="padding: 0 3px 0 3px;">@</span> Map`);
-			if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
-				$(`#floatingtoolbar .choosemap`).after(`
-					<li class="choosebackground">
-						<span class="pictos">a</span>
-						Background
-					</li>
-				`);
-			}
-			if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
-				$(`#floatingtoolbar .chooseobjects`).after(`
-					<li class="chooseforeground">
-						<span class="pictos">B</span>
-						Foreground
-					</li>
-				`);
-			}
+	d20plus.engine.layersVisibilityCheck = () => {
+		const layers = ["floors", "background", "foreground", "roofs"];
+		layers.forEach((layer) => {
+			const isHidden = d20.engine.canvas._objects.some((o) => {
+				if (o.model) return o.model.get("layer") === `hidden_${layer}`;
+			}) || d20plus.engine.layersIsMarkedAsHidden(layer);
+			d20plus.engine.layerVisibilityOff(layer, isHidden, true);
+		});
+	}
 
-			if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
-				$(`#floatingtoolbar .choosewalls`).after(`
-					<li class="chooseweather">
-						<span class="pictos">C</span>
-						Weather Exclusions
-					</li>
-				`);
+	d20plus.engine.layersToggle = (layer) => {
+		const page = d20.Campaign.activePage();
+		if (!page.get(`bR20cfg_hidden`)) page.set(`bR20cfg_hidden`, "");
+		if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
+			d20plus.engine.layerVisibilityOff(layer, false);
+		} else {
+			d20plus.engine.layerVisibilityOff(layer, true);
+		}
+	};
+
+	d20plus.engine.layerVisibilityOff = (layer, off, force) => {
+		const page = d20.Campaign.activePage();
+		if (off) {
+			if (d20plus.engine.objectsHideUnhide("layer", layer, "layeroff", false) || force) {
+				if (window.currentEditingLayer === layer) d20plus.ui.switchToR20Layer();
+				d20plus.ui.layerVisibilityIcon(layer, false);
+				if (!d20plus.engine.layersIsMarkedAsHidden(layer)) {
+					page.set(`bR20cfg_hidden`, `${page.get(`bR20cfg_hidden`)} ${layer}`);
+					page.save();
+				}
+			}
+		} else {
+			d20plus.engine.objectsHideUnhide("layer", layer, "layeroff", true);
+			d20plus.ui.layerVisibilityIcon(layer, true);
+			if (d20plus.engine.layersIsMarkedAsHidden(layer)) {
+				page.set(`bR20cfg_hidden`, page.get(`bR20cfg_hidden`).replace(` ${layer}`, ""));
+				page.save();
 			}
 		}
+	}
+
+	d20plus.engine._objectsStashProps = (obj, visible) => {
+		[
+			"emits_bright_light",
+			"emits_low_light",
+			"has_directional_bright_light",
+			"has_directional_dim_light",
+			"bar1_value",
+			"bar2_value",
+			"bar3_value",
+			"showname",
+		].each((prop) => {
+			if (!visible) {
+				if (obj.attributes[prop]) {
+					obj.attributes[`bR20_${prop}`] = obj.attributes[prop];
+					obj.attributes[prop] = false;
+				}
+			} else {
+				if (obj.attributes[`bR20_${prop}`]) {
+					obj.attributes[prop] = obj.attributes[`bR20_${prop}`];
+					obj.attributes[`bR20_${prop}`] = null;
+				}
+			}
+		});
+	}
+
+	d20plus.engine._graphicsStashToRight = (_this, visible) => {
+		const xAttr = _this.x !== undefined ? "x" : "left";
+		if (typeof _this[xAttr] !== "number") return;
+		if (!visible) {
+			const page = d20.Campaign.pages.get(_this.page_id) || d20.Campaign.activePage();
+			const newLeft = _this[xAttr] + page.get("width") * 70;
+			_this.bR20_left = _this[xAttr];
+			_this[xAttr] = newLeft;
+		} else {
+			if (_this.bR20_left) {
+				_this[xAttr] = _this.bR20_left;
+				_this.bR20_left = null;
+			}
+		}
+	}
+
+	d20plus.engine.objectsHideUnhide = (query, val, prefix, visible) => {
+		let some = false;
+		for (const o of d20.engine.canvas._objects) {
+			if (!o.model) continue;
+			if (`${o.model.get(query)}`.search(val) > -1) {
+				const _this = o.model.attributes;
+				const {layer} = o.model.attributes;
+				if (visible) {
+					if (_this.bR20_hidden && _this.bR20_hidden.search(prefix) > -1) {
+						_this.bR20_hidden = _this.bR20_hidden.replace(`${prefix}_`, "");
+						if (_this.type !== "path") {
+							_this.layer = layer.replace(`${prefix}_`, "");
+							if (!_this.bR20_hidden) {
+								d20plus.engine._objectsStashProps(o.model, true);
+							}
+						} else if (!_this.bR20_hidden) {
+							d20plus.engine._graphicsStashToRight(_this, true);
+						}
+						o.saveState();
+						o.model.save();
+						some = true;
+					}
+				} else {
+					if (!_this.bR20_hidden || _this.bR20_hidden.search(prefix) === -1) {
+						_this.bR20_hidden = `${prefix}_${_this.bR20_hidden || ""}`;
+						if (_this.type !== "path") {
+							_this.layer = `${prefix}_${layer}`;
+							d20plus.engine._objectsStashProps(o.model, false);
+						} else {
+							d20plus.engine._graphicsStashToRight(_this, false);
+						}
+						o.saveState();
+						o.model.save();
+						some = true;
+					}
+				}
+			}
+		}
+		return some;
+	};
+
+	d20plus.engine.portalsHideUnhide = (viewid, prefix, visible) => {
+		const page = d20.Campaign.activePage();
+		[`doors`, `windows`].forEach(e => page[e].models.forEach(it => {
+			const _this = it.attributes;
+			if (!it.get(viewid)) return;
+			if (visible) {
+				if (_this.bR20_hidden && _this.bR20_hidden.search(prefix) > -1) {
+					_this.bR20_hidden = _this.bR20_hidden.replace(`${prefix}_`, "");
+					if (!_this.bR20_hidden) {
+						d20plus.engine._graphicsStashToRight(_this, true);
+					}
+					it.save();
+					it.createView();
+				}
+			} else {
+				if (!_this.bR20_hidden || _this.bR20_hidden.search(prefix) === -1) {
+					_this.bR20_hidden = `${prefix}_${_this.bR20_hidden || ""}`;
+					d20plus.engine._graphicsStashToRight(_this, false);
+					it.save();
+					it.createView();
+				}
+			}
+		}))
+	};
+
+	d20plus.engine.addLayers = () => {
+		d20plus.ut.log("Adding layers");
 
 		d20.engine.canvas._renderAll = _.bind(d20plus.mod.renderAll, d20.engine.canvas);
 		d20.engine.canvas.sortTokens = _.bind(d20plus.mod.sortTokens, d20.engine.canvas);
 		d20.engine.canvas.drawAnyLayer = _.bind(d20plus.mod.drawAnyLayer, d20.engine.canvas);
 		d20.engine.canvas.drawTokensWithoutAuras = _.bind(d20plus.mod.drawTokensWithoutAuras, d20.engine.canvas);
+
+		if (window.is_gm) {
+			$(document).on("d20:new_page_fully_loaded", d20plus.engine.checkPageSettings);
+			d20plus.engine.checkPageSettings();
+		}
 	};
+
+	d20plus.engine.checkPageSettings = () => {
+		if (!d20plus.cfg.getOrDefault("canvas", "extraLayerButtons")) return;
+		if (!d20.Campaign.activePage() || !d20.Campaign.activePage().get) {
+			setTimeout(d20plus.engine.checkPageSettings, 50);
+		} else {
+			d20plus.engine.layersVisibilityCheck();
+		}
+	}
 
 	d20plus.engine.removeLinkConfirmation = function () {
 		d20.utils.handleURL = d20plus.mod.handleURL;
@@ -12660,15 +15039,20 @@ function baseMenu () {
 			lastSceneUid: null,
 		};
 
+		const tagSize = "#roll20_token_size=";
+		const tagSkip = "#roll20_skip_token=";
+
 		/* eslint-disable */
 
 		// BEGIN ROLL20 CODE
 		var e, t = !1, n = [];
-		var i = function() {
+		d20plus.ut.injectCode(d20.token_editor, "closeContextMenu", (func) => {
 			t && (t.remove(),
 				t = !1),
-			e && clearTimeout(e)
-		};
+			e && clearTimeout(e);
+			func();
+		})
+		var i = d20.token_editor.closeContextMenu;
 		var r = function (r) {
 			var o, a;
 			r.changedTouches && r.changedTouches.length > 0 ? (o = r.changedTouches[0].pageX,
@@ -12971,17 +15355,27 @@ function baseMenu () {
 									i();
 						else if ("side_random" == e) {
 							d20.engine.canvas.getActiveGroup() && d20.engine.unselect();
-							var d = [];
+							var d = []
+								// BEGIN MOD
+								, prevUrl = "none";
+								// END MOD
 							_.each(n, function(e) {
 								if (e.model && "" != e.model.get("sides")) {
 									var t = e.model.get("sides").split("|")
 										, n = t.length
-										, i = d20.textchat.diceengine.random(n);
 									// BEGIN MOD
-									const imgUrl = unescape(t[i]);
-									e.model.save(getRollableTokenUpdate(imgUrl, i)),
+										, i = -1
+										, imgUrl = tagSkip;
+									const tweakRandom = t.filter(j => !unescape(j).includes(tagSkip)).length > 1;
+									while (imgUrl.includes(tagSkip)) {
+										i = d20.textchat.diceengine.random(n);
+										const tUrl = unescape(t[i]);
+										imgUrl = tweakRandom && tUrl === prevUrl ? tagSkip : tUrl;
+									}
+									prevUrl = imgUrl;
+									const trueUrl = getRollableTokenUpdate(imgUrl, i, e.model);
+									d.push(trueUrl);
 									// END MOD
-										d.push(t[i])
 								}
 							}),
 								d20.textchat.rawChatInput({
@@ -13003,7 +15397,7 @@ function baseMenu () {
 										const imgUrl = unescape(o[r]);
 										d20.engine.canvas.getActiveGroup() && d20.engine.unselect(),
 											// BEGIN MOD
-											e.model.save(getRollableTokenUpdate(imgUrl, r)),
+											getRollableTokenUpdate(imgUrl, r, e.model),
 											// END MOD
 											a.off("slide"),
 											a.dialog("destroy").remove()
@@ -13198,8 +15592,8 @@ function baseMenu () {
 						} else if ("back-one" === e) {
 							d20plus.engine.backwardOneLayer(n);
 							i();
-						} else if ("rollertokenresize" === e) {
-							resizeToken();
+						} else if ("edittokenimages" === e) {
+							d20plus.menu.editToken();
 							i();
 						} else if ("copy-tokenid" === e) {
 							const sel = d20.engine.selected();
@@ -13424,74 +15818,354 @@ function baseMenu () {
 
 		/* eslint-enable */
 
-		function getRollableTokenUpdate (imgUrl, curSide) {
-			const m = /\?roll20_token_size=(.*)/.exec(imgUrl);
+		function getRollableTokenUpdate (imgUrl, currentSide, token) {
+			const [imgsrc, m] = (imgUrl || "").replace(tagSkip, "").split(tagSize);
 			const toSave = {
-				currentSide: curSide,
-				imgsrc: imgUrl,
+				currentSide,
+				imgsrc,
 			};
 			if (m) {
-				toSave.width = 70 * Number(m[1]);
-				toSave.height = 70 * Number(m[1])
+				if (isNaN(m) && m?.split) {
+					const [w, h] = m.split("x");
+					if (!isNaN(w) && !isNaN(h)) {
+						toSave.width = Number(w);
+						toSave.height = Number(h);
+					}
+				} else {
+					toSave.width = 70 * Number(m);
+					toSave.height = 70 * Number(m)
+				}
 			}
-			return toSave;
+			token.save(toSave);
+			return imgsrc;
 		}
 
-		function resizeToken () {
-			const sel = d20.engine.selected();
+		function tokenEditorTexts (selection) {
+			const name = selection.length > 1 ? "You are editing multiple tokens" : selection[0].model?.attributes?.name || "Unnamed token";
+			const description = selection.length > 1 ? `
+				If you press "Save", the changes will be applied to each of the selected tokens, making them multi-sided if you have multiple images on the list below
+			` : selection[0].model.attributes.sides ? `
+				You are currently editing images for multi-sided token. Add or remove as many sides as you want. If only one image remains, the token will become a single-sided one
+			` : `
+				Currently this token is represented by a single image. Add more images to convert it to multi-sided token
+			`;
+			const tokenList = selection.length <= 1 ? "" : selection.reduce((r, t) => `${r}
+				<div class="tokenbox selected" data-tokenid="${t.model.id}" data-tokenimg="${t.model.attributes.imgsrc}">
+					<div class="inner">
+						<img src="${t.model.attributes.imgsrc}">
+						<div class="name">${t.model.attributes.name}</div>
+					</div>
+				</div>
+			`, "");
+			return {name, description, tokenList};
+		}
 
-			const options = [["Tiny", 0.5], ["Small", 1], ["Medium", 1], ["Large", 2], ["Huge", 3], ["Gargantuan", 4], ["Colossal", 5]].map(it => `<option value='${it[1]}'>${it[0]}</option>`);
-			const dialog = $(`<div><p style='font-size: 1.15em;'><strong>${d20.utils.strip_tags("Select Size")}:</strong> <select style='width: 150px; margin-left: 5px;'>${options.join("")}</select></p></div>`);
-			dialog.dialog({
-				title: "New Size",
-				beforeClose: function () {
-					return false;
+		d20plus.menu.editToken = (tokenId) => {
+			const selection = tokenId
+				? [{model: d20plus.ut.getTokenById(tokenId)}].filter(t => !!t.model?.attributes)
+				: d20.engine.selected().filter(t => t.type === "image");
+			if (!selection.length) return;
+			const images = [];
+			const added = [];
+			const $dialog = $(d20plus.html.tokenImageEditor);
+			const $list = $dialog.find(".tokenimagelist tbody");
+			const $tokenList = $dialog.find(".tokenlist");
+			const sizes = [["tiny - half square", "0.5"], ["small - 1x1", "1.0"], ["medium - 1x1", "1"], ["large - 2x2", "2"], ["huge - 3x3", "3"], ["gargantuan - 4x4", "4"], ["colossal - 5x5", "5"], ["custom", "0"]];
+			const findStandardSize = (w, h) => {
+				return (w === h && sizes.find(s => s[1] === `${w / 70}`)?.last()) || "0";
+			}
+			const addImageOnInit = (img, add) => {
+				const sizeChanged = img.w !== images.last()?.w || img.h !== images.last()?.h;
+				if (images.length && sizeChanged) $list.variedSizes = true;
+				images.push(img);
+				added.push(add || img.url);
+			}
+			selection.forEach(t => {
+				const sides = t.model.attributes.sides?.split("|");
+				const token = t.model.attributes.imgsrc;
+				const {width: tw, height: th} = t.model.attributes;
+				if (sides.length > 1) {
+					const curSide = sides[t.model.attributes.currentSide] || token;
+					sides.forEach((s, k) => {
+						const checked = unescape(s);
+						const listed = added.indexOf(checked);
+						const [url, size] = checked.split(tagSize);
+						const [sw, sh] = (size || "").split("x");
+						const image = {
+							url: url.replaceAll(tagSkip, ""),
+							skip: url.includes(tagSkip),
+							face: unescape(curSide).includes(url),
+							w: tw,
+							h: th,
+						};
+						if (listed !== -1) {
+							if (k === t.model.attributes.currentSide) images[listed].face = true;
+							return;
+						} else if (!isNaN(size)) {
+							Object.merge(image, {size, w: size * 70, h: size * 70});
+						} else if (!isNaN(sw) && !isNaN(sh)) {
+							Object.merge(image, {size: "0", w: sw, h: sh});
+						}
+						addImageOnInit(image, checked);
+					});
+				} else {
+					const listed = added.indexOf(t.model.attributes.imgsrc);
+					if (listed !== -1) images[listed].face = true;
+					else addImageOnInit({url: t.model.attributes.imgsrc, face: true, w: tw, h: th});
+				}
+			});
+			if ($list.variedSizes) {
+				images.forEach(i => { if (i.size === undefined) i.size = findStandardSize(i.w, i.h); });
+			}
+			const htmls = tokenEditorTexts(selection);
+			const resetTokens = () => {
+				$tokenList.find(".selected").each((k, t) => {
+					const $token = $(t);
+					const $tokenimage = $token.find("img");
+					$tokenimage.attr("src", $token.data("tokenimg"));
+				});
+			}
+			const buildList = () => {
+				if (images.length === 1) {
+					$list.someImageSelected = true;
+					images[0].selected = true;
+				}
+				$list.html(images.reduce((r, i, k) => `${r}
+					<tr class="tokenimage${images.length === 1 ? " lastone" : ""}${i.skip ? " skipped" : ""}" data-index="${(i.id = k, k)}">
+						<td style="padding:0px;" title="Current image">
+							<input class="face" type="checkbox"${i.selected ? " checked" : ""}>
+						</td>
+						<td>
+							<div class="dropbox filled">
+							<div class="inner"><img src="${i.url}"><div class="remove"><span>Drop a file</span></div></div>
+							</div>
+						</td>
+						<td>
+							<label>Select size:</label><select>${sizes.reduce((o, s) => `${o}
+								<option value="${s[1]}"${s[1] === i.size ? " selected" : ""}>${s[0]}</option>
+							`, `<option>default (keep as is)</option>`)}</select>
+							<span class="custom${i.size === "0" ? " set" : ""}"><input class="w" value="${i.w}"> X <input class="h" value="${i.h}">px</span>
+							<label class="skippable"><input class="toskip" type="checkbox"${i.skip ? " checked" : ""}> Skip side on randomize</label>
+						</td>
+						<td style="padding:0px;">
+							<span class="btn url" title="Edit URL...">j</span>
+							<span class="btn delete" title="Delete">#</span>
+						</td>
+					</tr>
+				`, ""));
+				if (!$list.someImageSelected) {
+					images.forEach((i, k) => {
+						if (i.face) $list.find("input.face").eq(k).prop({indeterminate: true});
+					});
+				}
+			}
+			$dialog.dialog({
+				autoopen: true,
+				title: "Edit token image(s)",
+				width: 450,
+				open: () => {
+					buildList();
+					$tokenList.html(htmls.tokenList);
+					$dialog.parent().css("maxHeight", "80vh").css("top", "10vh");
+					$dialog.find(".edittitle").text(htmls.name);
+					$dialog.find(".editlabel").text(htmls.description);
+					$list.droppable({
+						greedy: true,
+						tolerance: "pointer",
+						hoverClass: "ui-dropping",
+						scope: "default",
+						accept: ".resultimage, .library-item, .journalitem.character",
+						drop: (evt, $d) => {
+							evt.originalEvent.dropHandled = !0;
+							evt.stopPropagation();
+							evt.preventDefault();
+							$d.helper.detach();
+							const char = d20.Campaign.characters.get($d.draggable.data("itemid"));
+							const dtoken = JSON.parse(char?._blobcache.defaulttoken || "{}");
+							const url = $d.draggable.data("fullsizeurl")
+								|| $d.draggable.data("url")
+								|| dtoken.imgsrc;
+							const img = document.elementFromPoint(evt.clientX, evt.clientY);
+							const id = img.tagName === "IMG" ? $(img).closest(".tokenimage").data("index") : undefined;
+							if (images[id]?.url && url) {
+								images[id].url = url;
+								$list.find(".dropbox img").eq(id).attr("src", url);
+								if (images[id].selected) $tokenList.find(".selected img").attr("src", images[id].url);
+							} else if (url) {
+								if ($list.variedSizes && dtoken.width) {
+									const [w, h] = [dtoken.width, dtoken.height];
+									const size = findStandardSize(w, h);
+									images.push({url, size, w, h});
+								} else {
+									images.push({url, w: 70, h: 70});
+								}
+								buildList();
+							}
+						},
+					});
+					$dialog.on(window.mousedowntype, ".tokenbox", evt => {
+						const $token = $(evt.currentTarget);
+						if ($token.hasClass("selected")) {
+							if ($tokenList.find(".selected").length > 1) {
+								$token.removeClass("selected");
+								$token.find("img").attr("src", $token.data("tokenimg"));
+							}
+						} else {
+							$token.addClass("selected");
+							if ($list.someImageSelected) $token.find("img").attr("src", images.find(i => i.selected)?.url);
+						}
+					}).on("change", "select", evt => {
+						const $changed = $(evt.target);
+						const $token = $changed.parent();
+						const $custom = $token.find(".custom").removeClass("set");
+						const newSize = $changed.val();
+						const id = $changed.closest(".tokenimage").data("index");
+						if (newSize > 0) {
+							$token.find(".w, .h").val(newSize * 70);
+							images[id].size = newSize;
+							$list.variedSizes = true;
+						} else {
+							delete images[id].size;
+							if (newSize === "0") {
+								$list.variedSizes = true;
+								images[id].size = newSize;
+								images[id].w = $token.find(".w").val();
+								images[id].h = $token.find(".h").val();
+								$custom.addClass("set");
+							}
+						}
+					}).on("change", "input.face", evt => {
+						const id = $(evt.target).closest(".tokenimage").data("index");
+						const isChecked = $(evt.target).prop("checked");
+						const $allBoxes = $list.find("input.face");
+						if (isChecked) {
+							$list.someImageSelected = true;
+							$allBoxes.prop({checked: false}).prop({indeterminate: false});
+							$(evt.target).prop({checked: true});
+							$tokenList.find(".selected img").attr("src", images[id].url);
+							images.forEach((i, k) => {
+								if (k === id) i.selected = true;
+								else i.selected = false;
+							});
+						} else {
+							$list.someImageSelected = false;
+							images[id].selected = false;
+							resetTokens();
+							images.forEach((i, k) => {
+								if (i.face) $allBoxes.eq(k).prop({indeterminate: true});
+							});
+						}
+					}).on("change", "input.toskip", evt => {
+						const $token = $(evt.target).closest(".tokenimage");
+						const id = $token.data("index");
+						const isChecked = $(evt.target).prop("checked");
+						if (isChecked) {
+							$token.addClass("skipped");
+							images[id].skip = true;
+						} else {
+							$token.removeClass("skipped");
+							images[id].skip = false;
+						}
+					}).on("change", "input .w, input.h", evt => {
+						const $token = $(evt.target).closest(".tokenimage");
+						const id = $token.data("index");
+						const set = {w: $token.find(".w").val(), h: $token.find(".h").val()};
+						if (isNaN(set.w) || isNaN(set.h)) return;
+						images[id].w = set.w;
+						images[id].h = set.h;
+					}).on(window.mousedowntype, ".url", evt => {
+						const $token = $(evt.target).closest(".tokenimage");
+						const $image = $token.find("img");
+						const id = $token.data("index");
+						const url = window.prompt("Edit URL", $image.attr("src"));
+						if (!url) return;
+						d20plus.art.setLastImageUrl(url);
+						images[id].url = url;
+						$image.attr("src", url);
+					}).on(window.mousedowntype, ".delete", evt => {
+						const $deleted = $(evt.target).closest(".tokenimage");
+						const id = $deleted.data("index");
+						if (images.length <= 1) return;
+						if (images[id].selected) {
+							$list.someImageSelected = false;
+							resetTokens();
+						}
+						images.splice(id, 1);
+						buildList();
+						if (images.length === 1) {
+							$list.someImageSelected = true;
+							$list.find("input.face").prop({checked: true});
+							$tokenList.find(".selected img").attr("src", images[0].url);
+						}
+					}).on(window.mousedowntype, ".addimageurl", () => {
+						const url = window.prompt("Enter a URL", d20plus.art.getLastImageUrl());
+						if (!url) return;
+						d20plus.art.setLastImageUrl(url);
+						images.push({url, w: 70, h: 70});
+						buildList();
+					})
+				},
+				close: () => {
+					$dialog.off();
+					$dialog.dialog("destroy").remove();
 				},
 				buttons: {
-					Submit: function () {
-						const size = dialog.find("select").val();
-						d20.engine.unselect();
-						sel.forEach(it => {
-							const nxtSize = size * 70;
-							const sides = it.model.get("sides");
-							if (sides) {
-								const ueSides = unescape(sides);
-								const cur = it.model.get("currentSide");
-								const split = ueSides.split("|");
-								if (split[cur].includes("roll20_token_size")) {
-									split[cur] = split[cur].replace(/(\?roll20_token_size=).*/, `$1${size}`);
-								} else {
-									split[cur] += `?roll20_token_size=${size}`;
-								}
-								const toSaveSides = split.map(it => escape(it)).join("|");
-								const toSave = {
-									sides: toSaveSides,
-									width: nxtSize,
-									height: nxtSize,
-								};
-								// eslint-disable-next-line no-console
-								console.log(`Updating token:`, toSave);
-								it.model.save(toSave);
+					save: {
+						text: "Save changes",
+						click: () => {
+							const save = {};
+							if (images.length > 1) {
+								save.sides = images.map(i => {
+									const skipped = i.skip ? tagSkip : "";
+									const size = i.size ? tagSize + (i.size === "0" ? `${i.w}x${i.h}` : i.size) : "";
+									return escape(i.url + skipped + size);
+								}).join("|");
 							} else {
-								// eslint-disable-next-line no-console
-								console.warn("Token had no side data!")
+								save.sides = "";
 							}
-						});
-						dialog.off();
-						dialog.dialog("destroy").remove();
-						d20.textchat.$textarea.focus();
+							if ($list.someImageSelected) {
+								const selected = images.find(i => i.selected);
+								if (selected) {
+									save.imgsrc = selected.url;
+									save.currentSide = selected.id;
+									if (selected.size === "0") {
+										save.width = Number(selected.w);
+										save.height = Number(selected.h);
+									} else if (selected.size) {
+										save.width = selected.size * 70;
+										save.height = selected.size * 70;
+									}
+								}
+							}
+							if (selection.length > 1) {
+								d20.engine.unselect();
+							}
+							selection.forEach(t => {
+								if (selection.length === 1
+									|| $tokenList.find(`[data-tokenid=${t.model.id}]`).hasClass("selected")) {
+									t.model.save(save);
+								}
+							});
+							$dialog.off();
+							$dialog.dialog("destroy").remove();
+							d20.textchat.$textarea.focus();
+						},
 					},
-					Cancel: function () {
-						dialog.off();
-						dialog.dialog("destroy").remove();
+					cancel: {
+						text: "Cancel",
+						click: () => {
+							$dialog.off();
+							$dialog.dialog("destroy").remove();
+						},
 					},
 				},
 			});
+			return $dialog;
 		}
 
 		d20.token_editor.showContextMenu = r;
-		d20.token_editor.closeContextMenu = i;
-		$(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
+		// d20.token_editor.closeContextMenu = i;
+		// $(`#editor-wrapper`).on("click", d20.token_editor.closeContextMenu);
 	};
 }
 
@@ -15112,6 +17786,47 @@ function baseCss () {
 
 	// QOL fixes
 	d20plus.css.cssRules = d20plus.css.cssRules.concat([
+		// Style dice rolls for BetterActions
+		{
+			s: ".inlinerollresult.showtip.hit-dice",
+			r: "cursor: pointer",
+		},
+		{
+			s: ".inlinerollresult.showtip.hit-dice.heal-dice::before",
+			r: "content: \"+\"",
+		},
+		{
+			s: ".inlinerollresult.showtip.hit-dice:hover::after",
+			r: "content: \"\\2694\";font-size: initial; color: rgba(250,100,100,0.6); position: absolute;",
+		},
+		{
+			s: ".inlinerollresult.showtip.check::after",
+			r: "content: \"\\2612\";font-size: 15px;color: #b21a1a;position:absolute;background:inherit;margin-top: 4px;line-height: 15px;",
+		},
+		{
+			s: ".inlinerollresult.showtip.check.success::after",
+			r: "content: \"\\2611\";color: #009c00;",
+		},
+		{
+			s: ".inlinerollresult.showtip.check.attack-failure::after",
+			r: "content: \"\\26E8\"; padding-top: 2px;",
+		},
+		{
+			s: ".inlinerollresult.showtip.check.attack-success::after",
+			r: "content: \"\\2694\";color: #009c00;border: 1px solid;display: inline-block;border-radius: 10px;padding: 2px;font-size: 11px;line-height: 8px;margin-top: 5px;",
+		},
+		{
+			s: ".sheet-grey .inlinerollresult.showtip.check::after",
+			r: "content: \"\";border: none;",
+		},
+		{
+			s: ".inlinerollresult.showtip.check",
+			r: "margin-right: 8px;display: inline-block;height: 24px;line-height: 24px;margin-top: -4px;",
+		},
+		{
+			s: ".sheet-grey .inlinerollresult.showtip.check, .inlinerollresult.showtip.check.attack-success, .inlinerollresult.showtip.attack-fail",
+			r: "margin-right: unset;",
+		},
 		// Styles for altered messages
 		{
 			s: ".userscript-modify-message",
@@ -15760,6 +18475,778 @@ function baseCss () {
 			padding: 0 3px;
 		}
 	`;
+
+	d20plus.css.clickableConditionHints = `
+		.hinted.showtip,
+		.message .hinted.showtip,
+		.message .sheet-container .hinted.showtip {
+			color: #b85f74;
+			cursor: help;
+			font-weight: bold;
+			display: inline-block;
+		}
+		.hinted.showtip.clickable,
+		.message .hinted.showtip.clickable,
+		.message .sheet-container .hinted.showtip.clickable {
+			cursor: pointer;
+		}
+		.b20-condition-hint {
+			text-align: left;
+		}
+		.b20-condition-hint div, .b20-condition-hint p {
+			text-align: left;
+			max-height: 400px;
+			overflow-y: hidden;
+			font-size: 12px;
+			line-height: normal;
+		}
+		.b20-condition-hint h2, .b20-condition-hint h3 {
+			color: var(--link-text);
+			font-size: 14px;
+			line-height: normal;
+			display: inline-block;
+			width: 100%;
+		}
+		.b20-condition-hint ul {
+			margin-left: 15px;
+		}
+		.b20-condition-hint td, .b20-condition-hint th {
+			padding-right: 4px;
+		}
+		.b20-condition-hint .rd__h-toggle {
+			display: none;
+		}
+		.b20-condition-hint .ve-flex-vh-center {
+			font-weight: 100;
+			line-height: normal;
+			font-size: smaller;
+			float: right;
+		}
+	`;
+
+	d20plus.css.actionMenu = `
+		/* Widen traits template for spell descriptions (not necessary) */
+		.sheet-rolltemplate-traits {
+			width:90%;
+		}
+
+		/* Adjust token actions position */
+		#secondary-toolbar.legacy-menu.toolbar-collapse-adjust {
+			left: 118px;
+		}
+		#secondary-toolbar.legacy-menu.toolbar-collapse-adjust.master-toolbar-collapsed {
+			left: 92px;
+		}
+
+		#ba-panel {
+			display: block;
+		}
+
+		/* Better actions button */
+		#ba-panel button.large.page-button {
+			position: absolute;
+			height: 40px;
+			left: 62px;
+			width: 40px;
+			top: 20px;
+			border-radius: 8px;
+			padding: 0 !important;
+			background-color: var(--colors-light-060);
+			border-style: solid;
+			border-width: 1px;
+			border-color: var(--grayscale-light-l60);
+			backdrop-filter: blur(15px);
+			transition: left ease 200ms;
+		}
+		.dark #ba-panel button.large.page-button {
+			background-color: var(--colors-dark-050);
+			border-color: --grayscale-light-l-30;
+		}
+		#ba-panel button.large.page-button:hover {
+			border-width: 3px;
+		}
+		#ba-panel.master-toolbar-collapsed button.large.page-button {
+			left: 36px;
+		}
+
+		/* Better actions menu dialog (general) */
+		#ba-panel .ba-menu {
+			position: absolute;
+			left: 62px;
+			top: 72px;
+			width: 350px;
+			background-color: var(--vtt-surface);
+			border-radius: 8px;
+			box-shadow: var(--vtt-submenu-box-shadow);
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			padding: 4px;
+			font-family: var(--font-family-proxima-nova);
+			font-style: normal;
+			font-weight: 300;
+			font-size: 13px;
+			color: var(--vtt-grayscale-base);
+			transition: width 1s ease, opacity 1s ease, left ease 200ms;
+			opacity: 0.7;
+		}
+		#ba-panel:hover .ba-menu {
+			opacity: unset;
+		}
+		#ba-panel.master-toolbar-collapsed .ba-menu {
+			left: 36px;
+		}
+		#ba-panel .ba-token {
+			background: var(--vtt-surface);
+			width: 45px;
+			display: inline-block;
+			height: 45px;
+			border-radius: 23px;
+			position: relative;
+			top: -10px;
+			left: -13px;
+			border: 1px solid var(--vtt-grayscale-base);
+		}
+		#ba-panel .ba-token img {
+			width: 45px;
+		}
+		.ba-title {
+			width: 100%;
+			height: 35px;
+		}
+		.ba-title .ba-name {
+			height: 100%;
+			display: inline-block;
+			vertical-align: middle;
+			font-weight: bold;
+		}
+		.ba-title-actions {
+			display: block;
+			float: right;
+			cursor: pointer;
+		}
+		.ba-title-actions button {
+			font-family: Pictos;
+			font-size: 15px;
+			padding: 3px;
+		}
+		.ba-menu .ba-main {
+			font-family: "Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;;
+			font-size: 13px;
+			font-weight: normal;
+			width: 100%;
+		}
+
+		/* Better actions tabs */
+		#ba-panel .nav {
+			margin-bottom: 10px;
+			width: 100%;
+			padding-left: 34px;
+ 			box-sizing: border-box;
+			transition: padding-left 1s ease;
+			overflow: clip;
+			white-space: nowrap;
+			height: 37px;
+		}
+		.ba-menu .nav-tabs > li > a {
+			padding: 9px;
+			height: 17px;
+			text-decoration: none;
+		}
+		#ba-panel .ba-tabs > .nav-tabs a:hover {
+			cursor: pointer;
+			background: rgba(155,155,155,0.5);
+		}
+		.dark .ba-menu .nav-tabs a img {
+			filter: contrast(0) brightness(2);
+		}
+		.ba-menu .nav-tabs a img {
+			width: 15px;
+ 			margin: -5px;
+		}
+		.ba-menu .nav:not(:hover) .nav-tabs.active a span, .ba-menu .nav-tabs li:hover a span {
+			max-width: 55px;
+			padding-left: 6px;
+			text-overflow: ellipsis;
+		}
+		.ba-menu .nav-tabs a span {
+			display: inline-block;
+			padding-left: 0px;
+			margin-right: -3px;
+			max-width: 0px;
+			color: var(--vtt-grayscale-base);
+			overflow: hidden;
+			transition: max-width 1s ease, padding-left 1s ease;
+		}
+
+		.ba-list.content-left, .ba-main .content-right {
+			display: inline-block;
+			overflow-x: hidden;
+			overflow-y: auto;
+			min-height: 216px;
+			max-height: 216px;
+			margin-bottom: 6px;
+			padding: 0px 5px;
+			box-sizing: border-box;
+			scrollbar-width: thin;
+			scrollbar-color: transparent transparent;
+			scrollbar-gutter: stable;
+			transition: width 1s ease, max-height 0.6s ease, padding 0.5s 0.5s;
+		}
+		.ba-list.content-left:hover, .ba-main .content-right:hover {
+			scrollbar-color: rgba(155,155,155,0.5) transparent;
+		}
+		.ba-main .content-left {
+			width: 160px;
+		}
+		.ba-main .content-right {
+			width: 180px;
+			float: right;
+			box-sizing: content-box;
+		}
+		.ba-info > ul, .ba-list > ul {
+			list-style: none;
+			margin: 0px;
+		}
+		.ba-info > ul > li {
+			border-bottom: 1px solid rgba(155,155,155,0.5);
+			padding-bottom: 5px;
+		}
+		.ba-info > ul > li > span {
+			display: inline-block;
+			padding-right: 4px;
+			font-weight: lighter;
+			color: var(--vtt-grayscale-base);
+		}
+		.ba-info > ul > li > span strong {
+			font-weight: normal;
+			color: rgb(140,140,140);
+			white-space: nowrap;
+		}
+
+		/* Collapsed state */
+		#ba-panel .ba-menu.wcollapsed {
+			width: 170px;
+		  }
+		.ba-menu.wcollapsed .ba-name {
+			max-width: 55px;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+		  }
+		#ba-panel .ba-menu.wcollapsed .nav {
+			padding-left: 0px;
+			margin-top: 5px;
+			height: 29px;
+		  }
+		.ba-menu.wcollapsed .nav-tabs > li {
+			width: 21px;
+		}
+		.ba-menu.wcollapsed .nav-tabs > li > a {
+			width: 0px;
+			height: 13px;
+			padding-top: 5px;
+		}
+		.ba-menu.wcollapsed .nav-tabs > li > a > img {
+			width: 12px;
+			margin: -6px;
+		}
+		  .ba-menu.wcollapsed .nav:not(:hover) .nav-tabs.active a span, .ba-menu.wcollapsed .nav-tabs li:hover a span {
+			display: none;
+			margin-right: -9px;
+		  }
+		  #ba-panel .ba-menu.wcollapsed .ba-list.content-left {
+			width: 164px;
+		  }
+		  #ba-panel .ba-menu.wcollapsed .ba-info.content-right {
+			padding: 0px;
+			width: 0%;
+			height: 200px;
+			position: absolute;
+			top: 85px;
+		  }
+		  .ba-menu.wcollapsed .ba-title-actions [data-action="collapsew"]::after {
+			content: "N";
+			transform: none;
+		  }
+		  .ba-title-actions [data-action="collapsew"]::after {
+			content: "l";
+			transform: rotate(180deg);
+			display: inline-block;
+		  }
+		  .ba-menu.hexpanded .ba-title-actions [data-action="expandh"]::after {
+			content: "\`\`";
+			font-size: 14px;
+			display: inline-block;
+			width: 14px;
+			overflow: clip;
+			text-indent: -7px;
+			letter-spacing: 1px;
+		  }
+		  .ba-title-actions [data-action="expandh"]::after {
+			content: "\`";
+			font-size: 13px;
+			display: inline-block;
+		  }
+		  .ba-menu.hexpanded .ba-list.content-left, .ba-menu.hexpanded  .ba-main .content-right {
+			max-height: 70vh;
+		  }
+
+		.ba-list > ul > li {
+			border-bottom: 1px solid rgba(155,155,155,0.5);
+			padding: 5px 0px 5px 5px;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overflow-x: hidden;
+		}
+		.ba-list ul > li[data-action]:hover {
+			background-color: rgba(155,155,155,0.5);
+			cursor: pointer;
+		}
+		.ba-list > ul > li:hover > .submenu {
+			display: flex;
+			margin: 0px 5px 0px -5px;
+		}
+		.ba-list .submenu {
+			display: none;
+		}
+		.ba-list .submenu > li {
+			list-style: none;
+			display: block;
+			text-align: center;
+			padding: 3px;
+			box-sizing: content-box;
+			margin-bottom: -3px;
+			margin-top: 2px;
+			flex-grow: 1;
+			border-left: 1px solid rgba(155,155,155,0.5);
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.ba-list .submenu > li:first-child {
+			border-left: none;
+		}
+		.ba-list ul.uneven li.inactive > span, .ba-list li.inactive[data-action] {
+			color: #848484;
+			font-weight: 100;
+		}
+		.ba-list ul.uneven.filtered li.inactive, .ba-list ul.uneven.filtered .hasSub li.inactive {
+			display: none;
+		}
+		.ba-list ul:not(.uneven) li.mods label.filter {
+			display: none;
+		}
+		.ba-list ul[data-list="spells"] > li > span {
+			text-align: right;
+			width: 100%;
+			display: inline-block;
+			padding-right: 14px;
+			box-sizing: border-box;
+			font-weight: bold;
+		}
+		.ba-list ul[data-list="spells"] > .hasSub > .submenu {
+			display: block;
+			margin: 0px;
+		}
+		.ba-list ul[data-list="spells"] > .hasSub > .submenu > li {
+			width: 100%;
+			display: block;
+			text-align: left;
+			margin: 3px 0px 3px -5px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			border-left: none;
+		}
+		.ba-list ul[data-list="spells"] i {
+			font-style: normal;
+			display: inline-block;
+			font-size: 8px;
+			font-weight: normal;
+			float: left;
+		}
+		.ba-list ul[data-list="spells"] .selector:hover .submenu {
+			display: flex;
+			margin-left: 0px; 
+		}
+		.ba-list ul[data-list="spells"] .submenu .parameters > .submenu {
+			display: none;
+		}
+		.ba-list ul[data-list="spells"] .submenu .parameters:hover > .submenu {
+			display: block;
+			position: absolute;
+			z-index: 10;
+			top: 75px;
+			left: 130px;
+			background: var(--vtt-surface);
+			height: 240px;
+			border-left: 1px dashed rgba(155,155,155,0.5);
+		}
+		.ba-info [data-pane] {
+			width: 175px;
+		}
+		.ba-list [data-list], .ba-info [data-pane] {
+			display: none;
+		}
+		.ba-list .active[data-list], .ba-info [data-pane] {
+			display: none;
+		}
+		.ba-list .active[data-list], .ba-info .active[data-pane] {
+			display: block;
+		}
+		.ba-list .mods {
+			position: sticky;
+			top: 0px;
+			background: var(--vtt-surface);
+			padding-top: 1px;
+		}
+		.ba-list li.mods label {
+			display: inline-block;
+			margin-bottom: 3px;
+		}
+		.ba-list li.mods label span {
+			cursor: pointer;
+			padding: 0px 3px;
+			margin-right: 3px;
+			border: 1px solid transparent;
+			border-radius: 4px;
+		}
+		.ba-list li.mods label.filter span {
+			font-family: pictos;
+			font-size: 12px;
+			display: inline-block;
+			height: 19px;
+			box-sizing: border-box;
+			vertical-align: top;
+			color: gray;
+			width: 19px;
+			overflow: clip;
+			margin-left: 4px;
+			transform: rotate(180deg);
+			border-radius: 12px;
+		}
+		.ba-list li.mods label span:hover {
+			background: rgba(155,155,155,0.5);
+		}
+		.ba-list li.mods input:checked + span {
+			background-color: var(--primary-dark);
+			color: var(--grayscale-dark-base);
+			border: 1px solid var(--primary-dark-l20);
+		}
+		.ba-list li.mods label input {
+			display: none;
+		}
+	`;
+
+	d20plus.css.layerToolbar = `
+		.b20.drawer-outer, .b20 .drawer-views {
+			display: flex;
+			flex-shrink: 1;
+			flex-direction: column;
+			align-items: center;
+			position: absolute;
+			background: var(--vtt-toolbar-drawer-bg);
+			backdrop-filter: blur(5px);
+			min-height: 44px;
+			padding: 6px 2px;
+			padding-top: 6px;
+			padding-bottom: 6px;
+			border-radius: 8px;
+			bottom: 20px;
+			left: 60px;
+			padding-bottom: 3px;
+			padding-top: 6px;
+			z-index: 10499;
+			box-shadow: var(--vtt-toolbar-drawer-box-shadow);
+		}
+		.b20.toolbar-button-outer, .b20 .drawer-views .toolbar-button-outer {
+			position: relative;
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+			align-items: center;
+		}
+		.drawer-outer #extra-layer-button {
+			display: none;
+		}
+		.b20 .toolbar-button-mid {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		.b20 .toolbar-button-inner, .b20 .view-button-inner {
+			display: flex;
+			flex-direction: column;
+			align-content: space-between;
+			justify-content: center;
+			align-items: center;
+			position: relative;
+			width: 44px;
+			height: 40px;
+		}
+		.b20 .icon-slot {
+			color: var(--vtt-toolbar-icon-color);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 36px;
+			height: 36px;
+			border-radius: 12px;
+		}
+		.b20 .icon-circle {
+			background: var(--vtt-layer-btn-bg);
+			border-radius: 20px;
+		}
+		.b20 .icon-selected, .b20 .drawer-views .view-button-inner {
+			border: 1px solid;
+			border-radius: 12px;
+			border-color: var(--vtt-toolbar-border-color);
+			color: var(--72282855);
+		}
+		.b20 .b20-selected .icon-slot {
+			background-color: #446810;
+		}
+		.b20 .submenu-caret {
+			position: absolute;
+			background-image: linear-gradient(to top left, var(--vtt-submenu-caret-color) 50%, transparent 0);
+			background-size: 100% 100%;
+			background-repeat: no-repeat;
+			background-position: left,right;
+			width: 4px;
+			height: 4px;
+			bottom: 2px;
+			right: 4px;
+		}
+		.b20 span.grimoire__roll20-icon {
+			font-family: Roll20Icons;
+			font-size: var(--72a4ca39);
+			user-select: none;
+		  }
+		.b20 .label {
+			display: flex;
+			justify-content: center;
+			font-family: var(--font-family-proxima-nova);
+			color: var(--vtt-layer-label-color);
+			padding: 1.95px 5.85px 0px;
+			letter-spacing: .03rem;
+			font-size: 66%;
+			max-width: 0px;
+		}
+		.b20.toolbar-button-outer:hover .toolbar-button-inner {
+			border-radius: 12px;
+			filter: drop-shadow(0px 0px 4px rgba(122, 150, 60, 0.3)) drop-shadow(0px 0px 2px rgba(121, 174, 27, 0.1)) drop-shadow(1px 1px 4px rgba(135, 193, 64, 0.6));
+		}
+		.b20 .toolbar-tooltip-outer {
+			position: absolute;
+			left: 59px;
+			z-index:10500;
+			display: none;
+			flex-direction: row;
+			justify-content: center;
+			align-items: center;
+			height: 34px;
+			top: var(--0c2fd930);
+		}
+		.b20.toolbar-button-outer:hover .toolbar-tooltip-outer,
+		.b20 .drawer-views .toolbar-button-outer:hover .toolbar-tooltip-outer {
+			display: flex;
+		}
+		.b20 .toolbar-tooltip-caret {
+			background: var(--vtt-tooltip-bg);
+			transform: rotate(-45deg);
+			width: 8px;
+			height: 8px;
+		}
+		.b20 .toolbar-tooltip-inner {
+			background: var(--vtt-tooltip-bg);
+			position: absolute;
+			display: flex;
+			flex-grow: 1;
+			flex-direction: row;
+			justify-content: center;
+			align-items: center;
+			border-radius: 8px;
+			padding: 0px 8px 0px 8px;
+			gap: 8px;
+			left: 4px;
+		}
+		.b20 .toolbar-tooltip-label {
+			display: flex;
+			align-items: center;
+			color: var(--vtt-tooltip-color);
+			background: var(--vtt-tooltip-bg);
+			width: max-content;
+			height: 34px;
+		}
+		.b20 .toolbar-shortcut-label {
+			display: flex;
+			align-items: center;
+			color: var(--vtt-label-color);
+			background: var(--vtt-tooltip-bg);
+			width: max-content;
+			height: 34px;
+			font-weight: bold;
+		}
+		#layers-label {
+			margin-bottom: 4px;
+			font-size: 9px;
+		}
+		#master-toolbar .toolbar-button-mid .label {
+			font-size: 8px;
+			margin: -3px 0px 4px 0px;
+		}
+		/* Layer visibility toggles */
+		.b20 .layer-toggle {
+			font-family: Pictos;
+			position: relative;
+			margin: 0px 0px -16px 0px;
+			top: -14px;
+			left: 10px;
+			background-color: var(--vtt-layer-btn-bg);
+			border-radius: 8px;
+			width: 16px;
+			height: 16px;
+			text-align: center;
+			line-height: 16px;
+			cursor: alias;
+			opacity: 0.7;
+		}
+		.toolbar-button-inner.layer-off {
+			pointer-events: none;
+			filter: opacity(0.5) brightness(1.2);
+		}
+		.toolbar-button-inner.layer-off::after {
+			content: "d";
+			width: 16px;
+			height: 16px;
+			font-family: Pictos;
+			margin-top:-16px;
+			position: relative;
+			left: 11px;
+			top: 1px;
+			font-size: 15px;
+			color: rgb(177, 0, 0);
+		}
+		html.dark .toolbar-button-inner.layer-off::after {
+			top: 3px;
+		}
+		/* View toggles */
+		.b20.drawer-outer .drawer-views {
+			left: 50px;
+			bottom: 0px;
+		}
+		.b20 .drawer-views .toolbar-button-mid {
+			height: 36px;
+			border-radius: 20px;
+			padding: 0px;
+			margin: 2px 4px;
+		}
+		.b20 .drawer-views .view-button-inner {
+			margin-bottom: -10px;
+			border-radius: 20px;
+			border: 1px solid transparent;
+			border-bottom: none;
+			border-top: none;
+			width: 34px;
+		}
+		.b20 .drawer-views .last .view-button-inner {
+			border-top-left-radius: 0px;
+			border-top-right-radius: 0px;
+			border-top: none;
+		}
+		.b20 .drawer-views .first .view-button-inner {
+			border-bottom-left-radius: 0px;
+			border-bottom-right-radius: 0px;
+		}
+		.b20 .drawer-views .middle .view-button-inner {
+			border-radius: 0px;
+			border-top: 0px;
+		}
+		.b20 .drawer-views .view-icon-slot {
+			width: 36px;
+			height: 38px;
+			line-height: 18px;
+			border-radius: 20px;
+			padding: 8px;
+			box-sizing: border-box;
+		}
+		.b20 .drawer-views .label {
+			top: 0px;
+			position: relative;
+			font-size: 7px;
+			max-width: 36px;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			overflow: visible;
+			overflow-x: clip;
+			padding: 0px;
+			display: block;
+		}
+		.b20 .drawer-views:hover .view-button-inner {
+			border: 1px solid var(--vtt-toolbar-border-color);
+			border-bottom: none;
+			border-top: none;
+		}
+		.b20 .drawer-views .active .view-icon-slot {
+			background: var(--vtt-layer-btn-bg);
+		}
+		.b20 .drawer-views .toolbar-button-outer:hover .view-button-inner {
+			filter: drop-shadow(0px 0px 4px rgba(70, 190, 173, 0.3)) drop-shadow(0px 0px 5px rgba(27, 174, 133, 0.1)) drop-shadow(1px 1px 5px rgba(64, 193, 169, 0.6));
+		}
+		.b20 .drawer-views .active .view-icon-slot::after {
+			font-family: Pictos;
+			content: "E";
+			position: relative;
+			opacity: 0.7;
+			top: -31px;
+			left: 15px;
+		}
+	`;
+
+	d20plus.css.hideExtraLayersToggle = `
+		.b20 .layer-toggle {
+			display: none;
+		}
+	`;
+
+	d20plus.css.betterTokenMarkersMenu = `
+		#radial-menu .markermenu.open {
+			width: 301px;
+			height: auto;
+			line-height: 0px;
+			border-radius: 25px;
+			padding: 15px;
+			overflow: auto;
+			margin-left: 20px;
+			max-height: 254px;
+		}
+		#radial-menu .markermenu.open::before {
+			content: " ";
+			background: inherit;
+			width: 50px;
+			height: 50px;
+			display: block;
+			position: absolute;
+			left: -24px;
+			top: 33px;
+			border-radius: 25px;
+			z-index: -1;
+		}
+		#radial-menu .markermenu .statusicon {
+			margin: 1px;
+			width: 28px;
+			height: 28px;
+			box-sizing: border-box;
+			border: 4px solid transparent;
+			padding: 0px;
+			background-position: center;
+		}
+	`;
+
+	d20plus.css.deserifyDarkmode = `
+		.sheet-darkmode #tab-content {
+			font-family: unset;
+		}
+	`;
 }
 
 SCRIPT_EXTENSIONS.push(baseCss);
@@ -15836,72 +19323,159 @@ function baseUi () {
 		d20plus.tool.addTools();
 	};
 
-	d20plus.ui.addQuickUiGm = () => {
-		const $wrpBtnsMain = $(`#floatingtoolbar`);
+	d20plus.ui.r20Buttons = [
+		{DOMid: "tokens-layer-button", id: "objects", color: "--vtt-toolbar-token-layer-btn-bg"},
+		{DOMid: "gm-layer-button", id: "gmlayer", color: "--vtt-toolbar-gm-layer-btn-bg"},
+		{DOMid: "lighting-layer-button", id: "walls", color: "--vtt-toolbar-lighting-layer-btn-bg"},
+		{DOMid: "map-layer-button", id: "map", color: "--vtt-toolbar-map-layer-btn-bg"},
+	];
 
-		// add quick layer selection panel
-		const $ulBtns = $(`<div id="floatinglayerbar"><ul/></div>`)
-			.css({
-				width: 30,
-				position: "absolute",
-				left: 10,
-				top: $wrpBtnsMain.height() + 90,
-				border: "1px solid #666",
-				boxShadow: "1px 1px 3px #666",
-				zIndex: 10600,
-				backgroundColor: "rgba(255,255,255,0.80)",
-			})
-			.appendTo($(`#playerzone`)).find(`ul`);
+	d20plus.ui.b20Buttons = [
+		{name: "FG", tooltip: "Foreground Layer", icon: "B", id: "foreground", cfg: "showForeground"},
+		{name: "ROOF", tooltip: "Roof Layer", icon: "H", id: "roofs", cfg: "showRoofs"},
+		{name: "BG", tooltip: "Background Layer", icon: "a", id: "background", cfg: "showBackground"},
+		{name: "FLOOR", tooltip: "Floor Layer", icon: "I", id: "floors", cfg: "showFloors"},
+		{name: "COVER", tooltip: "Weather Exclusions", icon: "C", id: "weather", cfg: "showWeather"},
+	];
 
-		const handleClick = (clazz, evt) => $wrpBtnsMain.find(`.${clazz}`).trigger("click", evt);
+	const switchToB20Layer = (evt) => {
+		const $selected = $(evt.currentTarget);
+		const $icon = $selected.find(".icon-slot");
+		const icon = $icon.find("span").text();
+		const $roll20LayersButton = $("#layers-menu-button").find(".grimoire__roll20-icon");
 
-		// Add layers to second side bar
-		$(`<li title="Map" class="choosemap"><span class="pictos" style="padding: 0 3px;">@</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosemap`, evt));
-		if (d20plus.cfg.getOrDefault("canvas", "showBackground")) {
-			$(`<li title="Background" class="choosebackground"><span class="pictos">a</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosebackground`, evt));
-		}
-		$(`<li title="Objects & Tokens" class="chooseobjects"><span class="pictos">b</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseobjects`, evt));
-		if (d20plus.cfg.getOrDefault("canvas", "showForeground")) {
-			$(`<li title="Foreground" class="chooseforeground"><span class="pictos">B</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseforeground`, evt));
-		}
-		$(`<li title="GM Info Overlay" class="choosegmlayer"><span class="pictos">E</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosegmlayer`, evt));
-		$(`<li title="Dynamic Lighting" class="choosewalls"><span class="pictostwo">r</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`choosewalls`, evt));
-		if (d20plus.cfg.getOrDefault("canvas", "showWeather")) {
-			$(`<li title="Weather Exclusions" class="chooseweather"><span class="pictos">C</span></li>`).appendTo($ulBtns).click((evt) => handleClick(`chooseweather`, evt));
-		}
+		currentEditingLayer = $selected.data("layer");
+		d20.Campaign.activePage().onLayerChange();
+		d20plus.ui.b20LayersActive = true;
 
-		$("body").on("click", "#editinglayer li", function () {
-			$("#floatinglayerbar").removeClass("map")
-				.removeClass("background")
-				.removeClass("objects")
-				.removeClass("foreground")
-				.removeClass("gmlayer")
-				.removeClass("walls")
-				.removeClass("weather");
-			setTimeout(() => {
-				$("#floatinglayerbar").addClass(window.currentEditingLayer)
-			}, 1);
-		});
+		d20plus.ui.secondaryPanel.buttons.removeClass("b20-selected");
+		d20plus.ui.secondaryPanel.iconSlots.removeClass("icon-selected");
 
-		// add "desc sort" button to init tracker
-		const $initTracker = $(`#initiativewindow`);
-		const addInitSortBtn = () => {
-			$(`<div class="btn" id="init-quick-sort-desc" style="margin-right: 5px;"><span class="pictos">}</span></div>`).click(() => {
-				// this will throw a benign error if the settings dialog has never been opened
-				$("#initiativewindow_settings .sortlist_numericdesc").click();
-			}).prependTo($initTracker.parent().find(`.ui-dialog-buttonset`));
-		};
-		if (d20.Campaign.initiativewindow.model.attributes.initiativepage) {
-			addInitSortBtn();
+		$selected.addClass("b20-selected");
+		$icon.addClass("icon-selected icon-circle");
+		d20plus.ui.$r20Buttons.removeClass("icon-selected").attr("style", "");
+		d20plus.ui.extraButton.icon.text(icon);
+		$roll20LayersButton.css({"font-family": "Pictos", "font-size": "1.5em"});
+		$roll20LayersButton.text(icon);
+	};
+
+	const switchLayersToolbar = (evt) => {
+		if (evt.delegateTarget.id === "extra-layer-button") {
+			d20plus.ui.$secondaryPanel
+				.css({left: "60px"})
+				.toggle();
+			if (d20plus.ui.$secondaryPanel.css("display") === "none"
+				&& d20plus.ui.b20LayersActive) {
+				d20plus.ui.extraButton.button.addClass("b20-selected");
+				d20plus.ui.extraButton.iconSlot.addClass("icon-selected");
+			} else {
+				d20plus.ui.extraButton.button.removeClass("b20-selected");
+				// d20plus.ui.extraButton.iconSlot.removeClass("icon-selected");
+			}
 		} else {
-			d20.Campaign.initiativewindow.model.on("change", (e) => {
-				if (d20.Campaign.initiativewindow.model.attributes.initiativepage && $(`#init-quick-sort-desc`).length === 0) {
-					addInitSortBtn();
-					d20plus.cfg.baseHandleConfigChange();
-				}
-			})
+			const roll20ToolbarVisible = $("#tokens-layer-button").parent().is(":visible");
+			d20plus.ui.$secondaryPanel
+				.css({left: "110px"})
+				.toggle(roll20ToolbarVisible);
 		}
 	};
+
+	d20plus.ui.switchToR20Layer = (evt) => {
+		d20plus.ui.secondaryPanel.buttons.removeClass("b20-selected");
+		d20plus.ui.secondaryPanel.iconSlots.removeClass("icon-selected").addClass("icon-circle");
+		d20plus.ui.extraButton.button.removeClass("b20-selected");
+		d20plus.ui.extraButton.icon.text("|");
+		d20plus.ui.b20LayersActive = false;
+
+		// the following check with setTimeout is required to properly process native r20 buttons.
+		// Without it the previously active layer won't be activated again
+		const $triggeredBy = $(evt?.target || "#tokens-layer-button .icon-slot");
+		const $pressed = $triggeredBy.closest(".toolbar-button-outer");
+		const $pressedIcon = $triggeredBy.closest(".icon-slot");
+		const $pressedButton = $triggeredBy.closest(".toolbar-button-inner");
+		const isFirstButton = $pressed.attr("id") === d20plus.ui.r20Buttons[0].id;
+		const $roll20LayersButton = $("#layers-menu-button").find(".grimoire__roll20-icon");
+		const secondaryPanelHidden = d20plus.ui.$secondaryPanel.css("display") === "none";
+
+		if (secondaryPanelHidden) d20plus.ui.extraButton.iconSlot.addClass("icon-circle").removeClass("icon-selected");
+		$roll20LayersButton.css({"font-family": "Roll20Icons", "font-size": "1.3em"});
+
+		// should manually apply layer instead
+		setTimeout(() => {
+			if ($pressedIcon.attr("style")) return;
+			const layer = d20plus.ui.r20Buttons.find(b => b.DOMid === $pressed.attr("id"));
+			if (!layer?.color) return;
+			$pressedIcon
+				.addClass("icon-selected")
+				.attr("style", `background-color: var(${layer.color});`);
+			currentEditingLayer = layer.id;
+			d20.Campaign.activePage().onLayerChange();
+		}, 100);
+	};
+
+	d20plus.ui.addQuickUiGm = () => {
+		if (!d20plus.cfg.getOrDefault("canvas", "extraLayerButtons")) return;
+		const buttonsHmtl = d20plus.ui.b20Buttons.reduce((html, l) => {
+			l.enabled = d20plus.cfg.getOrDefault("canvas", l.cfg);
+			return `${html}${(l.enabled ? d20plus.html.layerSecondaryPanel(l) : "")}`;
+		}, "");
+		if (!d20plus.ui.b20Buttons.some(b => b.enabled)) return;
+
+		d20plus.ui.$extraButton = $(d20plus.html.layerExtrasButton);
+		d20plus.ui.$secondaryPanel = $(`
+			<div class="drawer-outer b20" style="left: 111px;display:none">
+			${buttonsHmtl}</div>
+		`);
+
+		d20plus.ui.extraButton = {
+			icon: d20plus.ui.$extraButton.find(".icon-slot span"),
+			iconSlot: d20plus.ui.$extraButton.find(".icon-slot"),
+			button: d20plus.ui.$extraButton.find(".toolbar-button-inner"),
+		};
+
+		d20plus.ui.secondaryPanel = {
+			iconSlots: d20plus.ui.$secondaryPanel.find(".icon-slot"),
+			buttons: d20plus.ui.$secondaryPanel.find(".toolbar-button-inner"),
+		};
+
+		d20plus.ui.$r20Buttons = $("#tokens-layer-button")
+			.parent()
+			.find(".toolbar-button-outer:not(.b20) .icon-slot");
+
+		$("body").append(d20plus.ui.$secondaryPanel);
+		$("#map-layer-button").after(d20plus.ui.$extraButton);
+
+		d20plus.ui.$extraButton.on("mouseenter", ".toolbar-button-inner", (evt) => {
+			$(evt.currentTarget).find(".icon-slot").addClass("icon-selected").removeClass("icon-circle");
+		}).on("mouseleave", ".toolbar-button-inner", (evt) => {
+			if (d20plus.ui.b20LayersActive || d20plus.ui.$secondaryPanel.css("display") !== "none") return;
+			$(evt.currentTarget).find(".icon-slot").removeClass("icon-selected").addClass("icon-circle");
+		}).on(clicktype, ".toolbar-button-inner", switchLayersToolbar);
+
+		d20plus.ui.$secondaryPanel.on("mouseenter", ".toolbar-button-inner", (evt) => {
+			$(evt.currentTarget).find(".icon-slot").addClass("icon-selected").removeClass("icon-circle");
+		}).on("mouseleave", ".toolbar-button-inner", (evt) => {
+			if ($(evt.currentTarget).hasClass("b20-selected")) return;
+			$(evt.currentTarget).find(".icon-slot").removeClass("icon-selected").addClass("icon-circle");
+		}).on(clicktype, ".layer-toggle", (evt) => {
+			evt.stopPropagation();
+			const $layerIcon = $(evt.currentTarget).prev(".toolbar-button-inner");
+			const state = d20plus.engine.layersToggle($layerIcon.data("layer"));
+		}).on(clicktype, ".toolbar-button-inner", switchToB20Layer);
+
+		$(document.body)
+			.on("mouseup", d20plus.ui.r20Buttons.reduce((css, b) => {
+				return `${css}${css ? ", " : ""}#${b.DOMid}  .icon-slot`;
+			}, ""), d20plus.ui.switchToR20Layer)
+			.on(clicktype, "#layers-menu-button .toolbar-button-inner", switchLayersToolbar);
+
+		$("#playerzone").css({"z-index": 10100}); // otherwise it has the same z-index as native buttons
+	};
+
+	d20plus.ui.layerVisibilityIcon = (layer, state) => {
+		const $layerIcon = d20plus.ui.$secondaryPanel?.find(`[data-layer=${layer}]`);
+		$layerIcon?.toggleClass("layer-off", !state);
+	}
 
 	/**
 	 * Prompt the user to choose from a list of checkboxes. By default, one checkbox can be selected, but a "count"
@@ -16500,7 +20074,11 @@ function d20plusMod () {
 		e && !window.is_gm && (e.hideResizers = !0),
 		this.clipTo ? fabric.util.clipContext(this, p) : p.save(),
 		v.tokens = u.map,
-		this.drawMapLayer(p, v);
+		this.drawMapLayer(p, v),
+		// BEGIN MOD
+		v.tokens = u.floors,
+		this.drawAnyLayer(p, v, "floors");
+		// END MOD
 		const n = v && v.grid_before_afow
 		  , y = !d20.Campaign.activePage().get("adv_fow_enabled") || v && v.disable_afow
 		  , d = !d20.Campaign.activePage().get("showgrid") || v && v.disable_grid;
@@ -16508,7 +20086,7 @@ function d20plusMod () {
 		!y && window.largefeats && d20.canvas_overlay.drawAFoW(d20.engine.advfowctx, d20.engine.work_canvases.floater.context),
 		!n && !d && d20.canvas_overlay.drawGrid(p),
 		// BEGIN MOD
-		["background", "objects", "foreground"].forEach(layer => {
+		["background", "objects", "roofs", "foreground"].forEach(layer => {
 			v.tokens = u[layer],
 			this.drawAnyLayer(p, v, layer);
 		}),
@@ -16529,8 +20107,10 @@ function d20plusMod () {
 		const v = {
 			map: [],
 			// BEGIN MOD
+			floors: [],
 			background: [],
 			objects: [],
+			roofs: [],
 			foreground: [],
 			gmlayer: [],
 			weather: [],
@@ -16546,12 +20126,12 @@ function d20plusMod () {
 	// END ROLL20 CODE
 
 	d20plus.mod.setAlpha = function (layer) {
-		const l = ["map", "walls", "weather", "background", "objects", "foreground", "gmlayer"];
+		const l = ["map", "floors", "walls", "weather", "background", "objects", "roofs", "foreground", "gmlayer"];
 		const o = ["background", "objects", "foreground"];
 		return !window.is_gm 
 			|| (o.includes(layer) && o.includes(window.currentEditingLayer))
 			|| (l.indexOf(window.currentEditingLayer) >= l.indexOf(layer)
-				&& !(o.includes(layer) && window.currentEditingLayer === "gmlayer"))
+				&& !((layer === "roofs" || o.includes(layer)) && window.currentEditingLayer === "gmlayer"))
 			? 1 : (layer === "gmlayer" ? d20.engine.gm_layer_opacity : .5);
 	}
 
@@ -16593,34 +20173,6 @@ function d20plusMod () {
 		),
 		v.restore()
 	},
-	// END ROLL20 CODE
-
-	// BEGIN ROLL20 CODE
-	d20plus.mod.editingLayerOnclick = () => {
-		$("#editinglayer").off(clicktype).on(clicktype, "li", function() {
-			var e = $(this);
-			$("#editinglayer").removeClass(window.currentEditingLayer);
-			$("#drawingtools .choosepath").show();
-			"polygon" !== d20.engine.mode && $("#drawingtools").hasClass("polygon") && $("#drawingtools").removeClass("polygon").addClass("path");
-
-			// BEGIN MOD
-			if (e.hasClass("chooseweather")) {
-				window.currentEditingLayer = "weather";
-				$("#drawingtools .choosepath").hide();
-				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon")
-			} else {
-				e.hasClass("choosebackground") ? window.currentEditingLayer = "background" : e.hasClass("chooseforeground") ? window.currentEditingLayer = "foreground" : e.hasClass("chooseobjects") ? window.currentEditingLayer = "objects" : e.hasClass("choosemap") ? window.currentEditingLayer = "map" : e.hasClass("choosegmlayer") ? window.currentEditingLayer = "gmlayer" : e.hasClass("choosewalls") && (window.currentEditingLayer = "walls",
-					$("#drawingtools .choosepath").hide(),
-				"path" !== d20.engine.mode && $("#drawingtools").removeClass("path").addClass("polygon"));
-			}
-			// END MOD
-			$("#editinglayer").addClass(window.currentEditingLayer);
-
-			// BEGIN MOD
-			d20.Campaign.activePage().onLayerChange();
-			// END MOD
-		});
-	};
 	// END ROLL20 CODE
 
 	// prevent prototype methods from breaking some poorly-written property loops
@@ -20979,6 +24531,7 @@ function baseChat () {
 			descr: "format text: strikethrough",
 			param: "text",
 			tip: "Any formatted text without line breaks",
+			b20: true,
 		},
 		{
 			code: "/fx %%",
@@ -21025,6 +24578,11 @@ function baseChat () {
 	d20plus.chat.smallActionBtnAdd = (msg, action) => {
 		const id = d20plus.ut.generateRowId();
 		const actions = {
+			hp: {title: "Revert damage", icon: "r", callback: d20plus.engine.alterTokensHP},
+			spell: {title: "Revert spell slots", icon: "r", callback: d20plus.engine.expendResources},
+			item: {title: "Revert item usage", icon: "r", callback: d20plus.engine.expendResources},
+			resource: {title: "Revert spending resources", icon: "r", callback: d20plus.engine.expendResources},
+			repeated: {title: "Revert spending resources", icon: "r", callback: d20plus.engine.expendResources},
 			request: {title: "Request script info", icon: "?", callback: d20plus.chat.requestScriptVersions},
 		}[action.type];
 		d20plus.chat.actions[id] = Object.assign({params: action}, actions);
@@ -21161,6 +24719,29 @@ function baseChat () {
 				"_type": "boolean",
 				"_player": true,
 			},
+			"autoExpend": {
+				"name": "Expend spell slots & class resources",
+				"default": "b20",
+				"_type": "_enum",
+				"__values": ["none", "b20"],
+				"__texts": ["disabled", "only b20 expressions"],
+				"_player": true,
+			},
+			"autoDmg": {
+				"name": "Apply damage and attack rolls",
+				"default": "b20",
+				"_type": "_enum",
+				"__values": ["none", "b20", "b20mods"],
+				"__texts": ["disabled", "only b20 expressions", "use b20 expressions & suggest actions for every roll"],
+				"_player": true,
+			},
+			"dmgTokenBar": {
+				"name": "Token bar to apply HP changes to",
+				"default": "1",
+				"_type": "_enum",
+				"__values": ["1", "2", "3"],
+				"_player": true,
+			},
 			"executeJSMacro": {
 				"name": "Execute JS script in macros",
 				"default": "own",
@@ -21242,6 +24823,101 @@ function baseChat () {
 		$("#textchat-input").removeClass("social-resized social-default");
 	}
 
+	d20plus.chat.parseAOE = ($el) => {
+		const msg = $el.closest(".message.general");
+		const rollData = /\[(\d*)(?<type>chk|dmg|sdmg)[^\]]*\]/;
+		const targetData = /<span.*class=("|'?)inlinerollresult.*(?<success>fullcrit|fullfail|showtip).*\1.*title=("|'?).*Rolling.*\[chk(?<id>[^\]]*)\].*\3>\d+<\/span>/g;
+		const targets = [];
+		const makeList = (success) => {
+			return targets
+				.filter(target => success ^ (target.success !== "fullcrit"))
+				.map(target => target.id)
+				.join("|");
+		}
+		msg.html().replace(targetData, (...str) => {
+			const data = str.last();
+			targets.push(data);
+		});
+		msg.find(".inlinerollresult.showtip").each(function () {
+			const roll = $(this);
+			const tooltipsrc = roll.attr("title") || roll.attr("original-title");
+			let isdmg = "";
+			let newtip = tooltipsrc.replace(rollData, (...str) => {
+				const data = str.last();
+				const dmg = roll.text();
+				if (data.type === "chk") {
+					roll.attr("data-damage", "check");
+				} else if (data.type === "dmg" || data.type === "sdmg") {
+					const targets = makeList(data.type === "sdmg");
+					const num = !targets ? 0 : targets.split("|").length;
+					roll.addClass("hit-dice");
+					roll.attr("data-damage", dmg);
+					roll.attr("data-targets", targets);
+					isdmg = `<span class="hit-dice-tip hit-aoe hit-aoe${num}"></span>`;
+				}
+				return "";
+			});
+			newtip += isdmg;
+			roll.attr((roll.attr("original-title") ? "original-title" : "title"), newtip);
+		});
+	}
+
+	d20plus.chat.processDice = ($msg) => {
+		const dmgCfg = d20plus.cfg.getOrDefault("chat", "autoDmg");
+		const rollData = /\[(\d*)(?<type>chk|atk|dmg|sdmg|heal|init)(?<targets>[^\]]*)\]/g;
+		$msg.find(".inlinerollresult").each((i, el) => {
+			const roll = {$el: $(el)};
+			if (roll.$el.attr("data-damage")) return;
+			const tooltipsrc = roll.$el.attr("title") || roll.$el.attr("original-title");
+			roll.val = roll.$el.text();
+			roll.tooltip = tooltipsrc.replace(rollData, (...parsed) => {
+				Object.assign(roll, parsed.last());
+				roll.$el.attr("data-targets", roll.targets);
+				return "";
+			});
+			if (dmgCfg === "none") {
+				if (roll.type) roll.$el.attr("title", roll.tooltip);
+				return;
+			} else if (roll.type === "chk") {
+				if (!isNaN(roll.targets) && !isNaN(roll.val)) {
+					const dc = roll.targets;
+					if (Number(dc) > roll.val) roll.$el.addClass("check failure");
+					else roll.$el.addClass("check success");
+					roll.tooltip += ` vs&nbsp;DC&nbsp;${dc}`;
+				}
+				roll.$el.attr("data-damage", "check");
+			} else if (roll.type === "atk") {
+				const ac = atob(roll.targets);
+				if (!isNaN(ac) && !isNaN(roll.val)) {
+					if (Number(ac) > roll.val) roll.$el.addClass("check attack-failure");
+					else roll.$el.addClass("check attack-success");
+					if (is_gm) roll.tooltip += ` vs&nbsp;AC&nbsp;${ac}`;
+				}
+				roll.$el.attr("data-damage", "attack");
+			} else if (roll.type === "init") {
+				if (!roll.$el.closest(".sheet-grey").length && is_gm) {
+					d20plus.ba.addTurn(roll.targets, roll.val);
+				}
+			} else if (roll.type) {
+				if (roll.targets === "aoe") {
+					d20plus.chat.parseAOE(roll.$el);
+					return;
+				}
+				roll.$el.attr("data-damage", roll.type === "heal" ? -roll.val : +roll.val);
+				if (roll.type === "heal") roll.$el.addClass("heal-dice");
+				if (roll.targets) roll.tooltip += "<span class=\"hit-dice-tip hit-targeted\"></span>";
+				else roll.tooltip += "<span class=\"hit-dice-tip\"></span>";
+				roll.$el.addClass("hit-dice");
+			} else {
+				if (dmgCfg === "b20") return;
+				roll.$el.attr("data-damage", roll.val);
+				roll.tooltip += "<span class=\"hit-dice-tip\"></span>";
+				roll.$el.addClass("mod-dice");
+			}
+			roll.$el.attr("title", roll.tooltip);
+		});
+	}
+
 	d20plus.chat.processPlayersList = (changelist) => {
 		if (!d20plus.chat.players) d20plus.chat.players = {};
 		d20.Campaign.players.models.forEach(current => {
@@ -21279,6 +24955,7 @@ function baseChat () {
 	}
 
 	d20plus.chat.processIncomingMsg = (msg, msgData) => {
+		const replaceHints = d20plus.cfg.getOrDefault("chat", "showDNDHints");
 		if (msg.listenerid?.language && d20plus.cfg.getOrDefault("chat", "languages")) {
 			const speech = msg.listenerid;
 			const inKnownLanguage = window.is_gm || hasLanguageProficiency(speech.languageid);
@@ -21306,6 +24983,27 @@ function baseChat () {
 				$(`#connects${msg.listenerid.id}-info`).text("3");
 				return false;
 			}
+		} else if (msg.listenerid?.type === "automation") {
+			const broadcast = msg.type !== "whisper";
+			if (is_gm || broadcast || msgData.to_me) {
+				msg.id = d20plus.ut.generateRowId();
+				msg.who = "b20action";
+				msg.type = "general";
+				msg.avatar = `/users/avatar/${d20plus.ut.getAccountById(msg.playerid)}/30`;
+				const span = `class="showtip tipsy-n-right" style="cursor: help;"`;
+				const avatar = `<img src="${msg.avatar}" height="20px" width="20px"> `;
+				d20plus.chat.modifyMsg(msg.id, {class: "action"});
+				d20plus.chat.modifyMsg(msg.id, {legalize: true});
+				if (msg.listenerid.undo) d20plus.chat.modifyMsg(msg.id, {action: msg.listenerid.undo});
+				msg.content = `<span ${span} title='${avatar} ${msg.listenerid.author}'>${msg.content}</span>`;
+			}
+		} else if (msg.inlinerolls && msg.rolltemplate) {				// for some reason r20 refreshes roll template html after a sec
+			msg.id = d20plus.ut.generateRowId();						// this is supposed to trick r20 not to revert msg contents
+			d20plus.chat.modifyMsg(msg.id, {dice: true});
+		}
+		if (replaceHints) {
+			const fromHint = msg.listenerid?.excludeHint;
+			d20plus.chat.modifyMsg(msg.id, {hints: true, excludeHint: fromHint});
 		}
 		if (d20.textchat.talktomyself && msgData.from_me) {
 			if (d20plus.cfg.getOrDefault("chat", "highlightttms")) d20plus.chat.modifyMsg(msg.id, {class: "talktomyself"});
@@ -21384,8 +25082,9 @@ function baseChat () {
 	}
 
 	d20plus.chat.displaying = () => {
+		const lastDisplayedSysMsg = $(`#textchat .message.system`).last();
 		Object.entries({...d20plus.chat.modify}).forEach(([id, mods]) => {
-			const msg = mods.sys ? $(`#textchat .message.system`).last() : $(`[data-messageid=${id}]`);
+			const msg = mods.sys ? lastDisplayedSysMsg : $(`[data-messageid=${id}]`);
 
 			if (mods.intro) {
 				const code = "<code style='cursor:pointer'>/help</code>";
@@ -21404,8 +25103,37 @@ function baseChat () {
 				if (mods.decolon) msg.find(".by").text((i, txt) => txt.replace(/(?:\(To |)(.+?)\)?:/, "$1"));
 				if (mods.legalize) msg.html(removeClassUserscript(msg.html()));
 				if (mods.action) d20plus.chat.smallActionBtnAdd(msg, mods.action);
+				if (mods.dice) d20plus.chat.processDice(msg);
+				if (mods.hints) d20plus.chat.giveHints(msg, mods.excludeHint);
 				delete d20plus.chat.modify[id];
 			}
+		});
+	}
+
+	d20plus.chat.giveHints = async (msg, exclude) => {
+		if (!JSON_DATA["data/conditionsdiseases.json"]) return;
+		msg.html(function () {
+			d20plus.chat.htmlRenderer = d20plus.chat.htmlRenderer || new Renderer();
+			const prepareItems = (type) => JSON_DATA["data/conditionsdiseases.json"][type].map(i => {
+				if (i.name.toLowerCase() === exclude) return ["b20-skip-this-entry", ""];
+				return [
+					i.name.toLowerCase(),
+					Object.assign({}, i, {
+						category: type,
+						page: `${i.page}<br>${type.toSentenceCase()}`,
+					})];
+			});
+			const condIndex = Object.fromEntries([].concat(prepareItems("condition"), prepareItems("disease"), prepareItems("status")));
+			const listToSearch = new RegExp(`(?<cond>${Object.keys(condIndex).join("|")})`, "gi");
+			return this.innerHTML.replace(/(?:(?:"|\w)>|^)[^<>]*?(?<t>\p{L}+)[^<>]*?(?:<|$)/ug, (...m) => {
+				return m[0].replace(listToSearch, (...s) => {
+					const condObj = condIndex[s.last()?.cond.toLowerCase()];
+					const resHtml = d20plus.chat.htmlRenderer.render(condObj);
+					return `
+						<span class="hinted clickable showtip tipsy-e" title="<div class=&quot;b20-condition-hint&quot;>${resHtml.replaceAll("\"", "&quot;")}</div>">${s.last()?.cond}</span>
+					`;
+				});
+			})
 		});
 	}
 
@@ -21482,6 +25210,55 @@ function baseChat () {
 		}
 	}
 
+	d20plus.chat.enhanceRolls = () => {
+		d20.textchat.$textchat.on("click", ".inlinerollresult.showtip", event => {
+			const dmg = event.target.getAttribute("data-damage");
+			const dtargets = event.target.getAttribute("data-targets");
+			if (isNaN(dmg) || !dmg) return;
+			if (event.shiftKey && event.ctrlKey) {
+				d20plus.engine.alterTokensHP({dmg: -Math.abs(dmg)});
+			} else if (event.shiftKey) {
+				d20plus.engine.alterTokensHP({dmg: Math.abs(dmg)});
+			} else if (event.ctrlKey) {
+				d20plus.engine.alterTokensHP({dmg: Math.floor(Math.abs(dmg) / 2)});
+			} else if (dtargets) {
+				const targets = dtargets.split("|")
+					.map(targetID => d20plus.ut.getTokenById(targetID))
+					.filter(token => !!token);
+				d20plus.engine.alterTokensHP({dmg, targets});
+			}
+		})
+		d20plus.ut.dynamicStyles("hit-dice-tips").html(`
+			.hit-dice-tip::after {display:block; font-size:smaller; content:"Select targets & hold ctrl/shift (or both) to alter HP"}
+			.hit-dice-tip.hit-targeted::after {content:"Click to apply HP changes"}
+			.hit-dice-tip.hit-aoe::after {content:"Click to auto-dmg targets"}
+			.hit-dice-tip.hit-aoe0::after {content:"This damage affects 0 targets"}
+			.hit-dice-tip.hit-aoe1::after {content:"Click to auto-dmg 1 target"}
+			.hit-dice-tip.hit-aoe2::after {content:"Click to auto-dmg 2 targets"}
+			.hit-dice-tip.hit-aoe3::after {content:"Click to auto-dmg 3 targets"}
+			.hit-dice-tip.hit-aoe4::after {content:"Click to auto-dmg 4 targets"}
+			.hit-dice-tip.hit-aoe5::after {content:"Click to auto-dmg 5 targets"}
+			.hit-dice-tip.hit-aoe6::after {content:"Click to auto-dmg 6 targets"}
+			.shift-pressed .mod-dice, .ctrl-pressed .mod-dice {cursor: pointer}
+			.shift-pressed .hit-dice-tip::after {content:"Shft+Click to decrease HP to selected tokens"}
+			.ctrl-pressed .hit-dice-tip::after {content:"Ctrl+Click to decrease HP (halved value) to selected tokens"}
+			.ctrl-pressed.shift-pressed .hit-dice-tip::after {content:"Shft+Ctrl+Click to increase HP to selected tokens"}
+		`);
+	}
+
+	d20plus.chat.clickableHints = () => {
+		d20.textchat.$textchat.on("click", ".hinted.clickable", (evt) => {
+			const clicked = $(evt.target);
+			const name = clicked.text();
+			const dstyle = `]("style="display: block;max-height: 300px;color: inherit;text-decoration: none;overflow-y: auto;"`;
+			const splDescr = (clicked.attr("original-title") || clicked.attr("title") || "").split(/<\/(?:p|li|h2|tr)>/);
+			const source = splDescr[0].split(/<(?:\/span|br)>/).splice(1).join(" ").replace(/<([^<]*?)>|\[–\]/g, "");
+			const descr = splDescr.splice(1).join("%NEWLINE%").replace(/<(?:li|td|th)([^<]*?)>/g, "- ").replace(/<([^<]*?)>/g, "");
+			const builtTemplate = `&{template:traits} {{name=${name.toSentenceCase()} }} {{source=${source} }} {{description=[${descr}${dstyle}) }}`;
+			d20.textchat.doChatInput(builtTemplate, null, {excludeHint: name.toLowerCase()});
+		});
+	}
+
 	d20plus.chat.enhanceChat = () => {
 		d20plus.ut.log("Enhancing chat");
 		d20plus.ut.injectCode(d20.textchat, "incoming", d20plus.chat.r20incoming);
@@ -21535,6 +25312,16 @@ function baseChat () {
 				.on("click", ".msg-action-button", d20plus.chat.smallActionBtnPress);
 		}
 
+		$(window).on("keydown.Shift keydown.Control keyup.Shift keyup.Control", event => {
+			const $root = $(document.body);
+			["shift", "ctrl"].forEach(mod => {
+				if (event[`${mod}Key`]) $root.addClass(`${mod}-pressed`);
+				else $root.removeClass(`${mod}-pressed`);
+			})
+		});
+		d20plus.chat.enhanceRolls();
+		d20plus.chat.clickableHints();
+
 		$("#textchat-input")
 			.off("click", "button")
 			.on("click", "button", d20plus.chat.sending);
@@ -21544,12 +25331,2217 @@ function baseChat () {
 SCRIPT_EXTENSIONS.push(baseChat);
 
 
+function baseBACharacters () {
+	d20plus.ba = d20plus.ba || {};
+
+	d20plus.ba.characters = [];
+	d20plus.ba.tokens = [];
+
+	d20plus.ba.characters.Connector = function (ref) {
+		const abilities = ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"];
+
+		const skills = {
+			acrobatics: "dexterity",
+			animal_handling: "wisdom",
+			arcana: "intelligence",
+			athletics: "strength",
+			deception: "charisma",
+			history: "intelligence",
+			insight: "wisdom",
+			intimidation: "charisma",
+			investigation: "intelligence",
+			medicine: "wisdom",
+			nature: "intelligence",
+			perception: "wisdom",
+			performance: "charisma",
+			persuasion: "charisma",
+			religion: "intelligence",
+			sleight_of_hand: "dexterity",
+			stealth: "dexterity",
+			survival: "wisdom",
+
+			initiative: "dexterity",
+		};
+
+		const prepareRawStats = (lvls, attrib, id, val) => {
+			if (!Array.isArray(lvls)) lvls = [lvls];
+			const max = attrib?.attributes.max;
+			let obj = this.sheet.data;
+			lvls.forEach(lvl => {
+				obj[lvl] = obj[lvl] || {};
+				obj = obj[lvl];
+			});
+			obj._ref = obj._ref || {};
+			obj._ref[id] = attrib;
+			obj[id] = val || attrib.attributes.current;
+			if (max !== undefined && max !== "") obj[`${id}_max`] = max;
+			if (lvls.length > 1) obj._id = lvls.last();
+		}
+
+		const prepareResources = () => {
+			const resources = { _ref: {} };
+			["other", "class"].forEach(r => {
+				const tag = this.sheet.data.stats[`${r}_resource_name`];
+				const num = this.sheet.data.stats[`${r}_resource`];
+				const ref = this.sheet.data.stats._ref[`${r}_resource`];
+				if (num !== undefined && tag) {
+					resources[tag] = num;
+					resources._ref[tag] = ref;
+				}
+			});
+			Object.entries(this.sheet.data.resources || {}).forEach(([id, r]) => {
+				["left", "right"].forEach(n => {
+					const tag = r[`resource_${n}_name`];
+					const num = r[`resource_${n}`];
+					if (num !== undefined && tag) {
+						resources[tag] = num;
+						resources._ref[tag] = this.sheet.data.resources[id]?._ref;
+					}
+				});
+			})
+			this.sheet.data.resources = resources;
+		}
+
+		const fetchAttribs = () => {
+			this.isNpc = false;
+			this.sheet.data = {
+				stats: {},
+				npcStats: {},
+				spellslots: {},
+			};
+			this.name = {
+				tk: this.refLastToken.attributes.name,
+				ch: this._ref.attributes.name,
+			};
+			this._ref.attribs?.models.forEach(prop => {
+				const [tag, type, id, ...attrPath] = prop.attributes.name.split("_");
+				const attr = attrPath.join("_");
+				const current = prop.attributes.current;
+				if (type === undefined) {
+					if (tag === "npc" && current === "1") this.isNpc = true;
+					else prepareRawStats("stats", prop, tag);
+				} else if (type === "slots") {
+					const lvl = tag.slice(-1);
+					prepareRawStats(["spellslots", lvl], prop, id);
+				} else if (tag === "repeating") {
+					const [stype, lvl] = type.split("-");
+					if (stype === "spell") {
+						if (lvl) {
+							prepareRawStats(["spells", id], prop, attr);
+							this.sheet.data.spells[id].lvl = lvl;
+						} else {
+							prepareRawStats("stats", prop, [type].concat(id || []).join("_"));
+						}
+					} else if (stype === "npcaction") {
+						prepareRawStats(["actions", id], prop, attr);
+						if (lvl) this.sheet.data.actions[id].actionType = lvl;
+					} else if (type === "attack") {
+						prepareRawStats(["attacks", id], prop, attr);
+					} else if (type === "inventory") {
+						prepareRawStats(["items", id], prop, attr);
+					} else if (["proficiencies", "tool", "resource"].includes(type)) {
+						const stype = type.last() === "s" ? type : `${type}s`;
+						prepareRawStats([stype, id], prop, attr);
+					} else if (["acmod", "damagemod", "savemod", "skillmod", "tohitmod"].includes(type)) {
+						const stype = type.split("mod")[0].replace("tohit", "attack");
+						prepareRawStats(["mods", stype, id], prop, attr);
+					} else if (type === "npctrait" || type === "traits") {
+						prepareRawStats(["traits", id], prop, attr);
+						prepareRawStats(["traits", id], undefined, "isTrait", true);
+					}
+				} else if (type === "reporder") {
+					prepareRawStats("order", prop, attr, current.split(","));
+				} else if (tag === "global" && id === "mod" && attr === "flag") {
+					prepareRawStats(["mods", "active"], prop, type);
+				} else if (tag === "npc") {
+					if (type === "name") this.name.npc = prop.attributes.current;
+					prepareRawStats("npcStats", prop, [type].concat(id || [], attr || []).join("_"));
+				} else {
+					if (prop.attributes.name === "charactersheet_type" && current === "npc") this.isNpc = true;
+					prepareRawStats("stats", prop, [tag].concat(type || [], id || [], attr || []).join("_"));
+				}
+			});
+		}
+
+		const getMod = (val) => {
+			return val
+				? `+${val}`.replace("++", "+").replace("+-", "-")
+				: "+0";
+		}
+
+		const filterVal = (val) => {
+			return val === undefined ? undefined : `${val}`;
+		}
+
+		const checkType = function (type) {
+			switch (type) {
+				case "ability": return abilities.includes(this.val);
+				case "ability_mod": return abilities.map(a => `${a}_mod`).includes(this.val);
+				case "ability_save": return abilities.map(a => `${a}_save`).includes(this.val);
+				case "skill": return Object.keys(skills).includes(this.val);
+				case "skill_mod": return Object.keys(skills).map(a => `${a}_mod`).includes(this.val);
+				case "skill_pb": return Object.keys(skills).map(a => `${a}_pb`).includes(this.val);
+			}
+		}
+
+		const getStats = (q) => {
+			const char = this.sheet.data.stats._ref;
+			const npc = this.sheet.data.npcStats._ref;
+			const str = {val: q, is: checkType};
+			if (str.is("ability")) return `${char[q]?.attributes.current}` || "10";
+			else if (str.is("ability_mod")) return getMod(char[q]?.attributes.current);
+			else if (str.is("ability_save")) {
+				return getMod(
+					(this.isNpc && filterVal(npc[`${q.substr(0, 3)}_save`]?.attributes.current))
+					|| char[`${q}_bonus`]?.attributes.current);
+			} else if (str.is("skill")) {
+				return `${10 + Number(
+					(this.isNpc && filterVal(npc[q]?.attributes.current))
+					|| char[`${q}_bonus`]?.attributes.current || 0)}`;
+			} else if (str.is("skill_mod")) {
+				q = q === "concentration_mod" ? "constitution" : q.replace("_mod", "");
+				return getMod(
+					(this.isNpc && filterVal(npc[q]?.attributes.current))
+					|| char[`${q}_bonus`]?.attributes.current);
+			} else if (q === "passive_perception") {
+				return `${
+					(this.isNpc && (10 + Number(filterVal(npc[`passive`]?.attributes.current)
+						|| filterVal(npc[`perception`]?.attributes.current)
+						|| filterVal(char[`perception_bonus`]?.attributes.current))))
+					|| char[`passive_wisdom`]?.attributes.current}`;
+			} else return (this.isNpc && filterVal(npc[q]?.attributes.current)) || char[q]?.attributes.current;
+		}
+
+		const types = {
+			spells: {
+				id: "spells",
+				utils: {
+					_char: () => this,
+					_get: function (q) {
+						if (q === "name") return this._ref.spellname?.attributes.current;
+						else if (q === "description") return this._ref.spelldescription?.attributes.current;
+						else if (q === "uses") {
+							if (this._resource === undefined) {
+								const resourceName = this._ref.innate?.attributes.current;
+								const resource = this._char().sheet.getResources(resourceName);
+								this._resource = resource || false;
+							}
+							return this._resource?.current;
+						}
+						return this._ref[q]?.attributes.current;
+					},
+					_has: function (q) {
+						switch (q) {
+							case "atk": return (
+								this._ref.spellattack?.attributes.current
+								&& this._ref.spellattack?.attributes.current !== "None"
+							);
+							case "dmg": return (
+								this._ref.spelldamage?.attributes.current
+								|| this._ref.spelldamage2?.attributes.current
+							);
+							case "dmgorheal": return (
+								this._ref.spelldamage?.attributes.current
+								|| this._ref.spelldamage2?.attributes.current
+								|| this._ref.spellhealing?.attributes.current
+							);
+							case "upcast": return (
+								!isNaN(this._ref.spellhldie?.attributes.current)
+								&& !!this._ref.spellhldietype?.attributes.current
+							);
+							case "action": return (
+								this._ref.spelldamage?.attributes.current
+								|| this._ref.spelldamage2?.attributes.current
+								|| this._ref.spellhealing?.attributes.current
+								|| (this._ref.spellattack?.attributes.current
+									&& this._ref.spellattack?.attributes.current !== "None")
+								|| this._ref.spellsave?.attributes.current
+							);
+							case "uses": {
+								if (this._resource) return true;
+								const resourceName = this._ref.innate?.attributes.current;
+								const resource = this._char().sheet.getResources(resourceName);
+								if (resource) {
+									this._resource = resource;
+									return true;
+								} else {
+									this._resource = false;
+									return false;
+								}
+							}
+							case "ritual": return (
+								this._ref.spellritual?.attributes.current !== "0"
+								&& this._ref.spellritual?.attributes.current
+							);
+							case "active": return this._ref.spellprepared?.attributes.current === "1"
+							case "save": return !!this._ref.spellsave?.attributes.current;
+						}
+					},
+				},
+			},
+			attacks: {
+				id: "attacks",
+				utils: {
+					_char: () => this,
+					_get: function (q) {
+						switch (q) {
+							case "name": return this._ref.atkname?.attributes.current;
+							case "range": return this._ref.atkrange?.attributes.current;
+							case "dmg1type": return this._ref.dmgtype?.attributes.current;
+							case "dmg2type": return this._ref.dmg2type?.attributes.current;
+							case "dmg1": return this._ref.attack_damage?.attributes.current;
+							case "dmg2": return this._ref.attack_damage2?.attributes.current;
+							case "attr": return this._ref.atkattr_base?.attributes.current.replace(/@{(.*?)}/, "$1");
+							default: return this._ref[q]?.attributes.current;
+						}
+					},
+					_has: function (q) {
+						switch (q) {
+							case "atk": return this._ref.atkflag?.attributes.current !== "0";
+							case "save": return !!this._ref.savedc?.attributes.current;
+							case "dmg1": return (
+								!!this._ref.dmgbase?.attributes.current
+								&& this._ref.dmgflag?.attributes.current !== "0");
+							case "dmg2": return (
+								!!this._ref.dmg2base?.attributes.current
+								&& this._ref.dmg2flag?.attributes.current !== "0");
+							case "pb": return this._ref.atkprofflag?.attributes.current !== "0"; // idiotic thing (pc only)?
+							case "range": return this._ref.atkrange?.attributes.current.includes("/");
+							default: return (
+								this._ref[q]?.attributes.current
+								&& this._ref[q]?.attributes.current !== "0");
+						}
+					},
+				},
+			},
+			actions: {
+				id: "actions", // npc's attack are stored here
+				utils: {
+					_char: () => this,
+					_get: function (q) {
+						switch (q) {
+							case "name": return this._ref.name?.attributes.current;
+							case "range": return this._ref.attack_range?.attributes.current;
+							case "dmg1type": return this._ref.attack_damagetype?.attributes.current;
+							case "dmg2type": return this._ref.attack_damagetype2?.attributes.current;
+							case "dmg1": return this._ref.attack_damage?.attributes.current;
+							case "dmg2": return this._ref.attack_damage2?.attributes.current;
+							case "attr": return undefined;
+							default: return this._ref[q]?.attributes.current;
+						}
+					},
+					_has: function (q) {
+						switch (q) {
+							case "atk": return this._ref.attack_flag?.attributes.current !== "0";
+							case "dmg1": return !!this._ref.attack_damage?.attributes.current;
+							case "dmg2": return !!this._ref.attack_damage2?.attributes.current;
+							case "pb": return false; // idiotic thing (pc only)?
+							case "save": return false;
+							case "range": return this._ref.attack_type?.attributes.current === "Ranged";
+							default: return (
+								this._ref[q]?.attributes.current
+								&& this._ref[q]?.attributes.current !== "0");
+						}
+					},
+				},
+			},
+			traits: {
+				id: "traits",
+				utils: {
+					_char: () => this,
+					_get: function (q) {
+						switch (q) {
+							case "name": return this._ref.name?.attributes.current;
+							case "description": return this._ref.description?.attributes.current;
+							case "resource": return this._ref.source_type?.attributes.current;
+							case "uses": {
+								if (this._resource === undefined) {
+									const resourceName = this._ref.source_type?.attributes.current;
+									const resource = this._char().sheet.getResources(resourceName);
+									this._resource = resource || false;
+								}
+								return this._resource?.current;
+							}
+							default: return this._ref[q]?.attributes.current;
+						}
+					},
+					_has: function (q) {
+						switch (q) {
+							case "atk": return false;
+							case "dmg1": return false;
+							case "dmg2": return false;
+							case "pb": return false;
+							case "save": return false;
+							case "range": return false;
+							case "action": return false;
+							case "uses": {
+								if (this._resource) return true;
+								const resourceName = this._ref.source_type?.attributes.current;
+								const resource = !!resourceName && this._char().sheet.getResources(resourceName);
+								if (resource) {
+									this._resource = resource;
+									return true;
+								} else {
+									this._resource = false;
+									return false;
+								}
+							}
+							default: return (
+								this._ref[q]?.attributes.current
+								&& this._ref[q]?.attributes.current !== "0"
+							);
+						}
+					},
+				},
+			},
+			items: {
+				id: "items",
+				utils: {
+					_char: () => this,
+					_get: function (q) {
+						switch (q) {
+							case "name": return this._ref.itemname?.attributes.current;
+							case "description": return this._ref.itemcontent?.attributes.current;
+							case "equipped": return this._ref.equipped?.attributes.current;
+							default: return this._ref[q]?.attributes.current;
+						}
+					},
+					_has: function (q) {
+						switch (q) {
+							case "atk": return false;
+							case "dmg1": return false;
+							case "dmg2": return false;
+							case "pb": return false;
+							case "save": return false;
+							case "range": return false;
+							case "action": return false;
+							case "active": return this._ref.equipped?.attributes.current !== "0"
+							default: return (
+								this._ref[q]?.attributes.current
+								&& this._ref[q]?.attributes.current !== "0"
+							);
+						}
+					},
+					_equip: function (toggle) {
+						const current = this._ref.equipped?.attributes.current !== "0";
+						const changing = toggle === undefined
+							? (current ? "0" : "1")
+							: (toggle ? "1" : "0");
+						this._ref.equipped?.save({current: changing});
+					},
+				},
+			},
+			/*
+			function (param) {
+				const char = d20plus.ba.getSingleChar();
+				const attr = {
+					name: {pc: "atkname", npc: "name"},
+					range: {pc: "atkrange", npc: "attack_range"},
+					hasattack: {pc: "atkflag", npc: "attack_flag", q: {false: ["0"]}},
+					hasdamage: {get: (at) => char.isNpc ? !!at.attack_damage : !!at.dmgbase && at.dmgflag !== "0"},
+					hasdamage2: {get: (at) => char.isNpc ? !!at.attack_damage2 : !!at.dmg2base && at.dmg2flag !== "0"},
+					damagetype: {pc: "dmgtype", npc: "attack_damagetype"},
+					damagetype2: {pc: "dmg2type", npc: "attack_damagetype2"},
+					profbonus: {pc: "atkprofflag", q: {false: ["0"]}},
+				}[param];
+				const val = char.isNpc ? this[attr?.npc] : this[attr?.pc];
+				if (attr.get) return attr.get(this);
+				else if (!attr.q) return val;
+				else return attr.q.true?.includes(val) || (attr.q.false && !attr.q.false.includes(val));
+			},
+			function (param) {
+				const char = d20plus.ba.getSingleChar();
+				const attr = {
+					hasattack: {get: (sp) => !!sp.spellattack && sp.spellattack !== "None"},
+					hasdamage: {get: (sp) => !!sp.spelldamage || !!sp.spelldamage2},
+					hasdamageorhealing: {get: (sp) => !!sp.spelldamage || !!sp.spelldamage2 || !!sp.spellhealing},
+					hassave: {get: (sp) => !!sp.spellsave && sp.spellsave !== ""},
+				}[param];
+				const val = char.isNpc ? this[attr?.npc] : this[attr?.pc];
+				if (attr.get) return attr.get(this);
+				else if (!attr.q) return val;
+				else return attr.q.true?.includes(val) || (attr.q.false && !attr.q.false.includes(val));
+			},
+			*/
+		}
+
+		this.sheet = {
+			get: (q) => {
+				for (let i = 0; i < Object.keys(types).length; i++) {
+					const list = this.sheet.data[types[Object.keys(types)[i]].id];
+					if (list && list[q]) return Object.assign({_id: q}, types[Object.keys(types)[i]].utils || {}, list[q]);
+				}
+				return this.sheet.data.stats?._ref && getStats(q);
+			},
+			getSpells: (lvl) => {
+				const all = this.sheet.data.spells || {};
+				return Object.keys(all).reduce((spls, id) => {
+					if (
+						(lvl && all[id].lvl !== lvl)
+						|| all[id]._ref.innate?.attributes.current
+					) return spls;
+					spls.push(Object.assign({}, types.spells.utils || {}, all[id]));
+					return spls;
+				}, []);
+			},
+			getTraits: () => {
+				const all = Object.assign({},
+					this.sheet.data.traits || {},
+					this.sheet.data.spells || {},
+					(this.isNpc && this.sheet.data.actions) || {},
+				);
+				return Object.keys(all).reduce((trts, id) => {
+					if (all[id].isTrait) {
+						trts.push(Object.assign({}, types.traits.utils || {}, all[id]));
+					} else if (all[id]._ref.innate?.attributes.current) {
+						trts.push(Object.assign({}, types.spells.utils || {}, all[id]));
+					} else if (this.isNpc
+							&& all[id]._ref.attack_flag
+							&& all[id]._ref.attack_flag.attributes.current !== "on") {
+						trts.push(Object.assign({}, types.actions.utils || {}, all[id]));
+					}
+					return trts;
+				}, []);
+			},
+			getAttacks: () => {
+				const all = this.isNpc
+					? this.sheet.data.actions || {}
+					: this.sheet.data.attacks || {};
+				const utils = this.isNpc
+					? types.actions.utils || {}
+					: types.attacks.utils || {};
+				return Object.keys(all).reduce((atks, id) => {
+					if (
+						(this.isNpc && all[id]._ref.attack_flag?.attributes.current === "on")
+						|| (!this.isNpc && !all[id].spellid)
+					) atks.push(Object.assign({}, utils || {}, all[id]));
+					return atks;
+				}, []);
+			},
+			getItems: () => {
+				const all = this.isNpc
+					? {}
+					: this.sheet.data.items || {};
+				const utils = types.items.utils || {};
+				return Object.keys(all).reduce((atks, id) => {
+					if (
+						(this.isNpc && all[id].attack_flag === "on")
+						|| (!this.isNpc && !all[id].spellid)
+					) atks.push(Object.assign({}, utils || {}, all[id]));
+					return atks;
+				}, []);
+			},
+			getResources: (name) => {
+				const resources = {};
+				[["default", {}]].concat(Object.entries(this.sheet.data.resources || {})).forEach(([id, r]) => {
+					const isDefault = id === "default";
+					const pair = isDefault ? ["other", "class"] : ["left", "right"];
+					pair.forEach(n => {
+						const pointer = isDefault ? `${n}_resource` : `resource_${n}`;
+						const stack = isDefault ? this.sheet.data.stats._ref : r._ref;
+						const name = stack[`${pointer}_name`]?.attributes.current;
+						const num = String(stack[pointer]?.attributes.current);
+						const pb = !!stack[`${pointer}_use_pb`]?.attributes.current
+							&& stack[`${pointer}_use_pb`].attributes.current !== "0";
+						if (num !== undefined && name) {
+							resources[name] = {
+								_ref: {
+									name: stack[`${pointer}_name`],
+									resource: stack[pointer],
+									pb: stack[`${pointer}_use_pb`],
+								},
+								name: name,
+								current: num,
+								type: isDefault ? "resource" : "repeated",
+								side: n,
+								max: pb ? this.sheet.get("pb") : stack[pointer].attributes.max,
+							};
+						}
+					});
+				});
+				return name ? resources[name] : resources;
+			},
+			getRollModifier: (r) => {
+				const r20q = /.*@{(?<attr>[^}]*)}.*/g;
+				return r?.split("+").reduce((res, attr) => {
+					return res + (Number(attr.replace(r20q, (...s) => this.sheet.get(s.last().attr))) || 0);
+				}, 0) || 0;
+			},
+			fetch: () => {
+				// d20plus.ut.log("Fetching character", this.sheet.fetched, this._ref.attribs.models.length)
+				if (this.sheet.fetched !== this._ref.attribs.models.length) {
+					this.sheet.fetched = this._ref.attribs.models.length;
+					fetchAttribs();
+				}
+			},
+			data: {
+				stats: {},
+				npcStats: {},
+				spellslots: {},
+			},
+			spellSlots: {
+				current: (lvl) => {
+					return this.sheet.data.spellslots
+					&& (this.sheet.data.spellslots[lvl]?._ref.expended?.attributes.current
+					|| this.sheet.data.spellslots[lvl]?._ref.total?.attributes.current
+					|| 0);
+				},
+				expended: (lvl) => {
+					const calc = this.sheet.data.spellslots && (
+						(this.sheet.data.spellslots[lvl]?._ref.total?.attributes.current || 0)
+						- (this.sheet.data.spellslots[lvl]?._ref.expended?.attributes.current || 0));
+					return calc >= 0 ? calc : 0;
+				},
+				max: (lvl) => {
+					return this.sheet.data.spellslots
+						&& (this.sheet.data.spellslots[lvl]?._ref.total?.attributes.current || 0);
+				},
+				expend: (lvl) => {
+					void 0;
+				},
+			},
+			fetched: 0,
+		};
+
+		this.ready = async () => {
+			return new Promise(resolve => {
+				let inProgress = 0;
+				const wait = setInterval(() => {
+					const statsFetched = Object.keys(this.sheet.data.stats).length > 1;
+					inProgress++;
+					if (statsFetched) resolve(true);
+					if (statsFetched || inProgress > 120) {
+						resolve(false);
+						clearInterval(wait);
+					}
+				}, 30);
+			});
+		}
+
+		this.refresh = () => {
+			if (d20plus.ba.current.singleChar?.character?.id !== this.id) return;
+			this.sheet.fetch();
+			this.sheet.data.stats?._ref && d20plus.ba.menu.refresh();
+		};
+
+		const init = async () => {
+			const gotToken = !ref.attribs;
+			if (gotToken && !ref.character && !ref._model?.character) return;
+
+			this._ref = ref._model?.character || ref.character || ref;
+			this.refLastToken = gotToken && (ref._model || ref);
+			this.id = this._ref.id;
+
+			await d20plus.ut.fetchCharAttribs(this._ref, true);
+			d20plus.ut.injectCode(
+				this._ref.attribs._callbacks.change.next,
+				"callback",
+				(callback, p) => {
+					callback(...p);
+					setTimeout(this.refresh, 100);
+				},
+			);
+
+			d20plus.ba.characters.push(this);
+			this.sheet.fetch();
+			this.refresh();
+		}
+
+		init();
+	}
+
+	d20plus.ba.tokens.Connector = function (ref) {
+		const getHP = (max) => {
+			return !max
+				? this._ref.attributes[`bar${this.hp.bar}_value`]
+				: this._ref.attributes[`bar${this.hp.bar}_max`];
+		};
+
+		this.hp = {
+			checkMode: () => {
+				this.hp.connected = false;
+				this.hp.bar = Number(d20plus.cfg.getOrDefault("chat", "dmgTokenBar"));
+				for (let i = 1; i < 4; i++) {
+					const attr = this._ref.attributes[`bar${i}_link`];
+					if (attr && this.character?.sheet.data.stats?._ref?.hp.id === attr) {
+						this.hp.connected = true;
+						this.hp.bar = i;
+					}
+				}
+			},
+			reduce: () => {
+				void 0;
+			},
+		}
+
+		this.refresh = () => {
+			if (!d20plus.ba.current.charTokens?.find(t => this.id === t.id)) return;
+			// d20plus.ut.log("Fetching token", this.get("name"), this.character.sheet.fetched, this.character._ref.attribs.models.length)
+			this.hp.checkMode();
+			d20plus.ba.menu.refresh();
+		}
+
+		this.select = () => {
+			d20.engine.select(this._object);
+		}
+
+		this.find = () => {
+			d20.engine.centerOnPoint(this._ref?.attributes?.left || 0, this._ref?.attributes?.top || 0);
+			// d20.token_editor.removeRadialMenu();
+		}
+
+		this.get = (q) => {
+			switch (q) {
+				case "image": return this._ref.attributes.imgsrc;
+				case "npc": return this.character?.isNpc;
+				case "hp": return getHP();
+				case "hp_max": return getHP("max");
+				case "name": return this._ref.attributes.name || "";
+				case "char_name": return this._ref.character.attributes.name || "";
+				case "npc_name": return this.character?.sheet.get("name") || "";
+				case "spells": return this.character?.sheet.getSpells();
+				case "attacks": return this.character?.sheet.getAttacks();
+				case "items": return this.character?.sheet.getItems();
+				case "traits": return this.character?.sheet.getTraits();
+				default: return this.character?.sheet.get(q);
+			}
+		}
+
+		this.ready = async () => {
+			return new Promise(resolve => {
+				let inProgress = 0;
+				const wait = setInterval(() => {
+					const statsFetched = Object.keys(this.character?.sheet?.data.stats || {}).length > 1;
+					inProgress++;
+					if (statsFetched) resolve(true);
+					if (statsFetched || inProgress > 120) {
+						resolve(false);
+						clearInterval(wait);
+					}
+				}, 30);
+			});
+		}
+
+		const init = async () => {
+			if ((ref?._model?.attributes || ref?.attributes)?.type !== "image") return;
+			if (!(ref?._model?.character || ref?.character)?.id) return;
+			this._ref = ref._model || ref;
+			this._object = ref._model
+				? ref
+				: d20.engine.canvas.getObjects()?.find(t => t._model?.id === this._ref.id);
+			this.id = this._ref.id;
+
+			const char = d20plus.ba.characters.get(this._ref.character.id);
+			this.character = char || await new d20plus.ba.characters.Connector(this._ref);
+			this.mods = {
+				general: {},
+				stats: {},
+				skills: {},
+				attacks: {},
+				spells: {filter: true},
+				items: {filter: true},
+				traits: {filter: true},
+			};
+
+			d20plus.ba.tokens.push(this);
+			this.refresh();
+		}
+
+		init();
+	}
+
+	d20plus.ba.initCharacters = () => {
+		const get = function (ref) {
+			return Object.isObject(ref)
+				? this.find(it => it.id === ref.id
+					|| it.id === ref._model?.id
+					|| it.id === ref.character?.id
+					|| it.id === ref._model?.character?.id)
+				: this.find(it => it.id === ref);
+		}
+
+		const ready = function (ref) {
+			const isToken = !!this.getCurrent;
+			if ((isToken && !ref?.id
+					&& !ref._model.id
+					&& !ref.character
+					&& !ref._model?.character)
+				|| (!isToken && !ref?.id
+					&& !ref.attribs)) return;
+
+			const existing = this.get(ref.id || this._model?.id);
+			const created = existing || new this.Connector(ref);
+
+			existing?.refresh();
+			return existing || created;
+		}
+
+		d20plus.ba.tokens.get = get;
+		d20plus.ba.characters.get = get;
+
+		d20plus.ba.tokens.ready = ready;
+		d20plus.ba.characters.ready = ready;
+
+		d20plus.ba.tokens.getCurrent = () => {
+			return d20plus.ba.tokens.get(d20plus.ba.current.singleChar?.id);
+		}
+
+		d20plus.ba.tokens.focusCurrent = () => {
+			const token = d20plus.ba.tokens.getCurrent();
+			d20.engine.unselect();
+			token?.find();
+			token?.select();
+		}
+
+		d20plus.ba.getReady = function (ref) { // legacy
+			const gotToken = !ref.attribs;
+			if (gotToken && !ref.character && !ref._model?.character) return;
+
+			const token = ref._model || ref;
+			const existing = (gotToken ? d20plus.ba.tokens : d20plus.ba.characters).get(token.id);
+			d20plus.ut.log(token, existing); // check why it's called twice !!!!
+			const created = existing || (gotToken
+				? new d20plus.ba.tokens.Connector(token)
+				: new d20plus.ba.characters.Connector(token));
+			existing?.refresh();
+			return existing || created;
+		}
+	}
+
+	window.d20debug = {
+		qattr: (q) => {
+			d20plus.ba.characters.forEach(ch => d20plus.ut.log(ch.name.tk, ch.sheet.get(q)));
+			d20plus.ut.log(`Quering ${q}: ${d20plus
+				.ba.characters
+				.reduce((r, ch) => `${r}\n${ch.name.ch}:\t ${ch.sheet.get(q)}`, "")
+			}`);
+		},
+	}
+}
+
+SCRIPT_EXTENSIONS.push(baseBACharacters);
+
+function baseBARollTemplates () {
+	d20plus.ba = d20plus.ba || {};
+
+	const targetTag = `@{target|token_id}`;
+	const targetName = `@{target|token_name}`;
+	const normalizeStyle = `color: inherit;text-decoration: none;cursor: auto;`;
+
+	const getRollMode = () => {
+		const adv = d20plus.ba.$dom.menu.find(".ba-list .mods:visible .advantage input").prop("checked");
+		const dis = d20plus.ba.$dom.menu.find(".ba-list .mods:visible .disadvantage input").prop("checked");
+		return adv ? "advantage" : dis ? "disadvantage" : "normal";
+	}
+
+	const getWMode = () => {
+		const togm = d20plus.ba.$dom.menu.find(".ba-list .mods:visible .togm input").prop("checked");
+		return togm ? "/w gm " : "";
+	}
+
+	const getTemplatePart = ([tag, val, props], subtree) => {
+		if ((!tag && !subtree) || props === false || props?.q === false) return "";
+		if (Array.isArray(val)) val = val.reduce((s, v) => s + getTemplatePart([null].concat(v), true), "");
+		else val = props?.css ? `[${val || " "}]("style="${normalizeStyle}${props.css}")` : val;
+		const left = props?.left || (props?.lcss ? `[ ]("style="${props?.lcss}")` : "");
+		const right = props?.right || (props?.rcss ? `[ ]("style="${props?.rcss}")` : "");
+		return `${tag ? `${tag}=` : ""}${left}${val}${right}`;
+	}
+
+	const getTemplateVar = (v) => {
+		if (v.q === false || (!v.tag && !v.isSubStr) || (!v.val && v.q === undefined)) return "";
+		if (Array.isArray(v.val)) {
+			const getSubVal = (s, v) => s + getTemplateVar(Object.assign(v, {isSubStr: true}));
+			const subVal = v.val.reduce(getSubVal, "");
+			v.val = v.css ? `[${subVal}]("style="${normalizeStyle}${v.css}")` : subVal;
+		} else {
+			if (v.css) v.val = (v.val || " ").replaceAll("]", "&#93;");
+			v.val = v.css ? `[${v.val}]("style="${normalizeStyle}${v.css}")` : v.val;
+		}
+		return `${v.tag ? `${v.tag}=` : ""}${v.val}`;
+	}
+
+	/* eslint-disable object-property-newline */
+	const buildAbilityTemplate = (v) => {
+		const tmplModel = [
+			{tag: v.rMode,	val: `1`},
+			{tag: `rname`,	val: v.title, css: `color:${v._isNpc ? "#9a384f" : "#607429"};`},
+			{tag: `name`,	val: `${v.subTitle || ""} (${v.mod || 0})`},
+			{tag: `type`,	val: v.attrName, css: `display:inline-block;width:50%;font-style: normal;margin: 2px 0px;vertical-align: middle;text-align: right;padding-right: 5px;line-height: 14px;letter-spacing: -1px;`},
+			{tag: `r1`,	val: [
+				{val: ` `, css: `display: inline-block;margin-left:-8px;`},
+				{val: `[[${v.r1}${v.dc ? `[chk${v.dc}]` : ""}]]`},
+			]},
+			{tag: `r2`,	val: [
+				{val: `[[${v.r2 || v.r1}${v.dc ? `[chk${v.dc}]` : ""}]]`},
+				{val: ` `, css: `display: inline-block;margin-right:-10px;`},
+			], q: v.rMode !== "normal"},
+		].map(getTemplateVar).filter(s => !!s).join("}} {{");
+		return `&{template:npc} ${v.hidden} {{${tmplModel}}}`;
+	}
+
+	const buildAttackTemplate = (v) => {
+		v.targetId = v._onSelf ? v._this.id : v.targetId;
+		const tmplModel = [
+			{tag: `attack`,	 val: "1"},
+			{tag: `crit`,	 val: "1"},
+			{tag: `damage`,	 val: "1"},
+			{tag: v.rMode,	 val: "1", q: !!v.atk1},
+			{tag: `range`,	 val: v.charName, css: `color:${v._isNpc ? "#9a384f" : "#607429"};${!v.atk1 || v.rMode === "" ? "margin-top: 12px;" : ""}font-weight:bold;display: inline-block;font-family: 'Times New Roman', Times;font-style: normal;font-variant: small-caps;font-size: 14px;`},
+			{tag: `rname`,	 val: v.title, css: `font-size: 13px;line-height: 16px;`},
+			{tag: `charname`, val: [
+				{val: v.subTitle, q: !!v.subTitle},
+				{val: ` `, q: !!v.targetName || !!v.saveAttr, css: `display: block;padding-bottom: 3px;`},
+				{val: [
+					{val: `^{on-hit:-u}`, css: `font-style: normal;display: block;`},
+					{val: `^{save} **^{difficulty-class-abv}${v.dc} ^{${v.saveAttr?.slice(0, 3)}-u}**`, css: `font-style: normal;display: block;`},
+				], q: !!v.saveAttr},
+				{val: [
+					{val: `^{target:} ${v.targetName}`},
+					{val: ` (${v.distance})`, q: !!v.distance},
+				], q: !!v.targetName},
+				{val: ` `, css: `display: block;padding-bottom: 8px;`},
+			]},
+			{tag: `mod`, val: [
+				{val: v.atkMod, q: v.rMode !== "" && !!v.atkMod},
+				{val: v.mod, q: !!v.mod},
+				{val: "⚕", q: !!v._isSpell, css: `color:#3737ff;font-weight:bold;`},
+			]},
+			{tag: `dmg1flag`, val: "1"},
+			{tag: `dmg1type`, val: v.dmg1type},
+			{tag: `dmg1`,	val: `[[${v.dmg1roll || 0}[${v.dmg1tag}${v.targetId}]]]`},
+			{tag: `crit1`,	val: `[[${v.crit1roll || 0}[${v.dmg1tag}${v.targetId}]]]`},
+			{tag: `dmg2flag`, val: "1", q: !!v.dmg2on},
+			{tag: `dmg2type`, val: v.dmg2type},
+			{tag: `dmg2`,	val: `[[${v.dmg2roll || 0}[${v.dmg2tag}${v.targetId}]]]`, q: !!v.dmg2on},
+			{tag: `crit2`,	val: `[[${v.crit2roll || 0}[${v.dmg2tag}${v.targetId}]]]`, q: !!v.dmg2on},
+			{tag: `r1`,		val: `[[${v.atk1}[atk${btoa(v.targetAc || "")}]]]`, q: !!v.atk1},
+			{tag: `r2`,		val: `[[${v.atk2 || v.atk1}[atk${btoa(v.targetAc || "")}]]]`, q: v.rMode !== "normal"},
+		].map(getTemplateVar).filter(s => !!s).join("}} {{");
+		return `&{template:atkdmg} ${v.hidden || ""} {{${tmplModel}}}`;
+	}
+
+	const buildCastTemplate = (v) => {
+		const tmplModel = [
+			{tag: `attack`,	 val: "1"},
+			{tag: `damage`,	 val: "1"},
+			{tag: `mod`,	 val: "⚕", css: `color:#3737ff;font-weight:bold;`},
+			{tag: `range`,	 val: v.charName, css: `color:${v._isNpc ? "#9a384f" : "#607429"};margin-top: 12px;font-weight:bold;display: inline-block;font-family: 'Times New Roman', Times;font-style: normal;font-variant: small-caps;font-size: 14px;`},
+			{tag: `rname`,	 val: v.title, css: `font-size: 13px;line-height: 16px;`},
+			{tag: `charname`, val: [
+				{val: v.subTitle, css: `display:inline-block;`},
+				{val: [
+					{val: ` `, css: `display: block;padding-bottom: 7px;`},
+					{val: `^{difficulty-class-abv}${v.dc} ^{${v.saveAttr?.slice(0, 3)}-u}`, css: `display: block;font-weight:bold;font-size:13px;`},
+					{val: [
+						{val: `^{target:} ${v.targetName}`},
+						{val: ` (${v.distance})`, q: !!v.distance},
+					], q: !!v.targetName, css: `display: block;`},
+					{val: `^{save}`, css: `display: block;`},
+					{val: ` `, css: `display: block;padding-bottom: 7px;`},
+				]},
+			]},
+			// {tag: `mod`,	 val: v.atkMod},
+			{tag: `dmg1type`,	val: [
+				{val: `^{damage:-u}%NEWLINE%^{failures-u}`, css: "font-size:8px;line-height:8px;display:block;padding:4px 0px;"},
+				{val: v.dmg1type ? `${v.dmg1type || ""} ${v.dmg2type || ""}` : "", q: !!v.dmg1type || !!v.dmg2type, css: `display: block;padding-bottom: 7px;width: 180px;font-style: normal;`},
+			]},
+			{tag: `dmg2type`,	val: `^{damage:-u}%NEWLINE%^{successes-u}`, css: "font-size:8px;line-height:8px;display:block;padding:4px 0px;"},
+			{tag: `dmg1flag`,	val: "1"},
+			{tag: `dmg2flag`,	val: "1"},
+			{tag: "dmg1", val: v.dmgOnFail},
+			{tag: "dmg2", val: v.dmgOnSuccess},
+		].map(getTemplateVar).filter(s => !!s).join("}} {{");
+		v.hidden = v.hidden || `[[ floor([[${v.dmg1roll}${v.dmg1type ? `[${v.dmg1type}]` : ""} ${v.dmg2roll ? `+ ${v.dmg2roll}${v.dmg2type ? `[${v.dmg2type}]` : ""}` : ""}[dmg${v.targetId}]]]/2) [dmg${v.targetId}] ]]`;
+		return `&{template:atkdmg} ${v.hidden || ""} {{${tmplModel}}}`;
+	}
+
+	const buildActionTemplate = (v) => {
+		const tmplModel = [
+			// {tag: v.rMode,	val: "1", q: !!v.dmg1on},
+			// {tag: `attack`,	val: "1", q: !!v.dmg1on},
+			{tag: `mod`,	 val: "⚕", css: `color:#3737ff;font-weight:bold;`},
+			{tag: `rname`,	 val: [
+				{val: v.charName, css: `color:${v._isNpc ? "#9a384f" : "#607429"};margin-top: 12px;font-weight:bold;display:block;font-family: 'Times New Roman', Times;font-style: normal;font-variant: small-caps;font-size: 14px;`},
+				{val: v.title, css: `font-size: 13px;line-height: 16px;`},
+			]},
+			{tag: `charname`, val: [
+				{val: v.subTitle, css: `display:inline-block;`},
+				{val: [
+					{val: ` `, css: `display: block;padding-bottom: 7px;`},
+					{val: `^{difficulty-class-abv}${v.dc} ^{${v.saveAttr?.slice(0, 3)}-u}`, q: !!v.saveAttr, css: `display: block;font-weight:bold;font-size:13px;`},
+					{val: [
+						{val: `^{target:} ${v.targetName}`},
+						{val: ` (${v.distance})`, q: !!v.distance},
+					], q: !!v.targetName, css: `display: block;`},
+					{val: `^{save}`, q: !!v.saveAttr, css: `display: block;`},
+					{val: ` `, css: `display: block;padding-bottom: 7px;`},
+				]},
+			]},
+		].map(getTemplateVar).filter(s => !!s).join("}} {{");
+		return `&{template:simple} ${v.hidden || ""} {{${tmplModel}}}`;
+	}
+
+	const buildDescriptionTemplate = (v) => {
+		const tmplModel = [
+			{tag: `name`,	val: v.title},
+			{tag: `source`,	val: [
+				{val: v.charName},
+				{val: v.subTitle},
+			]},
+			{tag: `description`, val: v.description, css: `display:block; overflow-y:auto; max-height:250px`},
+		].map(getTemplateVar).filter(s => !!s).join("}} {{");
+		return `&{template:traits} {{${tmplModel}}}`;
+	}
+
+	const getDescriptionTemplate = (token, id, type) => {
+		const char = d20plus.ba.getSingleChar(token);
+		const cat = char[type] || [];
+		const obj = cat[id];
+		if (!obj) return;
+		if (type === "spells") d20.textchat.doChatInput(`&{template:traits} {{name=${obj.spellname}}} {{source=${obj.spellschool || ""}}} {{description=${obj.spelldescription}}}`);
+		else if (type === "attacks") d20.textchat.doChatInput(`&{template:traits} {{name=${obj.atkname}}} {{source=${obj.spellschool || ""}}} {{description=${obj.atkdamagetype || ""}}}`);
+	}
+	/* eslint-enable object-property-newline */
+
+	const outputTemplate = (values) => {
+		const templateModel = {
+			ability: buildAbilityTemplate,
+			attack: buildAttackTemplate,
+			cast: buildCastTemplate,
+			action: buildActionTemplate,
+			description: buildDescriptionTemplate,
+		}[values?._modelType];
+
+		const template = templateModel && templateModel(values);
+		if (!template) return d20plus.ba.rollError(); d20plus.ut.log(values);
+
+		d20.textchat.doChatInput(`${getWMode()}${template}`);
+		if (values._expend) d20plus.engine.expendResources(values._expend);
+	}
+
+	const buildRollModel = (r) => {
+		const critrange = r.critrange && Number(r.critrange) !== 20 ? `cs>${r.critrange}` : "";
+		const base = !r.base ? ""
+			: r.base.toLowerCase().includes("d") ? r.base : `1d${r.base}${critrange}`;
+		const mods = r.mods?.reduce((s, m) => {
+			if (!m) return s;
+			const attr = m[1] ? `[${m[1]}]` : "";
+			const raw = String(m[0] || "0").split("+").map(d => {
+				if (!d) return "";
+				d = d.trim();
+				if (d[0] === "-" || (s === "" && !r.base) || d === "") return `${d}`;
+				else return `+${d}`;
+			}).join("");
+			return `${s} ${raw}${attr}`;
+		}, "")
+		const dmg = r.type ? `[${r.type}${r.target || "@{target|token_id"}]` : "";
+		return `${base}${mods}${dmg}`;
+	}
+
+	const buildDisplayMod = (r) => {
+		const base = !r.base || r.base === "20" ? ""
+			: r.base.toLowerCase().includes("d") ? "" : `D${r.base} `;
+		const mods = r.mods?.reduce((s, m) => {
+			if (!m) return s;
+			return s + (Number(m[0]) || 0);
+		}, 0) || 0; d20plus.ut.log("Building modifier", mods, r)
+		const sign = mods < 0 || !r.base ? "" : "+";
+		return `${base}${sign}${mods}`;
+	}
+
+	const getAbilityVals = (q) => { // spec, attr, dc
+		const [attr, dcTmp] = String(q.flags).split("|");
+		const dc = q.dc || dcTmp;
+		const spec = q.id;
+
+		const abbr = attr.slice(0, 3).toUpperCase();
+		const attrBase = attr.replaceAll(" ", "_").replaceAll("-", "_");
+		const attrId = spec === "save" ? `${attrBase}_save` : `${attrBase}_mod`;
+		const attrMod = q.token.get(attrId);
+
+		const roll = {
+			base: attr !== "hit dice" ? `20` : `${q.token.get("hitdietype")}`,
+			// type: spec === "hit dice" ? `heal` : null,
+			// target: spec === "hit dice" ? token.id : null,
+			mods: [
+				[attrMod, abbr],
+				attr === "initiative" ? [` `, `init${q.token.id}`] : null,
+				spec === "ability" && !q.token.get("npc") ? [`${q.token.get("jack_bonus")}`, "JACK"] : null,
+			],
+		}
+
+		if (attr === "hit dice") roll.mods[0] = [q.token.get("constitution_mod"), "CON"];
+		if (attr === "concentration") roll.mods[0] = [q.token.get("constitution_save"), "CON"];
+
+		const tmplVals = {
+			_this: q.token,
+			_thisId: q.token.character.id,
+			_isNpc: q.token.get("npc"),
+			_modelType: !["hit dice", "fall"].includes(attr) ? "ability" : "attack",
+			_onSelf: true,
+			dc,
+			rMode: getRollMode(),
+			title: attr !== "hit dice" ? q.token.get("name") : `^{hit-dice-u}`,
+			subTitle: `^{${spec === "ability" ? "abilities" : ["skill", "save", "roll"].includes(spec) ? spec : attr}}`,
+			attrName: `^{${spec === "save" ? `${attrBase}-save` : (["death save", "hit dice"].includes(attr) ? attr.split(" ").concat("u").join("-") : attrBase)}}`,
+			mod: buildDisplayMod(roll),
+			r1: buildRollModel(roll), // +$[[0]]`,
+			// r2: `[[${buildRollModel(roll)}]]`, // +$[[0]]`,
+
+			dmg1on: true,
+			dmg1tag: "heal",
+			dmg1type: `^{hp}`,
+			dmg1roll: buildRollModel(roll),
+			charName: q.token.get("name"),
+			targetId: q.token.id,
+		}
+
+		return tmplVals;
+	};
+
+	const getAttackVals = (q) => {
+		const atk = q.token.get(q.id);
+		const dmg = atk._get("rollbase_crit")?.match(/{{dmg1=\[\[(?<dmg1>[^}]*)\]\]}}(?:.*?){{dmg2=\[\[(?<dmg2>[^}]*)\]\]}}(?:.*?){{crit1=\[\[(?<crit1>[^}]*)\]\]}}(?:.*?){{crit2=\[\[(?<crit2>[^}]*)\]\]}}/)?.groups || {};
+		const atkattr = atk._get("attr");
+		const isNpc = q.token.get("npc");
+
+		const atkRoll = {
+			base: `20`,
+			critrange: atk._get("atkcritrange") || q.token.get("default_critical_range") || "20",
+			mods: [
+				isNpc ? [atk._get("attack_tohit"), "MOD"] : undefined,
+				!isNpc ? [atk._get("atkmod"), "MOD"] : undefined,
+				!isNpc ? [atk._get("atkmagic"), "MB"] : undefined,
+				atkattr ? [q.token.get(atkattr), atkattr?.slice(0, 3).toUpperCase()] : undefined,
+				atk._has("pb") && !isNpc ? [q.token.get("pb"), "PB"] : undefined,
+			],
+		}
+
+		const tmplVals = {
+			_this: q.token,
+			_thisId: q.token.character.id,
+			_isNpc: isNpc,
+			_onSelf: atk._get("range")?.includes("[S]"),
+			_targeted: atk._has("atk") || atk._has("dmg1") || atk._has("dmg2") || atk._has("save"),
+			_modelType: atk._has("atk") ? "attack" : atk._has("save") && atk._has("dmg1") ? "cast" : "action",
+			_expend: atk._get("ammo") ? {type: "item", name: atk._get("ammo"), charID: q.token.character.id} : undefined,
+
+			title: atk._get("name") || "^{attack-u}",
+			subTitle: [atk._get("range")?.replace(/\[\w\]/g, "").replaceAll("]", "&#93;"), i18n(atk._get("attack_type")?.toLowerCase(), "")]
+				.reduce((t, v) => v && (!t || `${t}, ${v}`.length < 27) ? `${t}${v && t ? ", " : ""}${v}` : t, ""),
+			charName: q.token.get("name"),
+			description: atk._get("description"),
+
+			dmg2on:	atk._has("dmg2"),
+			dmg1tag:	atk._get("dmg1type")?.includes("Healing") ? "heal" : "dmg",
+			dmg2tag:	atk._get("dmg2type")?.includes("Healing") ? "heal" : "dmg",
+			dmg1type:	atk._get("dmg1type") || "",
+			dmg2type:	atk._get("dmg2type") || "",
+			dmg1roll:	atk._get("attack_damage") || dmg.dmg1 || 0,
+			dmg2roll:	atk._get("attack_damage2") || dmg.dmg2 || 0,
+			rMode: getRollMode(),
+			crit1roll:	atk._get("attack_crit") || dmg.crit1 || 0,
+			crit2roll:	atk._get("attack_crit2") || dmg.crit2 || 0,
+			atk1: buildRollModel(atkRoll),
+			atkMod:	buildDisplayMod(atkRoll),
+			saveAttr: atk._get("saveattr")?.toLowerCase() || "",
+			dc: q.token.character.sheet.getRollModifier(atk._get("savedc")),
+		}
+		return tmplVals;
+	}
+
+	const getSpellVals = (q) => { // id, flags
+		const expendCfg = d20plus.cfg.getOrDefault("chat", "autoExpend");
+		const lvls = String(q.flags).split(",");
+		const spell = q.token.get(q.id);
+		const spell_ability = spell._get("spell_ability");
+		const spellAbility = spell_ability && spell_ability?.length > 2
+			? (spell_ability !== "spell" ? spell_ability : q.token.get("spellcasting_ability"))?.replace(/@{(.*?)(_mod|)}(\+|)/, "$1") || ""
+			: "";
+		const subTitle = [spell.spellrange, spell.spellduration, spell.spelltarget, i18n(spell.spellattack?.toLowerCase(), "")]
+			.reduce((t, v) => v && (!t || `${t}, ${v}`.length < 27) ? `${t}${v && t ? ", " : ""}${v}` : t, "");
+		const onSelf = spell.spellrange?.includes("[S]") || spell.spelltarget?.includes("Self");
+		const spelldmgmod = spell._get("spelldmgmod") === "Yes" ? q.token.get(`${spellAbility}_mod`) || 0 : "";
+
+		const expend = (spell.lvl === undefined || !!spell._get("innate"))
+			? (spell._has("uses") ? {type: spell._resource.type, res: spell._resource.side, name: spell._resource.name, charID: q.token.character.id} : undefined)
+			: (spell.lvl !== "cantrip" ? {type: "spell", lvl: spell.lvl, charID: q.token.character.id} : undefined);
+
+		const atkRoll = {
+			base: `20`,
+			// type: `atk`,
+			// target: targetTag,
+			critrange: q.token.get("default_critical_range") || "20",
+			mods: [
+				spell_ability === "spell" && [q.token.get("spell_attack_bonus"), "SPELL"], // `@{${char.id}|spell_attack_mod}[MOD]+${spellAbility}@{${char.id}|pb}[PB]`
+				spell_ability !== "spell" && [q.token.get("spell_attack_mod"), "MOD"],
+				spell_ability !== "spell" && [q.token.get(`${spellAbility}_mod`), spellAbility.slice(0, 3).toUpperCase()],
+				spell_ability !== "spell" && [q.token.get("pb"), "PB"],
+			],
+		}
+
+		const upcast = lvls.reduce((vars, lvl) => {
+			lvl = Number(lvl);
+			if (!lvl) return vars;
+			const splvl = spell.lvl !== "cantrip" ? Number(spell.lvl) : 0;
+			const base = spell._get("spelldamage") ? spell._get("spelldamage") : (spell._get("spellhealing") && !spell._get("spellsave") ? spell._get("spellhealing") : "");
+			const diff = lvl - splvl;
+			const mult = diff * (spell._get("spellhldie") || 1);
+			const addBonus = spell._get("spellhlbonus") && !isNaN(spell._get("spellhlbonus")) ? `+${Number(spell._get("spellhlbonus"))}` : "";
+			const addDice = spell._get("spellhldietype") ? `${mult}${spell._get("spellhldietype")}${addBonus}` : "";
+
+			vars[lvl] = {
+				dmg1roll: base ? buildRollModel({base, mods: [[spelldmgmod], [addDice, `LVL${lvl}`]]}) : "",
+				crit1roll: base ? buildRollModel({base, mods: [[`${mult}${spell._get("spellhldietype")}`, `LVL${lvl}`]]}) : "",
+			}
+			return vars;
+		}, []);
+
+		const tmplVals = {
+			_this: q.token,
+			_thisId: q.token.character.id,
+			_isNpc: q.token.get("npc"),
+			_isSpell: spell._get("spell_ability") === "spell",
+			_upcast: upcast,
+			_save: spell._get("spellsave")?.toLowerCase() || false,
+			_expend: expend,
+			_onSelf: spell._get("spellrange")?.includes("[S]") || spell._get("spelltarget") === "self",
+			_targeted: !!spell._has("atk") || !!spell._has("dmgorheal") || !!spell._has("save"),
+			_modelType: spell._has("atk") || (!spell._has("save") && spell._has("dmgorheal")) ? "attack" : (spell._has("save") && spell._has("dmg") ? "cast" : "action"),
+
+			rMode: spell._has("atk") ? getRollMode() : /* spell._getVar("hassave") || !!spell.spelldamage2 ? "always" : */ "",
+			charName: q.token.get("name"),
+			title:	spell._get("name"),
+			subTitle,
+
+			dmg1on: !!spell._get("spelldamage") || !!spell._get("spellhealing"),
+			dmg2on: !!spell._get("spelldamage2"),
+			dmg1tag:	spell._get("spelldamage") || spell._get("spelldamage2") ? "dmg" : spell._get("spellhealing") ? "heal" : "",
+			dmg2tag:	spell._get("spelldamage2") ? "dmg" : spell._get("spelldamage") && spell._get("spellhealing") ? "heal" : "",
+			dmg1type:	spell._get("spelldamagetype") || (spell._get("spellhealing") ? "healing" : ""),
+			dmg2type:	spell._get("spelldamagetype2") || (spell._get("spelldamage") && spell._get("spellhealing") ? "healing" : ""),
+			dmg1roll:	spell._get("spelldamage") ? buildRollModel({base: spell._get("spelldamage"), mods: [[spelldmgmod]]})
+				: spell._get("spellhealing") && !spell._get("spellsave") ? buildRollModel({base: spell._get("spellhealing"), mods: [[spelldmgmod]]}) : "",
+			dmg2roll:	spell._get("spelldamage2") ? buildRollModel({base: spell._get("spelldamage2"), mods: [[spelldmgmod]]})
+				: spell._get("spelldamage") && spell._get("spellhealing") && !spell._get("spellsave") ? buildRollModel({base: spell._get("spellhealing"), mods: [[spelldmgmod]]}) : "",
+
+			crit1roll:	spell._get("spelldamage"),
+			crit2roll:	spell._get("spelldamage2"),
+			atk1: buildRollModel(atkRoll),
+			atkMod:	buildDisplayMod(atkRoll),
+			description: spell._get("description"),
+			hldescription: spell._get("spellathigherlevels"),
+
+			dc: spell._get("spell_ability") !== "spell"
+				? buildDisplayMod({mods: [[8], [q.token.get("spell_dc_mod")], [q.token.get(`${spellAbility}_mod`)], [q.token.get("pb")]]})
+				: (q.token.get("spell_save_dc") || "10"),
+			saveAttr: spell._get("spellsave")?.toLowerCase() || "",
+			dmgOnFail: `$[[0]]`,
+			dmgOnSuccess: spell.lvl === "cantrip" ? "[[0]]" : `$[[1]]`,
+		}
+		return tmplVals;
+	}
+
+	const switchTargeting = (mode) => {
+		const on = mode === "on";
+		d20plus.mod.setMode(on ? "targeting" : "select");
+		d20.engine.canvas.hoverCursor = on ? "crosshair" : "move";
+		d20plus.ba.$dom.r20targetingNote[on ? "show" : "hide"]();
+		$("#babylonCanvas")[on ? "addClass" : "removeClass"]("targeting");
+	}
+
+	d20plus.ba.getTarget = async (vals, target) => {
+		if (target === false) { // user Closed targeting dialog
+			switchTargeting("off");
+			return d20.engine.nextTargetCallback = false;
+		} else if (!target) {
+			// d20plus.ut.log("START TARGETING", vals);
+			switchTargeting("on");
+			d20.engine.nextTargetCallback = (t) => { d20plus.ba.getTarget(vals, t); };
+		} else if (vals._aoe) {
+			// console.log(target);
+		} else {
+			if (!target._model?.character) return d20plus.ut.sendHackerChat("Target the token that represents a PC or NPC", true);
+			const targetToken = d20plus.ba.tokens.ready(target);
+			const distance = d20plus.ut.getTokensDistanceText(target._model, vals._this._ref);
+			await targetToken.ready();
+			await targetToken.character.sheet.fetch();
+
+			// const targetChar = await d20plus.ba.fetchChar(target._model);
+			// const thisToken = d20plus.ut.getTokenById(d20plus.ba.chars[vals._thisId].lastTokenId);
+
+			d20plus.ut.log("Getting target", vals);
+			switchTargeting("off");
+			d20.engine.nextTargetCallback = false;
+
+			if (vals._save) {
+				// d20plus.ba.currentToken = target._model;
+				// d20plus.ba.singleSelected = target._model;
+				outputTemplate(getAbilityVals({ // "save", vals._save, vals.dc
+					id: "save",					// spec, attr, dc
+					flags: vals._save,
+					dc: vals.dc,
+					token: targetToken,
+				}));
+			}
+
+			vals.targetId = target._model.id;
+			vals.targetName = target._model.attributes.name;
+			vals.targetAc = targetToken.get("ac"); // targetChar.isNpc ? targetChar.npcStats.ac : targetChar.stats.ac;
+			vals.distance = distance;
+			setTimeout(i => { outputTemplate(vals) }, 500);
+			// d20plus.ut.log("END TARGETING", vals);
+		}
+	}
+
+	d20plus.ba.getConcentrationDC = (vals) => {
+		const $dc = $(`
+			<div>
+				Enter incoming damage
+				<input type="number" style="width:45px;">
+			</div>
+		`).dialog({
+			title: "Concentration roll",
+			autoopen: true,
+			close: () => { $dc.off(); $dc.dialog("destroy").remove() },
+			buttons: {
+				"Cancel": () => { $dc.off(); $dc.dialog("destroy").remove() },
+				"Roll": () => {
+					const $input = $dc.find("input");
+					const dmg = $input.val();
+					if (!isNaN(dmg)) {
+						vals.dc = Math.max(10, Math.floor(dmg / 2));
+						outputTemplate(vals);
+					}
+					$dc.off(); $dc.dialog("destroy").remove();
+				},
+			},
+		})
+	}
+
+	d20plus.ba.getFallHeight = (vals) => {
+		const $fd = $(`
+			<div>
+				Enter fall height, ft.
+				<input type="number" style="width:45px;">
+			</div>
+		`).dialog({
+			title: "Fall damage",
+			autoopen: true,
+			close: () => { $fd.off(); $fd.dialog("destroy").remove() },
+			buttons: {
+				"Cancel": () => { $fd.off(); $fd.dialog("destroy").remove() },
+				"Roll": () => {
+					const $input = $fd.find("input");
+					const height = $input.val();
+					if (!isNaN(height)) {
+						const dmgRoll = Math.min(Math.abs(Math.floor(height / 10)), 20);
+						vals.dmg1roll = `${dmgRoll}d6[dmg${vals._thisId}]`;
+						vals.title = "Fall";
+						vals.subTitle = "Fall damage";
+						vals.dmg1tag = "dmg";
+						vals.dmg1type = `bludgeoning`;
+						vals.mod = `${height} ft.`;
+						outputTemplate(vals);
+					}
+					$fd.off(); $fd.dialog("destroy").remove();
+				},
+			},
+		})
+	}
+
+	d20plus.ba.getUpcastSpell = (vals, flags) => {
+		const lvls = String(flags).split(",");
+		const options = lvls.reduce((html, lvl) => {
+			const name = lvl === "0" ? "As ritual" : `Level ${lvl}`;
+			return `${html}<option value="${lvl}">${name}</option>`;
+		}, "")
+		const $uc = $(`
+			<div>
+				<h3>${vals.title}</h3>
+				${vals.hldescription ? `<p>${vals.hldescription}</p>` : ""}
+				Select spell slot to expend:
+				<select style="width:90px;">${options}</select>
+			</div>
+		`).dialog({
+			title: "Upcast spell",
+			autoopen: true,
+			close: () => { $fd.off(); $uc.dialog("destroy").remove() },
+			buttons: {
+				"Cancel": () => { $uc.off(); $uc.dialog("destroy").remove() },
+				"Roll": () => {
+					const $input = $uc.find("select");
+					const level = $input.val();
+					if (level === "0") {
+						vals._expend = false;
+					} else {
+						vals._expend.lvl = level;
+						if (vals._upcast && vals._upcast[level]?.dmg1roll) {
+							vals.dmg1roll = vals._upcast[level]?.dmg1roll;
+							if (vals._upcast[level]?.crit1roll) vals.crit1roll = vals._upcast[level]?.crit1roll;
+						}
+					}
+					if (vals._targeted && !vals._onSelf) d20plus.ba.getTarget(vals);
+					else outputTemplate(vals);
+					$uc.off(); $uc.dialog("destroy").remove();
+				},
+			},
+		})
+	}
+
+	d20plus.ba.makeRoll = (q) => { // action, spec, flags
+		const getTmplVals = {
+			roll: getAbilityVals,
+			attack: getAttackVals,
+			cast: getSpellVals,
+			upcast: getSpellVals,
+		}[q.action];
+
+		const tmplVals = getTmplVals && getTmplVals(q); // spec, flags
+		if (!tmplVals) return d20plus.ba.rollError();
+		else if (q.flags === "concentration") d20plus.ba.getConcentrationDC(tmplVals);
+		else if (q.flags === "fall") d20plus.ba.getFallHeight(tmplVals);
+		else if (q.action === "upcast") d20plus.ba.getUpcastSpell(tmplVals, q.flags);
+		else if (tmplVals._targeted && !tmplVals._onSelf) d20plus.ba.getTarget(tmplVals);
+		else outputTemplate(tmplVals);
+	}
+
+	d20plus.ba.makeInfo = (q) => {
+		const getTmplVals = {
+			spell: getSpellVals,
+			attack: getAttackVals,
+		}[q.action];
+
+		const tmplVals = getTmplVals && getTmplVals(q);
+		if (!tmplVals) return d20plus.ba.rollError();
+		tmplVals._modelType = "description";
+		tmplVals._expend = false; d20plus.ut.log("Outputting template", tmplVals);
+		outputTemplate(tmplVals);
+	}
+}
+
+SCRIPT_EXTENSIONS.push(baseBARollTemplates);
+
+
+function baseBetterActions () {
+	d20plus.ba = d20plus.ba || {};
+
+	const peopleIcon = "https://img.icons8.com/ios-glyphs/30/multicultural-people.png";
+	const tabs = ["general", "stats", "skills", "attacks", "traits", "spells", "items", "animations"];
+	const abilities = ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"];
+	let skills = "acrobatics,animal_handling,arcana,athletics,deception,history,insight,intimidation,investigation,medicine,nature,perception,performance,persuasion,religion,sleight_of_hand,stealth,survival";
+
+	const buildAnimations = () => {
+		Object.keys(d20plus.anim.animatorTool?._anims || {}).forEach(i => {
+			d20plus.ba.tree.anims.push({
+				name: d20plus.anim.animatorTool._anims[i].name
+					.toSentenceCase()
+					.replace("_", " "),
+				action: "animation",
+				spec: i,
+			});
+		})
+	}
+
+	const buildGroup = (name, subtree) => {
+		subtree && d20plus.ba.tree.rolls.push({
+			name,
+			type: "head",
+			items: subtree,
+		});
+		return subtree;
+	}
+
+	const buildAbilities = () => {
+		const subtree = abilities.map(ab => {
+			const id = ab.replaceAll("-", "_");
+			return {
+				name: i18n(id, ab.toSentenceCase()),
+				type: `selector`,
+				items: [{
+					name: "Roll plain check",
+					icon: "Check",
+					action: "roll",
+					spec: "ability",
+					flags: ab,
+				}, {
+					name: "Save",
+					icon: "Save",
+					action: "roll",
+					spec: "save",
+					flags: ab,
+				}],
+			}
+		});
+		return buildGroup("Abilities", subtree);
+	}
+
+	const buildSkills = () => {
+		const token = d20plus.ba.tokens.getCurrent();
+		return buildGroup("Skills", skills.map(sk => {
+			const id = sk.replaceAll("-", "_");
+			const prof = token
+				? (((!token.character.isNpc && token.get(`${id}_prof`) && token.get(`${id}_prof`) !== "0")
+					|| (token.character.isNpc && token.get(`${id}_base`)))
+					? "active"
+					: "inactive")
+				: "";
+			return {
+				name: i18n(id, sk.toSentenceCase().replaceAll("_", " ")),
+				action: "roll",
+				spec: "skill",
+				type: prof,
+				flags: sk,
+			};
+		}));
+	}
+
+	const buildSpellVariants = (spell, token) => {
+		const items = [];
+		const ritual = spell?._has("ritual");
+		const lvl = Number(spell.lvl);
+		const upcast = !isNaN(spell.lvl);
+		ritual && items.push(0);
+		upcast && [...Array(9 - lvl)].map((k, i) => {
+			const upLvl = i + lvl + 1;
+			const hasSlots = token.get("npc") || token.character.sheet.spellSlots.max(upLvl);
+			hasSlots && items.push(upLvl);
+		});
+		return items.length ? items.join(",") : null;
+	}
+
+	const buildSpellSlots = (char, lvl) => {
+		if (char.spellSlots.max(`${lvl}`)) {
+			const has = Number(char.spellSlots.current(`${lvl}`)) || 0;
+			const total = Number(char.spellSlots.max(`${lvl}`)) || 0;
+			if (char.spellSlots.max(`${lvl}`) <= 4 && has >= 0) {
+				return [...Array(total)].reduce((k, s, i) => {
+					return i <= has - 1 ? `${k}⬤` : `${k}◎`;
+				}, "");
+			} else return `${has}/${char.spellSlots.max(`${lvl}`)}`;
+		}
+	}
+
+	const buildSpells = () => {
+		const subtree = [];
+		const token = d20plus.ba.tokens.getCurrent();
+		const shouldPrepare = ["Cleric", "Druid", "Paladin", "Wizard"].includes(token?.get("class"));
+		if (!token) return false;
+		for (let i = 0; i <= 9; i++) {
+			const lvl = i || "cantrip";
+			const spells = token.character?.sheet.getSpells(`${lvl}`);
+			const items = spells.map(spell => {
+				const isAttack = spell._has("atk");
+				const hasVariants = (spell.spellathigherlevels
+					|| spell.spellritual)
+					&& i !== "cantrip";
+				const variants = i !== "cantrip" ? buildSpellVariants(spell, token) : null;
+				const unprepared = (!i && " ") || (spell._has("active") ? " active" : " inactive");
+				return {
+					name: spell._get("name"),
+					type: `spellaction selector${unprepared} ${variants ? "variable" : ""}`,
+					items: [{
+						name: "Show description",
+						icon: "🕮",
+						action: "spelldescription",
+						spec: spell._id,
+					}, {
+						name: "Cast spell",
+						icon: isAttack ? "⚔" : "⚕",
+						action: "cast",
+						spec: spell._id,
+					}].concat(variants ? {
+						name: "Cast at different level",
+						icon: "↪",
+						action: "upcast",
+						spec: spell._id,
+						flags: variants,
+					} : []),
+				}
+			});
+			items.length && subtree.push({
+				resource: buildSpellSlots(token.character?.sheet, lvl),
+				name: !i ? "Cantrips" : `Level ${lvl}`,
+				type: "head",
+				items,
+			});
+			!items.length && token.character?.sheet.spellSlots?.max(`${lvl}`) && subtree.push({
+				resource: buildSpellSlots(token.character?.sheet, lvl),
+				name: `Level ${lvl}`,
+				type: "head",
+			})
+		}
+		return buildGroup("Spells", subtree);
+	}
+
+	const buildAttacks = () => {
+		const token = d20plus.ba.tokens.getCurrent();
+
+		return buildGroup("Attacks", token?.get("attacks").map(at => {
+			const rangeField = at._get("range");
+			const isCast = !at._has("atk");
+			const isRanged = at._has("range");
+			const isVersatile = !isCast && rangeField?.includes("[V]");
+			const isOffhandable = !isCast && rangeField?.includes("[O]");
+			const types = [
+				isCast ? " cast" : "",
+				isRanged ? " ranged" : "",
+				isOffhandable ? " offhand" : "",
+				isVersatile ? " versatile" : "",
+			].join("");
+			return {
+				name: at._get("name"),
+				type: `atkaction selector${types}`,
+				items: [{
+					name: "Show description",
+					icon: "🕮",
+					action: "attackdescription",
+					spec: at._id,
+				}, {
+					name: "Attack",
+					icon: isCast ? "⚕" : isRanged ? "➹" : isVersatile ? "🗡🖑🖑" : "🗡",
+					action: "attack",
+					spec: at._id,
+				}].concat(isOffhandable ? {
+					name: "Attack with offhand",
+					icon: "⚔",
+					action: "attack",
+					spec: at._id,
+					flags: "O",
+				} : []).concat(isVersatile ? {
+					name: "Attack with single hand (versatile)",
+					icon: `🗡🖑`,
+					action: "attack",
+					spec: at._id,
+					flags: "V",
+				} : []),
+			}
+		}));
+	}
+
+	const buildTraits = () => {
+		const token = d20plus.ba.tokens.getCurrent();
+
+		return buildGroup("Attacks", token?.get("traits").map(tr => {
+			const canBeUsed = tr._has("uses") || tr._has("action") || !isNaN(tr.lvl);
+			const usable = canBeUsed ? "active" : "inactive";
+			return {
+				name: tr._get("name"),
+				type: `spellaction selector ${usable}`,
+				items: [{
+					name: "Show description",
+					icon: "🕮",
+					action: "spelldescription",
+					spec: tr._id,
+				}].concat(canBeUsed ? {
+					name: "Use trait",
+					icon: "⚕",
+					action: "cast",
+					spec: tr._id,
+				} : []),
+			};
+		}));
+	}
+
+	const buildItems = () => {
+		const token = d20plus.ba.tokens.getCurrent();
+
+		return buildGroup("Items", token?.get("items").map(it => {
+			const equipped = it._has("active") ? "active" : "inactive";
+			return {
+				name: it._get("name"),
+				type: `spellaction selector ${equipped}`,
+				items: [{
+					name: "Show description",
+					icon: "🕮",
+					action: "spelldescription",
+					spec: it._id,
+				}].concat(!it._id ? { // wrong condition
+					name: "Use trait",
+					icon: "⚕",
+					action: "cast",
+					spec: it._id,
+				} : []),
+			};
+		}));
+	}
+
+	const addCommonRolls = () => {
+		d20plus.ba.tree.rolls.push(
+			{name: "Initiative", action: "roll", spec: "roll", flags: "initiative"},
+			{name: "Concentration", action: "roll", spec: "roll", flags: "concentration"},
+			{name: "Fall damage", action: "roll", spec: "roll", flags: "fall"},
+		);
+		if (!d20plus.ba.current.singleChar
+			|| d20plus.ba.tokens.getCurrent()?.get("npc")) return;
+		d20plus.ba.tree.rolls = d20plus.ba.tree.rolls.concat([
+			{name: "Death save", action: "roll", spec: "roll", flags: "death save|10"},
+			{name: "Hit dice", action: "roll", spec: "roll", flags: "hit dice"},
+		]);
+		return d20plus.ba.tree.rolls.filter(roll => roll.action === "roll");
+	}
+
+	const buildTag = (title, txt, close) => {
+		if (txt !== undefined && txt !== "") {
+			title = title.last() !== ":" && !close ? `${title}:` : title;
+			return close ? `<span><b>${title}</b>&nbsp;${txt}&nbsp;<b>${close}</b></span>`
+				: `<span><strong>${title}</strong>&nbsp;${txt}</span>`;
+		} else return "";
+	}
+
+	const buildModsHtml = (tab) => {
+		const token = d20plus.ba.tokens.get(d20plus.ba.current.singleChar?.id);
+		const mods = [
+			{label: "ADV", id: "advantage", title: "Toggle advantage"},
+			{label: "DIS", id: "disadvantage", title: "Toggle disadvantage"},
+			{label: "GM", id: "togm", title: "Send to GM only"},
+			{label: "&lt;l", id: "filter", title: "Filter items", except: ["general", "stats"]},
+		];
+		if (token?.mods[tab].filter) d20plus.ba.$dom.lists[tab].addClass("filtered");
+		else d20plus.ba.$dom.lists[tab].removeClass("filtered");
+		return `<li class="mods ${tab}">${mods.reduce((res, mod) => {
+			if (mod.except?.includes(tab)) return res;
+			const checked = token?.mods[tab][mod.id] ? ` checked="on"` : "";
+			return `${res}<label class="${mod.id}" title="${mod.title}">
+				<input type="checkbox"${checked}><span>${mod.label}</span>
+			</label>`;
+		}, "")}</li>`;
+	}
+
+	const buildHtml = (tree, mod) => {
+		tree = tree || d20plus.ba.tree.rolls;
+		return tree.reduce((html, it) => {
+			if (it.items) {
+				if (!it.items.length) return html;
+				return `${html}
+				<li class="hasSub ${it.type}">
+					<span${it.name?.length > 14 ? ` title="${it.name}"` : ""}>
+						${it.resource ? `<i>${it.resource}</i>` : ""}${it.icon || it.name}
+					</span>
+					<ul class="submenu">
+						${buildHtml(it.items)}
+					</ul>
+				</li>`;
+			} else {
+				const dataAttribs = `data-action="${it.action}" data-spec="${it.spec}"${it.flags ? ` data-flags="${it.flags}"` : ""}`;
+				const typeAttribs = it.type ? `class="${it.type}" ` : "";
+				return `${html}<li ${typeAttribs}${dataAttribs}${it.icon || it.name?.length > 15 ? ` title="${it.name || ""}"` : ""}>
+					${it.resource ? `<span><i>${it.resource}</i>` : ""}
+					${it.icon || it.name}${it.resource ? `</span>` : ""}
+				</li>`;
+			}
+		}, mod ? buildModsHtml(mod) : "");
+	}
+
+	const buildStatsHtml = () => {
+		const token = d20plus.ba.tokens.getCurrent();
+		if (!token || !token.character?.sheet.data.stats) return;
+
+		const baseStats = (token.get("npc") ? [
+			buildTag("HP:", `${token.get("hp")}&nbsp;${buildTag("/", token.get("hp_max"), " ")}`),
+			buildTag("(", token.get("hpformula"), ")"),
+			"<br>",
+			buildTag("AC:", token.get("ac")),
+			buildTag("", token.get("actype"), ""),
+			buildTag("CR:", token.get("challenge")),
+			buildTag("Speed", token.get("speed")),
+		] : [
+			buildTag("HP:", `${token.get("hp")}&nbsp;${buildTag("/", token.get("hp_max"), " ")}`),
+			buildTag("AC:", token.get("ac")),
+			buildTag("PB", token.get("pb")),
+			buildTag("Speed", token.get("speed")),
+		]).concat([
+			buildTag("Initiative", token.get("initiative_bonus")),
+			buildTag("Passive Perception", token.get("passive_perception")),
+		]).join(" ");
+
+		const baseAbilities = abilities.map(a => {
+			const mod = token.get(`${a}_mod`);
+			return buildTag(`${a.slice(0, 3).toUpperCase()}:`, `${token.get(a) || ""}${buildTag(" (", mod, ")")}`);
+		}).join(" ");
+		const spellStats = token.get("spells").length ? `<li>${[
+			buildTag("Caster Level", token.get(`caster_level`)),
+			buildTag("Spell Save DC", token.get(`spell_save_dc`)),
+			buildTag("Spell Attack Bonus", token.get(`spell_attack_bonus`)),
+		].join(" ")}</li>` : "";
+
+		const classDetails = token.get("class_display")
+			?.split(" ").map(c => isNaN(c) && c ? i18n(c.toLowerCase(), c) : c)
+			.join(" ") || "";
+
+		const charDetails = token.get("npc") ? [
+			buildTag("Speaks:", token.get("languages")),
+			buildTag("Senses:", token.get("senses")),
+			buildTag("Vulnerable to:", token.get("vulnerabilities")),
+			buildTag("Resists:", token.get("resistances")),
+			buildTag("Immune to:", token.get("condition_immunities")),
+			buildTag("Immunities:", token.get("immunities")),
+		].join(" ") : ["cp", "sp", "ep", "gp", "pp"].map(c => {
+			return buildTag(`${c.toUpperCase()}:`, token.get(c) || "0");
+		}).join(" ");
+
+		return `
+			<li><span>${token.get("npc") ? token.get("type") : `${token.get("race_display")}, ${classDetails}`}</span></li>
+			<li>${baseStats}</li><li>${baseAbilities}</li>${spellStats}
+			${charDetails ? `<li>${charDetails}</li>` : ""}
+		`;
+	}
+
+	const buildBasicRollsHtml = () => {
+		const stats = d20plus.ba.current.singleChar ? buildStatsHtml() : `
+			<li style="width: 220px;">Group selected:</li>
+			${d20plus.ba.current.charTokens?.reduce((list, t) => `${list}<li>${t.attributes.name}</li>`, "")}
+		`;
+		["general", "stats", "skills"].forEach((tab, i) => {
+			d20plus.ba.$dom.tabs[tab].toggle(true);
+		});
+		d20plus.ba.$dom.infos.all.filter(":not([data-pane=animations])").html(stats);
+		d20plus.ba.$dom.lists.general.html(buildHtml(addCommonRolls(), "general"));
+		d20plus.ba.$dom.lists.stats.html(buildHtml(buildAbilities(), "stats"));
+		d20plus.ba.$dom.lists.skills.html(buildHtml(buildSkills(), "skills"));
+	}
+
+	const buildAdvRollsHtml = () => {
+		[
+			{id: "attacks", callback: buildAttacks},
+			{id: "traits", callback: buildTraits},
+			{id: "spells", callback: buildSpells},
+			{id: "items", callback: buildItems},
+		].forEach(tab => {
+			const list = tab.callback();
+			list?.length && d20plus.ba.$dom.tabs[tab.id].toggle(true);
+			d20plus.ba.$dom.lists[tab.id].html(buildHtml(list, tab.id));
+			const active = d20plus.ba.$dom.lists[tab.id].find(".active").length;
+			const inactive = d20plus.ba.$dom.lists[tab.id].find(".inactive").length;
+			if (active && inactive) d20plus.ba.$dom.lists[tab.id].addClass("uneven");
+			else d20plus.ba.$dom.lists[tab.id].removeClass("uneven");
+		})
+	}
+
+	const getAmConfig = () => {
+		const cfg = d20plus.cfg.getOrDefault("token", "showTokenMenu");
+		d20plus.ba.enabled = cfg !== "none";
+		d20plus.ba.enabledCharMenu = cfg.includes("char");
+		d20plus.ba.enabledAnimation = cfg.includes("anim");
+		return d20plus.ba.enabled;
+	}
+
+	const amExecute = async (action, spec, flags) => {
+		const appliedTo = action !== "animation"
+			? d20plus.ba.current.charTokens
+			: d20plus.ba.current.imgTokens;
+		appliedTo.forEach(t => {
+			const b20Model = d20plus.ba.tokens.get(t.id || t._model.id);
+			if (action === "animation") {
+				d20plus.anim.animator.startAnimation(b20Model._object, spec);
+			} else if (["spelldescription", "attackdescription"].includes(action)) {
+				d20plus.ba.makeInfo({
+					token: b20Model,
+					action: action === "spelldescription" ? "spell" : "attack",
+					id: spec,
+				});
+			} else {
+				d20plus.ba.makeRoll({
+					token: b20Model,
+					action,
+					id: spec,
+					flags,
+				});
+			}
+		});
+	}
+
+	const amDo = (action) => {
+		const amCharId = d20plus.ba.tokens.getCurrent()?.character.id;
+		if (action === "opensheet") d20plus.ba.tokens.getCurrent().character._ref.view.showDialog();
+		else if (action === "openchar") void 0;
+		else if (action === "findtoken") d20plus.ba.tokens.focusCurrent();
+		else if (action === "close") d20plus.ba.$dom.menu.toggle(false);
+		else if (action === "collapsew") d20plus.ba.$dom.menu.toggleClass("wcollapsed");
+		else if (action === "expandh") d20plus.ba.$dom.menu.toggleClass("hexpanded");
+		else if (action === "speakas") {
+			const $speagingas = $("#speakingas");
+			const [type, speakAsId] = $speagingas.val().split("|");
+			if (speakAsId === amCharId) $speagingas.val(["player", d20_player_id].join("|"));
+			else $speagingas.val(["character", amCharId].join("|"));
+		}
+	}
+
+	const amShow = async () => {
+		if (d20plus.ba.executing) return;
+		d20plus.ba.tree = {rolls: [], stats: [], anims: []};
+		tabs.forEach((tab, i) => {
+			d20plus.ba.$dom.tabs[tab].toggle(false);
+		});
+		d20plus.ba.$dom.title.img.attr("src", peopleIcon);
+		d20plus.ba.$dom.title.img.removeAttr("title");
+		d20plus.ba.$dom.title.img.css({filter: "contrast(0.1)", cursor: "unset"});
+		if (d20plus.ba.current.hasChars) {
+			buildBasicRollsHtml();
+			if (d20plus.ba.current.singleChar) {
+				const token = d20plus.ba.tokens.getCurrent();
+				if (token) {
+					d20plus.ut.log("Drawing menu for", token.get("name"));
+					buildAdvRollsHtml();
+					d20plus.ba.$dom.title.name.text(token.get("name") || "Token");
+					d20plus.ba.$dom.title.img.attr("src", token.get("image"));
+					d20plus.ba.$dom.title.img.attr("title", token.get("name"));
+					d20plus.ba.$dom.title.img.css({filter: "unset", cursor: "pointer"});
+				}
+			} else {
+				d20plus.ba.$dom.title.name.text("Group");
+			}
+		}
+		if (d20plus.ba.current.hasImages) {
+			buildAnimations();
+			d20plus.ba.$dom.lists.animations.html(buildHtml(d20plus.ba.tree.anims));
+			if (d20plus.ba.tree.anims.length) d20plus.ba.$dom.tabs.animations.toggle(true);
+		}
+		d20plus.ba.$dom.menu.find(".ba-tabs li.active:visible").length
+			|| d20plus.ba.$dom.menu.find(".ba-tabs li:visible").get(0)?.click();
+	}
+
+	const amEnterPortal = () => {
+		const actor = d20plus.ba.current.lastSelectedToken;
+		const mover = d20.engine.selected()[0]?._model;
+		const token = d20plus.ba.tokens.get(actor?.id);
+
+		d20plus.ba.current.lastSelectedToken = false;
+		d20.engine.unselect();
+
+		const adjacent = (actor
+			&& Math.abs(mover.attributes.top - actor.attributes.top) <= (actor.attributes.height + mover.attributes.height / 2)
+			&& Math.abs(mover.attributes.left - actor.attributes.left) <= (actor.attributes.width + mover.attributes.width / 2)
+		);
+
+		if (adjacent) {
+			const receiver = d20plus.ut.getTokenById(mover.attributes.custom_portal);
+			if (receiver) {
+				const layer = actor.attributes.layer;
+				actor.save({
+					top: receiver.attributes.top,
+					left: receiver.attributes.left,
+					layer: is_gm ? "gmlayer" : "objects",
+				});
+				d20.engine.centerOnPoint(receiver.attributes.left || 0, receiver.attributes.top || 0);
+				setTimeout(() => {
+					// d20.engine.unselect();
+					actor.save({layer});
+					// token?.find();
+					setTimeout(() => token?.select(), 600);
+				}, 600);
+			}
+		}
+
+		setTimeout(() => {
+			d20.engine.unselect();
+		}, 400);
+	}
+
+	const amShowPortalConnection = () => {
+		const entry = d20.engine.selected()[0]?._model;
+		const exit = d20plus.ut.getTokenById(entry.attributes.custom_portal);
+		const author = d20.Campaign.players.models.find(p => p.id !== d20_player_id)?.id;
+
+		if (!exit || !author) return;
+		d20plus.ba.current.showingPortals = author;
+
+		d20.engine.receiveMeasureUpdate({
+			"x": entry.attributes.left,
+			"y": entry.attributes.top,
+			"to_x": exit.attributes.left,
+			"to_y": exit.attributes.top,
+			"player": author,
+			"pageid": d20.Campaign.activePage()?.id,
+			"currentLayer": "gmlayer",
+			"waypoints": [],
+			"sticky": 0,
+			"flags": 0,
+			"hide": false,
+			"action": "line",
+			"color": "#c9c9c9",
+			"type": "measuring",
+			"time": Number(new Date()),
+		});
+	};
+
+	const amResetPortalConnection = () => {
+		d20.engine.receiveEndMeasure({player: d20plus.ba.current.showingPortals});
+		d20plus.ba.current.showingPortals = false;
+	}
+
+	d20plus.ba.menu = {
+		refresh: () => {
+			amShow();
+		},
+		fetchCharLegacy: (...params) => {
+			prepareChar(...params);
+		},
+	}
+
+	d20plus.ba.rollError = () => {
+		d20plus.ut.sendHackerChat("Unrecognized error applying menu command", true);
+	}
+
+	d20plus.ba.alterHP = (alter) => {
+		const barID = Number(d20plus.cfg.getOrDefault("chat", "dmgTokenBar"));
+		const bar = {
+			val: `bar${barID}_value`,
+			link: `bar${barID}_link`,
+			max: `bar${barID}_max`,
+		};
+		const calcHP = (token) => {
+			if (!token?.get) return false;
+			const current = token.get(bar.val);
+			const max = token.get(bar.max);
+			if (isNaN(max) || isNaN(current) || current === "") return false;
+			const hp = {old: current, new: current - alter.dmg};
+			if (hp.new < 0) hp.new = 0;
+			if (max !== "") {
+				if (hp.new > max) hp.new = max;
+				if (hp.new <= -max) hp.dead = true;
+				if (hp.old <= 0 && hp.new > 0) hp.alive = true;
+			}
+			return hp;
+		}
+		const playerName = d20plus.ut.getPlayerNameById(d20_player_id);
+		const author = `${playerName} applied ${alter.dmg} damage`;
+		const transport = {type: "automation", author};
+		const targets = alter.targets;
+		d20.engine.unselect();
+		targets.forEach(async token => {
+			if (typeof token === "string") token = d20plus.ut.getTokenById(token);
+			else if (token.model) token = token.model;
+			const hp = calcHP(token);
+			if (!hp) return d20plus.ut.sendHackerChat("You have to select proper token bar in the settings", true);
+			if (!token.currentPlayerControls()) return;
+			if (alter.restore !== undefined) hp.new = alter.restore;
+			const barLinked = token.get(bar.link);
+			const tokenName = token.get("name");
+			if (barLinked) {
+				if (!token.character?.currentPlayerControls()) return;
+				const charID = token.character?.id;
+				const fetched = await d20plus.ut.fetchCharAttribs(token.character);
+				if (fetched && charID) {
+					const attrib = token.character.attribs.get(barLinked);
+					const charName = token.character.get("name");
+					attrib.save({current: hp.new});
+					attrib.syncTokenBars();
+					hp.msg = `/w "${charName}" ${tokenName} from ${hp.old} to ${hp.new} HP`;
+					if (alter.restore !== undefined) hp.msg = `/w "${charName}" ${tokenName} HP back to ${hp.new}`;
+				}
+			} else {
+				token.save({[bar.val]: hp.new});
+				hp.msg = `/w gm ${tokenName} from ${hp.old} to ${hp.new} HP`;
+				if (alter.restore !== undefined) hp.msg = `/w gm ${tokenName} HP back to ${hp.new}`;
+			}
+			if (hp.msg) {
+				hp.undo = {type: "hp", dmg: alter.dmg, restore: hp.old, targets: [token.id]};
+				if (alter.restore === undefined) hp.transport = Object.assign({undo: hp.undo}, transport);
+				else transport.author = `${playerName} restored HP to ${alter.restore}`;
+				d20.textchat.doChatInput(hp.msg, undefined, hp.transport || transport);
+				if (hp.dead) d20.textchat.doChatInput(`${tokenName} is instantly dead`, undefined, transport);
+				else if (hp.alive) d20.textchat.doChatInput(`${tokenName} is conscious again`, undefined, transport);
+				else if (hp.new === 0) d20.textchat.doChatInput(`${tokenName} falls unconscious`, undefined, transport);
+			}
+		})
+	}
+
+	d20plus.ba.addTurn = (tokenId, init) => {
+		const token = d20plus.ut.getTokenById(tokenId);
+		const pageId = token?.collection.page.id;
+		const tracker = d20.Campaign.initiativewindow;
+		const actor = {_pageid: pageId, id: tokenId, pr: init, custom: ""};
+
+		const needsOpening = !tracker.windowopen;
+		needsOpening && tracker.openWindow();
+		needsOpening && tracker.model.save();
+		// for some reason we need to pretend the turn tracker was opened long ago (2s seems enough)
+		// otherwise the tokens won't show on the list until the next token is added
+		setTimeout(() => {
+			let trackerIt = d20.Campaign.currentOrderArray
+				.find(it => it._pageid === pageId && it.id === tokenId);
+			if (!trackerIt) {
+				d20.Campaign.currentOrderArray.push(actor);
+				trackerIt = d20.Campaign.currentOrderArray.last();
+			}
+			trackerIt.pr = init;
+			tracker.model.save({turnorder: JSON.stringify(d20.Campaign.currentOrderArray)});
+		}, needsOpening ? 2000 : 0);
+	}
+
+	d20plus.ba.initBetterActions = () => {
+		const $createMenu = $(d20plus.html.bActionsMenu);
+		d20plus.ba.initCharacters();
+		skills = i18n("skills-list", skills).split(",");
+
+		d20plus.ba.$dom = {
+			panel: $createMenu,
+			menu: $createMenu.find(".ba-menu"),
+			tabs: {all: $createMenu.find(`[data-tab]`)},
+			lists: {all: $createMenu.find(`[data-list]`)},
+			infos: {all: $createMenu.find(`[data-pane]`)},
+			title: {name: $createMenu.find(`.ba-name`), img: $createMenu.find(`.ba-token img`)},
+		};
+
+		tabs.forEach((data, i) => {
+			d20plus.ba.$dom.tabs[data] = d20plus.ba.$dom.menu.find(`[data-tab=${data}]`);
+			d20plus.ba.$dom.lists[data] = d20plus.ba.$dom.menu.find(`[data-list=${data}]`);
+			d20plus.ba.$dom.infos[data] = d20plus.ba.$dom.menu.find(`[data-pane=${data}]`);
+		});
+
+		d20plus.ba.$dom.r20targetingNote = $("#targetinginstructions");
+		d20plus.ba.$dom.r20toolbar = $("#secondary-toolbar");
+		d20plus.ba.$dom.r20tokenActions = d20plus.ba.$dom.r20toolbar.find(".mode.tokenactions");
+		d20plus.ba.$dom.infos["context"] = d20plus.ba.$dom.menu.find(`[data-pane=context]`);
+		$("body").append($createMenu);
+
+		if (getAmConfig()) {
+			const controlledChar = d20.Campaign
+				.activePage().thegraphics.models
+				.find(t => !!t.character && t.character.currentPlayerControls());
+			if (controlledChar) {
+				d20plus.ba.current = {
+					charTokens: [controlledChar],
+					imgTokens: [controlledChar],
+					id: d20plus.ut.generateRowId(),
+					singleChar: controlledChar,
+					hasChars: true,
+					hasImages: is_gm
+						&& d20plus.ba.enabledAnimation
+						&& Object.keys(d20plus.anim.animatorTool?._anims || {}).length,
+				};
+				(async () => {
+					d20plus.ba.tokens.ready(controlledChar);
+					// amShow();
+				})();
+			}
+		}
+
+		$("body").on("shape_selected", "#editor", async evt => {
+			if (!getAmConfig()) return;
+			const selected = d20.engine.selected();
+
+			if (d20plus.ba.current?.showingPortals) amResetPortalConnection();
+
+			if (selected.length === 1
+				&& selected[0]._model?.attributes.custom_portal
+				&& (d20plus.ba.current?.lastSelectedToken || !is_gm)) {
+				amEnterPortal();
+				return;
+			} else if (selected.length === 1
+				&& selected[0]._model?.attributes.custom_portal
+				&& !d20plus.ba.current?.lastSelectedToken
+				&& is_gm) {
+				amShowPortalConnection();
+				return;
+			}
+
+			d20plus.ba.current = {
+				charTokens: selected
+					.filter(it => it._model?.character)
+					.map(it => it._model),
+				imgTokens: selected
+					.filter(it => it.type === "image"),
+				id: d20plus.ut.generateRowId(),
+			};
+			d20plus.ba.current.singleChar = d20plus.ba.current.charTokens.length > 1
+				? false
+				: d20plus.ba.current.charTokens[0] || false;
+			d20plus.ba.current.hasChars = d20plus.ba.enabledCharMenu
+				&& d20plus.ba.current.charTokens.length > 0;
+			d20plus.ba.current.hasImages = is_gm
+				&& d20plus.ba.enabledAnimation
+				&& d20plus.ba.current.imgTokens.length > 0
+				&& Object.keys(d20plus.anim.animatorTool?._anims || {}).length;
+
+			if (d20plus.ba.current.hasChars) {
+				d20plus.ba.current.charTokens.forEach(async t => {
+					const token = d20plus.ba.tokens.ready(t);
+				});
+			} else if (d20plus.ba.current.hasImages) {
+				amShow();
+			}
+
+			d20plus.ba.current.lastSelectedToken = d20plus.ba.current.singleChar;
+		}).on("nothing_selected", "#editor", evt => {
+			amResetPortalConnection();
+			d20plus.ba.current.lastSelectedToken = false;
+		});
+
+		$createMenu.on("click", "[data-action], [data-spec]", evt => {
+			const $clicked = $(evt.currentTarget);
+			const action = $clicked.data("action");
+			const spec = $clicked.data("spec");
+			const flags = $clicked.data("flags");
+			if (spec && action) amExecute(action, spec, flags);
+			// else if (action && mod) amSet(mod);
+			else if (!spec && action) amDo(action);
+		}).on("click", "[data-tab]", evt => {
+			const $clicked = $(evt.currentTarget);
+			const tab = $clicked.data("tab");
+			d20plus.ba.$dom.tabs.all.removeClass("active");
+			d20plus.ba.$dom.lists.all.removeClass("active");
+			d20plus.ba.$dom.infos.all.removeClass("active");
+			$clicked.addClass("active");
+			d20plus.ba.$dom.lists[tab].addClass("active");
+			d20plus.ba.$dom.infos[tab].addClass("active");
+		}).on("click", ".mods label span", evt => {
+			const type = $(evt.target).closest("label").attr("class");
+			const tab = $(evt.target).closest("[data-list]").data("list");
+			if (d20plus.ba.current.singleChar) {
+				const token = d20plus.ba.tokens.get(d20plus.ba.current.singleChar?.id);
+				token.mods[tab][type] = !$(evt.target).prev().prop("checked");
+				if (type === "filter") {
+					if (token.mods[tab][type]) d20plus.ba.$dom.lists[tab].addClass("filtered");
+					else d20plus.ba.$dom.lists[tab].removeClass("filtered");
+				}
+			}
+		}).on("click", ".page-button.large", evt => {
+			d20plus.ba.$dom.menu.toggle();
+		}).on("mouseover", ".spellaction, .atkaction", (evt) => {
+			const $entry = $(evt.currentTarget);
+			const id = $entry.find("[data-spec]").data("spec");
+			const token = d20plus.ba.tokens.getCurrent();
+			const ability = token.get(id);
+			const name = ability._get("name");
+			const description = ability._get("description")?.replaceAll("\n", "<br>");
+
+			if (!description) {
+				const tab = $entry.closest("[data-list]").data("list");
+				d20plus.ba.$dom.infos.all.removeClass("active");
+				d20plus.ba.$dom.infos[tab]?.addClass("active");
+				return;
+			}
+
+			const html = `
+				<li><strong>${name}</strong></li>
+				<li style="font-size:11px;font-family:sans-serif">${description}</li>
+			`;
+
+			d20plus.ba.$dom.infos.all.removeClass("active");
+			d20plus.ba.$dom.infos.context.addClass("active");
+			d20plus.ba.$dom.infos.context.html(html);
+		});
+
+		$("#toolbar-collapse-handle").on("click", (evt) => {
+			const barCollapsed = $(evt.currentTarget).hasClass("collapse-handle-collapsed");
+			d20plus.ba.$dom.panel.toggleClass("master-toolbar-collapsed", barCollapsed);
+		})
+	}
+}
+
+SCRIPT_EXTENSIONS.push(baseBetterActions);
+
+
 function remoteLibre () {
 	d20plus.remoteLibre = {
 		getRemotePlaylists () {
-			return fetch("https://api.github.com/repos/DMsGuild201/Roll20_resources/contents/playlist")
+			return fetch(DATA_URL_PLAYLIST)
 				.then(response => response.json())
 				.then(data => {
+					if (!data.filter) return;
 					const promises = data.filter(file => file.download_url.toLowerCase().endsWith(".json"))
 						.map(file => d20plus.remoteLibre.downloadPlaylist(file.download_url));
 					return Promise.all(promises).then(res => d20plus.remoteLibre.processRemotePlaylists(res));
@@ -21812,10 +27804,11 @@ SCRIPT_EXTENSIONS.push(jukeboxWidget);
 const betteR20Core = function () {
 	// Page fully loaded and visible
 	d20plus.Init = async () => {
-		d20plus.scriptName = `betteR20-core v${d20plus.version}`;
+		d20plus.scriptName = `betteR20-${B20_NAME} v${d20plus.version}`;
 		try {
 			d20plus.ut.log(`Init (v${d20plus.version})`);
-			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-core v${d20plus.version}</h3>`;
+			d20plus.ut.log(`Userscript (v${d20plus.version_user})`);
+			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-${B20_NAME} v${d20plus.version}</h3>`;
 
 			d20plus.engine.swapTemplates();
 
@@ -21867,6 +27860,7 @@ const betteR20Core = function () {
 			d20plus.engine.fixPolygonTool();
 			// d20plus.ut.fixSidebarLayout();
 			d20plus.chat.enhanceChat();
+			d20plus.ba.initBetterActions();
 
 			// apply config
 			if (window.is_gm) {
@@ -21917,7 +27911,8 @@ const betteR20Base = function () {
 };
 
 const D20plus = function (version) {
-	d20plus.version = version;
+	d20plus.version_user = version;
+	d20plus.version = B20_VERSION;
 
 	// Window loaded
 	function doBootstrap () {
@@ -21937,6 +27932,14 @@ const D20plus = function (version) {
 					if ((typeof window.d20 !== "undefined" || window.currentPlayer?.d20) && !$("#loading-overlay").is(":visible") && !hasRunInit) {
 						hasRunInit = true;
 						if (!window.d20) window.d20 = window.currentPlayer.d20;
+						if (!d20.engine?.canvas) {
+							d20plus.ut.showFullScreenWarning({
+								title: "JUMPGATE IS NOT SUPPORTED",
+								message: "Your game appears to run on Jumpgate that is not supported",
+								instructions: "Jumpgate can't be disabled or enabled for a game, it is chosen upon the game creation. Please either disable betteR20, or switch to a game that utilizes the old roll20 engine",
+							});
+							return;
+						}
 						d20plus.Init();
 					} else {
 						setTimeout(waitForD20, 50);
@@ -22045,7 +28048,7 @@ Parser._parse_bToA = function (abMap, b, fallback) {
 };
 
 Parser.attrChooseToFull = function (attList) {
-	if (attList.length === 1) return `${Parser.attAbvToFull(attList[0])} modifier`;
+	if (attList.length === 1) return `${Parser.attAbvToFull(attList[0])}${attList[0] === "spellcasting" ? " ability" : ""} modifier`;
 	else {
 		const attsTemp = [];
 		for (let i = 0; i < attList.length; ++i) {
@@ -22276,10 +28279,12 @@ Parser.getAbilityModifier = function (abilityScore) {
 	return `${modifier}`;
 };
 
-Parser.getSpeedString = (ent, {isMetric = false, isSkipZeroWalk = false} = {}) => {
+Parser.getSpeedString = (ent, {isMetric = false, isSkipZeroWalk = false, isLongForm = false} = {}) => {
 	if (ent.speed == null) return "\u2014";
 
-	const unit = isMetric ? Parser.metric.getMetricUnit({originalUnit: "ft.", isShortForm: true}) : "ft.";
+	const unit = isMetric
+		? Parser.metric.getMetricUnit({originalUnit: "ft.", isShortForm: !isLongForm})
+		: isLongForm ? "feet" : "ft.";
 	if (typeof ent.speed === "object") {
 		const stack = [];
 		let joiner = ", ";
@@ -22335,10 +28340,6 @@ Parser.speedToProgressive = function (prop) {
 	return Parser._parse_aToB(Parser.SPEED_TO_PROGRESSIVE, prop);
 };
 
-Parser._addCommas = function (intNum) {
-	return `${intNum}`.replace(/(\d)(?=(\d{3})+$)/g, "$1,");
-};
-
 Parser.raceCreatureTypesToFull = function (creatureTypes) {
 	const hasSubOptions = creatureTypes.some(it => it.choose);
 	return creatureTypes
@@ -22353,7 +28354,7 @@ Parser.raceCreatureTypesToFull = function (creatureTypes) {
 };
 
 Parser.crToXp = function (cr, {isDouble = false} = {}) {
-	if (cr != null && cr.xp) return Parser._addCommas(`${isDouble ? cr.xp * 2 : cr.xp}`);
+	if (cr != null && cr.xp) return (isDouble ? cr.xp * 2 : cr.xp).toLocaleString();
 
 	const toConvert = cr ? (cr.cr || cr) : null;
 	if (toConvert === "Unknown" || toConvert == null || !Parser.XP_CHART_ALT[toConvert]) return "Unknown";
@@ -22361,7 +28362,7 @@ Parser.crToXp = function (cr, {isDouble = false} = {}) {
 	//   Exceptions, such as MM's Frog and Sea Horse, have their XP set to 0 on the creature
 	if (toConvert === "0") return "10";
 	const xp = Parser.XP_CHART_ALT[toConvert];
-	return Parser._addCommas(`${isDouble ? 2 * xp : xp}`);
+	return (isDouble ? 2 * xp : xp).toLocaleString();
 };
 
 Parser.crToXpNumber = function (cr) {
@@ -22515,10 +28516,10 @@ Parser.LANGUAGES_ALL = [
 	...Parser.LANGUAGES_SECRET,
 ].sort();
 
-Parser.acToFull = function (ac, renderer) {
+Parser.acToFull = function (ac, {renderer = null, isHideFrom = false} = {}) {
 	if (typeof ac === "string") return ac; // handle classic format
 
-	renderer = renderer || Renderer.get();
+	renderer ||= Renderer.get();
 
 	let stack = "";
 	let inBraces = false;
@@ -22540,7 +28541,7 @@ Parser.acToFull = function (ac, renderer) {
 
 			stack += cur.ac;
 
-			if (cur.from) {
+			if (!isHideFrom && cur.from) {
 				// always brace nested braces
 				if (cur.braces) {
 					stack += " (";
@@ -22696,11 +28697,11 @@ Parser.sourceJsonToStylePart = function (source) {
 	return "";
 };
 
-Parser.sourceJsonToMarkerHtml = function (source, {isList = true, additionalStyles = ""} = {}) {
+Parser.sourceJsonToMarkerHtml = function (source, {isList = true, isAddBrackets = null, additionalStyles = ""} = {}) {
 	source = Parser._getSourceStringFromSource(source);
 	// TODO(Future) consider enabling this
 	// if (SourceUtil.isPartneredSourceWotc(source)) return `<span class="help-subtle ve-source-marker ${isList ? `ve-source-marker--list` : ""} ve-source-marker--partnered ${additionalStyles}" title="D&amp;D Partnered Source">${isList ? "" : "["}✦${isList ? "" : "]"}</span>`;
-	if (SourceUtil.isLegacySourceWotc(source)) return `<span class="help-subtle ve-source-marker ${isList ? `ve-source-marker--list` : ""} ve-source-marker--legacy ${additionalStyles}" title="Legacy Source">${isList ? "" : "["}ʟ${isList ? "" : "]"}</span>`;
+	if (SourceUtil.isLegacySourceWotc(source)) return `<span class="help-subtle ve-source-marker ${isList ? `ve-source-marker--list` : ""} ve-source-marker--legacy ${additionalStyles}" title="Legacy Source">${isList && !isAddBrackets ? "" : "["}ʟ${isList && !isAddBrackets ? "" : "]"}</span>`;
 	return "";
 };
 
@@ -22910,6 +28911,154 @@ Parser.itemMiscTagToFull = function (type) {
 	return Parser._parse_aToB(Parser.ITEM_MISC_TAG_TO_FULL, type);
 };
 
+Parser.ITM_PROP_ABV__TWO_HANDED = "2H";
+Parser.ITM_PROP_ABV__AMMUNITION = "A";
+Parser.ITM_PROP_ABV__AMMUNITION_FUTURISTIC = "AF";
+Parser.ITM_PROP_ABV__BURST_FIRE = "BF";
+Parser.ITM_PROP_ABV__EXTENDED_REACH = "ER";
+Parser.ITM_PROP_ABV__FINESSE = "F";
+Parser.ITM_PROP_ABV__HEAVY = "H";
+Parser.ITM_PROP_ABV__LIGHT = "L";
+Parser.ITM_PROP_ABV__LOADING = "LD";
+Parser.ITM_PROP_ABV__OTHER = "OTH";
+Parser.ITM_PROP_ABV__REACH = "R";
+Parser.ITM_PROP_ABV__RELOAD = "RLD";
+Parser.ITM_PROP_ABV__SPECIAL = "S";
+Parser.ITM_PROP_ABV__THROWN = "T";
+Parser.ITM_PROP_ABV__VERSATILE = "V";
+Parser.ITM_PROP_ABV__VESTIGE_OF_DIVERGENCE = "Vst";
+
+Parser.ITM_PROP__TWO_HANDED = "2H";
+Parser.ITM_PROP__AMMUNITION = "A";
+Parser.ITM_PROP__AMMUNITION_FUTURISTIC = "AF|DMG";
+Parser.ITM_PROP__BURST_FIRE = "BF|DMG";
+Parser.ITM_PROP__EXTENDED_REACH = "ER|TDCSR";
+Parser.ITM_PROP__FINESSE = "F";
+Parser.ITM_PROP__HEAVY = "H";
+Parser.ITM_PROP__LIGHT = "L";
+Parser.ITM_PROP__LOADING = "LD";
+Parser.ITM_PROP__OTHER = "OTH";
+Parser.ITM_PROP__REACH = "R";
+Parser.ITM_PROP__RELOAD = "RLD|DMG";
+Parser.ITM_PROP__SPECIAL = "S";
+Parser.ITM_PROP__THROWN = "T";
+Parser.ITM_PROP__VERSATILE = "V";
+Parser.ITM_PROP__VESTIGE_OF_DIVERGENCE = "Vst|TDCSR";
+
+Parser.ITM_PROP__ODND_TWO_HANDED = "2H|XPHB";
+Parser.ITM_PROP__ODND_AMMUNITION = "A|XPHB";
+Parser.ITM_PROP__ODND_FINESSE = "F|XPHB";
+Parser.ITM_PROP__ODND_HEAVY = "H|XPHB";
+Parser.ITM_PROP__ODND_LIGHT = "L|XPHB";
+Parser.ITM_PROP__ODND_LOADING = "LD|XPHB";
+Parser.ITM_PROP__ODND_REACH = "R|XPHB";
+Parser.ITM_PROP__ODND_THROWN = "T|XPHB";
+Parser.ITM_PROP__ODND_VERSATILE = "V|XPHB";
+
+Parser.ITM_TYP_ABV__TREASURE = "$";
+Parser.ITM_TYP_ABV__TREASURE_ART_OBJECT = "$A";
+Parser.ITM_TYP_ABV__TREASURE_COINAGE = "$C";
+Parser.ITM_TYP_ABV__TREASURE_GEMSTONE = "$G";
+Parser.ITM_TYP_ABV__AMMUNITION = "A";
+Parser.ITM_TYP_ABV__AMMUNITION_FUTURISTIC = "AF";
+Parser.ITM_TYP_ABV__VEHICLE_AIR = "AIR";
+Parser.ITM_TYP_ABV__ARTISAN_TOOL = "AT";
+Parser.ITM_TYP_ABV__EXPLOSIVE = "EXP";
+Parser.ITM_TYP_ABV__FOOD_AND_DRINK = "FD";
+Parser.ITM_TYP_ABV__ADVENTURING_GEAR = "G";
+Parser.ITM_TYP_ABV__GAMING_SET = "GS";
+Parser.ITM_TYP_ABV__GENERIC_VARIANT = "GV";
+Parser.ITM_TYP_ABV__HEAVY_ARMOR = "HA";
+Parser.ITM_TYP_ABV__ILLEGAL_DRUG = "IDG";
+Parser.ITM_TYP_ABV__INSTRUMENT = "INS";
+Parser.ITM_TYP_ABV__LIGHT_ARMOR = "LA";
+Parser.ITM_TYP_ABV__MELEE_WEAPON = "M";
+Parser.ITM_TYP_ABV__MEDIUM_ARMOR = "MA";
+Parser.ITM_TYP_ABV__MOUNT = "MNT";
+Parser.ITM_TYP_ABV__OTHER = "OTH";
+Parser.ITM_TYP_ABV__POTION = "P";
+Parser.ITM_TYP_ABV__RANGED_WEAPON = "R";
+Parser.ITM_TYP_ABV__ROD = "RD";
+Parser.ITM_TYP_ABV__RING = "RG";
+Parser.ITM_TYP_ABV__SHIELD = "S";
+Parser.ITM_TYP_ABV__SCROLL = "SC";
+Parser.ITM_TYP_ABV__SPELLCASTING_FOCUS = "SCF";
+Parser.ITM_TYP_ABV__VEHICLE_WATER = "SHP";
+Parser.ITM_TYP_ABV__VEHICLE_SPACE = "SPC";
+Parser.ITM_TYP_ABV__TOOL = "T";
+Parser.ITM_TYP_ABV__TACK_AND_HARNESS = "TAH";
+Parser.ITM_TYP_ABV__TRADE_GOOD = "TG";
+Parser.ITM_TYP_ABV__VEHICLE_LAND = "VEH";
+Parser.ITM_TYP_ABV__WAND = "WD";
+
+Parser.ITM_TYP__TREASURE = "$|DMG";
+Parser.ITM_TYP__TREASURE_ART_OBJECT = "$A|DMG";
+Parser.ITM_TYP__TREASURE_COINAGE = "$C";
+Parser.ITM_TYP__TREASURE_GEMSTONE = "$G|DMG";
+Parser.ITM_TYP__AMMUNITION = "A";
+Parser.ITM_TYP__AMMUNITION_FUTURISTIC = "AF|DMG";
+Parser.ITM_TYP__VEHICLE_AIR = "AIR|DMG";
+Parser.ITM_TYP__ARTISAN_TOOL = "AT";
+Parser.ITM_TYP__EXPLOSIVE = "EXP|DMG";
+Parser.ITM_TYP__FOOD_AND_DRINK = "FD";
+Parser.ITM_TYP__ADVENTURING_GEAR = "G";
+Parser.ITM_TYP__GAMING_SET = "GS";
+Parser.ITM_TYP__GENERIC_VARIANT = "GV|DMG";
+Parser.ITM_TYP__HEAVY_ARMOR = "HA";
+Parser.ITM_TYP__ILLEGAL_DRUG = "IDG|TDCSR";
+Parser.ITM_TYP__INSTRUMENT = "INS";
+Parser.ITM_TYP__LIGHT_ARMOR = "LA";
+Parser.ITM_TYP__MELEE_WEAPON = "M";
+Parser.ITM_TYP__MEDIUM_ARMOR = "MA";
+Parser.ITM_TYP__MOUNT = "MNT";
+Parser.ITM_TYP__OTHER = "OTH";
+Parser.ITM_TYP__POTION = "P";
+Parser.ITM_TYP__RANGED_WEAPON = "R";
+Parser.ITM_TYP__ROD = "RD|DMG";
+Parser.ITM_TYP__RING = "RG|DMG";
+Parser.ITM_TYP__SHIELD = "S";
+Parser.ITM_TYP__SCROLL = "SC|DMG";
+Parser.ITM_TYP__SPELLCASTING_FOCUS = "SCF";
+Parser.ITM_TYP__VEHICLE_WATER = "SHP";
+Parser.ITM_TYP__VEHICLE_SPACE = "SPC|AAG";
+Parser.ITM_TYP__TOOL = "T";
+Parser.ITM_TYP__TACK_AND_HARNESS = "TAH";
+Parser.ITM_TYP__TRADE_GOOD = "TG";
+Parser.ITM_TYP__VEHICLE_LAND = "VEH";
+Parser.ITM_TYP__WAND = "WD|DMG";
+
+Parser.ITM_TYP__ODND_TREASURE_ART_OBJECT = "$A|XDMG";
+Parser.ITM_TYP__ODND_TREASURE_COINAGE = "$C|XPHB";
+Parser.ITM_TYP__ODND_TREASURE_GEMSTONE = "$G|XDMG";
+Parser.ITM_TYP__ODND_AMMUNITION = "A|XPHB";
+Parser.ITM_TYP__ODND_AMMUNITION_FUTURISTIC = "AF|XDMG";
+Parser.ITM_TYP__ODND_VEHICLE_AIR = "AIR|XPHB";
+Parser.ITM_TYP__ODND_ARTISAN_TOOL = "AT|XPHB";
+Parser.ITM_TYP__ODND_EXPLOSIVE = "EXP|XDMG";
+Parser.ITM_TYP__ODND_FOOD_AND_DRINK = "FD|XPHB";
+Parser.ITM_TYP__ODND_ADVENTURING_GEAR = "G|XPHB";
+Parser.ITM_TYP__ODND_GAMING_SET = "GS|XPHB";
+Parser.ITM_TYP__ODND_GENERIC_VARIANT = "GV|XDMG";
+Parser.ITM_TYP__ODND_HEAVY_ARMOR = "HA|XPHB";
+Parser.ITM_TYP__ODND_INSTRUMENT = "INS|XPHB";
+Parser.ITM_TYP__ODND_LIGHT_ARMOR = "LA|XPHB";
+Parser.ITM_TYP__ODND_MELEE_WEAPON = "M|XPHB";
+Parser.ITM_TYP__ODND_MEDIUM_ARMOR = "MA|XPHB";
+Parser.ITM_TYP__ODND_MOUNT = "MNT|XPHB";
+Parser.ITM_TYP__ODND_POTION = "P|XPHB";
+Parser.ITM_TYP__ODND_RANGED_WEAPON = "R|XPHB";
+Parser.ITM_TYP__ODND_ROD = "RD|XDMG";
+Parser.ITM_TYP__ODND_RING = "RG|XDMG";
+Parser.ITM_TYP__ODND_SHIELD = "S|XPHB";
+Parser.ITM_TYP__ODND_SCROLL = "SC|XPHB";
+Parser.ITM_TYP__ODND_SPELLCASTING_FOCUS = "SCF|XPHB";
+Parser.ITM_TYP__ODND_VEHICLE_WATER = "SHP|XPHB";
+Parser.ITM_TYP__ODND_TOOL = "T|XPHB";
+Parser.ITM_TYP__ODND_TACK_AND_HARNESS = "TAH|XPHB";
+Parser.ITM_TYP__ODND_TRADE_GOOD = "TG|XDMG";
+Parser.ITM_TYP__ODND_VEHICLE_LAND = "VEH|XPHB";
+Parser.ITM_TYP__ODND_WAND = "WD|XDMG";
+
 Parser._decimalSeparator = (0.1).toLocaleString().substring(1, 2);
 Parser._numberCleanRegexp = Parser._decimalSeparator === "." ? new RegExp(/[\s,]*/g, "g") : new RegExp(/[\s.]*/g, "g");
 Parser._costSplitRegexp = Parser._decimalSeparator === "." ? new RegExp(/(\d+(\.\d+)?)([csegp]p)/) : new RegExp(/(\d+(,\d+)?)([csegp]p)/);
@@ -22942,7 +29091,11 @@ Parser.dmgTypeToFull = function (dmgType) {
 	return Parser._parse_aToB(Parser.DMGTYPE_JSON_TO_FULL, dmgType);
 };
 
-Parser.skillProficienciesToFull = function (skillProficiencies) {
+Parser.skillProficienciesToFull = function (skillProficiencies, {styleHint = null} = {}) {
+	styleHint ||= VetoolsConfig.get("styleSwitcher", "style");
+
+	const ptSource = styleHint === "classic" ? Parser.SRC_PHB : Parser.SRC_XPHB;
+
 	function renderSingle (skProf) {
 		if (skProf.any) {
 			skProf = MiscUtil.copyFast(skProf);
@@ -22956,27 +29109,31 @@ Parser.skillProficienciesToFull = function (skillProficiencies) {
 		if (~ixChoose) keys.splice(ixChoose, 1);
 
 		const baseStack = [];
-		keys.filter(k => skProf[k]).forEach(k => baseStack.push(Renderer.get().render(`{@skill ${k.toTitleCase()}}`)));
+		keys.filter(k => skProf[k]).forEach(k => baseStack.push(Renderer.get().render(`{@skill ${k.toTitleCase()}|${ptSource}}`)));
 
-		const chooseStack = [];
+		let ptChoose = "";
 		if (~ixChoose) {
 			const chObj = skProf.choose;
+			const count = chObj.count ?? 1;
 			if (chObj.from.length === 18) {
-				chooseStack.push(`choose any ${!chObj.count || chObj.count === 1 ? "skill" : chObj.count}`);
+				ptChoose = styleHint === "classic"
+					? `choose any ${count === 1 ? "skill" : chObj.count}`
+					: `Choose ${chObj.count}`;
 			} else {
-				chooseStack.push(`choose ${chObj.count || 1} from ${chObj.from.map(it => Renderer.get().render(`{@skill ${it.toTitleCase()}}`)).joinConjunct(", ", " and ")}`);
+				ptChoose = styleHint === "classic"
+					? `choose ${count} from ${chObj.from.map(it => Renderer.get().render(`{@skill ${it.toTitleCase()}|${ptSource}}`)).joinConjunct(", ", " and ")}`
+					: Renderer.get().render(`{@i Choose ${count}:} ${chObj.from.map(it => `{@skill ${it.toTitleCase()}|${ptSource}}`).joinConjunct(", ", " or ")}`);
 			}
 		}
 
 		const base = baseStack.joinConjunct(", ", " and ");
-		const choose = chooseStack.join(""); // this should currently only ever be 1-length
 
-		if (baseStack.length && chooseStack.length) return `${base}; and ${choose}`;
+		if (baseStack.length && ptChoose.length) return `${base}; and ${ptChoose}`;
 		else if (baseStack.length) return base;
-		else if (chooseStack.length) return choose;
+		else if (ptChoose.length) return ptChoose;
 	}
 
-	return skillProficiencies.map(renderSingle).join(" <i>or</i> ");
+	return skillProficiencies.map(renderSingle).join(` <i>or</i> `);
 };
 
 // sp-prefix functions are for parsing spell data, and shared with the roll20 script
@@ -23072,27 +29229,137 @@ Parser.spMetaToFull = function (meta) {
 	return "";
 };
 
-Parser.spLevelSchoolMetaToFull = function (level, school, meta, subschools) {
-	const levelPart = level === 0 ? Parser.spLevelToFull(level).toLowerCase() : `${Parser.spLevelToFull(level)}-level`;
-	const levelSchoolStr = level === 0 ? `${Parser.spSchoolAbvToFull(school)} ${levelPart}` : `${levelPart} ${Parser.spSchoolAbvToFull(school).toLowerCase()}`;
+Parser._spLevelSchoolMetaToFull_level = ({level, styleHint}) => {
+	if (styleHint === "classic") return level === 0 ? Parser.spLevelToFull(level).toLowerCase() : `${Parser.spLevelToFull(level)}-level`;
+	return level === 0 ? Parser.spLevelToFull(level) : `Level ${level}`;
+};
 
-	const metaArr = Parser.spMetaToArr(meta);
-	if (metaArr.length || (subschools && subschools.length)) {
-		const metaAndSubschoolPart = [
-			(subschools || []).map(sub => Parser.spSchoolAbvToFull(sub)).join(", "),
-			metaArr.join(", "),
-		].filter(Boolean).join("; ").toLowerCase();
-		return `${levelSchoolStr} (${metaAndSubschoolPart})`;
+Parser._spLevelSchoolMetaToFull_levelSchool = ({level, school, styleHint, ptLevel}) => {
+	if (level === 0) return `${Parser.spSchoolAbvToFull(school)} ${ptLevel}`;
+
+	if (styleHint === "classic") return `${ptLevel} ${Parser.spSchoolAbvToFull(school).toLowerCase()}`;
+	return `${ptLevel} ${Parser.spSchoolAbvToFull(school)}`;
+};
+
+Parser.spLevelSchoolMetaToFull = function (level, school, meta, subschools, {styleHint = null} = {}) {
+	styleHint ||= VetoolsConfig.get("styleSwitcher", "style");
+
+	const ptLevel = Parser._spLevelSchoolMetaToFull_level({level, styleHint});
+	const ptLevelSchool = Parser._spLevelSchoolMetaToFull_levelSchool({level, school, styleHint, ptLevel});
+
+	const metaArr = Parser.spMetaToArr(meta, {styleHint})
+		.filter(k => styleHint === "classic" || k !== "ritual");
+
+	if (metaArr.length || subschools?.length) {
+		const ptMetaAndSubschools = [
+			(subschools || [])
+				.map(sub => Parser.spSchoolAbvToFull(sub))
+				.join(", "),
+			metaArr
+				.join(", "),
+		]
+			.filter(Boolean)
+			.join("; ");
+
+		if (styleHint === "classic") return `${ptLevelSchool} (${ptMetaAndSubschools.toLowerCase()})`;
+		return `${ptLevelSchool} (${ptMetaAndSubschools})`;
 	}
-	return levelSchoolStr;
+
+	return ptLevelSchool;
 };
 
-Parser.spTimeListToFull = function (times, isStripTags) {
-	return times.map(t => `${Parser.getTimeToFull(t)}${t.condition ? `, ${isStripTags ? Renderer.stripTags(t.condition) : Renderer.get().render(t.condition)}` : ""}`).join(" or ");
+Parser.SP_TM_ACTION = "action";
+Parser.SP_TM_B_ACTION = "bonus";
+Parser.SP_TM_REACTION = "reaction";
+Parser.SP_TM_ROUND = "round";
+Parser.SP_TM_MINS = "minute";
+Parser.SP_TM_HRS = "hour";
+Parser.SP_TM_SPECIAL = "special";
+Parser.SP_TIME_SINGLETONS = [Parser.SP_TM_ACTION, Parser.SP_TM_B_ACTION, Parser.SP_TM_REACTION, Parser.SP_TM_ROUND];
+Parser.SP_TIME_TO_FULL = {
+	[Parser.SP_TM_ACTION]: "Action",
+	[Parser.SP_TM_B_ACTION]: "Bonus Action",
+	[Parser.SP_TM_REACTION]: "Reaction",
+	[Parser.SP_TM_ROUND]: "Rounds",
+	[Parser.SP_TM_MINS]: "Minutes",
+	[Parser.SP_TM_HRS]: "Hours",
+	[Parser.SP_TM_SPECIAL]: "Special",
+};
+Parser.spTimeUnitToFull = function (timeUnit) {
+	return Parser._parse_aToB(Parser.SP_TIME_TO_FULL, timeUnit);
 };
 
-Parser.getTimeToFull = function (time) {
-	return `${time.number ? `${time.number} ` : ""}${time.unit === "bonus" ? "bonus action" : time.unit}${time.number > 1 ? "s" : ""}`;
+Parser.SP_TIME_TO_SHORT = {
+	[Parser.SP_TM_ROUND]: "Rnd.",
+	[Parser.SP_TM_MINS]: "Min.",
+	[Parser.SP_TM_HRS]: "Hr.",
+};
+Parser.spTimeUnitToShort = function (timeUnit) {
+	return Parser._parse_aToB(Parser.SP_TIME_TO_SHORT, timeUnit);
+};
+
+Parser.SP_TIME_TO_ABV = {
+	[Parser.SP_TM_ACTION]: "A",
+	[Parser.SP_TM_B_ACTION]: "BA",
+	[Parser.SP_TM_REACTION]: "R",
+	[Parser.SP_TM_ROUND]: "rnd",
+	[Parser.SP_TM_MINS]: "min",
+	[Parser.SP_TM_HRS]: "hr",
+	[Parser.SP_TM_SPECIAL]: "SPC",
+};
+Parser.spTimeUnitToAbv = function (timeUnit) {
+	return Parser._parse_aToB(Parser.SP_TIME_TO_ABV, timeUnit);
+};
+
+Parser.spTimeToShort = function (time, isHtml) {
+	if (!time) return "";
+	return (time.number === 1 && Parser.SP_TIME_SINGLETONS.includes(time.unit))
+		? `${Parser.spTimeUnitToAbv(time.unit).uppercaseFirst()}${time.condition ? "*" : ""}`
+		: `${time.number} ${isHtml ? `<span class="ve-small">` : ""}${Parser.spTimeUnitToAbv(time.unit)}${isHtml ? `</span>` : ""}${time.condition ? "*" : ""}`;
+};
+
+Parser.spTimeListToFull = function (times, meta, {isStripTags = false, styleHint = null} = {}) {
+	styleHint ||= VetoolsConfig.get("styleSwitcher", "style");
+
+	return [
+		...times,
+		...styleHint === "classic" || !meta?.ritual
+			? []
+			: [{"number": 1, "unit": "ritual"}],
+	]
+		.map(time => {
+			return [
+				Parser.getTimeToFull(time, {styleHint}),
+				time.condition ? `, ${isStripTags ? Renderer.stripTags(time.condition) : Renderer.get().render(time.condition)}` : "",
+				time.note ? ` (${isStripTags ? Renderer.stripTags(time.note) : Renderer.get().render(time.note)})` : "",
+			]
+				.filter(Boolean)
+				.join("");
+		})
+		.joinConjunct(", ", " or ");
+};
+
+Parser._TIME_UNITS_SHORTHAND = new Set([
+	Parser.SP_TM_ACTION,
+	Parser.SP_TM_B_ACTION,
+	Parser.SP_TM_REACTION,
+	"ritual", // faux unit added during rendering
+]);
+
+Parser._getTimeToFull_number = ({time, styleHint}) => {
+	if (!time.number) return "";
+	if (styleHint === "classic") return `${time.number} `;
+
+	if (time.number === 1 && Parser._TIME_UNITS_SHORTHAND.has(time.unit)) return "";
+	return `${time.number} `;
+};
+
+Parser.getTimeToFull = function (time, {styleHint = null} = {}) {
+	styleHint ||= VetoolsConfig.get("styleSwitcher", "style");
+
+	const ptNumber = Parser._getTimeToFull_number({time, styleHint});
+	const ptUnit = (time.unit === Parser.SP_TM_B_ACTION ? "bonus action" : time.unit)[(styleHint === "classic" || ptNumber) ? "toString" : "uppercaseFirst"]();
+	return `${ptNumber}${ptUnit}${time.number > 1 ? "s" : ""}`;
 };
 
 Parser.getMinutesToFull = function (mins, {isShort = false} = {}) {
@@ -23115,6 +29382,7 @@ Parser.RNG_POINT = "point";
 Parser.RNG_LINE = "line";
 Parser.RNG_CUBE = "cube";
 Parser.RNG_CONE = "cone";
+Parser.RNG_EMANATION = "emanation";
 Parser.RNG_RADIUS = "radius";
 Parser.RNG_SPHERE = "sphere";
 Parser.RNG_HEMISPHERE = "hemisphere";
@@ -23130,6 +29398,7 @@ Parser.SP_RANGE_TYPE_TO_FULL = {
 	[Parser.RNG_LINE]: "Line",
 	[Parser.RNG_CUBE]: "Cube",
 	[Parser.RNG_CONE]: "Cone",
+	[Parser.RNG_EMANATION]: "Emanation",
 	[Parser.RNG_RADIUS]: "Radius",
 	[Parser.RNG_SPHERE]: "Sphere",
 	[Parser.RNG_HEMISPHERE]: "Hemisphere",
@@ -23173,6 +29442,7 @@ Parser.SP_RANGE_TO_ICON = {
 	[Parser.RNG_LINE]: "fa-grip-lines-vertical",
 	[Parser.RNG_CUBE]: "fa-cube",
 	[Parser.RNG_CONE]: "fa-traffic-cone",
+	[Parser.RNG_EMANATION]: "fa-hockey-puck",
 	[Parser.RNG_RADIUS]: "fa-hockey-puck",
 	[Parser.RNG_SPHERE]: "fa-globe",
 	[Parser.RNG_HEMISPHERE]: "fa-globe",
@@ -23195,6 +29465,7 @@ Parser.spRangeToShortHtml = function (range) {
 		case Parser.RNG_LINE:
 		case Parser.RNG_CUBE:
 		case Parser.RNG_CONE:
+		case Parser.RNG_EMANATION:
 		case Parser.RNG_RADIUS:
 		case Parser.RNG_SPHERE:
 		case Parser.RNG_HEMISPHERE:
@@ -23233,6 +29504,7 @@ Parser.spRangeToFull = function (range) {
 		case Parser.RNG_LINE:
 		case Parser.RNG_CUBE:
 		case Parser.RNG_CONE:
+		case Parser.RNG_EMANATION:
 		case Parser.RNG_RADIUS:
 		case Parser.RNG_SPHERE:
 		case Parser.RNG_HEMISPHERE:
@@ -23301,6 +29573,7 @@ Parser.RANGE_TYPES = [
 	{type: Parser.RNG_LINE, hasDistance: true, isRequireAmount: true},
 	{type: Parser.RNG_CUBE, hasDistance: true, isRequireAmount: true},
 	{type: Parser.RNG_CONE, hasDistance: true, isRequireAmount: true},
+	{type: Parser.RNG_EMANATION, hasDistance: true, isRequireAmount: true},
 	{type: Parser.RNG_RADIUS, hasDistance: true, isRequireAmount: true},
 	{type: Parser.RNG_SPHERE, hasDistance: true, isRequireAmount: true},
 	{type: Parser.RNG_HEMISPHERE, hasDistance: true, isRequireAmount: true},
@@ -23346,25 +29619,29 @@ Parser.spEndTypeToFull = function (type) {
 
 Parser.spDurationToFull = function (dur) {
 	let hasSubOr = false;
-	const outParts = dur.map(d => {
-		switch (d.type) {
-			case "special":
-				return "Special";
-			case "instant":
-				return `Instantaneous${d.condition ? ` (${d.condition})` : ""}`;
-			case "timed":
-				return `${d.concentration ? "Concentration, " : ""}${d.concentration ? "u" : d.duration.upTo ? "U" : ""}${d.concentration || d.duration.upTo ? "p to " : ""}${d.duration.amount} ${d.duration.amount === 1 ? d.duration.type : `${d.duration.type}s`}`;
-			case "permanent": {
-				if (d.ends) {
+
+	const outParts = dur
+		.map(d => {
+			const ptCondition = d.condition ? ` (${d.condition})` : "";
+
+			switch (d.type) {
+				case "special":
+					if (d.concentration) return `Concentration${ptCondition}`;
+					return `Special${ptCondition}`;
+				case "instant":
+					return `Instantaneous${ptCondition}`;
+				case "timed":
+					return `${d.concentration ? "Concentration, " : ""}${d.concentration ? "u" : d.duration.upTo ? "U" : ""}${d.concentration || d.duration.upTo ? "p to " : ""}${d.duration.amount} ${d.duration.amount === 1 ? d.duration.type : `${d.duration.type}s`}${ptCondition}`;
+				case "permanent": {
+					if (!d.ends) return `Permanent${ptCondition}`;
+
 					const endsToJoin = d.ends.map(m => Parser.spEndTypeToFull(m));
 					hasSubOr = hasSubOr || endsToJoin.length > 1;
-					return `Until ${endsToJoin.joinConjunct(", ", " or ")}`;
-				} else {
-					return "Permanent";
+					return `Until ${endsToJoin.joinConjunct(", ", " or ")}${ptCondition}`;
 				}
 			}
-		}
-	});
+		});
+
 	return `${outParts.joinConjunct(hasSubOr ? "; " : ", ", " or ")}${dur.length > 1 ? " (see below)" : ""}`;
 };
 
@@ -23395,13 +29672,16 @@ Parser.spClassesToFull = function (sp, {isTextOnly = false, subclassLookup = {}}
 
 Parser.spMainClassesToFull = function (fromClassList, {isTextOnly = false} = {}) {
 	return fromClassList
-		.map(c => ({hash: UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](c), c}))
-		.filter(it => !ExcludeUtil.isInitialised || !ExcludeUtil.isExcluded(it.hash, "class", it.c.source))
-		.sort((a, b) => SortUtil.ascSort(a.c.name, b.c.name))
+		.map(clsStub => ({hash: UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASSES](clsStub), clsStub}))
+		.filter(it => !ExcludeUtil.isInitialised || !ExcludeUtil.isExcluded(it.hash, "class", it.clsStub.source))
+		.sort((a, b) => SortUtil.ascSort(a.clsStub.name, b.clsStub.name))
 		.map(it => {
-			if (isTextOnly) return it.c.name;
+			if (isTextOnly) return it.clsStub.name;
 
-			return `<span title="${it.c.definedInSource ? `Class source` : "Source"}: ${Parser.sourceJsonToFull(it.c.source)}${it.c.definedInSource ? `. Spell list defined in: ${Parser.sourceJsonToFull(it.c.definedInSource)}.` : ""}">${Renderer.get().render(`{@class ${it.c.name}|${it.c.source}}`)}</span>`;
+			const definedInSource = it.clsStub.definedInSource || it.clsStub.source;
+			const ptLink = Renderer.get().render(`{@class ${it.clsStub.name}|${it.clsStub.source}}`);
+			const ptTitle = definedInSource === it.clsStub.source ? `Class source/spell list defined in: ${Parser.sourceJsonToFull(definedInSource)}.` : `Class source: ${Parser.sourceJsonToFull(it.clsStub.source)}. Spell list defined in: ${Parser.sourceJsonToFull(definedInSource)}.`;
+			return `<span title="${ptTitle.qq()}">${ptLink}</span>`;
 		})
 		.join(", ") || "";
 };
@@ -23596,32 +29876,19 @@ Parser.monTypeFromPlural = function (type) {
 	return Parser._parse_bToA(Parser.MON_TYPE_TO_PLURAL, type);
 };
 
-Parser.monCrToFull = function (cr, {xp = null, isMythic = false} = {}) {
-	if (cr == null) return "";
-
-	if (typeof cr === "string") {
-		if (Parser.crToNumber(cr) >= VeCt.CR_CUSTOM) return `${cr}${xp != null ? ` (${xp} XP)` : ""}`;
-
-		xp = xp != null ? Parser._addCommas(xp) : Parser.crToXp(cr);
-		return `${cr} (${xp} XP${isMythic ? `, or ${Parser.crToXp(cr, {isDouble: true})} XP as a mythic encounter` : ""})`;
-	} else {
-		const stack = [Parser.monCrToFull(cr.cr, {xp: cr.xp, isMythic})];
-		if (cr.lair) stack.push(`${Parser.monCrToFull(cr.lair)} when encountered in lair`);
-		if (cr.coven) stack.push(`${Parser.monCrToFull(cr.coven)} when part of a coven`);
-		return stack.joinConjunct(", ", " or ");
-	}
-};
-
-Parser.getFullImmRes = function (toParse, {isPlainText = false} = {}) {
+Parser.getFullImmRes = function (toParse, {isPlainText = false, isTitleCase = false} = {}) {
 	if (!toParse?.length) return "";
 
 	let maxDepth = 0;
 
-	const renderString = str => isPlainText ? Renderer.stripTags(`${str}`) : Renderer.get().render(`${str}`);
+	const renderString = (str, {isTitleCase = false} = {}) => {
+		if (isTitleCase) str = str.toTitleCase();
+		return isPlainText ? Renderer.stripTags(`${str}`) : Renderer.get().render(`${str}`);
+	};
 
 	const render = (val, depth = 0) => {
 		maxDepth = Math.max(maxDepth, depth);
-		if (typeof val === "string") return renderString(val);
+		if (typeof val === "string") return renderString(val, {isTitleCase});
 
 		if (val.special) return renderString(val.special);
 
@@ -23632,7 +29899,7 @@ Parser.getFullImmRes = function (toParse, {isPlainText = false} = {}) {
 		const prop = val.immune ? "immune" : val.resist ? "resist" : val.vulnerable ? "vulnerable" : null;
 		if (prop) {
 			const toJoin = val[prop].length === Parser.DMG_TYPES.length && CollectionUtil.deepEquals(Parser.DMG_TYPES, val[prop])
-				? ["all damage"]
+				? ["all damage"[isTitleCase ? "toTitleCase" : "toString"]()]
 				: val[prop].map(nxt => render(nxt, depth + 1));
 			stack.push(renderString(depth ? toJoin.join(maxDepth ? "; " : ", ") : toJoin.joinConjunct(", ", " and ")));
 		}
@@ -23661,12 +29928,13 @@ Parser.getFullImmRes = function (toParse, {isPlainText = false} = {}) {
 	return out;
 };
 
-Parser.getFullCondImm = function (condImm, {isPlainText = false, isEntry = false} = {}) {
+Parser.getFullCondImm = function (condImm, {isPlainText = false, isEntry = false, isTitleCase = false} = {}) {
 	if (isPlainText && isEntry) throw new Error(`Options "isPlainText" and "isEntry" are mutually exclusive!`);
 
 	if (!condImm?.length) return "";
 
 	const render = condition => {
+		if (isTitleCase) condition = condition.toTitleCase();
 		if (isPlainText) return condition;
 		const ent = `{@condition ${condition}}`;
 		if (isEntry) return ent;
@@ -23675,7 +29943,7 @@ Parser.getFullCondImm = function (condImm, {isPlainText = false, isEntry = false
 
 	return condImm
 		.map(it => {
-			if (it.special) return it.special;
+			if (it.special) return Renderer.get().render(it.special);
 			if (it.conditionImmune) return `${it.preNote ? `${it.preNote} ` : ""}${it.conditionImmune.map(render).join(", ")}${it.note ? ` ${it.note}` : ""}`;
 			return render(it);
 		})
@@ -23720,6 +29988,8 @@ Parser.MON_MISC_TAG_TO_FULL = {
 	"HPR": "Has HP Reduction",
 	"MW": "Has Weapon Attacks, Melee",
 	"RW": "Has Weapon Attacks, Ranged",
+	"MA": "Has Attacks, Melee",
+	"RA": "Has Attacks, Ranged",
 	"MLW": "Has Melee Weapons",
 	"RNG": "Has Ranged Weapons",
 	"RCH": "Has Reach Attacks",
@@ -23811,19 +30081,36 @@ Parser.prereqPatronToShort = function (patron) {
 	return patron;
 };
 
+Parser.FEAT_CATEGORY_TO_FULL = {
+	"G": "General",
+	"O": "Origin",
+	"FS": "Fighting Style",
+	"FS:P": "Fighting Style Replacement (Paladin)",
+	"FS:R": "Fighting Style Replacement (Ranger)",
+	"EB": "Epic Boon",
+};
+
+Parser.featCategoryToFull = (category) => {
+	return Parser._parse_aToB(Parser.FEAT_CATEGORY_TO_FULL, category) || category;
+};
+
+Parser.featCategoryFromFull = (full) => {
+	return Parser._parse_bToA(Parser.FEAT_CATEGORY_TO_FULL, full.trim().toTitleCase()) || full;
+};
+
 // NOTE: These need to be reflected in omnidexer.js to be indexed
 Parser.OPT_FEATURE_TYPE_TO_FULL = {
-	AI: "Artificer Infusion",
-	ED: "Elemental Discipline",
-	EI: "Eldritch Invocation",
-	MM: "Metamagic",
+	"AI": "Artificer Infusion",
+	"ED": "Elemental Discipline",
+	"EI": "Eldritch Invocation",
+	"MM": "Metamagic",
 	"MV": "Maneuver",
 	"MV:B": "Maneuver, Battle Master",
 	"MV:C2-UA": "Maneuver, Cavalier V2 (UA)",
 	"AS:V1-UA": "Arcane Shot, V1 (UA)",
 	"AS:V2-UA": "Arcane Shot, V2 (UA)",
 	"AS": "Arcane Shot",
-	OTH: "Other",
+	"OTH": "Other",
 	"FS:F": "Fighting Style; Fighter",
 	"FS:B": "Fighting Style; Bard",
 	"FS:P": "Fighting Style; Paladin",
@@ -23832,6 +30119,7 @@ Parser.OPT_FEATURE_TYPE_TO_FULL = {
 	"OR": "Onomancy Resonant",
 	"RN": "Rune Knight Rune",
 	"AF": "Alchemical Formula",
+	"TT": "Traveler's Trick",
 };
 
 Parser.optFeatureTypeToFull = function (type) {
@@ -23987,6 +30275,7 @@ Parser.CAT_ID_SKILLS = 50;
 Parser.CAT_ID_SENSES = 51;
 Parser.CAT_ID_DECK = 52;
 Parser.CAT_ID_CARD = 53;
+Parser.CAT_ID_ITEM_MASTERY = 54;
 
 Parser.CAT_ID_TO_FULL = {};
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_CREATURE] = "Bestiary";
@@ -23998,15 +30287,15 @@ Parser.CAT_ID_TO_FULL[Parser.CAT_ID_CONDITION] = "Condition";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_FEAT] = "Feat";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_ELDRITCH_INVOCATION] = "Eldritch Invocation";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_PSIONIC] = "Psionic";
-Parser.CAT_ID_TO_FULL[Parser.CAT_ID_RACE] = "Race";
+Parser.CAT_ID_TO_FULL[Parser.CAT_ID_RACE] = "Species";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_OTHER_REWARD] = "Other Reward";
-Parser.CAT_ID_TO_FULL[Parser.CAT_ID_VARIANT_OPTIONAL_RULE] = "Variant/Optional Rule";
+Parser.CAT_ID_TO_FULL[Parser.CAT_ID_VARIANT_OPTIONAL_RULE] = "Rule";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_ADVENTURE] = "Adventure";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_DEITY] = "Deity";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_OBJECT] = "Object";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_TRAP] = "Trap";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_HAZARD] = "Hazard";
-Parser.CAT_ID_TO_FULL[Parser.CAT_ID_QUICKREF] = "Quick Reference";
+Parser.CAT_ID_TO_FULL[Parser.CAT_ID_QUICKREF] = "Quick Reference (2014)";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_CULT] = "Cult";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_BOON] = "Boon";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_DISEASE] = "Disease";
@@ -24043,6 +30332,7 @@ Parser.CAT_ID_TO_FULL[Parser.CAT_ID_DECK] = "Deck";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_CARD] = "Card";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_SKILLS] = "Skill";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_SENSES] = "Sense";
+Parser.CAT_ID_TO_FULL[Parser.CAT_ID_ITEM_MASTERY] = "Item Mastery";
 
 Parser.pageCategoryToFull = function (catId) {
 	return Parser._parse_aToB(Parser.CAT_ID_TO_FULL, catId);
@@ -24103,6 +30393,7 @@ Parser.CAT_ID_TO_PROP[Parser.CAT_ID_DECK] = "deck";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_CARD] = "card";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_SKILLS] = "skill";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_SENSES] = "sense";
+Parser.CAT_ID_TO_PROP[Parser.CAT_ID_ITEM_MASTERY] = "itemMastery";
 
 Parser.pageCategoryToProp = function (catId) {
 	return Parser._parse_aToB(Parser.CAT_ID_TO_PROP, catId);
@@ -24331,56 +30622,6 @@ Parser.SKL_ABVS = [
 	Parser.SKL_ABV_TRA,
 ];
 
-Parser.SP_TM_ACTION = "action";
-Parser.SP_TM_B_ACTION = "bonus";
-Parser.SP_TM_REACTION = "reaction";
-Parser.SP_TM_ROUND = "round";
-Parser.SP_TM_MINS = "minute";
-Parser.SP_TM_HRS = "hour";
-Parser.SP_TM_SPECIAL = "special";
-Parser.SP_TIME_SINGLETONS = [Parser.SP_TM_ACTION, Parser.SP_TM_B_ACTION, Parser.SP_TM_REACTION, Parser.SP_TM_ROUND];
-Parser.SP_TIME_TO_FULL = {
-	[Parser.SP_TM_ACTION]: "Action",
-	[Parser.SP_TM_B_ACTION]: "Bonus Action",
-	[Parser.SP_TM_REACTION]: "Reaction",
-	[Parser.SP_TM_ROUND]: "Rounds",
-	[Parser.SP_TM_MINS]: "Minutes",
-	[Parser.SP_TM_HRS]: "Hours",
-	[Parser.SP_TM_SPECIAL]: "Special",
-};
-Parser.spTimeUnitToFull = function (timeUnit) {
-	return Parser._parse_aToB(Parser.SP_TIME_TO_FULL, timeUnit);
-};
-
-Parser.SP_TIME_TO_SHORT = {
-	[Parser.SP_TM_ROUND]: "Rnd.",
-	[Parser.SP_TM_MINS]: "Min.",
-	[Parser.SP_TM_HRS]: "Hr.",
-};
-Parser.spTimeUnitToShort = function (timeUnit) {
-	return Parser._parse_aToB(Parser.SP_TIME_TO_SHORT, timeUnit);
-};
-
-Parser.SP_TIME_TO_ABV = {
-	[Parser.SP_TM_ACTION]: "A",
-	[Parser.SP_TM_B_ACTION]: "BA",
-	[Parser.SP_TM_REACTION]: "R",
-	[Parser.SP_TM_ROUND]: "rnd",
-	[Parser.SP_TM_MINS]: "min",
-	[Parser.SP_TM_HRS]: "hr",
-	[Parser.SP_TM_SPECIAL]: "SPC",
-};
-Parser.spTimeUnitToAbv = function (timeUnit) {
-	return Parser._parse_aToB(Parser.SP_TIME_TO_ABV, timeUnit);
-};
-
-Parser.spTimeToShort = function (time, isHtml) {
-	if (!time) return "";
-	return (time.number === 1 && Parser.SP_TIME_SINGLETONS.includes(time.unit))
-		? `${Parser.spTimeUnitToAbv(time.unit).uppercaseFirst()}${time.condition ? "*" : ""}`
-		: `${time.number} ${isHtml ? `<span class="ve-small">` : ""}${Parser.spTimeUnitToAbv(time.unit)}${isHtml ? `</span>` : ""}${time.condition ? "*" : ""}`;
-};
-
 Parser.SKL_ABJ = "Abjuration";
 Parser.SKL_EVO = "Evocation";
 Parser.SKL_ENC = "Enchantment";
@@ -24517,6 +30758,7 @@ Parser.ARMOR_ABV_TO_FULL = {
 	"l.": "light",
 	"m.": "medium",
 	"h.": "heavy",
+	"s.": "shield",
 };
 
 Parser.WEAPON_ABV_TO_FULL = {
@@ -24545,6 +30787,7 @@ Parser.CONDITION_TO_COLOR = {
 };
 
 Parser.RULE_TYPE_TO_FULL = {
+	"C": "Core",
 	"O": "Optional",
 	"P": "Prerelease",
 	"V": "Variant",
@@ -24691,6 +30934,9 @@ Parser.SRC_DoDk = "DoDk";
 Parser.SRC_HWCS = "HWCS";
 Parser.SRC_HWAitW = "HWAitW";
 Parser.SRC_ToB1_2023 = "ToB1-2023";
+Parser.SRC_XPHB = "XPHB";
+Parser.SRC_XDMG = "XDMG";
+Parser.SRC_XMM = "XMM";
 Parser.SRC_TD = "TD";
 Parser.SRC_SCREEN = "Screen";
 Parser.SRC_SCREEN_WILDERNESS_KIT = "ScreenWildernessKit";
@@ -24699,6 +30945,7 @@ Parser.SRC_SCREEN_SPELLJAMMER = "ScreenSpelljammer";
 Parser.SRC_HF = "HF";
 Parser.SRC_HFFotM = "HFFotM";
 Parser.SRC_HFStCM = "HFStCM";
+Parser.SRC_PaF = "PaF";
 Parser.SRC_CM = "CM";
 Parser.SRC_NRH = "NRH";
 Parser.SRC_NRH_TCMC = "NRH-TCMC";
@@ -24764,15 +31011,15 @@ Parser.MisMVX_PREFIX = "Misplaced Monsters: Volume ";
 Parser.AA_PREFIX = "Adventure Atlas: ";
 
 Parser.SOURCE_JSON_TO_FULL = {};
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PHB] = "Player's Handbook (2014)";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_DMG] = "Dungeon Master's Guide (2014)";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_MM] = "Monster Manual (2014)";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_CoS] = "Curse of Strahd";
-Parser.SOURCE_JSON_TO_FULL[Parser.SRC_DMG] = "Dungeon Master's Guide";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_EEPC] = "Elemental Evil Player's Companion";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_EET] = "Elemental Evil: Trinkets";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HotDQ] = "Hoard of the Dragon Queen";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_LMoP] = "Lost Mine of Phandelver";
-Parser.SOURCE_JSON_TO_FULL[Parser.SRC_MM] = "Monster Manual";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_OotA] = "Out of the Abyss";
-Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PHB] = "Player's Handbook";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PotA] = "Princes of the Apocalypse";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_RoT] = "The Rise of Tiamat";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_RoTOS] = "The Rise of Tiamat Online Supplement";
@@ -24873,6 +31120,9 @@ Parser.SOURCE_JSON_TO_FULL[Parser.SRC_DoDk] = "Dungeons of Drakkenheim";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HWCS] = "Humblewood Campaign Setting";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HWAitW] = "Humblewood: Adventure in the Wood";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_ToB1_2023] = "Tome of Beasts 1 (2023 Edition)";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_XPHB] = "Player's Handbook (2024)";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_XDMG] = "Dungeon Master's Guide (2024)";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_XMM] = "Monster Manual (2025)";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_TD] = "Tarot Deck";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCREEN] = "Dungeon Master's Screen";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCREEN_WILDERNESS_KIT] = "Dungeon Master's Screen: Wilderness Kit";
@@ -24881,6 +31131,7 @@ Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCREEN_SPELLJAMMER] = "Dungeon Master's Sc
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HF] = "Heroes' Feast";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HFFotM] = "Heroes' Feast: Flavors of the Multiverse";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HFStCM] = "Heroes' Feast: Saving the Childrens Menu";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PaF] = "Puncheons and Flagons";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_CM] = "Candlekeep Mysteries";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_NRH] = Parser.NRH_NAME;
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_NRH_TCMC] = `${Parser.NRH_NAME}: The Candy Mountain Caper`;
@@ -24921,15 +31172,15 @@ Parser.SOURCE_JSON_TO_FULL[Parser.SRC_MisMV1] = `${Parser.MisMVX_PREFIX}1`;
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_AATM] = `${Parser.AA_PREFIX}The Mortuary`;
 
 Parser.SOURCE_JSON_TO_ABV = {};
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PHB] = "PHB'14";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_DMG] = "DMG'14";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_MM] = "MM'14";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_CoS] = "CoS";
-Parser.SOURCE_JSON_TO_ABV[Parser.SRC_DMG] = "DMG";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_EEPC] = "EEPC";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_EET] = "EET";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HotDQ] = "HotDQ";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_LMoP] = "LMoP";
-Parser.SOURCE_JSON_TO_ABV[Parser.SRC_MM] = "MM";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_OotA] = "OotA";
-Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PHB] = "PHB";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PotA] = "PotA";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_RoT] = "RoT";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_RoTOS] = "RoTOS";
@@ -25030,6 +31281,9 @@ Parser.SOURCE_JSON_TO_ABV[Parser.SRC_DoDk] = "DoDk";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HWCS] = "HWCS";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HWAitW] = "HWAitW";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_ToB1_2023] = "ToB1'23";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_XPHB] = "PHB'24";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_XDMG] = "DMG'24";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_XMM] = "MM'25";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_TD] = "TD";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCREEN] = "Screen";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCREEN_WILDERNESS_KIT] = "ScWild";
@@ -25038,6 +31292,7 @@ Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCREEN_SPELLJAMMER] = "ScSJ";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HF] = "HF";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HFFotM] = "HFFotM";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HFStCM] = "HFStCM";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PaF] = "PaF";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_CM] = "CM";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_NRH] = "NRH";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_NRH_TCMC] = "NRH-TCMC";
@@ -25078,15 +31333,15 @@ Parser.SOURCE_JSON_TO_ABV[Parser.SRC_MisMV1] = "MisMV1";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_AATM] = "AATM";
 
 Parser.SOURCE_JSON_TO_DATE = {};
-Parser.SOURCE_JSON_TO_DATE[Parser.SRC_CoS] = "2016-03-15";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PHB] = "2014-08-19";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_DMG] = "2014-12-09";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_MM] = "2014-09-30";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_CoS] = "2016-03-15";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_EEPC] = "2015-03-10";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_EET] = "2015-03-10";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HotDQ] = "2014-08-19";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_LMoP] = "2014-07-15";
-Parser.SOURCE_JSON_TO_DATE[Parser.SRC_MM] = "2014-09-30";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_OotA] = "2015-09-15";
-Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PHB] = "2014-08-19";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PotA] = "2015-04-07";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_RoT] = "2014-11-04";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_RoTOS] = "2014-11-04";
@@ -25186,6 +31441,9 @@ Parser.SOURCE_JSON_TO_DATE[Parser.SRC_DoDk] = "2023-12-21";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HWCS] = "2019-06-17";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HWAitW] = "2019-06-17";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_ToB1_2023] = "2023-05-31";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_XPHB] = "2024-09-17";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_XDMG] = "2024-11-12";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_XMM] = "2025-02-18";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_TD] = "2022-05-24";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCREEN] = "2015-01-20";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCREEN_WILDERNESS_KIT] = "2020-11-17";
@@ -25194,6 +31452,7 @@ Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCREEN_SPELLJAMMER] = "2022-08-16";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HF] = "2020-10-27";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HFFotM] = "2023-11-07";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HFStCM] = "2023-11-21";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PaF] = "2024-08-27";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_CM] = "2021-03-16";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_NRH] = "2021-09-01";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_NRH_TCMC] = "2021-09-01";
@@ -25387,6 +31646,9 @@ Parser.SOURCES_PARTNERED_WOTC = new Set([
 	Parser.SRC_LRDT,
 ]);
 Parser.SOURCES_LEGACY_WOTC = new Set([
+	Parser.SRC_PHB,
+	// Parser.SRC_DMG, // TODO(XDMG)
+	// Parser.SRC_MM, // TODO(XMM)
 	Parser.SRC_EEPC,
 	Parser.SRC_VGM,
 	Parser.SRC_MTF,
@@ -25394,9 +31656,12 @@ Parser.SOURCES_LEGACY_WOTC = new Set([
 
 // An opinionated set of source that could be considered "core-core"
 Parser.SOURCES_VANILLA = new Set([
-	Parser.SRC_DMG,
-	Parser.SRC_MM,
-	Parser.SRC_PHB,
+	// Parser.SRC_DMG, // "Legacy" source, removed in favor of XDMG
+	// Parser.SRC_MM, // "Legacy" source, removed in favor of XMM
+	// Parser.SRC_PHB, // "Legacy" source, removed in favor of XPHB
+	Parser.SRC_XDMG,
+	Parser.SRC_XMM,
+	Parser.SRC_XPHB,
 	Parser.SRC_SCAG,
 	// Parser.SRC_TTP, // "Legacy" source, removed in favor of MPMM
 	// Parser.SRC_VGM, // "Legacy" source, removed in favor of MPMM
@@ -25516,10 +31781,14 @@ Parser.SOURCES_AVAILABLE_DOCS_BOOK = {};
 	Parser.SRC_MPP,
 	Parser.SRC_HF,
 	Parser.SRC_HFFotM,
+	Parser.SRC_PaF,
 	Parser.SRC_BMT,
 	Parser.SRC_DMTCRG,
 	Parser.SRC_HWCS,
 	Parser.SRC_ToB1_2023,
+	Parser.SRC_XPHB,
+	Parser.SRC_XMM,
+	Parser.SRC_XDMG,
 	Parser.SRC_TD,
 ].forEach(src => {
 	Parser.SOURCES_AVAILABLE_DOCS_BOOK[src] = src;
@@ -25644,7 +31913,6 @@ Parser.PROP_TO_TAG = {
 	"baseitem": "item",
 	"itemGroup": "item",
 	"magicvariant": "item",
-	"subclass": "class",
 };
 Parser.getPropTag = function (prop) {
 	if (Parser.PROP_TO_TAG[prop]) return Parser.PROP_TO_TAG[prop];
@@ -25652,7 +31920,7 @@ Parser.getPropTag = function (prop) {
 };
 
 Parser.PROP_TO_DISPLAY_NAME = {
-	"variantrule": "Variant Rule",
+	"variantrule": "Rule",
 	"optionalfeature": "Option/Feature",
 	"magicvariant": "Magic Item Variant",
 	"baseitem": "Item (Base)",
@@ -25680,46 +31948,6 @@ Parser.getPropDisplayName = function (prop, {suffix = ""} = {}) {
 	if (mFoundry) return Parser.getPropDisplayName(mFoundry.groups.prop.lowercaseFirst(), {suffix: " Foundry Data"});
 
 	return `${prop.split(/([A-Z][a-z]+)/g).filter(Boolean).join(" ").uppercaseFirst()}${suffix}`;
-};
-
-Parser.ITEM_TYPE_JSON_TO_ABV = {
-	"A": "ammunition",
-	"AF": "ammunition",
-	"AT": "artisan's tools",
-	"EM": "eldritch machine",
-	"EXP": "explosive",
-	"FD": "food and drink",
-	"G": "adventuring gear",
-	"GS": "gaming set",
-	"HA": "heavy armor",
-	"IDG": "illegal drug",
-	"INS": "instrument",
-	"LA": "light armor",
-	"M": "melee weapon",
-	"MA": "medium armor",
-	"MNT": "mount",
-	"MR": "master rune",
-	"GV": "generic variant",
-	"P": "potion",
-	"R": "ranged weapon",
-	"RD": "rod",
-	"RG": "ring",
-	"S": "shield",
-	"SC": "scroll",
-	"SCF": "spellcasting focus",
-	"OTH": "other",
-	"T": "tools",
-	"TAH": "tack and harness",
-	"TG": "trade good",
-	"$": "treasure",
-	"$A": "treasure (art object)",
-	"$C": "treasure (coinage)",
-	"$G": "treasure (gemstone)",
-	"VEH": "vehicle (land)",
-	"SHP": "vehicle (water)",
-	"AIR": "vehicle (air)",
-	"SPC": "vehicle (space)",
-	"WD": "wand",
 };
 
 Parser.DMGTYPE_JSON_TO_FULL = {
@@ -25811,7 +32039,7 @@ Parser.mapGridTypeToFull = function (gridType) {
 EXT_LIB_SCRIPTS.push((function lib_script_4 () {
 // in deployment, `IS_DEPLOYED = "<version number>";` should be set below.
 globalThis.IS_DEPLOYED = undefined;
-globalThis.VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"1.209.3"/* 5ETOOLS_VERSION__CLOSE */;
+globalThis.VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"2.1.0"/* 5ETOOLS_VERSION__CLOSE */;
 globalThis.DEPLOYED_IMG_ROOT = undefined;
 // for the roll20 script to set
 globalThis.IS_VTT = false;
@@ -26081,6 +32309,10 @@ String.prototype.trimAnyChar = String.prototype.trimAnyChar || function (chars) 
 	return (start > 0 || end < this.length) ? this.substring(start, end) : this;
 };
 
+String.prototype.countSubstring = String.prototype.countSubstring || function (term) {
+	return (this.match(new RegExp(term.escapeRegexp(), "g")) || []).length;
+};
+
 Array.prototype.joinConjunct || Object.defineProperty(Array.prototype, "joinConjunct", {
 	enumerable: false,
 	writable: true,
@@ -26103,12 +32335,13 @@ Array.prototype.joinConjunct || Object.defineProperty(Array.prototype, "joinConj
 globalThis.StrUtil = {
 	COMMAS_NOT_IN_PARENTHESES_REGEX: /,\s?(?![^(]*\))/g,
 	COMMA_SPACE_NOT_IN_PARENTHESES_REGEX: /, (?![^(]*\))/g,
+	SEMICOLON_SPACE_NOT_IN_PARENTHESES_REGEX: /; (?![^(]*\))/g,
 
 	uppercaseFirst: function (string) {
 		return string.uppercaseFirst();
 	},
 	// Certain minor words should be left lowercase unless they are the first or last words in the string
-	TITLE_LOWER_WORDS: ["a", "an", "the", "and", "but", "or", "for", "nor", "as", "at", "by", "for", "from", "in", "into", "near", "of", "on", "onto", "to", "with", "over", "von"],
+	TITLE_LOWER_WORDS: ["a", "an", "the", "and", "but", "or", "for", "nor", "as", "at", "by", "for", "from", "in", "into", "near", "of", "on", "onto", "to", "with", "over", "von", "between", "per"],
 	// Certain words such as initialisms or acronyms should be left uppercase
 	TITLE_UPPER_WORDS: ["Id", "Tv", "Dm", "Ok", "Npc", "Pc", "Tpk", "Wip", "Dc", "D&d"],
 	TITLE_UPPER_WORDS_PLURAL: ["Ids", "Tvs", "Dms", "Oks", "Npcs", "Pcs", "Tpks", "Wips", "Dcs", "D&d"], // (Manually pluralize, to avoid infinite loop)
@@ -26158,6 +32391,15 @@ globalThis.StrUtil = {
 
 	toTitleCase (str) { return str.toTitleCase(); },
 	qq (str) { return (str = str || "").qq(); },
+
+	getNextDuplicateName (str) {
+		if (str == null) return null;
+
+		// Get the root name without trailing numbers, e.g. "Goblin (2)" -> "Goblin"
+		const m = /^(?<name>.*?) \((?<ordinal>\d+)\)$/.exec(str.trim());
+		if (!m) return `${str} (1)`;
+		return `${m.groups.name} (${Number(m.groups.ordinal) + 1})`;
+	},
 };
 
 globalThis.NumberUtil = class {
@@ -26339,6 +32581,13 @@ globalThis.SourceUtil = class {
 			|| Parser.SOURCES_NON_STANDARD_WOTC.has(source);
 	}
 
+	static _CLASSIC_THRESHOLD_TIMESTAMP = null;
+
+	static isClassicSource (source) {
+		this._CLASSIC_THRESHOLD_TIMESTAMP ||= new Date(Parser.sourceJsonToDate(Parser.SRC_XPHB));
+		return new Date(Parser.sourceJsonToDate(source)) < this._CLASSIC_THRESHOLD_TIMESTAMP;
+	}
+
 	static FILTER_GROUP_STANDARD = 0;
 	static FILTER_GROUP_PARTNERED = 1;
 	static FILTER_GROUP_NON_STANDARD = 2;
@@ -26369,20 +32618,33 @@ globalThis.SourceUtil = class {
 		if (!source) return null;
 		source = source.toLowerCase();
 
-		// TODO this could be made to work with homebrew
-		let docPage, mappedSource;
-		if (Parser.SOURCES_AVAILABLE_DOCS_BOOK[source]) {
-			docPage = UrlUtil.PG_BOOK;
-			mappedSource = Parser.SOURCES_AVAILABLE_DOCS_BOOK[source];
-		} else if (Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[source]) {
-			docPage = UrlUtil.PG_ADVENTURE;
-			mappedSource = Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[source];
-		}
-		if (!docPage) return null;
+		const meta = this._getAdventureBookSourceHref_fromSite({source})
+			|| this._getAdventureBookSourceHref_fromPrerelease({source})
+			|| this._getAdventureBookSourceHref_fromBrew({source});
+		if (!meta) return;
 
-		mappedSource = mappedSource.toLowerCase();
+		const {docPage, mappedSource} = meta;
 
 		return `${docPage}#${[mappedSource, page ? `page:${page}` : null].filter(Boolean).join(HASH_PART_SEP)}`;
+	}
+
+	static _getAdventureBookSourceHref_fromSite ({source}) {
+		if (Parser.SOURCES_AVAILABLE_DOCS_BOOK[source]) return {docPage: UrlUtil.PG_BOOK, mappedSource: Parser.SOURCES_AVAILABLE_DOCS_BOOK[source]};
+		if (Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[source]) return {docPage: UrlUtil.PG_ADVENTURE, mappedSource: Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[source]};
+		return null;
+	}
+
+	static _getAdventureBookSourceHref_fromPrerelease ({source}) { return this._getAdventureBookSourceHref_fromPrereleaseBrew({source, brewUtil: PrereleaseUtil}); }
+	static _getAdventureBookSourceHref_fromBrew ({source}) { return this._getAdventureBookSourceHref_fromPrereleaseBrew({source, brewUtil: BrewUtil2}); }
+
+	static _getAdventureBookSourceHref_fromPrereleaseBrew ({source, brewUtil}) {
+		const contentsAdventure = (brewUtil.getBrewProcessedFromCache("adventure") || []).filter(ent => ent.source.toLowerCase() === source);
+		const contentsBook = (brewUtil.getBrewProcessedFromCache("book") || []).filter(ent => ent.source.toLowerCase() === source);
+
+		// If there exists more than one adventure/book for this source, do not assume a mapping from source -> ID
+		if ((contentsAdventure.length + contentsBook.length) !== 1) return null;
+
+		return {docPage: contentsAdventure.length ? UrlUtil.PG_ADVENTURE : UrlUtil.PG_BOOK, mappedSource: Parser.sourceJsonToJson(source)};
 	}
 
 	static getEntitySource (it) { return it.source || it.inherits?.source; }
@@ -26582,8 +32844,8 @@ class TemplateUtil {
 	static initVanilla () {
 		/**
 		 * Template strings which can contain DOM elements.
-		 * Usage: ee`<div>Press this button: ${btn}</div>`
-		 * or:    ee(ele)`<div>Press this button: ${btn}</div>`
+		 * Usage: ee`<div>Press this button: ${ve-btn}</div>`
+		 * or:    ee(ele)`<div>Press this button: ${ve-btn}</div>`
 		 * @return {HTMLElementModified}
 		 */
 		globalThis.ee = (parts, ...args) => {
@@ -26718,8 +32980,8 @@ globalThis.JqueryUtil = {
 		};
 	},
 
-	showCopiedEffect (eleOr$Ele, text = "Copied!", bubble) {
-		const $ele = eleOr$Ele instanceof $ ? eleOr$Ele : $(eleOr$Ele);
+	showCopiedEffect ($_ele, text = "Copied!", bubble) {
+		const $ele = $_ele instanceof $ ? $_ele : $($_ele);
 
 		const top = $(window).scrollTop();
 		const pos = $ele.offset();
@@ -26817,7 +33079,7 @@ globalThis.JqueryUtil = {
 					children: [
 						e_({
 							tag: "button",
-							clazz: "btn toast__btn-close",
+							clazz: "ve-btn toast__btn-close",
 							children: [
 								e_({
 									tag: "span",
@@ -26912,7 +33174,7 @@ globalThis.ElementUtil = {
 	 * @property {function(): HTMLElementModified} detach
 	 *
 	 * @property {function(string, string): HTMLElementModified} attr
-	 * @property {function(*=): *} val
+	 * @property {function(*=, ?object): *} val
 	 *
 	 * @property {function(?string): (HTMLElementModified|string)} html
 	 * @property {function(?string): (HTMLElementModified|string)} txt
@@ -27150,13 +33412,17 @@ globalThis.ElementUtil = {
 		return this;
 	},
 
-	_val (val) {
+	_val (val, {isSetAttribute = false} = {}) {
 		if (val !== undefined) {
 			switch (this.tagName) {
 				case "SELECT": {
 					let selectedIndexNxt = -1;
 					for (let i = 0, len = this.options.length; i < len; ++i) {
-						if (this.options[i]?.value === val) { selectedIndexNxt = i; break; }
+						if (this.options[i]?.value === val) {
+							selectedIndexNxt = i;
+							if (isSetAttribute) this.options[i].setAttribute("selected", "selected");
+							break;
+						}
 					}
 					this.selectedIndex = selectedIndexNxt;
 					return this;
@@ -27727,7 +33993,7 @@ globalThis.MiscUtil = class {
 		return new Promise(resolve => setTimeout(() => resolve(resolveAs), msecs));
 	}
 
-	static GENERIC_WALKER_ENTRIES_KEY_BLOCKLIST = new Set(["caption", "type", "colLabels", "colLabelGroups", "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path"]);
+	static GENERIC_WALKER_ENTRIES_KEY_BLOCKLIST = new Set(["caption", "type", "colLabels", "colLabelGroups", "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path", "source"]);
 
 	/**
 	 * @param [opts]
@@ -28056,6 +34322,8 @@ globalThis.MiscUtil = class {
 globalThis.EventUtil = class {
 	static _mouseX = 0;
 	static _mouseY = 0;
+	static _isKeydownShift = false;
+	static _isKeydownCtrlMeta = false;
 	static _isUsingTouch = false;
 	static _isSetCssVars = false;
 
@@ -28067,6 +34335,20 @@ globalThis.EventUtil = class {
 		});
 		document.addEventListener("touchstart", () => {
 			EventUtil._isUsingTouch = true;
+		});
+		document.addEventListener("keydown", evt => {
+			switch (evt.key) {
+				case "Shift": return EventUtil._isKeydownShift = true;
+				case "Control": return EventUtil._isKeydownCtrlMeta = true;
+				case "Meta": return EventUtil._isKeydownCtrlMeta = true;
+			}
+		});
+		document.addEventListener("keyup", evt => {
+			switch (evt.key) {
+				case "Shift": return EventUtil._isKeydownShift = false;
+				case "Control": return EventUtil._isKeydownCtrlMeta = false;
+				case "Meta": return EventUtil._isKeydownCtrlMeta = false;
+			}
 		});
 	}
 
@@ -28095,6 +34377,12 @@ globalThis.EventUtil = class {
 	static getMousePos () {
 		return {x: EventUtil._mouseX, y: EventUtil._mouseY};
 	}
+
+	/* -------------------------------------------- */
+
+	static isShiftDown () { return EventUtil._isKeydownShift; }
+
+	static isCtrlMetaDown () { return EventUtil._isKeydownCtrlMeta; }
 
 	/* -------------------------------------------- */
 
@@ -29042,7 +35330,7 @@ UrlUtil.URL_TO_HASH_BUILDER["legendaryGroup"] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER["itemEntry"] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER["itemProperty"] = (it) => UrlUtil.encodeArrayForHash(it.abbreviation, it.source);
 UrlUtil.URL_TO_HASH_BUILDER["itemType"] = (it) => UrlUtil.encodeArrayForHash(it.abbreviation, it.source);
-UrlUtil.URL_TO_HASH_BUILDER["itemTypeAdditionalEntries"] = (it) => UrlUtil.encodeArrayForHash(it.appliesTo, it.source);
+UrlUtil.URL_TO_HASH_BUILDER["itemTypeAdditionalEntries"] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER["itemMastery"] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER["skill"] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER["sense"] = UrlUtil.URL_TO_HASH_GENERIC;
@@ -29079,16 +35367,16 @@ UrlUtil.PG_TO_NAME[UrlUtil.PG_CONDITIONS_DISEASES] = "Conditions & Diseases";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_FEATS] = "Feats";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_OPT_FEATURES] = "Other Options and Features";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_PSIONICS] = "Psionics";
-UrlUtil.PG_TO_NAME[UrlUtil.PG_RACES] = "Races";
+UrlUtil.PG_TO_NAME[UrlUtil.PG_RACES] = "Species";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_REWARDS] = "Supernatural Gifts & Rewards";
-UrlUtil.PG_TO_NAME[UrlUtil.PG_VARIANTRULES] = "Optional, Variant, and Expanded Rules";
+UrlUtil.PG_TO_NAME[UrlUtil.PG_VARIANTRULES] = "Rules Glossary";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_ADVENTURES] = "Adventures";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_BOOKS] = "Books";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_DEITIES] = "Deities";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_CULTS_BOONS] = "Cults & Supernatural Boons";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_OBJECTS] = "Objects";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_TRAPS_HAZARDS] = "Traps & Hazards";
-UrlUtil.PG_TO_NAME[UrlUtil.PG_QUICKREF] = "Quick Reference";
+UrlUtil.PG_TO_NAME[UrlUtil.PG_QUICKREF] = "Quick Reference (2014)";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_MANAGE_BREW] = "Homebrew Manager";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_MANAGE_PRERELEASE] = "Prerelease Content Manager";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_MAKE_BREW] = "Homebrew Builder";
@@ -29172,6 +35460,7 @@ UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_CARD] = "card";
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_SKILLS] = "skill";
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_SENSES] = "sense";
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_LEGENDARY_GROUP] = "legendaryGroup";
+UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_ITEM_MASTERY] = "itemMastery";
 
 UrlUtil.CAT_TO_HOVER_PAGE = {};
 UrlUtil.CAT_TO_HOVER_PAGE[Parser.CAT_ID_CLASS_FEATURE] = "classfeature";
@@ -29180,6 +35469,7 @@ UrlUtil.CAT_TO_HOVER_PAGE[Parser.CAT_ID_CARD] = "card";
 UrlUtil.CAT_TO_HOVER_PAGE[Parser.CAT_ID_SKILLS] = "skill";
 UrlUtil.CAT_TO_HOVER_PAGE[Parser.CAT_ID_SENSES] = "sense";
 UrlUtil.CAT_TO_HOVER_PAGE[Parser.CAT_ID_LEGENDARY_GROUP] = "legendaryGroup";
+UrlUtil.CAT_TO_HOVER_PAGE[Parser.CAT_ID_ITEM_MASTERY] = "itemMastery";
 
 UrlUtil.HASH_START_CREATURE_SCALED = `${VeCt.HASH_SCALED}${HASH_SUB_KV_SEP}`;
 UrlUtil.HASH_START_CREATURE_SCALED_SPELL_SUMMON = `${VeCt.HASH_SCALED_SPELL_SUMMON}${HASH_SUB_KV_SEP}`;
@@ -29229,7 +35519,7 @@ if (!IS_DEPLOYED && !IS_VTT && typeof window !== "undefined") {
 		if (EventUtil.noModifierKeys(e) && typeof d20 === "undefined") {
 			if (e.key === "#") {
 				const spl = window.location.href.split("/");
-				window.prompt("Copy to clipboard: Ctrl+C, Enter", `https://5etools-mirror-2.github.io/${spl[spl.length - 1]}`);
+				window.prompt("Copy to clipboard: Ctrl+C, Enter", `https://5e.tools/${spl[spl.length - 1]}`);
 			}
 		}
 	});
@@ -29281,6 +35571,13 @@ globalThis.SortUtil = {
 		return SortUtil.ascSort(aNum, bNum);
 	},
 
+	_RE_SORT_NUM: /\d+/g,
+	ascSortLowerPropNumeric (prop, a, b) {
+		a._sortName ||= (a[prop] || "").replace(SortUtil._RE_SORT_NUM, (...m) => `${m[0].padStart(10, "0")}`);
+		b._sortName ||= (b[prop] || "").replace(SortUtil._RE_SORT_NUM, (...m) => `${m[0].padStart(10, "0")}`);
+		return SortUtil.ascSortLower(a._sortName, b._sortName);
+	},
+
 	_ascSort: (a, b) => {
 		if (b === a) return 0;
 		return b < a ? 1 : -1;
@@ -29291,7 +35588,7 @@ globalThis.SortUtil = {
 	},
 
 	ascSortDateString (a, b) {
-		return SortUtil.ascSortDate(new Date(a || "1970-01-0"), new Date(b || "1970-01-0"));
+		return SortUtil.ascSortDate(new Date(a || "1970-01-01"), new Date(b || "1970-01-01"));
 	},
 
 	compareListNames (a, b) { return SortUtil._ascSort(a.name.toLowerCase(), b.name.toLowerCase()); },
@@ -29658,7 +35955,7 @@ globalThis.DataUtil = {
 	_merging: {},
 	_merged: {},
 
-	async _pLoad ({url, id, isBustCache = false}) {
+	async _pLoad ({url, id, isBustCache = false}) { console.log("_pLoad >", url)
 		if (DataUtil._loading[id] && !isBustCache) {
 			await DataUtil._loading[id];
 			return DataUtil._loaded[id];
@@ -29896,7 +36193,24 @@ globalThis.DataUtil = {
 		return `${toCsv(headers)}\n${rows.map(r => toCsv(r)).join("\n")}`;
 	},
 
-	userDownload (filename, data, {fileType = null, isSkipAdditionalMetadata = false, propVersion = "siteVersion", valVersion = VERSION_NUMBER} = {}) {
+	/**
+	 * @param {string} filename
+	 * @param {*} data
+	 * @param {?string} fileType
+	 * @param {?boolean} isSkipAdditionalMetadata
+	 * @param {?string} propVersion
+	 * @param {?string} valVersion
+	 */
+	userDownload (
+		filename,
+		data,
+		{
+			fileType = null,
+			isSkipAdditionalMetadata = false,
+			propVersion = "siteVersion",
+			valVersion = VERSION_NUMBER,
+		} = {},
+	) {
 		filename = `${filename}.json`;
 		if (isSkipAdditionalMetadata || data instanceof Array) return DataUtil._userDownload(filename, JSON.stringify(data, null, "\t"), "text/json");
 
@@ -30091,7 +36405,9 @@ globalThis.DataUtil = {
 			page: true,
 			otherSources: true,
 			srd: true,
+			srd52: true,
 			basicRules: true,
+			freeRules2024: true,
 			reprintedAs: true,
 			hasFluff: true,
 			hasFluffImages: true,
@@ -30112,6 +36428,9 @@ globalThis.DataUtil = {
 			if (opts.isLower) uid = uid.toLowerCase();
 			let [name, source, displayText, ...others] = uid.split("|").map(Function.prototype.call.bind(String.prototype.trim));
 
+			// If "ambiguous" source, allow linking to version-dependent entity
+			const isAllowRedirect = !source;
+
 			source = source || Parser.getTagSource(tag, source);
 			if (opts.isLower) source = source.toLowerCase();
 
@@ -30120,6 +36439,7 @@ globalThis.DataUtil = {
 				source,
 				displayText,
 				others,
+				isAllowRedirect,
 			};
 		},
 
@@ -31119,26 +37439,26 @@ globalThis.DataUtil = {
 		},
 	},
 
-	proxy: {
-		getVersions (prop, ent, {isExternalApplicationIdentityOnly = false} = {}) {
+	proxy: class {
+		static getVersions (prop, ent, {isExternalApplicationIdentityOnly = false} = {}) {
 			if (DataUtil[prop]?.getVersions) return DataUtil[prop]?.getVersions(ent, {isExternalApplicationIdentityOnly});
 			return DataUtil.generic.getVersions(ent, {isExternalApplicationIdentityOnly});
-		},
+		}
 
-		unpackUid (prop, uid, tag, opts) {
+		static unpackUid (prop, uid, tag, opts) {
 			if (DataUtil[prop]?.unpackUid) return DataUtil[prop]?.unpackUid(uid, tag, opts);
 			return DataUtil.generic.unpackUid(uid, tag, opts);
-		},
+		}
 
-		getNormalizedUid (prop, uid, tag, opts) {
+		static getNormalizedUid (prop, uid, tag, opts) {
 			if (DataUtil[prop]?.getNormalizedUid) return DataUtil[prop].getNormalizedUid(uid, tag, opts);
 			return DataUtil.generic.getNormalizedUid(uid, tag, opts);
-		},
+		}
 
-		getUid (prop, ent, opts) {
+		static getUid (prop, ent, opts) {
 			if (DataUtil[prop]?.getUid) return DataUtil[prop].getUid(ent, opts);
 			return DataUtil.generic.getUid(ent, opts);
-		},
+		}
 	},
 
 	monster: class extends _DataUtilPropConfigMultiSource {
@@ -31158,7 +37478,7 @@ globalThis.DataUtil = {
 		static _PROP = "monster";
 
 		static async loadJSON () {
-			await DataUtil.monster.pPreloadMeta();
+			await DataUtil.monster.pPreloadLegendaryGroups();
 			return super.loadJSON();
 		}
 
@@ -31221,24 +37541,24 @@ globalThis.DataUtil = {
 				.filter(Boolean);
 		}
 
-		static async pPreloadMeta () {
-			DataUtil.monster._pLoadMeta = DataUtil.monster._pLoadMeta || ((async () => {
-				const legendaryGroups = await DataUtil.legendaryGroup.pLoadAll();
-				DataUtil.monster.populateMetaReference({legendaryGroup: legendaryGroups});
-			})());
-			await DataUtil.monster._pLoadMeta;
+		static _pLoadLegendaryGroups = null;
+		static async pPreloadLegendaryGroups () {
+			return (
+				DataUtil.monster._pLoadLegendaryGroups ||= ((async () => {
+					const legendaryGroups = await DataUtil.legendaryGroup.pLoadAll();
+					DataUtil.monster.populateMetaReference({legendaryGroup: legendaryGroups});
+				})())
+			);
 		}
 
-		static _pLoadMeta = null;
-		static metaGroupMap = {};
-		static getMetaGroup (mon) {
+		static legendaryGroupLookup = {};
+		static getLegendaryGroup (mon) {
 			if (!mon.legendaryGroup || !mon.legendaryGroup.source || !mon.legendaryGroup.name) return null;
-			return (DataUtil.monster.metaGroupMap[mon.legendaryGroup.source] || {})[mon.legendaryGroup.name];
+			return DataUtil.monster.legendaryGroupLookup[mon.legendaryGroup.source]?.[mon.legendaryGroup.name];
 		}
 		static populateMetaReference (data) {
 			(data.legendaryGroup || []).forEach(it => {
-				(DataUtil.monster.metaGroupMap[it.source] =
-					DataUtil.monster.metaGroupMap[it.source] || {})[it.name] = it;
+				(DataUtil.monster.legendaryGroupLookup[it.source] ||= {})[it.name] = it;
 			});
 		}
 	},
@@ -31574,6 +37894,64 @@ globalThis.DataUtil = {
 
 	itemType: class extends _DataUtilPropConfig {
 		static _PAGE = "itemType";
+
+		/**
+		 * @param uid
+		 * @param [opts]
+		 * @param [opts.isLower] If the returned values should be lowercase.
+		 */
+		static unpackUid (uid, opts) {
+			opts = opts || {};
+			if (opts.isLower) uid = uid.toLowerCase();
+			let [abbreviation, source] = uid.split("|").map(it => it.trim());
+			source ||= opts.isLower ? Parser.SRC_PHB.toLowerCase() : Parser.SRC_PHB;
+			return {
+				abbreviation,
+				source,
+			};
+		}
+
+		static getUid (ent, {isMaintainCase = false, isRetainDefault = false} = {}) {
+			// <abbreviation>|<source>
+			const sourceDefault = Parser.SRC_PHB;
+			const out = [
+				ent.abbreviation,
+				!isRetainDefault && (ent.source || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : ent.source,
+			].join("|").replace(/\|+$/, ""); // Trim trailing pipes
+			if (isMaintainCase) return out;
+			return out.toLowerCase();
+		}
+	},
+
+	itemProperty: class extends _DataUtilPropConfig {
+		static _PAGE = "itemProperty";
+
+		/**
+		 * @param uid
+		 * @param [opts]
+		 * @param [opts.isLower] If the returned values should be lowercase.
+		 */
+		static unpackUid (uid, opts) {
+			opts = opts || {};
+			if (opts.isLower) uid = uid.toLowerCase();
+			let [abbreviation, source] = uid.split("|").map(it => it.trim());
+			source ||= opts.isLower ? Parser.SRC_PHB.toLowerCase() : Parser.SRC_PHB;
+			return {
+				abbreviation,
+				source,
+			};
+		}
+
+		static getUid (ent, {isMaintainCase = false, isRetainDefault = false} = {}) {
+			// <abbreviation>|<source>
+			const sourceDefault = Parser.SRC_PHB;
+			const out = [
+				ent.abbreviation,
+				!isRetainDefault && (ent.source || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : ent.source,
+			].join("|").replace(/\|+$/, ""); // Trim trailing pipes
+			if (isMaintainCase) return out;
+			return out.toLowerCase();
+		}
 	},
 
 	language: class extends _DataUtilPropConfigSingleSource {
@@ -31830,14 +38208,35 @@ globalThis.DataUtil = {
 		}
 
 		static packUidSubclass (it) {
-			// <name>|<className>|<classSource>|<source>
-			const sourceDefault = Parser.getTagSource("subclass");
+			// <shortName>|<className>|<classSource>|<source>
+			const sourceDefault = Parser.getTagSource("class");
 			return [
-				it.name,
+				it.shortName,
 				it.className,
 				(it.classSource || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : it.classSource,
 				(it.source || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : it.source,
 			].join("|").replace(/\|+$/, ""); // Trim trailing pipes
+		}
+
+		/**
+		 * @param uid
+		 * @param [opts]
+		 * @param [opts.isLower] If the returned values should be lowercase.
+		 */
+		static unpackUidSubclass (uid, opts) {
+			opts = opts || {};
+			if (opts.isLower) uid = uid.toLowerCase();
+			let [shortName, className, classSource, source, displayText] = uid.split("|").map(it => it.trim());
+			classSource = classSource || (opts.isLower ? Parser.SRC_PHB.toLowerCase() : Parser.SRC_PHB);
+			source = source || (opts.isLower ? Parser.SRC_PHB.toLowerCase() : Parser.SRC_PHB);
+			return {
+				name: shortName, // (For display purposes only)
+				shortName,
+				className,
+				classSource,
+				source,
+				displayText,
+			};
 		}
 
 		/**
@@ -31936,6 +38335,12 @@ globalThis.DataUtil = {
 		// endregion
 	},
 
+	classFeature: class extends _DataUtilPropConfigMultiSource {
+		static _PAGE = "classFeature";
+		static _DIR = "class";
+		static _PROP = "classFeature";
+	},
+
 	classFluff: class extends _DataUtilPropConfigMultiSource {
 		static _PAGE = UrlUtil.PG_CLASSES;
 		static _DIR = "class";
@@ -31949,6 +38354,16 @@ globalThis.DataUtil = {
 		static async loadJSON () {
 			return DataUtil.class.loadJSON();
 		}
+
+		static unpackUid (uid, opts) {
+			return DataUtil.class.unpackUidSubclass(uid, opts);
+		}
+	},
+
+	subclassFeature: class extends _DataUtilPropConfigMultiSource {
+		static _PAGE = "subclassFeature";
+		static _DIR = "class";
+		static _PROP = "subclassFeature";
 	},
 
 	subclassFluff: class extends _DataUtilPropConfigMultiSource {
@@ -32015,6 +38430,10 @@ globalThis.DataUtil = {
 		static getNormalizedUid (uid, tag) {
 			const {name, pantheon, source} = this.unpackUidDeity(uid, tag, {isLower: true});
 			return [name, pantheon, source].join("|");
+		}
+
+		static unpackUid (uid, opts) {
+			return this.unpackUidDeity(uid, opts);
 		}
 
 		static unpackUidDeity (uid, opts) {
@@ -32169,6 +38588,11 @@ globalThis.DataUtil = {
 	hazardFluff: class extends _DataUtilPropConfigSingleSource {
 		static _PAGE = UrlUtil.PG_TRAPS_HAZARDS;
 		static _FILENAME = "fluff-trapshazards.json";
+	},
+
+	action: class extends _DataUtilPropConfigSingleSource {
+		static _PAGE = UrlUtil.PG_ACTIONS;
+		static _FILENAME = "actions.json";
 	},
 
 	quickreference: {
@@ -32937,6 +39361,48 @@ globalThis.CollectionUtil = {
 	// endregion
 };
 
+class _TrieNode {
+	constructor () {
+		this.children = {};
+		this.isEndOfRun = false;
+	}
+}
+
+globalThis.Trie = class {
+	constructor () {
+		this.root = new _TrieNode();
+	}
+
+	add (tokens, node) {
+		node ||= this.root;
+		const [head, ...tail] = tokens;
+		const nodeNxt = node.children[head] ||= new _TrieNode();
+		if (!tail.length) return nodeNxt.isEndOfRun = true;
+		this.add(tail, nodeNxt);
+	}
+
+	findLongestComplete (tokens, node, accum, found) {
+		node ||= this.root;
+		accum ||= [];
+		found ||= [];
+
+		const [head, ...tail] = tokens;
+		const nodeNxt = node.children[head];
+		if (!nodeNxt) {
+			if (found.length) {
+				const [out] = found.sort(SortUtil.ascSortProp.bind(SortUtil, "length")).reverse();
+				return out;
+			}
+			return null;
+		}
+
+		accum.push(head);
+
+		if (nodeNxt.isEndOfRun) found.push([...accum]);
+		return this.findLongestComplete(tail, nodeNxt, accum, found);
+	}
+};
+
 Array.prototype.last || Object.defineProperty(Array.prototype, "last", {
 	enumerable: false,
 	writable: true,
@@ -33247,8 +39713,9 @@ globalThis.ExcludeUtil = {
 
 		ExcludeUtil.pSave = MiscUtil.throttle(ExcludeUtil._pSave, 50);
 		try {
-			ExcludeUtil._excludes = await StorageUtil.pGet(VeCt.STORAGE_EXCLUDES) || [];
-			ExcludeUtil._excludes = ExcludeUtil._excludes.filter(it => it.hash); // remove legacy rows
+			ExcludeUtil._excludes = ExcludeUtil._getValidExcludes(
+				await StorageUtil.pGet(VeCt.STORAGE_EXCLUDES) || [],
+			);
 		} catch (e) {
 			JqueryUtil.doToast({
 				content: "Error when loading content blocklist! Purged blocklist data. (See the log for more information.)",
@@ -33264,6 +39731,12 @@ globalThis.ExcludeUtil = {
 			setTimeout(() => { throw e; });
 		}
 		ExcludeUtil.isInitialised = true;
+	},
+
+	_getValidExcludes (excludes) {
+		return excludes
+			.filter(it => it.hash) // remove legacy rows
+			.filter(it => it.hash != null && it.category != null && it.source != null); // remove invalid rows
 	},
 
 	getList () {
@@ -33367,7 +39840,7 @@ globalThis.ExcludeUtil = {
 	},
 
 	isAllContentExcluded (list) { return (!list.length && ExcludeUtil._excludeCount) || (list.length > 0 && list.length === ExcludeUtil._excludeCount); },
-	getAllContentBlocklistedHtml () { return `<div class="initial-message">(All content <a href="blocklist.html">blocklisted</a>)</div>`; },
+	getAllContentBlocklistedHtml () { return `<div class="initial-message initial-message--med">(All content <a href="blocklist.html">blocklisted</a>)</div>`; },
 
 	async _pSave () {
 		return StorageUtil.pSet(VeCt.STORAGE_EXCLUDES, ExcludeUtil._excludes);
@@ -33456,18 +39929,6 @@ globalThis.ExtensionUtil = class {
 	/* -------------------------------------------- */
 };
 if (typeof window !== "undefined") window.addEventListener("rivet.active", () => ExtensionUtil.ACTIVE = true);
-
-// TOKENS ==============================================================================================================
-globalThis.TokenUtil = {
-	handleStatblockScroll (event, ele) {
-		$(`#token_image`)
-			.toggle(ele.scrollTop < 32)
-			.css({
-				opacity: (32 - ele.scrollTop) / 32,
-				top: -ele.scrollTop,
-			});
-	},
-};
 
 // LOCKS ===============================================================================================================
 /**
@@ -33607,6 +40068,19 @@ globalThis.EditorUtil = {
 			...additionalOpts,
 		});
 
+		if (additionalOpts.mode === "ace/mode/json") {
+			// Escape backslashes when pasting JSON, unless CTRL+SHIFT are pressed
+			editor.on("paste", (evt) => {
+				if (EventUtil.isShiftDown() && EventUtil.isCtrlMetaDown()) return;
+				try {
+					// If valid JSON (ignoring trailing comma), we assume slashes are already escaped
+					JSON.parse(evt.text.replace(/,?\s*/, ""));
+				} catch (e) {
+					evt.text = evt.text.replace(/\\/g, "\\\\");
+				}
+			});
+		}
+
 		styleSwitcher.addFnOnChange(() => editor.setOptions({theme: EditorUtil.getTheme()}));
 
 		return editor;
@@ -33698,17 +40172,6 @@ if (!IS_VTT && typeof window !== "undefined") {
 	// 	$(`.cancer__sidebar-rhs-inner--top`).append(`<div class="TEST_RHS_TOP"></div>`)
 	// 	$(`.cancer__sidebar-rhs-inner--bottom`).append(`<div class="TEST_RHS_BOTTOM"></div>`)
 	// });
-
-	// TODO(img) remove this in future
-	window.addEventListener("load", () => {
-		if (window.location?.host !== "5etools-mirror-1.github.io") return;
-
-		JqueryUtil.doToast({
-			type: "warning",
-			isAutoHide: false,
-			content: $(`<div>This mirror is no longer being updated/maintained, and will be shut down on March 1st 2024.<br>Please use <a href="https://5etools-mirror-2.github.io/" rel="noopener noreferrer">5etools-mirror-2.github.io</a> instead, and <a href="https://gist.github.com/5etools-mirror-2/40d6d80f40205882d3fa5006fae963a4" rel="noopener noreferrer">migrate your data</a>.</div>`),
-		});
-	});
 }
 
 }).toString());
@@ -33951,7 +40414,7 @@ class UiUtil {
 		return string === "true" ? true : string === "false" ? false : opts.fallbackOnNaB;
 	}
 
-	static intToBonus (int, {isPretty = false} = {}) { return `${int >= 0 ? "+" : int < 0 ? (isPretty ? "\u2012" : "-") : ""}${Math.abs(int)}`; }
+	static intToBonus (int, {isPretty = false} = {}) { return `${int >= 0 ? "+" : int < 0 ? (isPretty ? "\u2212" : "-") : ""}${Math.abs(int)}`; }
 
 	static getEntriesAsText (entryArray) {
 		if (!entryArray || !entryArray.length) return "";
@@ -34000,7 +40463,6 @@ class UiUtil {
 
 	/**
 	 * @param {Object} [opts] Options object.
-	 * @param {string} [opts.title] Modal title.
 	 *
 	 * @param {string} [opts.title] Modal title.
 	 *
@@ -34024,7 +40486,7 @@ class UiUtil {
 	 * @param {boolean} [opts.isIndestructible] If the modal elements should be detached, not removed.
 	 * @param {boolean} [opts.isClosed] If the modal should start off closed.
 	 * @param {boolean} [opts.isEmpty] If the modal should contain no content.
-	 * @param {boolean} [opts.headerType]
+	 * @param {number} [opts.headerType]
 	 * @param {boolean} [opts.hasFooter] If the modal has a footer.
 	 * @returns {object}
 	 */
@@ -34094,7 +40556,7 @@ class UiUtil {
 
 		const btnCloseModal = opts.isFullscreenModal ? e_({
 			tag: "button",
-			clazz: `btn btn-danger btn-xs`,
+			clazz: `ve-btn ve-btn-danger ve-btn-xs`,
 			html: `<span class="glyphicon glyphicon-remove></span>`,
 			click: pHandleCloseClick(false),
 		}) : null;
@@ -34310,12 +40772,13 @@ class UiUtil {
 		return out;
 	}
 
-	static bindTypingEnd ({$ipt, fnKeyup, fnKeypress, fnKeydown, fnClick} = {}) {
+	static bindTypingEnd ({$ipt, fnKeyup, fnKeypress, fnKeydown, fnClick, timeout} = {}) {
 		let timerTyping;
 		$ipt
 			.on("keyup search paste", evt => {
 				clearTimeout(timerTyping);
-				timerTyping = setTimeout(() => { fnKeyup(evt); }, UiUtil.TYPE_TIMEOUT_MS);
+				if (evt.key === "Enter") return fnKeyup(evt);
+				timerTyping = setTimeout(() => { fnKeyup(evt); }, timeout ?? UiUtil.TYPE_TIMEOUT_MS);
 			})
 			// Trigger on blur, as tabbing out of a field triggers the keyup on the element which was tabbed into. Our
 			//   intent. however, is to trigger on any keyup which began in this field.
@@ -34354,11 +40817,12 @@ class UiUtil {
 }
 UiUtil.SEARCH_RESULTS_CAP = 75;
 UiUtil.TYPE_TIMEOUT_MS = 100; // auto-search after 100ms
+UiUtil.TYPE_TIMEOUT_LAZY_MS = 1500;
 UiUtil._MODAL_STACK = null;
 UiUtil._MODAL_LAST_MOUSEDOWN = null;
 
 class ListSelectClickHandlerBase {
-	static _EVT_PASS_THOUGH_TAGS = new Set(["A", "BUTTON"]);
+	static _EVT_PASS_THOUGH_TAGS = new Set(["A", "BUTTON", "INPUT", "TEXTAREA"]);
 
 	constructor () {
 		this._firstSelection = null;
@@ -34405,7 +40869,7 @@ class ListSelectClickHandlerBase {
 		if (opts.isPassThroughEvents) {
 			const evtPath = evt.composedPath();
 			const subEles = evtPath.slice(0, evtPath.indexOf(evt.currentTarget));
-			if (subEles.some(ele => this.constructor._EVT_PASS_THOUGH_TAGS.has(ele?.tagName))) return;
+			if (subEles.some(ele => ele?.type !== "checkbox" && this.constructor._EVT_PASS_THOUGH_TAGS.has(ele?.tagName))) return;
 		}
 
 		evt.preventDefault();
@@ -34418,7 +40882,9 @@ class ListSelectClickHandlerBase {
 			if (this._lastSelection === item) {
 				// on double-tapping the end of the selection, toggle it on/off
 
-				this._setCheckbox(item, {...opts, toVal: !cb.checked});
+				const toVal = !cb.checked;
+				this._setCheckbox(item, {...opts, toVal});
+				this._setHighlighted(item, {toVal});
 			} else if (this._firstSelection === item && this._lastSelection) {
 				// If the item matches the last clicked, clear all checkboxes from our last selection
 
@@ -34427,11 +40893,13 @@ class ListSelectClickHandlerBase {
 
 				const [ixStart, ixEnd] = [ix1, ix2].sort(SortUtil.ascSort);
 				for (let i = ixStart; i <= ixEnd; ++i) {
-					const it = this._visibleItems[i];
-					this._setCheckbox(it, {...opts, toVal: false});
+					const item = this._visibleItems[i];
+					this._setCheckbox(item, {...opts, toVal: false});
+					this._setHighlighted(item, {toVal: false});
 				}
 
 				this._setCheckbox(item, opts);
+				this._setHighlighted(item, opts);
 			} else {
 				// on a shift-click, toggle all the checkboxes to the value of the initial item...
 				this._selectionInitialValue = this._getCb(this._firstSelection, opts).checked;
@@ -34443,8 +40911,9 @@ class ListSelectClickHandlerBase {
 				const [ixStart, ixEnd] = [ix1, ix2].sort(SortUtil.ascSort);
 				const nxtOpts = {...opts, toVal: this._selectionInitialValue};
 				for (let i = ixStart; i <= ixEnd; ++i) {
-					const it = this._visibleItems[i];
-					this._setCheckbox(it, nxtOpts);
+					const item = this._visibleItems[i];
+					this._setCheckbox(item, nxtOpts);
+					this._setHighlighted(item, nxtOpts);
 				}
 
 				// ...except when selecting; for those between the last selection and this selection, those to unchecked
@@ -34452,14 +40921,16 @@ class ListSelectClickHandlerBase {
 					if (ix2Prev > ixEnd) {
 						const nxtOpts = {...opts, toVal: !this._selectionInitialValue};
 						for (let i = ixEnd + 1; i <= ix2Prev; ++i) {
-							const it = this._visibleItems[i];
-							this._setCheckbox(it, nxtOpts);
+							const item = this._visibleItems[i];
+							this._setCheckbox(item, nxtOpts);
+							this._setHighlighted(item, nxtOpts);
 						}
 					} else if (ix2Prev < ixStart) {
 						const nxtOpts = {...opts, toVal: !this._selectionInitialValue};
 						for (let i = ix2Prev; i < ixStart; ++i) {
-							const it = this._visibleItems[i];
-							this._setCheckbox(it, nxtOpts);
+							const item = this._visibleItems[i];
+							this._setCheckbox(item, nxtOpts);
+							this._setHighlighted(item, nxtOpts);
 						}
 					}
 				}
@@ -34476,11 +40947,11 @@ class ListSelectClickHandlerBase {
 				if (opts.fnOnSelectionChange) opts.fnOnSelectionChange(item, cbMaster.checked);
 
 				if (!opts.isNoHighlightSelection) {
-					this._setHighlighted(item, cbMaster.checked);
+					this._setHighlighted(item, {toVal: cbMaster.checked});
 				}
 			} else {
 				if (!opts.isNoHighlightSelection) {
-					this._setHighlighted(item, false);
+					this._setHighlighted(item, {toVal: false});
 				}
 			}
 
@@ -34507,12 +40978,34 @@ class ListSelectClickHandlerBase {
 				//   be filtered/hidden, the browser won't necessarily update them all. Therefore, forcibly set
 				//   `checked = false` below.
 				cb.checked = true;
-				this._setHighlighted(itemOther, true);
+				this._setHighlighted(itemOther, {toVal: true});
 			} else {
 				cb.checked = false;
-				this._setHighlighted(itemOther, false);
+				this._setHighlighted(itemOther, {toVal: false});
 			}
 		});
+	}
+
+	bindSelectAllCheckbox ($_cbAll) {
+		const cbAll = $_cbAll instanceof jQuery ? $_cbAll[0] : $_cbAll;
+		if (!cbAll) return;
+		cbAll
+			.addEventListener("change", () => {
+				const isChecked = cbAll.checked;
+				this.setCheckboxes({isChecked});
+			});
+	}
+
+	setCheckboxes ({isChecked, isIncludeHidden}) {
+		(isIncludeHidden ? this._allItems : this._visibleItems)
+			.forEach(item => {
+				const cb = this._getCb(item);
+
+				if (cb?.disabled) return;
+				if (cb) cb.checked = isChecked;
+
+				this._setHighlighted(item, {toVal: isChecked});
+			});
 	}
 }
 
@@ -34530,53 +41023,65 @@ class ListSelectClickHandler extends ListSelectClickHandlerBase {
 
 	_getCb (item, opts = {}) { return opts.fnGetCb ? opts.fnGetCb(item) : item.data.cbSel; }
 
-	_setCheckbox (item, opts = {}) { return this.setCheckbox(item, opts); }
+	_setCheckbox (item, {fnGetCb, fnOnSelectionChange, isNoHighlightSelection, toVal = true} = {}) {
+		const cbSlave = this._getCb(item, {fnGetCb, fnOnSelectionChange, isNoHighlightSelection});
 
-	_setHighlighted (item, isHighlighted) {
-		if (isHighlighted) item.ele instanceof $ ? item.ele.addClass("list-multi-selected") : item.ele.classList.add("list-multi-selected");
+		if (!cbSlave || cbSlave.disabled) return;
+
+		cbSlave.checked = toVal;
+		if (fnOnSelectionChange) fnOnSelectionChange(item, toVal);
+	}
+
+	_setHighlighted (item, {toVal = false} = {}) {
+		if (toVal) item.ele instanceof $ ? item.ele.addClass("list-multi-selected") : item.ele.classList.add("list-multi-selected");
 		else item.ele instanceof $ ? item.ele.removeClass("list-multi-selected") : item.ele.classList.remove("list-multi-selected");
 	}
 
 	/* -------------------------------------------- */
 
 	setCheckbox (item, {fnGetCb, fnOnSelectionChange, isNoHighlightSelection, toVal = true} = {}) {
-		const cbSlave = this._getCb(item, {fnGetCb, fnOnSelectionChange, isNoHighlightSelection});
-
-		if (cbSlave?.disabled) return;
-
-		if (cbSlave) {
-			cbSlave.checked = toVal;
-			if (fnOnSelectionChange) fnOnSelectionChange(item, toVal);
-		}
+		this._setCheckbox(item, {fnGetCb, fnOnSelectionChange, isNoHighlightSelection, toVal});
 
 		if (isNoHighlightSelection) return;
 
-		this._setHighlighted(item, toVal);
-	}
-
-	/**
-	 * (Public method for Plutonium use)
-	 */
-	bindSelectAllCheckbox ($cbAll) {
-		$cbAll.change(() => {
-			const isChecked = $cbAll.prop("checked");
-			this.setCheckboxes({isChecked});
-		});
-	}
-
-	setCheckboxes ({isChecked, isIncludeHidden}) {
-		(isIncludeHidden ? this._list.items : this._list.visibleItems)
-			.forEach(item => {
-				if (item.data.cbSel?.disabled) return;
-
-				if (item.data.cbSel) item.data.cbSel.checked = isChecked;
-
-				this._setHighlighted(item, isChecked);
-			});
+		this._setHighlighted(item, {toVal});
 	}
 }
 
 globalThis.ListSelectClickHandler = ListSelectClickHandler;
+
+class RenderableCollectionSelectClickHandler extends ListSelectClickHandlerBase {
+	constructor ({comp, prop, namespace = null}) {
+		super();
+		this._comp = comp;
+		this._prop = prop;
+		this._namespace = namespace;
+	}
+
+	_getCb (item, opts) {
+		return item.cbSel;
+	}
+
+	_setCheckbox (item, opts) {
+		item.cbSel.checked = opts.toVal;
+	}
+
+	_setHighlighted (item, {toVal = false} = {}) {
+		item.$wrpRow.toggleClass("list-multi-selected", toVal);
+	}
+
+	get _allItems () {
+		const rendereds = this._comp._getRenderedCollection({prop: this._prop, namespace: this._namespace});
+		return this._comp._state[this._prop]
+			.map(ent => rendereds[ent.id]);
+	}
+
+	get _visibleItems () {
+		return this._allItems;
+	}
+}
+
+globalThis.RenderableCollectionSelectClickHandler = RenderableCollectionSelectClickHandler;
 
 class ListUiUtil {
 	static bindPreviewButton (page, allData, item, btnShowHidePreview, {$fnGetPreviewStats} = {}) {
@@ -34785,7 +41290,7 @@ class ListUiUtil {
 	// ==================
 }
 ListUiUtil.HTML_GLYPHICON_EXPAND = `[+]`;
-ListUiUtil.HTML_GLYPHICON_CONTRACT = `[\u2012]`;
+ListUiUtil.HTML_GLYPHICON_CONTRACT = `[\u2212]`;
 
 globalThis.ListUiUtil = ListUiUtil;
 
@@ -35015,11 +41520,12 @@ TabUiUtilBase._DEFAULT_TAB_GROUP = "_default";
 TabUiUtilBase._DEFAULT_PROP_PROXY = "meta";
 
 TabUiUtilBase.TabMeta = class {
-	constructor ({name, icon = null, type = null, buttons = null} = {}) {
+	constructor ({name, icon = null, type = null, buttons = null, isSplitStart = false} = {}) {
 		this.name = name;
 		this.icon = icon;
 		this.type = type;
 		this.buttons = buttons;
+		this.isSplitStart = isSplitStart;
 	}
 };
 
@@ -35028,7 +41534,7 @@ class TabUiUtil extends TabUiUtilBase {
 		super.decorate(obj, {isInitMeta});
 
 		obj.__$getBtnTab = function ({tabMeta, _propProxy, propActive, ixTab}) {
-			return $(`<button class="btn btn-default ui-tab__btn-tab-head pt-2p px-4p pb-0 ${tabMeta.isHeadHidden ? "ve-hidden" : ""}">${tabMeta.name.qq()}</button>`)
+			return $(`<button class="ve-btn ve-btn-default ui-tab__btn-tab-head pt-2p px-4p pb-0 ${tabMeta.isHeadHidden ? "ve-hidden" : ""}">${tabMeta.name.qq()}</button>`)
 				.click(() => obj[_propProxy][propActive] = ixTab);
 		};
 
@@ -35045,12 +41551,12 @@ class TabUiUtil extends TabUiUtilBase {
 
 		obj.__renderTypedTabMeta_buttons = function ({tabMeta, ixTab}) {
 			const $btns = tabMeta.buttons.map((meta, j) => {
-				const $btn = $(`<button class="btn ui-tab__btn-tab-head pt-2p px-4p pb-0 bbr-0 bbl-0 ${meta.type ? `btn-${meta.type}` : "btn-primary"}" ${meta.title ? `title="${meta.title.qq()}"` : ""}>${meta.html}</button>`)
+				const $btn = $(`<button class="ve-btn ui-tab__btn-tab-head pt-2p px-4p pb-0 bbr-0 bbl-0 ${meta.type ? `ve-btn-${meta.type}` : "ve-btn-primary"}" ${meta.title ? `title="${meta.title.qq()}"` : ""}>${meta.html}</button>`)
 					.click(evt => meta.pFnClick(evt, $btn));
 				return $btn;
 			});
 
-			const $btnTab = $$`<div class="btn-group ve-flex-v-right ve-flex-h-right ml-2 w-100">${$btns}</div>`;
+			const $btnTab = $$`<div class="ve-btn-group ve-flex-v-center ${tabMeta.isSplitStart ? "ml-auto" : "ml-2"}">${$btns}</div>`;
 
 			return {
 				...tabMeta,
@@ -35081,7 +41587,7 @@ class TabUiUtilSide extends TabUiUtilBase {
 		super.decorate(obj, {isInitMeta});
 
 		obj.__$getBtnTab = function ({isSingleTab, tabMeta, _propProxy, propActive, ixTab}) {
-			return isSingleTab ? null : $(`<button class="btn btn-default btn-sm ui-tab-side__btn-tab mb-2 br-0 btr-0 bbr-0 text-left ve-flex-v-center" title="${tabMeta.name.qq()}"><div class="${tabMeta.icon} ui-tab-side__icon-tab mr-2 mobile-lg__mr-0 ve-text-center"></div><div class="mobile-lg__hidden">${tabMeta.name.qq()}</div></button>`)
+			return isSingleTab ? null : $(`<button class="ve-btn ve-btn-default ve-btn-sm ui-tab-side__btn-tab mb-2 br-0 btr-0 bbr-0 ve-text-left ve-flex-v-center" title="${tabMeta.name.qq()}"><div class="${tabMeta.icon} ui-tab-side__icon-tab mr-2 mobile-lg__mr-0 ve-text-center"></div><div class="mobile-lg__hidden">${tabMeta.name.qq()}</div></button>`)
 				.click(() => this[_propProxy][propActive] = ixTab);
 		};
 
@@ -35108,7 +41614,7 @@ class TabUiUtilSide extends TabUiUtilBase {
 
 		obj.__renderTypedTabMeta_buttons = function ({tabMeta, ixTab}) {
 			const $btns = tabMeta.buttons.map((meta, j) => {
-				const $btn = $(`<button class="btn ${meta.type ? `btn-${meta.type}` : "btn-primary"} btn-sm" ${meta.title ? `title="${meta.title.qq()}"` : ""}>${meta.html}</button>`)
+				const $btn = $(`<button class="ve-btn ${meta.type ? `ve-btn-${meta.type}` : "ve-btn-primary"} ve-btn-sm" ${meta.title ? `title="${meta.title.qq()}"` : ""}>${meta.html}</button>`)
 					.click(evt => meta.pFnClick(evt, $btn));
 
 				if (j === tabMeta.buttons.length - 1) $btn.addClass(`br-0 btr-0 bbr-0`);
@@ -35116,7 +41622,7 @@ class TabUiUtilSide extends TabUiUtilBase {
 				return $btn;
 			});
 
-			const $btnTab = $$`<div class="btn-group ve-flex-v-center ve-flex-h-right mb-2">${$btns}</div>`;
+			const $btnTab = $$`<div class="ve-btn-group ve-flex-v-center ve-flex-h-right mb-2">${$btns}</div>`;
 
 			return {
 				...tabMeta,
@@ -35269,6 +41775,7 @@ class SearchWidget {
 	 * @param $iptSearch input element
 	 * @param opts Options object.
 	 * @param opts.fnSearch Function which runs the search.
+	 * @param opts.pFnSearch Function which runs the search.
 	 * @param opts.fnShowWait Function which displays loading dots
 	 * @param opts.flags Flags object; modified during user interaction.
 	 * @param opts.flags.isWait Flag tracking "waiting for user to stop typing"
@@ -35277,6 +41784,15 @@ class SearchWidget {
 	 * @param opts.$ptrRows Pointer to array of rows.
 	 */
 	static bindAutoSearch ($iptSearch, opts) {
+		if (opts.fnSearch && opts.pFnSearch) throw new Error(`Options "fnSearch" and "pFnSearch" are mutually exclusive!`);
+
+		// Chain each search from the previous, to ensure the last search wins
+		let pSearching = null;
+		const addSearchPromiseTask = () => {
+			if (pSearching) pSearching = pSearching.then(() => opts.pFnSearch());
+			else pSearching = opts.pFnSearch();
+		};
+
 		UiUtil.bindTypingEnd({
 			$ipt: $iptSearch,
 			fnKeyup: evt => {
@@ -35292,6 +41808,7 @@ class SearchWidget {
 				}
 
 				opts.fnSearch && opts.fnSearch();
+				if (opts.pFnSearch) addSearchPromiseTask();
 			},
 			fnKeypress: evt => {
 				switch (evt.key) {
@@ -35302,6 +41819,7 @@ class SearchWidget {
 					case "Enter": {
 						opts.flags.doClickFirst = true;
 						opts.fnSearch && opts.fnSearch();
+						if (opts.pFnSearch) addSearchPromiseTask();
 					}
 				}
 			},
@@ -35331,7 +41849,11 @@ class SearchWidget {
 				}
 			},
 			fnClick: () => {
-				if (opts.fnSearch && $iptSearch.val() && $iptSearch.val().trim().length) opts.fnSearch();
+				if (!opts.fnSearch && !opts.pFnSearch) return;
+				if (!$iptSearch.val() && !$iptSearch.val().trim().length) return;
+
+				if (opts.fnSearch) opts.fnSearch();
+				if (opts.pFnSearch) addSearchPromiseTask();
 			},
 		});
 	}
@@ -35439,7 +41961,10 @@ class SearchWidget {
 	}
 
 	get $wrpSearch () {
-		if (!this._$rendered) this._render();
+		if (!this._$rendered) {
+			this._render();
+			this.__pDoSearch().then(null);
+		}
 		return this._$rendered;
 	}
 
@@ -35457,11 +41982,11 @@ class SearchWidget {
 		this._$wrpResults.empty().append(SearchWidget.getSearchNoResults());
 	}
 
-	__doSearch () {
+	async __pDoSearch () {
 		const searchInput = this._$iptSearch.val().trim();
 
 		const index = this._indexes[this._cat];
-		const results = index.search(searchInput, this.__getSearchOptions());
+		const results = await Omnisearch.pGetFilteredResults(index.search(searchInput, this.__getSearchOptions()));
 
 		const {toProcess, resultCount} = (() => {
 			if (results.length) {
@@ -35545,9 +42070,9 @@ class SearchWidget {
 				${Object.keys(this._indexes).sort().filter(it => it !== "ALL").map(it => `<option value="${it}">${SearchWidget.__getCatOptionText(it)}</option>`).join("")}
 			</select>`)
 				.appendTo($wrpControls).toggle(Object.keys(this._indexes).length !== 1)
-				.on("change", () => {
+				.on("change", async () => {
 					this._cat = this._$selCat.val();
-					this.__doSearch();
+					await this.__pDoSearch();
 				});
 
 			this._$iptSearch = $(`<input class="ui-search__ipt-search search form-control" autocomplete="off" placeholder="Search...">`).appendTo($wrpControls);
@@ -35556,7 +42081,7 @@ class SearchWidget {
 			let lastSearchTerm = "";
 			SearchWidget.bindAutoSearch(this._$iptSearch, {
 				flags: this._flags,
-				fnSearch: this.__doSearch.bind(this),
+				pFnSearch: this.__pDoSearch.bind(this),
 				fnShowWait: this.__showMsgWait.bind(this),
 				$ptrRows: this._$ptrRows,
 			});
@@ -35570,8 +42095,6 @@ class SearchWidget {
 					lastSearchTerm = this._$iptSearch.val();
 				}
 			});
-
-			this.__doSearch();
 		}
 	}
 
@@ -35725,7 +42248,7 @@ class SearchWidget {
 		};
 		await SearchWidget.pLoadCustomIndex({
 			contentIndexName: "entity_Races",
-			errorName: "races",
+			errorName: "species",
 			customIndexSubSpecs: [
 				new SearchWidget.CustomIndexSubSpec({
 					dataSource,
@@ -35737,7 +42260,7 @@ class SearchWidget {
 		});
 
 		return SearchWidget.pGetUserEntitySearch(
-			"Select Race",
+			"Select Species",
 			"entity_Races",
 			{
 				fnTransform: doc => {
@@ -35860,7 +42383,7 @@ class SearchWidget {
 			const allItems = (await Renderer.item.pBuildList()).filter(it => !it._isItemGroup);
 			return {
 				item: allItems.filter(it => {
-					if (it.type === "GV") return false;
+					if (it.type && DataUtil.itemType.unpackUid(it.type).abbreviation === Parser.ITM_TYP_ABV__GENERIC_VARIANT) return false;
 					if (isBasicIndex == null) return true;
 					const isBasic = it.rarity === "none" || it.rarity === "unknown" || it._category === "basic";
 					return isBasicIndex ? isBasic : !isBasic;
@@ -36002,6 +42525,7 @@ class SearchWidget {
 				...(brew[subSpec.prop] || []),
 			]
 				.pSerialAwaitMap(async ent => {
+					const src = SourceUtil.getEntitySource(ent);
 					const doc = {
 						id: id++,
 						c: subSpec.catId,
@@ -36009,8 +42533,9 @@ class SearchWidget {
 						h: 1,
 						n: ent.name,
 						q: subSpec.page,
-						s: ent.source,
+						s: src,
 						u: UrlUtil.URL_TO_HASH_BUILDER[subSpec.page](ent),
+						dP: SourceUtil.isPartneredSourceWotc(src),
 					};
 					if (subSpec.pFnGetDocExtras) Object.assign(doc, await subSpec.pFnGetDocExtras({ent, doc, subSpec}));
 					index.addDoc(doc);
@@ -36037,7 +42562,7 @@ class InputUiUtil {
 	}
 
 	static _$getBtnOk ({comp = null, opts, doClose}) {
-		return $(`<button class="btn btn-primary mr-2">${opts.buttonText || "OK"}</button>`)
+		return $(`<button class="ve-btn ve-btn-primary mr-2">${opts.buttonText || "OK"}</button>`)
 			.click(evt => {
 				evt.stopPropagation();
 				if (comp && !comp._state.isValid) return JqueryUtil.doToast({content: `Please enter valid input!`, type: "warning"});
@@ -36046,7 +42571,7 @@ class InputUiUtil {
 	}
 
 	static _$getBtnCancel ({comp = null, opts, doClose}) {
-		return $(`<button class="btn btn-default">Cancel</button>`)
+		return $(`<button class="ve-btn ve-btn-default">Cancel</button>`)
 			.click(evt => {
 				evt.stopPropagation();
 				doClose(false);
@@ -36054,7 +42579,7 @@ class InputUiUtil {
 	}
 
 	static _$getBtnSkip ({comp = null, opts, doClose}) {
-		return !opts.isSkippable ? null : $(`<button class="btn btn-default ml-3">Skip</button>`)
+		return !opts.isSkippable ? null : $(`<button class="ve-btn ve-btn-default ml-3">Skip</button>`)
 			.click(evt => {
 				evt.stopPropagation();
 				doClose(VeCt.SYM_UI_SKIP);
@@ -36087,7 +42612,7 @@ class InputUiUtil {
 		$getBtn ({doClose, fnRemember, isGlobal, storageKey}) {
 			if (this._isRemember && !storageKey && !fnRemember) throw new Error(`No "storageKey" or "fnRemember" provided for button with saveable value!`);
 
-			return $(`<button class="btn ${this._isPrimary ? "btn-primary" : "btn-default"} ${this._isSmall ? "btn-sm" : ""} ve-flex-v-center mr-3">
+			return $(`<button class="ve-btn ${this._isPrimary ? "ve-btn-primary" : "ve-btn-default"} ${this._isSmall ? "ve-btn-sm" : ""} ve-flex-v-center mr-3">
 				<span class="${this._clazzIcon} mr-2"></span><span>${this._text}</span>
 			</button>`)
 				.on("click", evt => {
@@ -36133,7 +42658,7 @@ class InputUiUtil {
 
 		const $btns = buttons.map(btnInfo => btnInfo.$getBtn({doClose, fnRemember, isGlobal, storageKey}));
 
-		const $btnSkip = !isSkippable ? null : $(`<button class="btn btn-default btn-sm ml-3"><span class="glyphicon glyphicon-forward"></span><span>${textSkip || "Skip"}</span></button>`)
+		const $btnSkip = !isSkippable ? null : $(`<button class="ve-btn ve-btn-default ve-btn-sm ml-3"><span class="glyphicon glyphicon-forward"></span><span>${textSkip || "Skip"}</span></button>`)
 			.click(evt => {
 				evt.stopPropagation();
 				doClose(VeCt.SYM_UI_SKIP);
@@ -36270,7 +42795,7 @@ class InputUiUtil {
 			if (prev != null) defaultVal = prev;
 		}
 
-		const $iptNumber = $(`<input class="form-control mb-2 text-right" ${opts.min ? `min="${opts.min}"` : ""} ${opts.max ? `max="${opts.max}"` : ""}>`)
+		const $iptNumber = $(`<input class="form-control mb-2 ve-text-right" ${opts.min ? `min="${opts.min}"` : ""} ${opts.max ? `max="${opts.max}"` : ""}>`)
 			.keydown(evt => {
 				if (evt.key === "Escape") { $iptNumber.blur(); return; }
 
@@ -36507,7 +43032,7 @@ class InputUiUtil {
 		});
 
 		$$`<div class="ve-flex ve-flex-wrap ve-flex-h-center mb-2">${opts.values.map((v, i) => {
-			const $btn = $$`<div class="m-2 btn ${v.buttonClass || "btn-default"} ui__btn-xxl-square ve-flex-col ve-flex-h-center">
+			const $btn = $$`<div class="m-2 ve-btn ${v.buttonClass || "ve-btn-default"} ui__btn-xxl-square ve-flex-col ve-flex-h-center">
 					${v.iconClass ? `<div class="ui-icn__wrp-icon ${v.iconClass} mb-1"></div>` : ""}
 					${v.iconContent ? v.iconContent : ""}
 					<div class="whitespace-normal w-100">${v.name}</div>
@@ -36518,12 +43043,12 @@ class InputUiUtil {
 				})
 				.toggleClass(v.buttonClassActive || "active", opts.default === i);
 			if (v.buttonClassActive && opts.default === i) {
-				$btn.removeClass("btn-default").addClass(v.buttonClassActive);
+				$btn.removeClass("ve-btn-default").addClass(v.buttonClassActive);
 			}
 
 			onclicks.push(() => {
 				$btn.toggleClass(v.buttonClassActive || "active", lastIx === i);
-				if (v.buttonClassActive) $btn.toggleClass("btn-default", lastIx !== i);
+				if (v.buttonClassActive) $btn.toggleClass("ve-btn-default", lastIx !== i);
 			});
 			return $btn;
 		})}</div>`.appendTo($modalInner);
@@ -36799,7 +43324,7 @@ class InputUiUtil {
 				const x = CONTROLS_RADIUS * Math.cos(theta);
 				const y = CONTROLS_RADIUS * Math.sin(theta);
 				$btns.push(
-					$(`<button class="btn btn-default btn-xxs absolute">${steps[i]}</button>`)
+					$(`<button class="ve-btn ve-btn-default ve-btn-xxs absolute">${steps[i]}</button>`)
 						.css({
 							top: y + CONTROLS_RADIUS - (BTN_STEP_SIZE / 2),
 							left: x + CONTROLS_RADIUS - (BTN_STEP_SIZE / 2),
@@ -37260,7 +43785,7 @@ class SourceUiUtil {
 			.keydown(evt => { if (evt.key === "Escape") $iptConverters.blur(); });
 		if (options.source) $iptConverters.val((options.source.convertedBy || []).join(", "));
 
-		const $btnOk = $(`<button class="btn btn-primary">OK</button>`)
+		const $btnOk = $(`<button class="ve-btn ve-btn-primary">OK</button>`)
 			.click(async () => {
 				let incomplete = false;
 				[$iptName, $iptAbv, $iptJson].forEach($ipt => {
@@ -37299,9 +43824,9 @@ class SourceUiUtil {
 
 		const $btnCancel = options.isRequired && !isEditMode
 			? null
-			: $(`<button class="btn btn-default ml-2">Cancel</button>`).click(() => options.cbCancel());
+			: $(`<button class="ve-btn ve-btn-default ml-2">Cancel</button>`).click(() => options.cbCancel());
 
-		const $btnUseExisting = $(`<button class="btn btn-default">Use an Existing Source</button>`)
+		const $btnUseExisting = $(`<button class="ve-btn ve-btn-default">Use an Existing Source</button>`)
 			.click(() => {
 				$stageInitial.hideVe();
 				$stageExisting.showVe();
@@ -37356,7 +43881,7 @@ class SourceUiUtil {
 		</select>`.change(() => $selExisting.removeClass("form-control--error"));
 		$selExisting[0].selectedIndex = 0;
 
-		const $btnConfirmExisting = $(`<button class="btn btn-default btn-sm">Confirm</button>`)
+		const $btnConfirmExisting = $(`<button class="ve-btn ve-btn-default ve-btn-sm">Confirm</button>`)
 			.click(async () => {
 				if ($selExisting[0].selectedIndex === 0) {
 					$selExisting.addClass("form-control--error");
@@ -37373,7 +43898,7 @@ class SourceUiUtil {
 				$stageInitial.showVe();
 			});
 
-		const $btnBackExisting = $(`<button class="btn btn-default btn-sm mr-2">Back</button>`)
+		const $btnBackExisting = $(`<button class="ve-btn ve-btn-default ve-btn-sm mr-2">Back</button>`)
 			.click(() => {
 				$selExisting[0].selectedIndex = 0;
 				$stageExisting.hideVe();
@@ -37479,7 +44004,7 @@ function MixinBaseComponent (Cls) {
 		 * @param opts.prop The state property.
 		 * @param [opts.namespace] The render namespace.
 		 */
-		_getRenderedCollection (opts) {
+		_getRenderedCollection (opts = null) {
 			opts = opts || {};
 			const renderedLookupProp = opts.namespace ? `${opts.namespace}.${opts.prop}` : opts.prop;
 			return (this.__rendered[renderedLookupProp] = this.__rendered[renderedLookupProp] || {});
@@ -37868,8 +44393,12 @@ class _RenderableCollectionGenericRowsSyncAsyncUtils {
 	/* -------------------------------------------- */
 
 	$getBtnDelete ({entity, title = "Delete"}) {
-		return $(`<button class="btn btn-xxs btn-danger" title="${title.qq()}"><span class="glyphicon glyphicon-trash"></span></button>`)
-			.click(() => this.doDelete({entity}));
+		return $(this.getBtnDelete(...arguments));
+	}
+
+	getBtnDelete ({entity, title = "Delete"}) {
+		return ee`<button class="ve-btn ve-btn-xxs ve-btn-danger" title="${title.qq()}"><span class="glyphicon glyphicon-trash"></span></button>`
+			.onn("click", () => this.doDelete({entity}));
 	}
 
 	doDelete ({entity}) {
@@ -37902,6 +44431,7 @@ class _RenderableCollectionGenericRowsSyncAsyncUtils {
 	}
 }
 
+/** @abstract */
 class RenderableCollectionGenericRows extends RenderableCollectionBase {
 	/**
 	 * @param comp
@@ -37948,10 +44478,15 @@ class RenderableCollectionGenericRows extends RenderableCollectionBase {
 	}
 
 	_$getWrpRow () {
-		return $(`<div class="ve-flex-v-center w-100"></div>`);
+		return $(this._getWrpRow());
+	}
+
+	_getWrpRow () {
+		return ee`<div class="ve-flex-v-center w-100"></div>`;
 	}
 
 	/**
+	 * @abstract
 	 * @return {?object}
 	 */
 	_populateRow ({comp, $wrpRow, entity}) {
@@ -38150,7 +44685,7 @@ class ComponentUiUtil {
 			$ipt.val(val);
 		};
 
-		const $ipt = (opts.$ele || $(opts.html || `<input class="form-control input-xs form-control--minimal text-right">`)).disableSpellcheck()
+		const $ipt = (opts.$ele || $(opts.html || `<input class="form-control input-xs form-control--minimal ve-text-right">`)).disableSpellcheck()
 			.keydown(evt => { if (evt.key === "Escape") $ipt.blur(); })
 			.change(() => {
 				const raw = $ipt.val().trim();
@@ -38293,10 +44828,10 @@ class ComponentUiUtil {
 					$ipt.focus();
 				};
 
-				const $btnUp = $(`<button class="btn btn-default ui-ideco__btn-ticker p-0 bold no-select">+</button>`)
+				const $btnUp = $(`<button class="ve-btn ve-btn-default ui-ideco__btn-ticker p-0 bold no-select">+</button>`)
 					.click(() => handleClick(1));
 
-				const $btnDown = $(`<button class="btn btn-default ui-ideco__btn-ticker p-0 bold no-select">\u2012</button>`)
+				const $btnDown = $(`<button class="ve-btn ve-btn-default ui-ideco__btn-ticker p-0 bold no-select">\u2212</button>`)
 					.click(() => handleClick(-1));
 
 				return $$`<div class="ui-ideco__wrp ui-ideco__wrp--${side} ve-flex-vh-center ve-flex-col">
@@ -38379,7 +44914,7 @@ class ComponentUiUtil {
 		const btn = (ele ? e_({ele}) : e_({
 			ele: ele,
 			tag: "button",
-			clazz: "btn btn-xs btn-default",
+			clazz: "ve-btn ve-btn-xs ve-btn-default",
 			text: opts.text || "Toggle",
 		}))
 			.onClick(() => component[stateProp][prop] = !component[stateProp][prop])
@@ -39233,7 +45768,7 @@ class ComponentUiUtil {
 			Object.entries(this._state).forEach(([k, v]) => {
 				if (v === false) return;
 
-				const $btnRemove = $(`<button class="btn btn-danger ui-pick__btn-remove ve-text-center">×</button>`)
+				const $btnRemove = $(`<button class="ve-btn ve-btn-danger ui-pick__btn-remove ve-text-center">×</button>`)
 					.click(() => this._state[k] = false)
 					.prop("disabled", this._meta.isDisabled);
 
@@ -39336,7 +45871,7 @@ class ComponentUiUtil {
 
 		let menu = getMenu();
 
-		const $btnAdd = $(`<button class="btn btn-xxs btn-default ui-pick__btn-add ve-flex-vh-center">+</button>`)
+		const $btnAdd = $(`<button class="ve-btn ve-btn-xxs ve-btn-default ui-pick__btn-add ve-flex-vh-center">+</button>`)
 			.click(evt => ContextUtil.pOpenMenu(evt, menu));
 
 		const {
@@ -39391,7 +45926,7 @@ class ComponentUiUtil {
 	static $getPickString (comp, prop, opts) {
 		opts = opts || {};
 
-		const $btnAdd = $(`<button class="btn btn-xxs btn-default ui-pick__btn-add ve-flex-vh-center">+</button>`)
+		const $btnAdd = $(`<button class="ve-btn ve-btn-xxs ve-btn-default ui-pick__btn-add ve-flex-vh-center">+</button>`)
 			.click(async () => {
 				const input = await InputUiUtil.pGetUserString();
 				if (input == null || input === VeCt.SYM_UI_SKIP) return;
@@ -39485,7 +46020,7 @@ class ComponentUiUtil {
 				}
 			});
 
-		const $btnAdd = $(`<button class="btn btn-xs btn-default ve-self-flex-stretch"><span class="glyphicon glyphicon-plus"></span></button>`)
+		const $btnAdd = $(`<button class="ve-btn ve-btn-xs ve-btn-default ve-self-flex-stretch"><span class="glyphicon glyphicon-plus"></span></button>`)
 			.on("click", () => {
 				addInputValue();
 			});

@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.35.185.11";
+const SCRIPT_VERSION = "1.35.186.11";
 const SCRIPT_REPO = "https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/";
 
 const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
@@ -33,7 +33,7 @@ const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
 - view descriptions before you use a spell or a trait
 - filter prepared spells/useable traits etc.
 - upcast or use spells as ritual
--- v.185.11 changes:
+-- v.186.11 changes:
 ⦁ warn about Jumpgate on startup
 ⦁ "import source" selector rework
 ⦁ community module imports fix
@@ -71,7 +71,7 @@ const analyticsBlocking = `
 
 function getHeader (name, info) {
 	return `// ==UserScript==
-// @name         betteR20-${name}-dev
+// @name         betteR20-beta-${name}
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
