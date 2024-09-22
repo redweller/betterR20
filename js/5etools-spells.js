@@ -124,7 +124,7 @@ function d20plusSpells () {
 				"Duration": Parser.spDurationToFull(data.duration).replace(/Concentration,\s*/gi, ""), // prevent double concentration text
 				"Material": "",
 				"Components": d20plus.spells._parseComponents(data.components),
-				"Casting Time": Parser.spTimeListToFull(data.time),
+				"Casting Time": Parser.spTimeListToFull(data.time, data.meta),
 			},
 		);
 
@@ -152,7 +152,7 @@ function d20plusSpells () {
 		let gmnotes = "";
 		notecontents += `<p><h3>${data.name}</h3>
 <em>${Parser.spLevelSchoolMetaToFull(data.level, data.school, data.meta)}${builderOptions.isSpellPoints && data.level ? ` (${d20plus.spells.spLevelToSpellPoints(data.level)} spell points)` : ""}</em></p><p>
-<strong>Casting Time:</strong> ${Parser.spTimeListToFull(data.time)}<br>
+<strong>Casting Time:</strong> ${Parser.spTimeListToFull(data.time, data.meta)}<br>
 <strong>Range:</strong> ${Parser.spRangeToFull(data.range)}<br>
 <strong>Components:</strong> ${Parser.spComponentsToFull(data.components, data.level)}<br>
 <strong>Duration:</strong> ${Parser.spDurationToFull(data.duration)}<br>

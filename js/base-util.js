@@ -117,7 +117,7 @@ function baseUtil () {
 		];
 		const welcomeTemplate = (b20v, vttv, faq) => `
 			<div class="${classname}">
-				<img src="" class="userscript-b20img" style="content: unset; width:30px;position: relative;top: 10px;float: right;">
+				<img src="" class="userscript-b20img" style="content: unset; width:30px;position: relative;top: 10px;float: right;margin-left:-20px">
 				<h1 style="display: inline-block;line-height: 25px;margin-top: 5px; font-size: 22px;">
 					betteR20 
 					<span style=" font-size: 13px ; font-weight: normal">by 5etools</span>

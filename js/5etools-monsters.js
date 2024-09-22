@@ -177,7 +177,7 @@ function d20plusMonsters () {
 	 * (lair actions and regional effects) can get their data more efficiently
 	 */
 	d20plus.monsters.pLoadLegGroups = async function () {
-		await DataUtil.monster.pPreloadMeta();
+		await DataUtil.monster.pPreloadLegendaryGroups();
 	}
 
 	// Import Monsters button was clicked
@@ -1346,7 +1346,7 @@ function d20plusMonsters () {
 
 					// Load lair actions and regional effects
 					if (data.legendaryGroup) {
-						const legGroup = DataUtil.monster.getMetaGroup(data);
+						const legGroup = DataUtil.monster.getLegendaryGroup(data);
 						if (legGroup) {
 							if (legGroup.lairActions) {
 								renderFluff += renderer.render({entries: legGroup.lairActions, name: "Lair Actions"}, -1);

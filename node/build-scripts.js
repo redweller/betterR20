@@ -1,7 +1,7 @@
 const fs = require("fs");
 
 const SCRIPT_VERSION = "1.35.185.11";
-const SCRIPT_REPO = "https://raw.githubusercontent.com/redweller/betterR20/beta/dist/";
+const SCRIPT_REPO = "https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/";
 
 const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
 -- Beta features overview:
@@ -16,17 +16,17 @@ const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
 ⦁ add show/hide layers toggles to b20 layers
 <strong>Miscellaneous</strong>
 ⦁ change players' avatars size
-⦁ fixed context menu appearing on left click
+⦁ fixed context menu appearing on LMB
 ⦁ fixed the art repo
 <strong>Edit Token Images dialog</strong>
-⦁ manage token images at any moment via context menu
-⦁ a better Random Side randomizer (for seemingly more random results)
-⦁ edit token images directly from roll20 Token Editor
+⦁ context menu token image editor
+⦁ a better Random Side randomizer
+⦁ edit images directly from r20 Token Editor
 <strong>Better token Actions & Automation</strong>
-⦁ new character menu in left top corner of the screen
+⦁ new character menu in the top left:
 - new design, the menu works even when no character is selected
 - browse stats and actions for last selected token
-⦁ use available actions with custom roll templates
+⦁ use all actions with new roll templates
 - the damage/healing values are clickable and are applied on click
 - spell slots, items and resources are spent automatically 
 - auto roll saves, and show save/attack success or failure
@@ -40,10 +40,16 @@ const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
 ⦁ fix crash on startup when 5e.tools is inaccessible
 ⦁ new image URLs fixer
 ⦁ new UVTT/DA walls data importer
-⦁ new multitoken parameters format
-- faster images loading due to less server requests
-- use "tools/URLs fixer" to convert your old multitokens
+⦁ new multitoken parameters format:
+- faster loading due to less server requests
+- use "tools/URLs fixer" to fix old multitokens
+⦁ 5etools v2.1.0 update:
+- update data and libs
+- separate userscript for 2014 rules only
 `;
+
+const AUTHORS_CORE = `TheGiddyLimit/Redweller`;
+const AUTHORS_5ETOOLS = `5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne/Cucucc/Cee/oldewyrm/darthbeep/Mertang/Redweller`;
 
 const matchString = `
 // @match        https://app.roll20.net/editor
@@ -63,37 +69,23 @@ const analyticsBlocking = `
 // @webRequest   [{"selector": { "include": "*://analytics.tiktok.com/*" },  "action": "cancel"}]
 `;
 
-const HEADER_CORE = `// ==UserScript==
-// @name         betteR20-beta-core
+function getHeader (name, info) {
+	return `// ==UserScript==
+// @name         betteR20-${name}-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      ${SCRIPT_VERSION}
-// @updateURL    ${SCRIPT_REPO}betteR20-core.meta.js
-// @downloadURL  ${SCRIPT_REPO}betteR20-core.user.js
+// @updateURL    ${SCRIPT_REPO}betteR20-${name}.meta.js
+// @downloadURL  ${SCRIPT_REPO}betteR20-${name}.user.js
 // @description  Enhance your Roll20 experience
-// @author       TheGiddyLimit
+// @author       ${info.authors}
 ${matchString}
 // @grant        unsafeWindow
 // @run-at       document-start
 ${analyticsBlocking}
 // ==/UserScript==
 `;
-
-const HEADER_5ETOOLS = `// ==UserScript==
-// @name         betteR20-beta-5etools
-// @namespace    https://5e.tools/
-// @license      MIT (https://opensource.org/licenses/MIT)
-// @version      ${SCRIPT_VERSION}
-// @updateURL    ${SCRIPT_REPO}betteR20-5etools.meta.js
-// @downloadURL  ${SCRIPT_REPO}betteR20-5etools.user.js
-// @description  Enhance your Roll20 experience
-// @author       5egmegaanon/astranauta/MrLabRat/TheGiddyLimit/DBAWiseMan/BDeveau/Remuz/Callador Julaan/Erogroth/Stormy/FlayedOne/Cucucc/Cee/oldewyrm/darthbeep/Mertang/Redweller
-${matchString}
-// @grant        unsafeWindow
-// @run-at       document-start
-${analyticsBlocking}
-// ==/UserScript==
-`;
+}
 
 const JS_DIR = "./js/";
 const LIB_DIR = "./lib/";
@@ -103,7 +95,7 @@ function joinParts (...parts) {
 	return parts.join("\n\n");
 }
 
-function getDataDirPaths () {
+function getDataDirPaths (dir) {
 	const walkSync = (dir, filelist = []) => {
 		fs.readdirSync(dir).forEach(file => {
 			filelist = fs.statSync(`${dir}/${file}`).isDirectory()
@@ -112,7 +104,7 @@ function getDataDirPaths () {
 		});
 		return filelist;
 	}
-	return walkSync("data").filter(it => it.toLowerCase().endsWith("json"));
+	return walkSync(dir).filter(it => it.toLowerCase().endsWith("json"));
 }
 
 function wrapLibData (filePath, data) {
@@ -154,6 +146,7 @@ const LIB_SCRIPTS = {
 
 		"parser.js",
 		"utils.js",
+		"utils-config.js",
 		"utils-ui.js",
 		"filter.js",
 		"utils-brew.js",
@@ -178,144 +171,161 @@ const LIB_SCRIPTS_API = {
 	],
 };
 
-const LIB_JSON = {
-	core: [],
-	"5etools": getDataDirPaths(),
+const SCRIPTS = {
+	core: [
+		"base-util",
+		"base-jsload",
+		"base-qpi",
+		"base-jukebox",
+		"base-math",
+		"base-config",
+		"base-tool",
+		"base-tool-module",
+		"base-tool-unlock",
+		"base-tool-animator",
+		"base-tool-dlimport",
+		"base-tool-urlfix",
+		"base-art",
+		"base-art-browse",
+		"overwrites/base",
+		"overwrites/canvas-handler",
+		"templates/template-roll20-token-editor",
+		"templates/template-roll20-page-settings",
+		"templates/template-roll20-actions-menu",
+		"templates/template-roll20-editors-misc",
+		"templates/template-base-misc",
+		"templates/template-page-weather",
+		"base-engine",
+		"base-menu",
+		"base-weather",
+		"base-journal",
+		"base-css",
+		"base-ui",
+		"base-mod",
+		"base-macro",
+		"base-chat-languages",
+		"base-chat-emoji",
+		"base-chat",
+		"base-ba-character",
+		"base-ba-rolltemplates",
+		"base-ba",
+		"base-remote-libre",
+		"base-jukebox-widget",
+
+		"core-bootstrap",
+
+		"base",
+	],
+	"5etools": [
+		"base-util",
+		"base-jsload",
+		"base-qpi",
+		"base-jukebox",
+		"base-math",
+		"base-config",
+		"base-tool",
+		"base-tool-module",
+		"base-tool-unlock",
+		"base-tool-animator",
+		"base-tool-table",
+		"base-tool-dlimport",
+		"base-tool-urlfix",
+		"base-art",
+		"base-art-browse",
+		"overwrites/base",
+		"overwrites/canvas-handler",
+		"templates/template-roll20-token-editor",
+		"templates/template-roll20-page-settings",
+		"templates/template-roll20-actions-menu",
+		"templates/template-roll20-editors-misc",
+		"templates/template-base-misc",
+		"templates/template-page-weather",
+		"base-engine",
+		"base-menu",
+		"base-weather",
+		"base-journal",
+		"base-css",
+		"base-ui",
+		"base-mod",
+		"base-macro",
+		"base-chat-languages",
+		"base-chat-emoji",
+		"base-chat",
+		"base-ba-character",
+		"base-ba-rolltemplates",
+		"base-ba",
+		"base-remote-libre",
+		"base-jukebox-widget",
+
+		"5etools-bootstrap",
+		"5etools-config",
+		"5etools-main",
+		"5etools-importer",
+		"5etools-monsters",
+		"5etools-spells",
+		"5etools-backgrounds",
+		"5etools-classes",
+		"5etools-items",
+		"5etools-feats",
+		"5etools-objects",
+		"5etools-tool",
+		"5etools-races",
+		"5etools-psionics",
+		"5etools-optional-features",
+		"5etools-adventures",
+		"5etools-deities",
+		"5etools-vehicles",
+		"5etools-template",
+		"5etools-css",
+
+		"base",
+	],
 };
 
-const SCRIPTS = {
+const BUILDS = {
 	core: {
-		header: HEADER_CORE,
-		scripts: [
-			"base-util",
-			"base-jsload",
-			"base-qpi",
-			"base-jukebox",
-			"base-math",
-			"base-config",
-			"base-tool",
-			"base-tool-module",
-			"base-tool-unlock",
-			"base-tool-animator",
-			"base-tool-dlimport",
-			"base-tool-urlfix",
-			"base-art",
-			"base-art-browse",
-			"overwrites/base",
-			"overwrites/canvas-handler",
-			"templates/template-roll20-token-editor",
-			"templates/template-roll20-page-settings",
-			"templates/template-roll20-actions-menu",
-			"templates/template-roll20-editors-misc",
-			"templates/template-base-misc",
-			"templates/template-page-weather",
-			"base-engine",
-			"base-menu",
-			"base-weather",
-			"base-journal",
-			"base-css",
-			"base-ui",
-			"base-mod",
-			"base-macro",
-			"base-chat-languages",
-			"base-chat-emoji",
-			"base-chat",
-			"base-ba-character",
-			"base-ba-rolltemplates",
-			"base-ba",
-			"base-remote-libre",
-			"base-jukebox-widget",
-
-			"core-bootstrap",
-
-			"base",
-		],
+		authors: AUTHORS_CORE,
+		baseURL: "https://5e.tools/",
+		libs: LIB_SCRIPTS.core,
+		libsAPI: LIB_SCRIPTS_API.core,
+		scripts: SCRIPTS.core,
+		dataJSON: [],
 	},
 	"5etools": {
-		header: HEADER_5ETOOLS,
-		scripts: [
-			"base-util",
-			"base-jsload",
-			"base-qpi",
-			"base-jukebox",
-			"base-math",
-			"base-config",
-			"base-tool",
-			"base-tool-module",
-			"base-tool-unlock",
-			"base-tool-animator",
-			"base-tool-table",
-			"base-tool-dlimport",
-			"base-tool-urlfix",
-			"base-art",
-			"base-art-browse",
-			"overwrites/base",
-			"overwrites/canvas-handler",
-			"templates/template-roll20-token-editor",
-			"templates/template-roll20-page-settings",
-			"templates/template-roll20-actions-menu",
-			"templates/template-roll20-editors-misc",
-			"templates/template-base-misc",
-			"templates/template-page-weather",
-			"base-engine",
-			"base-menu",
-			"base-weather",
-			"base-journal",
-			"base-css",
-			"base-ui",
-			"base-mod",
-			"base-macro",
-			"base-chat-languages",
-			"base-chat-emoji",
-			"base-chat",
-			"base-ba-character",
-			"base-ba-rolltemplates",
-			"base-ba",
-			"base-remote-libre",
-			"base-jukebox-widget",
-
-			"5etools-bootstrap",
-			"5etools-config",
-			"5etools-main",
-			"5etools-importer",
-			"5etools-monsters",
-			"5etools-spells",
-			"5etools-backgrounds",
-			"5etools-classes",
-			"5etools-items",
-			"5etools-feats",
-			"5etools-objects",
-			"5etools-tool",
-			"5etools-races",
-			"5etools-psionics",
-			"5etools-optional-features",
-			"5etools-adventures",
-			"5etools-deities",
-			"5etools-vehicles",
-			"5etools-template",
-			"5etools-css",
-
-			"base",
-		],
+		authors: AUTHORS_5ETOOLS,
+		baseURL: "https://5e.tools/",
+		libs: LIB_SCRIPTS["5etools"],
+		libsAPI: LIB_SCRIPTS_API["5etools"],
+		scripts: SCRIPTS["5etools"],
+		dataJSON: getDataDirPaths("data"),
 	},
-};
+	"5et2014": {
+		authors: AUTHORS_5ETOOLS,
+		baseURL: "https://2014.5e.tools/",
+		libs: LIB_SCRIPTS["5etools"],
+		libsAPI: LIB_SCRIPTS_API["5etools"],
+		scripts: SCRIPTS["5etools"],
+		dataJSON: getDataDirPaths("data2014"),
+	},
+}
 
-Object.entries(SCRIPTS).forEach(([k, v]) => {
-	const libScripts = LIB_SCRIPTS[k];
-	const libScriptsApi = LIB_SCRIPTS_API[k];
-	const libJson = LIB_JSON[k];
+Object.entries(BUILDS).forEach(([name, data]) => {
+	const libScripts = data.libs;
+	const libScriptsApi = data.libsAPI;
+	const libJson = data.dataJSON;
+	const header = getHeader(name, data);
 
-	const filename = `${BUILD_DIR}/betteR20-${k}.user.js`;
-	const metaFilename = `${BUILD_DIR}/betteR20-${k}.meta.js`;
+	const filename = `${BUILD_DIR}/betteR20-${name}.user.js`;
+	const metaFilename = `${BUILD_DIR}/betteR20-${name}.meta.js`;
 	const fullScript = joinParts(
-		v.header,
+		header,
 		fs.readFileSync(`${JS_DIR}header.js`, "utf-8").toString()
-			.replace("%B20_NAME%", k)
+			.replace("%B20_NAME%", name)
 			.replace("%B20_VERSION%", SCRIPT_VERSION)
-			.replace("%B20_BASE_URL%", "https://5e.tools/")
+			.replace("%B20_BASE_URL%", data.baseURL)
 			.replace("%B20_REPO_URL%", SCRIPT_REPO),
 		...libJson.map(filePath => wrapLibData(filePath, fs.readFileSync(filePath, "utf-8"))),
-		...v.scripts.map(filename => filename === "base-util"
+		...data.scripts.map(filename => filename === "base-util"
 			? fs.readFileSync(`${JS_DIR}${filename}.js`, "utf-8").toString().replace("}, 6000);", `
 			d20plus.ut.sendHackerChat(\`
 				<div class="userscript-b20intro">
@@ -336,7 +346,7 @@ Object.entries(SCRIPTS).forEach(([k, v]) => {
 		...libScriptsApi.map(filename => wrapLibScript(fs.readFileSync(`${LIB_DIR}${filename}`, "utf-8").toString(), true)),
 	);
 	fs.writeFileSync(filename, fullScript);
-	fs.writeFileSync(metaFilename, v.header);
+	fs.writeFileSync(metaFilename, header);
 });
 
 fs.writeFileSync(`${BUILD_DIR}/betteR20-version`, `${SCRIPT_VERSION}`);
