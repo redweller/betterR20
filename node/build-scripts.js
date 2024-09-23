@@ -1,38 +1,18 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.35.186.11";
+const SCRIPT_VERSION = "1.35.186.12";
 const SCRIPT_REPO = "https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/";
 
 const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
 -- Beta features overview:
-<strong>Mouseover hints on Conditions</strong>
-⦁ added hints to any chat message on standard D&D conditions
-⦁ can be disabled in b20 Config in Chat section
-<strong>Filter Imports by List</strong>
-⦁ when importing, you can filter by a list of items
-⦁ also filter by source, compatible with copying csvs from 5etools
-<strong>Layers</strong>
-⦁ add new Extra Layers toolbar as part of r20 newUI
-⦁ add show/hide layers toggles to b20 layers
-<strong>Miscellaneous</strong>
-⦁ change players' avatars size
-⦁ fixed context menu appearing on LMB
-⦁ fixed the art repo
-<strong>Edit Token Images dialog</strong>
-⦁ context menu token image editor
-⦁ a better Random Side randomizer
-⦁ edit images directly from r20 Token Editor
-<strong>Better token Actions & Automation</strong>
-⦁ new character menu in the top left:
-- new design, the menu works even when no character is selected
-- browse stats and actions for last selected token
-⦁ use all actions with new roll templates
-- the damage/healing values are clickable and are applied on click
-- spell slots, items and resources are spent automatically 
-- auto roll saves, and show save/attack success or failure
-- view descriptions before you use a spell or a trait
-- filter prepared spells/useable traits etc.
-- upcast or use spells as ritual
+⦁ Mouseover hints on Conditions
+⦁ Filter Imports by List
+⦁ Extra Layers functionality
+⦁ Token Images Editor
+⦁ Better token Actions & Automation
+⦁ Some fixes related to roll20 newUI
+⦁ context menu small fix
+⦁ ArtRepo is restored from backup
 -- v.186.11 changes:
 ⦁ warn about Jumpgate on startup
 ⦁ "import source" selector rework
@@ -46,6 +26,9 @@ const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
 ⦁ 5etools v2.1.0 update:
 - update data and libs
 - separate userscript for 2014 rules only
+-- v.186.12 changes:
+⦁ fix 5et2014 queries
+⦁ better source selector behavior
 `;
 
 const AUTHORS_CORE = `TheGiddyLimit/Redweller`;
@@ -324,7 +307,7 @@ Object.entries(BUILDS).forEach(([name, data]) => {
 			.replace("%B20_VERSION%", SCRIPT_VERSION)
 			.replace("%B20_BASE_URL%", data.baseURL)
 			.replace("%B20_REPO_URL%", SCRIPT_REPO),
-		...libJson.map(filePath => wrapLibData(filePath, fs.readFileSync(filePath, "utf-8"))),
+		...libJson.map(filePath => wrapLibData(filePath.replace("data2014", "data"), fs.readFileSync(filePath, "utf-8"))),
 		...data.scripts.map(filename => filename === "base-util"
 			? fs.readFileSync(`${JS_DIR}${filename}.js`, "utf-8").toString().replace("}, 6000);", `
 			d20plus.ut.sendHackerChat(\`
