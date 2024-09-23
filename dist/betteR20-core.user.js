@@ -2,7 +2,7 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.186.11
+// @version      1.35.186.12
 // @updateURL    https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/betteR20-core.meta.js
 // @downloadURL  https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -30,7 +30,7 @@ ART_HANDOUT = "betteR20-art";
 CONFIG_HANDOUT = "betteR20-config";
 
 B20_NAME = `core`;
-B20_VERSION = `1.35.186.11`;
+B20_VERSION = `1.35.186.12`;
 B20_REPO_URL = `https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/`;
 
 // TODO automate to use mirror if main site is unavailable
@@ -267,7 +267,7 @@ function baseUtil () {
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- Beta features overview:</code><br><strong>Mouseover hints on Conditions</strong><br>⦁ added hints to any chat message on standard D&D conditions<br>⦁ can be disabled in b20 Config in Chat section<br><strong>Filter Imports by List</strong><br>⦁ when importing, you can filter by a list of items<br>⦁ also filter by source, compatible with copying csvs from 5etools<br><strong>Layers</strong><br>⦁ add new Extra Layers toolbar as part of r20 newUI<br>⦁ add show/hide layers toggles to b20 layers<br><strong>Miscellaneous</strong><br>⦁ change players' avatars size<br>⦁ fixed context menu appearing on LMB<br>⦁ fixed the art repo<br><strong>Edit Token Images dialog</strong><br>⦁ context menu token image editor<br>⦁ a better Random Side randomizer<br>⦁ edit images directly from r20 Token Editor<br><strong>Better token Actions & Automation</strong><br>⦁ new character menu in the top left:<br>- new design, the menu works even when no character is selected<br>- browse stats and actions for last selected token<br>⦁ use all actions with new roll templates<br>- the damage/healing values are clickable and are applied on click<br>- spell slots, items and resources are spent automatically <br>- auto roll saves, and show save/attack success or failure<br>- view descriptions before you use a spell or a trait<br>- filter prepared spells/useable traits etc.<br>- upcast or use spells as ritual<br><code>-- v.186.11 changes:</code><br>⦁ warn about Jumpgate on startup<br>⦁ "import source" selector rework<br>⦁ community module imports fix<br>⦁ fix crash on startup when 5e.tools is inaccessible<br>⦁ new image URLs fixer<br>⦁ new UVTT/DA walls data importer<br>⦁ new multitoken parameters format:<br>- faster loading due to less server requests<br>- use "tools/URLs fixer" to fix old multitokens<br>⦁ 5etools v2.1.0 update:<br>- update data and libs<br>- separate userscript for 2014 rules only<br></p>
+					<p>This version contains following changes<br><code>-- Beta features overview:</code><br>⦁ Mouseover hints on Conditions<br>⦁ Filter Imports by List<br>⦁ Extra Layers functionality<br>⦁ Token Images Editor<br>⦁ Better token Actions & Automation<br>⦁ Some fixes related to roll20 newUI<br>⦁ context menu small fix<br>⦁ ArtRepo is restored from backup<br><code>-- v.186.11 changes:</code><br>⦁ warn about Jumpgate on startup<br>⦁ "import source" selector rework<br>⦁ community module imports fix<br>⦁ fix crash on startup when 5e.tools is inaccessible<br>⦁ new image URLs fixer<br>⦁ new UVTT/DA walls data importer<br>⦁ new multitoken parameters format:<br>- faster loading due to less server requests<br>- use "tools/URLs fixer" to fix old multitokens<br>⦁ 5etools v2.1.0 update:<br>- update data and libs<br>- separate userscript for 2014 rules only<br><code>-- v.186.12 changes:</code><br>⦁ fix 5et2014 queries<br>⦁ better source selector behavior<br></p>
 				</div>
 			`);
 			}, 6000);
@@ -35955,7 +35955,7 @@ globalThis.DataUtil = {
 	_merging: {},
 	_merged: {},
 
-	async _pLoad ({url, id, isBustCache = false}) { console.log("_pLoad >", url)
+	async _pLoad ({url, id, isBustCache = false}) {
 		if (DataUtil._loading[id] && !isBustCache) {
 			await DataUtil._loading[id];
 			return DataUtil._loaded[id];
