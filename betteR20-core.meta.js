@@ -2,11 +2,11 @@
 // @name         betteR20-core-dev
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.8.58
+// @version      1.35.11.60
+// @updateURL    https://raw.githubusercontent.com/redweller/betterR20/run/betteR20-core.meta.js
+// @downloadURL  https://raw.githubusercontent.com/redweller/betterR20/run/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
-// @updateURL    https://github.com/redweller/betterR20/raw/run/betteR20-core.meta.js
-// @downloadURL  https://github.com/redweller/betterR20/raw/run/betteR20-core.user.js
-// @author       TheGiddyLimit
+// @author       TheGiddyLimit/Redweller
 
 // @match        https://app.roll20.net/editor
 // @match        https://app.roll20.net/editor#*
