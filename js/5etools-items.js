@@ -193,22 +193,22 @@ function d20plusItems () {
 		const cleanDmg2 = removeDiceTags(data.dmg2);
 
 		let armorclass = "";
-		if (type === "S") armorclass = `+${data.ac}`;
-		if (type === "LA") armorclass = `${data.ac} + Dex`;
-		if (type === "MA") armorclass = `${data.ac} + Dex (max 2)`;
-		if (type === "HA") armorclass = data.ac;
+		if (type === "S" || type === "S|XPHB") armorclass = `+${data.ac}`;
+		if (type === "LA" || type === "LA|XPHB") armorclass = `${data.ac} + Dex`;
+		if (type === "MA" || type === "MA|XPHB") armorclass = `${data.ac} + Dex (max 2)`;
+		if (type === "HA" || type === "HA|XPHB") armorclass = data.ac;
 		let properties = "";
 		if (data.property) {
 			let propertieslist = data.property;
 			for (let i = 0; i < propertieslist.length; i++) {
 				let a = d20plus.items.parseProperty(propertieslist[i]);
 				let b = propertieslist[i];
-				if (b === "V") {
+				if (b === "V" || b ==="V|XPHB") {
 					a = `${a} (${cleanDmg2})`;
 					roll20Data.data["Alternate Damage"] = cleanDmg2;
 					roll20Data.data["Alternate Damage Type"] = Parser.dmgTypeToFull(data.dmgType);
 				}
-				if (b === "T" || b === "A") a = `${a} (${data.range}ft.)`;
+				if (b === "T" || b === "A" || b === "T|XPHB" || b === "A|XPHB") a = `${a} (${data.range}ft.)`;
 				if (b === "RLD") a = `${a} (${data.reload} shots)`;
 				if (i > 0) a = `, ${a}`;
 				properties += a;
