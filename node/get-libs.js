@@ -1,6 +1,7 @@
 // SPECIFYING PATH TO 5eTOOLS:
 // Console: node get-libs.js <path_to_5etools_root>
-// OR create /node/path.js with module.exports = "<path_to_5etools_root>"
+// OR create /node/path.js with the following contents:
+// module.exports = {mirror5e: "<path_to_5etools_root>"}
 
 const process = require("process");
 const fs = require("fs");
@@ -9,7 +10,7 @@ const rollup = require("rollup").rollup;
 
 const pathFromFile = fs.existsSync("node/path.js") && require("./path.js");
 const pathFromArg = process.argv[2];
-const SRC_PATH = pathFromFile || pathFromArg;
+const SRC_PATH = pathFromFile?.mirror5e || pathFromArg;
 
 if (!SRC_PATH) {
 	// eslint-disable-next-line no-console
@@ -26,6 +27,7 @@ const _LIBS = new Set([
 	"utils.js",
 	"utils-ui.js",
 	"utils-brew.js",
+	"utils-config.js",
 	"utils-dataloader.js",
 ]);
 

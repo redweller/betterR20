@@ -39,43 +39,45 @@ function d20plusItems () {
 					const packs = itemList.filter(it => packNames.has(it.name.toLowerCase()));
 					packs.forEach(p => {
 						if (!p._r20SubItemData) {
-							const contents = p.entries.find(it => it.type === "list").items;
+							const getSubItem = uid => {
+								const hash = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_ITEMS](DataUtil.proxy.unpackUid("item", uid, "item"));
+								return itemList.find(it => UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_ITEMS](it) === hash);
+							}
 
-							const out = [];
-							contents.forEach(line => {
-								if (line.includes("@item")) {
-									const [pre, tag, item] = line.split(/({@item)/g);
-									const tagItem = `${tag}${item}`;
+							const out = p.packContents
+								.map(info => {
+									if (typeof info === "string") {
+										return {
+											_typeHtml: "item",
+											count: 1,
+											data: getSubItem(info),
+										}
+									}
 
-									let [n, src] = item.split("}")[0].trim().split("|");
-									if (!src) src = "dmg";
+									if (info.item) {
+										return {
+											_typeHtml: "item",
+											count: info.quantity || 1,
+											data: getSubItem(info.item),
+										}
+									}
 
-									n = n.toLowerCase();
-									src = src.toLowerCase();
-
-									const subItem = itemList.find(it => n === it.name.toLowerCase() && src === it.source.toLowerCase());
-
-									let count = 1;
-									pre.replace(/\d+/g, (m) => count = Number(m));
-
-									out.push({
-										_typeHtml: "item",
-										count,
-										data: subItem,
-									})
-								} else {
-									out.push({
-										_typeHtml: "misc",
-										data: {
-											name: line.toTitleCase(),
+									if (info.special) {
+										return {
+											_typeHtml: "misc",
 											data: {
-												Category: "Items",
-												"Item Type": "Adventuring Gear",
+												name: info.special,
+												data: {
+													Category: "Items",
+													"Item Type": "Adventuring Gear",
+												},
 											},
-										},
-									})
-								}
-							});
+										}
+									}
+
+									return null;
+								})
+								.filter(Boolean)
 
 							p._r20SubItemData = out;
 						}

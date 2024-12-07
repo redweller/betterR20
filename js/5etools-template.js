@@ -4,7 +4,7 @@ const d20plusTemplate = function () {
 	d20plus.template5e._populateDropdown = function (dropdownId, inputFieldId, baseUrl, srcUrlObject, defaultSel, brewProps) {
 		const defaultUrl = defaultSel ? d20plus.formSrcUrl(baseUrl, srcUrlObject[defaultSel]) : "";
 		const dropdown = $(dropdownId);
-		const inputField = $(inputFieldId);
+		const $inputField = $(inputFieldId);
 		$.each(Object.keys(srcUrlObject), function (i, src) {
 			dropdown.append($("<option>", {
 				"data-url": d20plus.formSrcUrl(baseUrl, srcUrlObject[src]),
@@ -37,12 +37,11 @@ const d20plusTemplate = function () {
 			}));
 		});
 
-		inputField
+		$inputField
 			.val(defaultUrl)
 			.on("mousedown", () => {
-				inputField.val("");
-				inputField.attr("original-title", "");
-			}).on("change", () => d20plus.template5e._onDataURLChange({
+				d20plus.template5e._onDataURLChanging($inputField);
+			}).on("change, blur", () => d20plus.template5e._onDataURLChange({
 				queryInput:	inputFieldId,
 				queryList:	dropdownId,
 			}));
@@ -91,9 +90,8 @@ const d20plusTemplate = function () {
 			$inputField
 				.val(defaultSel)
 				.on("mousedown", () => {
-					$inputField.val("");
-					$inputField.attr("original-title", "");
-				}).on("change", () => d20plus.template5e._onDataURLChange({
+					d20plus.template5e._onDataURLChanging($inputField);
+				}).on("change, blur", () => d20plus.template5e._onDataURLChange({
 					queryInput:	inputFieldId,
 					queryList:	dropdownId,
 				}));
@@ -127,15 +125,25 @@ const d20plusTemplate = function () {
 		});
 	}
 
+	d20plus.template5e._onDataURLChanging = ($input) => {
+		$input.val() && (d20plus.template5e._dataURLCache = {
+			url: $input.val(),
+			title: $input.attr("original-title"),
+		})
+		$input.val("");
+		$input.attr("original-title", "");
+	}
+
 	d20plus.template5e._onDataURLChange = (data) => {
 		const $inputField = $(data.queryInput);
 		const $urlsList = $(data.queryList);
 		const val = $inputField.val();
 		const url = $urlsList.find(`[value="${val}"]`).data("url");
-		url && $inputField
-			.val(url)
+		// if ($inputField.is(":focus")) return;
+		(url || !val) && $inputField
+			.val(url || d20plus.template5e._dataURLCache.url)
 			.addClass("showtip tipsy-s")
-			.attr("original-title", val);
+			.attr("original-title", (url && val) || d20plus.template5e._dataURLCache.title);
 		data.buttonCallback && data.buttonCallback(data.buttonArgument);
 	};
 

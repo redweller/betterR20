@@ -1,7 +1,7 @@
 function remoteLibre () {
 	d20plus.remoteLibre = {
 		getRemotePlaylists () {
-			return fetch("https://api.github.com/repos/DMsGuild201/Roll20_resources/contents/playlist")
+			return fetch(DATA_URL_PLAYLIST)
 				.then(response => response.json())
 				.then(data => {
 					if (!data.filter) return;

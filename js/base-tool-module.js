@@ -519,7 +519,7 @@ function baseToolModule () {
 				$win5etools.dialog("open");
 				const $btnLoad = $win5etools.find(`.load`).off("click");
 				// url for the repo
-				const urlbase = "https://raw.githubusercontent.com/DMsGuild201/Roll20_resources/master/Module/";
+				const urlbase = DATA_URL_COMMUNITY_MODULES;
 
 				DataUtil.loadJSON(`${urlbase}index.json`).then(data => {
 					const $lst = $win5etools.find(`.list`);

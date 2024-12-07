@@ -1,11 +1,12 @@
 const betteR205etools = function () {
 	// Page fully loaded and visible
 	d20plus.Init = async () => {
-		d20plus.scriptName = `betteR20-5etools v${d20plus.version}`;
+		d20plus.scriptName = `betteR20-${B20_NAME} v${d20plus.version}`;
 		try {
-			d20plus.ut.log(`Init (v${d20plus.version})`);// RB20 EXCLUDE START
+			d20plus.ut.log(`Init (v${d20plus.version})`);
+			d20plus.ut.log(`Userscript (v${d20plus.version_user})`);// RB20 EXCLUDE START
 			d20plus.ut.selectLocale();// RB20 EXCLUDE END
-			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-5etools v${d20plus.version}</h3>`;
+			d20plus.settingsHtmlHeader = `<hr><h3>betteR20-${B20_NAME} v${d20plus.version}</h3>`;
 
 			await d20plus.js.pAddScripts();
 			await d20plus.qpi.pInitMockApi();

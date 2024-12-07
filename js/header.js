@@ -1,14 +1,21 @@
 ART_HANDOUT = "betteR20-art";
 CONFIG_HANDOUT = "betteR20-config";
 
+B20_NAME = `%B20_NAME%`;
+B20_VERSION = `%B20_VERSION%`;
+B20_REPO_URL = `%B20_REPO_URL%`;
+
 // TODO automate to use mirror if main site is unavailable
-BASE_SITE_URL = "https://5e.tools/";
-// BASE_SITE_URL = "https://5etools-mirror-2.github.io/";
-BASE_IMG_REPO_URL = "https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/";
+BASE_SITE_URL = `%B20_BASE_URL%`; // "https://5e.tools/";
 
 SITE_JS_URL = `${BASE_SITE_URL}js/`;
 DATA_URL = `${BASE_SITE_URL}data/`;
+
 DATA_URL_MODULES = `https://raw.githubusercontent.com/5etools-mirror-1/roll20-module/master`;
+DATA_URL_IMG_REPO = `https://raw.githubusercontent.com/5etools-mirror-2/5etools-img/main/`; // obsolete as of 1.35.11
+DATA_URL_ART_REPO = `https://raw.githubusercontent.com/5etools-mirror-1/pab-index/main/`;
+DATA_URL_PLAYLIST = `https://api.github.com/repos/ttrpg-resources/betterR20-playlist/contents`;
+DATA_URL_COMMUNITY_MODULES = `https://raw.githubusercontent.com/ttrpg-resources/betterR20-module/main/`;
 
 SCRIPT_EXTENSIONS = [];
 
