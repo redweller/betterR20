@@ -300,18 +300,13 @@
 			],
 			"feats": [
 				{
-					"magic initiate|xphb": true
+					"magic initiate; cleric|xphb": true
 				}
 			],
 			"skillProficiencies": [
 				{
 					"insight": true,
 					"religion": true
-				}
-			],
-			"languageProficiencies": [
-				{
-					"anyStandard": 2
 				}
 			],
 			"toolProficiencies": [
@@ -321,7 +316,7 @@
 			],
 			"startingEquipment": [
 				{
-					"a": [
+					"A": [
 						{
 							"item": "book|xphb",
 							"displayName": "Book (Prayers)"
@@ -337,13 +332,13 @@
 							"quantity": 10
 						},
 						{
-							"item": "robes|xphb"
+							"item": "robe|xphb"
 						},
 						{
 							"value": 800
 						}
 					],
-					"b": [
+					"B": [
 						{
 							"value": 5000
 						}
@@ -378,7 +373,7 @@
 						{
 							"type": "item",
 							"name": "Equipment:",
-							"entry": "Choose A or B: (A) {@item Calligrapher's Supplies|XPHB}, {@item Book|XPHB|Book (prayers)}, {@item Holy Symbol|XPHB}, {@item Parchment|XPHB|Patchment (10 sheets)}, {@item Robe|xphb}, 8 GP; or (B) 50 GP"
+							"entry": "Choose A or B: (A) {@item Calligrapher's Supplies|XPHB}, {@item Book|XPHB|Book (prayers)}, {@item Holy Symbol|XPHB}, {@item Parchment|XPHB} (10 sheets), {@item Robe|xphb}, 8 GP; or (B) 50 GP"
 						}
 					]
 				}
@@ -1016,11 +1011,6 @@
 					"persuasion": true
 				}
 			],
-			"languageProficiencies": [
-				{
-					"anyStandard": 2
-				}
-			],
 			"toolProficiencies": [
 				{
 					"anyArtisansTool": 1
@@ -1028,7 +1018,7 @@
 			],
 			"startingEquipment": [
 				{
-					"a": [
+					"A": [
 						{
 							"item": "artisan's tools|xphb"
 						},
@@ -1043,7 +1033,7 @@
 							"value": 3200
 						}
 					],
-					"b": [
+					"B": [
 						{
 							"value": 5000
 						}
@@ -2942,8 +2932,11 @@
 			"toolProficiencies": [
 				{
 					"disguise kit": true,
-					"gaming set": true,
-					"musical instrument": true
+					"anyGamingSet": 1
+				},
+				{
+					"disguise kit": true,
+					"anyMusicalInstrument": 1
 				}
 			],
 			"startingEquipment": [
@@ -3507,7 +3500,7 @@
 			],
 			"toolProficiencies": [
 				{
-					"gaming set": true
+					"anyGamingSet": 1
 				}
 			],
 			"startingEquipment": [
@@ -4769,11 +4762,6 @@
 					"sleight of hand": true
 				}
 			],
-			"languageProficiencies": [
-				{
-					"anyStandard": 2
-				}
-			],
 			"toolProficiencies": [
 				{
 					"calligrapher's supplies": true
@@ -4781,7 +4769,7 @@
 			],
 			"startingEquipment": [
 				{
-					"a": [
+					"A": [
 						{
 							"item": "forgery kit|xphb"
 						},
@@ -4795,7 +4783,7 @@
 							"value": 1500
 						}
 					],
-					"b": [
+					"B": [
 						{
 							"value": 5000
 						}
@@ -6087,7 +6075,7 @@
 			],
 			"toolProficiencies": [
 				{
-					"gaming set": true,
+					"anyGamingSet": 1,
 					"thieves' tools": true
 				}
 			],
@@ -6406,11 +6394,6 @@
 					"stealth": true
 				}
 			],
-			"languageProficiencies": [
-				{
-					"anyStandard": 2
-				}
-			],
 			"toolProficiencies": [
 				{
 					"thieves' tools": true
@@ -6418,7 +6401,7 @@
 			],
 			"startingEquipment": [
 				{
-					"a": [
+					"A": [
 						{
 							"item": "dagger|xphb",
 							"quantity": 2
@@ -6440,7 +6423,7 @@
 							"value": 1600
 						}
 					],
-					"b": [
+					"B": [
 						{
 							"value": 5000
 						}
@@ -7307,7 +7290,7 @@
 					"vehicles (land)": true
 				},
 				{
-					"musical instrument": true
+					"anyMusicalInstrument": 1
 				},
 				{
 					"choose": {
@@ -7327,7 +7310,7 @@
 					}
 				},
 				{
-					"gaming set": true
+					"anyGamingSet": 1
 				}
 			],
 			"startingEquipment": [
@@ -7948,7 +7931,7 @@
 			"toolProficiencies": [
 				{
 					"disguise kit": true,
-					"musical instrument": true
+					"anyMusicalInstrument": 1
 				}
 			],
 			"startingEquipment": [
@@ -8275,19 +8258,14 @@
 					"performance": true
 				}
 			],
-			"languageProficiencies": [
-				{
-					"anyStandard": 2
-				}
-			],
 			"toolProficiencies": [
 				{
-					"musical instrument": true
+					"anyMusicalInstrument": 1
 				}
 			],
 			"startingEquipment": [
 				{
-					"a": [
+					"A": [
 						{
 							"item": "musical instrument|xphb"
 						},
@@ -8308,7 +8286,7 @@
 							"value": 1100
 						}
 					],
-					"b": [
+					"B": [
 						{
 							"value": 5000
 						}
@@ -9319,11 +9297,6 @@
 					"nature": true
 				}
 			],
-			"languageProficiencies": [
-				{
-					"anyStandard": 2
-				}
-			],
 			"toolProficiencies": [
 				{
 					"carpenter's tools": true
@@ -9331,7 +9304,7 @@
 			],
 			"startingEquipment": [
 				{
-					"a": [
+					"A": [
 						{
 							"item": "sickle|xphb"
 						},
@@ -9354,7 +9327,7 @@
 							"value": 3000
 						}
 					],
-					"b": [
+					"B": [
 						{
 							"value": 5000
 						}
@@ -9422,7 +9395,7 @@
 			],
 			"toolProficiencies": [
 				{
-					"musical instrument": true
+					"anyMusicalInstrument": 1
 				}
 			],
 			"startingEquipment": [
@@ -10384,7 +10357,7 @@
 			],
 			"toolProficiencies": [
 				{
-					"gaming set": true
+					"anyGamingSet": 1
 				}
 			],
 			"startingEquipment": [
@@ -10620,7 +10593,7 @@
 			"toolProficiencies": [
 				{
 					"thieves' tools": true,
-					"musical instrument": true
+					"anyMusicalInstrument": 1
 				}
 			],
 			"startingEquipment": [
@@ -11675,7 +11648,7 @@
 			"toolProficiencies": [
 				{
 					"thieves' tools": true,
-					"musical instrument": true
+					"anyMusicalInstrument": 1
 				}
 			],
 			"startingEquipment": [
@@ -12682,19 +12655,14 @@
 					"perception": true
 				}
 			],
-			"languageProficiencies": [
-				{
-					"anyStandard": 2
-				}
-			],
 			"toolProficiencies": [
 				{
-					"gaming set": true
+					"anyGamingSet": 1
 				}
 			],
 			"startingEquipment": [
 				{
-					"a": [
+					"A": [
 						{
 							"item": "spear|xphb"
 						},
@@ -12702,8 +12670,7 @@
 							"item": "light crossbow|xphb"
 						},
 						{
-							"item": "crossbow bolt|xphb",
-							"quantity": 20
+							"item": "bolts (20)|xphb"
 						},
 						{
 							"item": "gaming set|xphb"
@@ -12724,7 +12691,7 @@
 							"value": 1200
 						}
 					],
-					"b": [
+					"B": [
 						{
 							"value": 5000
 						}
@@ -12807,18 +12774,13 @@
 			],
 			"feats": [
 				{
-					"magic initiate|xphb": true
+					"magic initiate; druid|xphb": true
 				}
 			],
 			"skillProficiencies": [
 				{
 					"stealth": true,
 					"survival": true
-				}
-			],
-			"languageProficiencies": [
-				{
-					"anyStandard": 2
 				}
 			],
 			"toolProficiencies": [
@@ -12828,13 +12790,12 @@
 			],
 			"startingEquipment": [
 				{
-					"a": [
+					"A": [
 						{
 							"item": "shortbow|xphb"
 						},
 						{
-							"item": "arrow|xphb",
-							"quantity": 20
+							"item": "arrows (20)|xphb"
 						},
 						{
 							"item": "cartographer's tools|xphb"
@@ -12849,13 +12810,13 @@
 							"item": "tent|xphb"
 						},
 						{
-							"item": "traveller's clothes|xphb"
+							"item": "traveler's clothes|xphb"
 						},
 						{
 							"value": 300
 						}
 					],
-					"b": [
+					"B": [
 						{
 							"value": 5000
 						}
@@ -13252,7 +13213,7 @@
 			],
 			"toolProficiencies": [
 				{
-					"gaming set": true,
+					"anyGamingSet": 1,
 					"vehicles (water)": true
 				}
 			],
@@ -14241,11 +14202,6 @@
 					"religion": true
 				}
 			],
-			"languageProficiencies": [
-				{
-					"anyStandard": 2
-				}
-			],
 			"toolProficiencies": [
 				{
 					"herbalism kit": true
@@ -14253,7 +14209,7 @@
 			],
 			"startingEquipment": [
 				{
-					"a": [
+					"A": [
 						{
 							"item": "quarterstaff|xphb"
 						},
@@ -14270,7 +14226,7 @@
 							"item": "lamp|xphb"
 						},
 						{
-							"item": "oil (flask)|xphb",
+							"item": "oil|xphb",
 							"quantity": 3
 						},
 						{
@@ -14280,7 +14236,7 @@
 							"value": 1600
 						}
 					],
-					"b": [
+					"B": [
 						{
 							"value": 5000
 						}
@@ -14845,7 +14801,7 @@
 					"tinker's tools": true
 				},
 				{
-					"gaming set": true,
+					"anyGamingSet": 1,
 					"vehicles (land)": true
 				},
 				{
@@ -14871,7 +14827,7 @@
 				},
 				{
 					"disguise kit": true,
-					"musical instrument": true
+					"anyMusicalInstrument": 1
 				},
 				{
 					"calligrapher's supplies": true,
@@ -14879,11 +14835,11 @@
 				},
 				{
 					"thieves' tools": true,
-					"gaming set": true
+					"anyGamingSet": 1
 				},
 				{
 					"poisoner's kit": true,
-					"musical instrument": true
+					"anyMusicalInstrument": 1
 				},
 				{
 					"vehicles (land)": true,
@@ -15383,7 +15339,7 @@
 			],
 			"toolProficiencies": [
 				{
-					"gaming set": true,
+					"anyGamingSet": 1,
 					"vehicles (land)": true
 				}
 			],
@@ -16094,7 +16050,7 @@
 			],
 			"toolProficiencies": [
 				{
-					"gaming set": true,
+					"anyGamingSet": 1,
 					"vehicles (land)": true
 				}
 			],
@@ -18240,7 +18196,7 @@
 			],
 			"toolProficiencies": [
 				{
-					"gaming set": true,
+					"anyGamingSet": 1,
 					"vehicles (land)": true
 				}
 			],
@@ -18356,11 +18312,6 @@
 					"persuasion": true
 				}
 			],
-			"languageProficiencies": [
-				{
-					"anyStandard": 2
-				}
-			],
 			"toolProficiencies": [
 				{
 					"navigator's tools": true
@@ -18368,7 +18319,7 @@
 			],
 			"startingEquipment": [
 				{
-					"a": [
+					"A": [
 						{
 							"item": "navigator's tools|xphb"
 						},
@@ -18383,7 +18334,7 @@
 							"value": 2200
 						}
 					],
-					"b": [
+					"B": [
 						{
 							"value": 5000
 						}
@@ -18439,7 +18390,7 @@
 			"toolProficiencies": [
 				{
 					"anyArtisansTool": 1,
-					"musical instrument": true
+					"anyMusicalInstrument": 1
 				}
 			],
 			"startingEquipment": [
@@ -18707,7 +18658,7 @@
 			],
 			"toolProficiencies": [
 				{
-					"gaming set": true
+					"anyGamingSet": 1
 				}
 			],
 			"startingEquipment": [
@@ -18977,19 +18928,14 @@
 					"persuasion": true
 				}
 			],
-			"languageProficiencies": [
-				{
-					"anyStandard": 2
-				}
-			],
 			"toolProficiencies": [
 				{
-					"gaming set": true
+					"anyGamingSet": 1
 				}
 			],
 			"startingEquipment": [
 				{
-					"a": [
+					"A": [
 						{
 							"item": "gaming set|xphb"
 						},
@@ -19003,7 +18949,7 @@
 							"value": 2900
 						}
 					],
-					"b": [
+					"B": [
 						{
 							"value": 5000
 						}
@@ -19495,7 +19441,7 @@
 			],
 			"toolProficiencies": [
 				{
-					"musical instrument": true
+					"anyMusicalInstrument": 1
 				}
 			],
 			"startingEquipment": [
@@ -21365,7 +21311,7 @@
 			],
 			"toolProficiencies": [
 				{
-					"musical instrument": true
+					"anyMusicalInstrument": 1
 				}
 			],
 			"startingEquipment": [
@@ -22131,7 +22077,7 @@
 			],
 			"toolProficiencies": [
 				{
-					"gaming set": true
+					"anyGamingSet": 1
 				}
 			],
 			"startingEquipment": [
@@ -22568,7 +22514,7 @@
 			],
 			"toolProficiencies": [
 				{
-					"gaming set": true
+					"anyGamingSet": 1
 				}
 			],
 			"startingEquipment": [
@@ -23254,18 +23200,13 @@
 			],
 			"feats": [
 				{
-					"magic initiate|xphb": true
+					"magic initiate; wizard|xphb": true
 				}
 			],
 			"skillProficiencies": [
 				{
 					"arcana": true,
 					"history": true
-				}
-			],
-			"languageProficiencies": [
-				{
-					"anyStandard": 2
 				}
 			],
 			"toolProficiencies": [
@@ -23275,7 +23216,7 @@
 			],
 			"startingEquipment": [
 				{
-					"a": [
+					"A": [
 						{
 							"item": "quarterstaff|xphb"
 						},
@@ -23296,7 +23237,7 @@
 							"value": 800
 						}
 					],
-					"b": [
+					"B": [
 						{
 							"value": 5000
 						}
@@ -23625,11 +23566,6 @@
 					"perception": true
 				}
 			],
-			"languageProficiencies": [
-				{
-					"anyStandard": 2
-				}
-			],
 			"toolProficiencies": [
 				{
 					"navigator's tools": true
@@ -23637,7 +23573,7 @@
 			],
 			"startingEquipment": [
 				{
-					"a": [
+					"A": [
 						{
 							"item": "dagger|xphb"
 						},
@@ -23654,7 +23590,7 @@
 							"value": 2000
 						}
 					],
-					"b": [
+					"B": [
 						{
 							"value": 5000
 						}
@@ -23746,11 +23682,6 @@
 					"perception": true
 				}
 			],
-			"languageProficiencies": [
-				{
-					"anyStandard": 2
-				}
-			],
 			"toolProficiencies": [
 				{
 					"calligrapher's supplies": true
@@ -23758,7 +23689,7 @@
 			],
 			"startingEquipment": [
 				{
-					"a": [
+					"A": [
 						{
 							"item": "calligrapher's supplies|xphb"
 						},
@@ -23769,7 +23700,7 @@
 							"item": "lamp|xphb"
 						},
 						{
-							"item": "oil (flask)|xphb"
+							"item": "oil|xphb"
 						},
 						{
 							"item": "parchment|xphb"
@@ -23778,7 +23709,7 @@
 							"value": 2300
 						}
 					],
-					"b": [
+					"B": [
 						{
 							"value": 5000
 						}
@@ -26046,7 +25977,7 @@
 			],
 			"toolProficiencies": [
 				{
-					"gaming set": true,
+					"anyGamingSet": 1,
 					"vehicles (land)": true
 				}
 			],
@@ -26378,19 +26309,14 @@
 					"intimidation": true
 				}
 			],
-			"languageProficiencies": [
-				{
-					"anyStandard": 2
-				}
-			],
 			"toolProficiencies": [
 				{
-					"gaming set": true
+					"anyGamingSet": 1
 				}
 			],
 			"startingEquipment": [
 				{
-					"a": [
+					"A": [
 						{
 							"item": "spear|xphb"
 						},
@@ -26398,8 +26324,7 @@
 							"item": "shortbow|xphb"
 						},
 						{
-							"item": "arrow|xphb",
-							"quantity": 20
+							"item": "arrows (20)|xphb"
 						},
 						{
 							"item": "gaming set|xphb"
@@ -26417,7 +26342,7 @@
 							"value": 1400
 						}
 					],
-					"b": [
+					"B": [
 						{
 							"value": 5000
 						}
@@ -26472,7 +26397,7 @@
 			],
 			"toolProficiencies": [
 				{
-					"gaming set": true,
+					"anyGamingSet": 1,
 					"thieves' tools": true
 				}
 			],
@@ -28636,7 +28561,7 @@
 			"toolProficiencies": [
 				{
 					"anyArtisansTool": 1,
-					"musical instrument": true
+					"anyMusicalInstrument": 1
 				}
 			],
 			"startingEquipment": [
@@ -29268,11 +29193,6 @@
 					"stealth": true
 				}
 			],
-			"languageProficiencies": [
-				{
-					"anyStandard": 2
-				}
-			],
 			"toolProficiencies": [
 				{
 					"thieves' tools": true
@@ -29280,7 +29200,7 @@
 			],
 			"startingEquipment": [
 				{
-					"a": [
+					"A": [
 						{
 							"item": "dagger|xphb",
 							"quantity": 2
@@ -29305,7 +29225,7 @@
 							"value": 1600
 						}
 					],
-					"b": [
+					"B": [
 						{
 							"value": 5000
 						}
@@ -29809,7 +29729,7 @@
 			],
 			"toolProficiencies": [
 				{
-					"musical instrument": true
+					"anyMusicalInstrument": 1
 				}
 			],
 			"startingEquipment": [
