@@ -27,6 +27,7 @@
 			"spellcastingAbility": "wis",
 			"casterProgression": "full",
 			"preparedSpells": "<$level$> + <$wis_mod$>",
+			"preparedSpellsChange": "restLong",
 			"cantripProgression": [
 				3,
 				3,
@@ -523,6 +524,29 @@
 			],
 			"spellcastingAbility": "wis",
 			"casterProgression": "full",
+			"preparedSpellsProgression": [
+				4,
+				5,
+				6,
+				7,
+				9,
+				10,
+				11,
+				12,
+				14,
+				15,
+				16,
+				16,
+				17,
+				17,
+				18,
+				18,
+				19,
+				20,
+				21,
+				22
+			],
+			"preparedSpellsChange": "restLong",
 			"cantripProgression": [
 				3,
 				3,
@@ -544,6 +568,17 @@
 				5,
 				5,
 				5
+			],
+			"featProgression": [
+				{
+					"name": "Epic Boon",
+					"category": [
+						"EB"
+					],
+					"progression": {
+						"19": 1
+					}
+				}
 			],
 			"startingProficiencies": {
 				"armor": [
@@ -570,9 +605,7 @@
 				]
 			},
 			"startingEquipment": {
-				"entries": [
-					"{@i Choose A or B:} (A) {@item Chain Shirt|XPHB}, {@item Shield|XPHB}, {@item Mace|XPHB}, {@item Holy Symbol|XPHB}, {@item Priest's Pack|XPHB}, 7 GP; or (B) 90 GP"
-				],
+				"additionalFromBackground": true,
 				"defaultData": [
 					{
 						"A": [
@@ -601,6 +634,9 @@
 							}
 						]
 					}
+				],
+				"entries": [
+					"{@i Choose A or B:} (A) {@item Chain Shirt|XPHB}, {@item Shield|XPHB}, {@item Mace|XPHB}, {@item Holy Symbol|XPHB}, {@item Priest's Pack|XPHB}, 7 GP; or (B) 110 GP"
 				]
 			},
 			"multiclassing": {
@@ -723,7 +759,7 @@
 					]
 				},
 				{
-					"title": "Prepared Spells per Spell Level",
+					"title": "Spell Slots per Spell Level",
 					"colLabels": [
 						"{@filter 1st|spells|level=1|class=Cleric}",
 						"{@filter 2nd|spells|level=2|class=Cleric}",
@@ -3432,24 +3468,30 @@
 			"entries": [
 				"You have dedicated yourself to one of the following sacred roles of your choice.",
 				{
-					"type": "entries",
+					"type": "options",
+					"count": 1,
 					"entries": [
 						{
-							"type": "entries",
-							"name": "Protector",
-							"entries": [
-								"Trained for battle, you gain proficiency with Martial weapons and training with Heavy armor."
-							]
+							"type": "refClassFeature",
+							"classFeature": "Protector|Cleric|XPHB|1|XPHB"
 						},
 						{
-							"type": "entries",
-							"name": "Thaumaturge",
-							"entries": [
-								"You know one extra cantrip from the {@filter Cleric spell list|spells|class=Cleric}. In addition, your mystical connection to the divine gives you a bonus to your Intelligence ({@skill Arcana|XPHB} or {@skill Religion|XPHB}) checks. The bonus equals your Wisdom modifier (minimum of +1)."
-							]
+							"type": "refClassFeature",
+							"classFeature": "Thaumaturge|Cleric|XPHB|1|XPHB"
 						}
 					]
 				}
+			]
+		},
+		{
+			"name": "Protector",
+			"source": "XPHB",
+			"page": 70,
+			"className": "Cleric",
+			"classSource": "XPHB",
+			"level": 1,
+			"entries": [
+				"Trained for battle, you gain proficiency with {@filter Martial weapons|items|type=martial weapon} and training with {@filter Heavy armor|items|type=Heavy Armor}."
 			]
 		},
 		{
@@ -3512,6 +3554,17 @@
 						}
 					]
 				}
+			]
+		},
+		{
+			"name": "Thaumaturge",
+			"source": "XPHB",
+			"page": 70,
+			"className": "Cleric",
+			"classSource": "XPHB",
+			"level": 1,
+			"entries": [
+				"You know one extra cantrip from the {@filter Cleric spell list|spells|class=Cleric}. In addition, your mystical connection to the divine gives you a bonus to your Intelligence ({@skill Arcana|XPHB} or {@skill Religion|XPHB}) checks. The bonus equals your Wisdom modifier (minimum of +1)."
 			]
 		},
 		{
@@ -8836,7 +8889,7 @@
 			"subclassShortName": "Trickery",
 			"subclassSource": "XPHB",
 			"level": 3,
-			"header": 1,
+			"header": 2,
 			"entries": [
 				"As a {@action Magic|XPHB} action, you can choose yourself or a willing creature within 30 feet of yourself to have {@variantrule Advantage|XPHB} on Dexterity ({@skill Stealth|XPHB}) checks. This blessing lasts until you finish a {@variantrule Long Rest|XPHB} or you use this feature again."
 			]
@@ -8850,7 +8903,7 @@
 			"subclassShortName": "Trickery",
 			"subclassSource": "XPHB",
 			"level": 3,
-			"header": 1,
+			"header": 2,
 			"entries": [
 				"Your connection to this divine domain ensures you always have certain spells ready. When you reach a Cleric level specified in the Trickery Domain Spells table, you thereafter always have the listed spells prepared.",
 				{
@@ -8894,7 +8947,7 @@
 			"subclassShortName": "Trickery",
 			"subclassSource": "XPHB",
 			"level": 3,
-			"header": 1,
+			"header": 2,
 			"consumes": {
 				"name": "Channel Divinity"
 			},

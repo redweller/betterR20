@@ -4162,6 +4162,9 @@
 			"environment": [
 				"desert"
 			],
+			"traitTags": [
+				"Camouflage"
+			],
 			"senseTags": [
 				"D",
 				"T"
@@ -7276,7 +7279,8 @@
 				"arctic"
 			],
 			"traitTags": [
-				"Flyby"
+				"Flyby",
+				"Regeneration"
 			],
 			"senseTags": [
 				"D"
@@ -7554,6 +7558,7 @@
 				"planar"
 			],
 			"traitTags": [
+				"Camouflage",
 				"Magic Resistance"
 			],
 			"senseTags": [
@@ -8142,7 +8147,8 @@
 				"dagger|phb"
 			],
 			"traitTags": [
-				"Amphibious"
+				"Amphibious",
+				"Camouflage"
 			],
 			"senseTags": [
 				"D"
@@ -8405,6 +8411,9 @@
 				"walk": 20,
 				"swim": 10
 			},
+			"initiative": {
+				"advantageMode": "adv"
+			},
 			"str": 10,
 			"dex": 14,
 			"con": 14,
@@ -8474,6 +8483,7 @@
 			],
 			"traitTags": [
 				"Amphibious",
+				"Camouflage",
 				"Pack Tactics"
 			],
 			"senseTags": [
@@ -11622,6 +11632,9 @@
 			"speed": {
 				"walk": 30
 			},
+			"initiative": {
+				"advantageMode": "adv"
+			},
 			"str": 13,
 			"dex": 16,
 			"con": 14,
@@ -13237,6 +13250,7 @@
 				"underwater"
 			],
 			"traitTags": [
+				"Camouflage",
 				"Water Breathing"
 			],
 			"senseTags": [
@@ -16839,6 +16853,9 @@
 			"environment": [
 				"desert"
 			],
+			"traitTags": [
+				"Camouflage"
+			],
 			"actionTags": [
 				"Multiattack"
 			],
@@ -17166,7 +17183,8 @@
 				"forest"
 			],
 			"traitTags": [
-				"Amorphous"
+				"Amorphous",
+				"Camouflage"
 			],
 			"senseTags": [
 				"B"
@@ -20629,6 +20647,9 @@
 			"speed": {
 				"walk": 30
 			},
+			"initiative": {
+				"advantageMode": "adv"
+			},
 			"str": 14,
 			"dex": 10,
 			"con": 14,
@@ -23541,6 +23562,7 @@
 				"forest"
 			],
 			"traitTags": [
+				"Camouflage",
 				"Sunlight Sensitivity"
 			],
 			"senseTags": [
@@ -23988,6 +24010,9 @@
 			],
 			"environment": [
 				"grassland"
+			],
+			"traitTags": [
+				"Camouflage"
 			],
 			"actionTags": [
 				"Multiattack"
@@ -28953,6 +28978,7 @@
 				"forest"
 			],
 			"traitTags": [
+				"Camouflage",
 				"Spider Climb",
 				"Web Sense",
 				"Web Walker"
@@ -31275,6 +31301,7 @@
 				"club|phb"
 			],
 			"traitTags": [
+				"Camouflage",
 				"Mimicry"
 			],
 			"senseTags": [
@@ -34711,7 +34738,8 @@
 				"swamp"
 			],
 			"traitTags": [
-				"Amphibious"
+				"Amphibious",
+				"Camouflage"
 			],
 			"senseTags": [
 				"D"
@@ -36069,6 +36097,7 @@
 				"underdark"
 			],
 			"traitTags": [
+				"Camouflage",
 				"Keen Senses"
 			],
 			"senseTags": [
@@ -39504,6 +39533,9 @@
 			"environment": [
 				"forest"
 			],
+			"traitTags": [
+				"Camouflage"
+			],
 			"senseTags": [
 				"D"
 			],
@@ -42711,7 +42743,8 @@
 				"arctic"
 			],
 			"traitTags": [
-				"Amphibious"
+				"Amphibious",
+				"Camouflage"
 			],
 			"senseTags": [
 				"SD"
@@ -42822,7 +42855,8 @@
 				"arctic"
 			],
 			"traitTags": [
-				"Amphibious"
+				"Amphibious",
+				"Camouflage"
 			],
 			"senseTags": [
 				"SD"
@@ -44601,6 +44635,9 @@
 			"environment": [
 				"desert"
 			],
+			"traitTags": [
+				"Camouflage"
+			],
 			"senseTags": [
 				"D",
 				"T"
@@ -44717,6 +44754,9 @@
 				"badlands",
 				"desert",
 				"grassland"
+			],
+			"traitTags": [
+				"Camouflage"
 			],
 			"senseTags": [
 				"D",
@@ -45384,6 +45424,7 @@
 				"underdark"
 			],
 			"traitTags": [
+				"Camouflage",
 				"Siege Monster"
 			],
 			"senseTags": [
@@ -46208,6 +46249,9 @@
 			"environment": [
 				"coastal",
 				"swamp"
+			],
+			"traitTags": [
+				"Camouflage"
 			],
 			"senseTags": [
 				"D"
@@ -47543,6 +47587,7 @@
 			],
 			"traitTags": [
 				"Amphibious",
+				"Camouflage",
 				"Keen Senses",
 				"Regeneration"
 			],
@@ -49378,6 +49423,9 @@
 			"speed": {
 				"walk": 40,
 				"climb": 20
+			},
+			"initiative": {
+				"advantageMode": "adv"
 			},
 			"str": 18,
 			"dex": 15,
@@ -51388,6 +51436,9 @@
 			"environment": [
 				"forest"
 			],
+			"traitTags": [
+				"Camouflage"
+			],
 			"senseTags": [
 				"D"
 			],
@@ -51454,6 +51505,9 @@
 			],
 			"environment": [
 				"swamp"
+			],
+			"traitTags": [
+				"Camouflage"
 			],
 			"senseTags": [
 				"B"
@@ -52260,6 +52314,9 @@
 			},
 			"speed": {
 				"walk": 30
+			},
+			"initiative": {
+				"advantageMode": "adv"
 			},
 			"str": 18,
 			"dex": 14,
@@ -55319,6 +55376,9 @@
 			"speed": {
 				"walk": 30
 			},
+			"initiative": {
+				"advantageMode": "adv"
+			},
 			"str": 12,
 			"dex": 20,
 			"con": 13,
@@ -56769,7 +56829,8 @@
 				"underwater"
 			],
 			"traitTags": [
-				"Amphibious"
+				"Amphibious",
+				"Camouflage"
 			],
 			"senseTags": [
 				"D"

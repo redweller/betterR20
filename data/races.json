@@ -588,6 +588,7 @@
 			"name": "Aasimar",
 			"source": "XPHB",
 			"page": 186,
+			"edition": "one",
 			"creatureTypes": [
 				"humanoid"
 			],
@@ -2553,6 +2554,7 @@
 			"name": "Dragonborn",
 			"source": "XPHB",
 			"page": 187,
+			"edition": "one",
 			"creatureTypes": [
 				"humanoid"
 			],
@@ -3558,6 +3560,7 @@
 			"source": "XPHB",
 			"page": 188,
 			"freeRules2024": true,
+			"edition": "one",
 			"creatureTypes": [
 				"humanoid"
 			],
@@ -3917,6 +3920,7 @@
 			"source": "XPHB",
 			"page": 189,
 			"freeRules2024": true,
+			"edition": "one",
 			"creatureTypes": [
 				"humanoid"
 			],
@@ -4986,6 +4990,10 @@
 			"name": "Gith",
 			"source": "MTF",
 			"page": 96,
+			"reprintedAs": [
+				"Githyanki|MPMM",
+				"Githzerai|MPMM"
+			],
 			"size": [
 				"M"
 			],
@@ -5314,6 +5322,7 @@
 			"name": "Gnome",
 			"source": "XPHB",
 			"page": 191,
+			"edition": "one",
 			"creatureTypes": [
 				"humanoid"
 			],
@@ -6122,6 +6131,7 @@
 			"name": "Goliath",
 			"source": "XPHB",
 			"page": 192,
+			"edition": "one",
 			"creatureTypes": [
 				"humanoid"
 			],
@@ -6898,6 +6908,7 @@
 			"source": "XPHB",
 			"page": 193,
 			"freeRules2024": true,
+			"edition": "one",
 			"creatureTypes": [
 				"humanoid"
 			],
@@ -7593,6 +7604,7 @@
 			"source": "XPHB",
 			"page": 194,
 			"freeRules2024": true,
+			"edition": "one",
 			"creatureTypes": [
 				"humanoid"
 			],
@@ -7604,7 +7616,9 @@
 			"feats": [
 				{
 					"anyFromCategory": {
-						"category": "O",
+						"category": [
+							"O"
+						],
 						"count": 1
 					}
 				}
@@ -10598,6 +10612,7 @@
 			"name": "Orc",
 			"source": "XPHB",
 			"page": 195,
+			"edition": "one",
 			"creatureTypes": [
 				"humanoid"
 			],
@@ -11057,7 +11072,7 @@
 			],
 			"toolProficiencies": [
 				{
-					"musical instrument": true
+					"anyMusicalInstrument": 1
 				}
 			],
 			"entries": [
@@ -11152,7 +11167,7 @@
 			],
 			"toolProficiencies": [
 				{
-					"musical instrument": true
+					"anyMusicalInstrument": 1
 				}
 			],
 			"entries": [
@@ -12351,6 +12366,7 @@
 			"name": "Tiefling",
 			"source": "XPHB",
 			"page": 197,
+			"edition": "one",
 			"creatureTypes": [
 				"humanoid"
 			],
@@ -12358,6 +12374,7 @@
 				"S",
 				"M"
 			],
+			"speed": 30,
 			"darkvision": 60,
 			"additionalSpells": [
 				{
@@ -14036,6 +14053,10 @@
 			"raceName": "Aasimar",
 			"raceSource": "VGM",
 			"page": 105,
+			"reprintedAs": [
+				"Aasimar|MPMM",
+				"Aasimar|XPHB"
+			],
 			"ability": [
 				{
 					"str": 1
@@ -14061,6 +14082,10 @@
 			"raceName": "Aasimar",
 			"raceSource": "VGM",
 			"page": 105,
+			"reprintedAs": [
+				"Aasimar|MPMM",
+				"Aasimar|XPHB"
+			],
 			"ability": [
 				{
 					"wis": 1
@@ -14086,6 +14111,10 @@
 			"raceName": "Aasimar",
 			"raceSource": "VGM",
 			"page": 105,
+			"reprintedAs": [
+				"Aasimar|MPMM",
+				"Aasimar|XPHB"
+			],
 			"ability": [
 				{
 					"con": 1
@@ -14306,6 +14335,9 @@
 			"raceSource": "PHB",
 			"page": 32,
 			"srd": true,
+			"reprintedAs": [
+				"Dragonborn|XPHB"
+			],
 			"hasFluff": true,
 			"hasFluffImages": true,
 			"_versions": [
@@ -15027,6 +15059,9 @@
 			"page": 20,
 			"srd": true,
 			"basicRules": true,
+			"reprintedAs": [
+				"Dwarf|XPHB"
+			],
 			"ability": [
 				{
 					"wis": 1
@@ -15163,6 +15198,9 @@
 			"raceSource": "PHB",
 			"page": 20,
 			"basicRules": true,
+			"reprintedAs": [
+				"Dwarf|XPHB"
+			],
 			"ability": [
 				{
 					"str": 2
@@ -15201,6 +15239,9 @@
 			"raceName": "Elf",
 			"raceSource": "PHB",
 			"page": 24,
+			"reprintedAs": [
+				"Elf|XPHB"
+			],
 			"ability": [
 				{
 					"cha": 1
@@ -15402,6 +15443,9 @@
 			"page": 23,
 			"srd": true,
 			"basicRules": true,
+			"reprintedAs": [
+				"Elf|XPHB"
+			],
 			"speed": 30,
 			"ability": [
 				{
@@ -15776,6 +15820,9 @@
 			"raceSource": "PHB",
 			"page": 24,
 			"basicRules": true,
+			"reprintedAs": [
+				"Elf|XPHB"
+			],
 			"speed": 35,
 			"ability": [
 				{
@@ -16983,6 +17030,9 @@
 			"raceName": "Gnome",
 			"raceSource": "PHB",
 			"page": 37,
+			"reprintedAs": [
+				"Gnome|XPHB"
+			],
 			"ability": [
 				{
 					"dex": 1
@@ -17145,6 +17195,9 @@
 			"raceSource": "PHB",
 			"page": 37,
 			"srd": true,
+			"reprintedAs": [
+				"Gnome|XPHB"
+			],
 			"ability": [
 				{
 					"con": 1
@@ -18242,6 +18295,9 @@
 			"page": 28,
 			"srd": true,
 			"basicRules": true,
+			"reprintedAs": [
+				"Halfling|XPHB"
+			],
 			"ability": [
 				{
 					"cha": 1
@@ -18541,6 +18597,9 @@
 			"raceSource": "PHB",
 			"page": 28,
 			"basicRules": true,
+			"reprintedAs": [
+				"Halfling|XPHB"
+			],
 			"ability": [
 				{
 					"con": 1
@@ -18568,6 +18627,9 @@
 			"page": 29,
 			"srd": true,
 			"basicRules": true,
+			"reprintedAs": [
+				"Human|XPHB"
+			],
 			"ability": [
 				{
 					"str": 1,
@@ -19171,6 +19233,9 @@
 			"raceSource": "PHB",
 			"page": 31,
 			"basicRules": true,
+			"reprintedAs": [
+				"Human|XPHB"
+			],
 			"ability": [
 				{
 					"choose": {
@@ -20144,6 +20209,9 @@
 			"raceSource": "PHB",
 			"page": 42,
 			"srd": true,
+			"reprintedAs": [
+				"Tiefling|XPHB"
+			],
 			"hasFluff": true,
 			"hasFluffImages": true
 		},

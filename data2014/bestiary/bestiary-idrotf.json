@@ -5855,6 +5855,9 @@
 					]
 				}
 			],
+			"traitTags": [
+				"Regeneration"
+			],
 			"actionTags": [
 				"Multiattack"
 			],
@@ -7315,6 +7318,7 @@
 				}
 			],
 			"traitTags": [
+				"Camouflage",
 				"Keen Senses"
 			],
 			"senseTags": [

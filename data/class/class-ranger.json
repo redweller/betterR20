@@ -457,7 +457,30 @@
 				"dex"
 			],
 			"spellcastingAbility": "wis",
-			"casterProgression": "full",
+			"casterProgression": "artificer",
+			"preparedSpellsProgression": [
+				2,
+				3,
+				4,
+				5,
+				6,
+				6,
+				7,
+				7,
+				9,
+				9,
+				10,
+				10,
+				11,
+				11,
+				12,
+				12,
+				14,
+				14,
+				15,
+				15
+			],
+			"preparedSpellsChange": "restLong",
 			"additionalSpells": [
 				{
 					"prepared": {
@@ -477,12 +500,22 @@
 					"progression": {
 						"2": 1
 					}
+				},
+				{
+					"name": "Epic Boon",
+					"category": [
+						"EB"
+					],
+					"progression": {
+						"19": 1
+					}
 				}
 			],
 			"startingProficiencies": {
 				"armor": [
+					"light",
 					"medium",
-					"light"
+					"shield"
 				],
 				"weapons": [
 					"simple",
@@ -507,9 +540,7 @@
 				]
 			},
 			"startingEquipment": {
-				"entries": [
-					"{@i Choose A or B:} (A) {@item Studded Leather Armor|XPHB}, {@item Scimitar|XPHB}, {@item Shortsword|XPHB}, {@item Longbow|XPHB}, {@item Arrows (20)|XPHB|20 Arrows}, {@item Quiver|XPHB}, {@item Druidic Focus|XPHB} ({@item sprig of mistletoe|XPHB}), {@item Explorer's Pack|XPHB}, and 7 GP; or (B) 150 GP"
-				],
+				"additionalFromBackground": true,
 				"defaultData": [
 					{
 						"A": [
@@ -526,7 +557,7 @@
 								"item": "longbow|xphb"
 							},
 							{
-								"item": "arrows|xphb"
+								"item": "arrows (20)|xphb"
 							},
 							{
 								"item": "quiver|xphb"
@@ -547,6 +578,9 @@
 							}
 						]
 					}
+				],
+				"entries": [
+					"{@i Choose A or B:} (A) {@item Studded Leather Armor|XPHB}, {@item Scimitar|XPHB}, {@item Shortsword|XPHB}, {@item Longbow|XPHB}, {@item Arrows (20)|XPHB|20 Arrows}, {@item Quiver|XPHB}, {@item Druidic Focus|XPHB} ({@item sprig of mistletoe|XPHB}), {@item Explorer's Pack|XPHB}, and 7 GP; or (B) 150 GP"
 				]
 			},
 			"multiclassing": {
@@ -714,7 +748,7 @@
 					]
 				},
 				{
-					"title": "Prepared Spells per Spell Level",
+					"title": "Spell Slots per Spell Level",
 					"colLabels": [
 						"{@filter 1st|spells|level=1|class=ranger}",
 						"{@filter 2nd|spells|level=2|class=ranger}",
@@ -2035,7 +2069,7 @@
 							"type": "entries",
 							"name": "Prepared Spells of Level 1+",
 							"entries": [
-								"You prepare the list of level 1+ spells that are available for you to cast with this feature. To start, choose two level 1 Ranger spells. Cure Wounds and Ensnaring Strike are recommended.",
+								"You prepare the list of level 1+ spells that are available for you to cast with this feature. To start, choose two {@filter level 1 Ranger spells|spells|class=Ranger|level=1}. {@spell Cure Wounds|XPHB} and {@spell Ensnaring Strike|XPHB} are recommended.",
 								"The number of spells on your list increases as you gain Ranger levels, as shown in the Prepared Spells column of the Ranger Features table. Whenever that number increases, choose additional Ranger spells until the number of spells on your list matches the number in the Ranger Features table. The chosen spells must be of a level for which you have spell slots. For example, if you're a level 5 Ranger, your list of prepared spells can include six Ranger spells of level 1 or 2 in any combination.",
 								"If another Ranger feature gives you spells that you always have prepared, those spells don't count against the number of spells you can prepare with this feature, but those spells otherwise count as Ranger spells for you."
 							]
@@ -2073,8 +2107,8 @@
 			"classSource": "XPHB",
 			"level": 1,
 			"entries": [
-				"Your training with weapons allows you to use the mastery properties of two kinds of weapons of your choice with which you have proficiency, such as {@item Longbow|XPHB|Longbows} and {@item Shortsword|XPHB|Shortswords}.",
-				"Whenever you finish a {@variantrule Long Rest|XPHB}, you can change the kinds of weapons you chose. For example, you could switch to using the mastery properties of {@item Scimitar|XPHB|Scimitars} and {@item Longsword|XPHB|Longswords}."
+				"Your training with weapons allows you to use the {@variantrule weapon mastery properties|XPHB|mastery properties} of two kinds of {@filter weapons|items|type=simple weapon;martial weapon} of your choice with which you have proficiency, such as {@item Longbow|XPHB|Longbows} and {@item Shortsword|XPHB|Shortswords}.",
+				"Whenever you finish a {@variantrule Long Rest|XPHB}, you can change the kinds of weapons you chose. For example, you could switch to using the {@variantrule weapon mastery properties|XPHB|mastery properties} of {@item Scimitar|XPHB|Scimitars} and {@item Longsword|XPHB|Longswords}."
 			]
 		},
 		{
@@ -4088,7 +4122,7 @@
 				},
 				{
 					"type": "entries",
-					"name": "Frighten",
+					"name": "Dreadful Strike",
 					"entries": [
 						"When you attack a creature and hit it with a weapon, you can deal an extra {@damage 2d6} Psychic damage. You can use this benefit only once per turn, you can use it a number of times equal to your Wisdom modifier (minimum of once), and you regain all expended uses when you finish a {@variantrule Long Rest|XPHB}."
 					]
@@ -4186,7 +4220,7 @@
 			"level": 3,
 			"entries": [
 				"You gain {@sense Darkvision|XPHB} with a range of 60 feet. If you already have {@sense Darkvision|XPHB} when you gain this feature, its range increases by 60 feet.",
-				"You are also adept at evading creatures that rely on {@sense Darkvision|XPHB}. While entirely in {@variantrule Darkness|XPHB}, you have the {@condition Invisible|XPHB} condition to any creature that relies on {@sense Darkvision|XPHB} to see you in that {@variantrule Darkness|XPHB}. Spells table, you thereafter always have the listed spells prepared."
+				"You are also adept at evading creatures that rely on {@sense Darkvision|XPHB}. While entirely in {@variantrule Darkness|XPHB}, you have the {@condition Invisible|XPHB} condition to any creature that relies on {@sense Darkvision|XPHB} to see you in that {@variantrule Darkness|XPHB}."
 			]
 		},
 		{

@@ -25,6 +25,7 @@
 			"spellcastingAbility": "cha",
 			"casterProgression": "1/2",
 			"preparedSpells": "<$level$> / 2 + <$cha_mod$>",
+			"preparedSpellsChange": "restLong",
 			"optionalfeatureProgression": [
 				{
 					"name": "Fighting Style",
@@ -351,7 +352,29 @@
 			],
 			"spellcastingAbility": "cha",
 			"casterProgression": "artificer",
-			"preparedSpells": "<$level$> / 2 + <$cha_mod$>",
+			"preparedSpellsProgression": [
+				2,
+				3,
+				4,
+				5,
+				6,
+				6,
+				7,
+				7,
+				9,
+				9,
+				10,
+				10,
+				11,
+				11,
+				12,
+				12,
+				14,
+				14,
+				15,
+				15
+			],
+			"preparedSpellsChange": "restLong",
 			"additionalSpells": [
 				{
 					"prepared": {
@@ -373,6 +396,15 @@
 					],
 					"progression": {
 						"2": 1
+					}
+				},
+				{
+					"name": "Epic Boon",
+					"category": [
+						"EB"
+					],
+					"progression": {
+						"19": 1
 					}
 				}
 			],
@@ -404,9 +436,7 @@
 				]
 			},
 			"startingEquipment": {
-				"entries": [
-					"{@i Choose A or B:} (A) {@item Chain Mail|XPHB}, {@item Shield|XPHB}, {@item Longsword|XPHB}, 6 {@item Javelin|XPHB|Javelins}, {@item Holy Symbol|XPHB}, {@item Priest's Pack|XPHB}, and 9 GP; or (B) 150 GP"
-				],
+				"additionalFromBackground": true,
 				"defaultData": [
 					{
 						"A": [
@@ -439,6 +469,9 @@
 							}
 						]
 					}
+				],
+				"entries": [
+					"{@i Choose A or B:} (A) {@item Chain Mail|XPHB}, {@item Shield|XPHB}, {@item Longsword|XPHB}, 6 {@item Javelin|XPHB|Javelins}, {@item Holy Symbol|XPHB}, {@item Priest's Pack|XPHB}, and 9 GP; or (B) 150 GP"
 				]
 			},
 			"multiclassing": {
@@ -2039,7 +2072,7 @@
 							"type": "entries",
 							"name": "Prepared Spells of Level 1+",
 							"entries": [
-								"You prepare the list of level 1+ spells that are available for you to cast with this feature. To start, choose two level 1 Paladin spells. Heroism and Searing Smite are recommended.",
+								"You prepare the list of level 1+ spells that are available for you to cast with this feature. To start, choose two {@filter level 1 Paladin spells|spells|class=Paladin|level=1}. {@spell Heroism|XPHB} and {@spell Searing Smite|XPHB} are recommended.",
 								"The number of spells on your list increases as you gain Paladin levels, as shown in the Prepared Spells column of the Paladin Features table. Whenever that number increases, choose additional Paladin spells until the number of spells on your list matches the number in the Paladin Features table. The chosen spells must be of a level for which you have spell slots. For example, if you're a level 5 Paladin, your list of prepared spells can include six Paladin spells of level 1 or 2 in any combination.",
 								"If another Paladin feature gives you spells that you always have prepared, those spells don't count against the number of spells you can prepare with this feature, but those spells otherwise count as Paladin spells for you."
 							]
@@ -2077,8 +2110,8 @@
 			"classSource": "XPHB",
 			"level": 1,
 			"entries": [
-				"Your training with weapons allows you to use the mastery properties of two kinds of weapons of your choice with which you have proficiency, such as {@item Longsword|XPHB|Longswords} and {@item Javelin|XPHB|Javelins}.",
-				"Whenever you finish a {@variantrule Long Rest|XPHB}, you can change the kinds of weapons you chose. For example, you could switch to using the mastery properties of {@item Halberd|XPHB|Halberds} and {@item Flail|XPHB|Flails}."
+				"Your training with weapons allows you to use the {@variantrule weapon mastery properties|XPHB|mastery properties} of two kinds of {@filter weapons|items|type=simple weapon;martial weapon} of your choice with which you have proficiency, such as {@item Longsword|XPHB|Longswords} and {@item Javelin|XPHB|Javelins}.",
+				"Whenever you finish a {@variantrule Long Rest|XPHB}, you can change the kinds of weapons you chose. For example, you could switch to using the {@variantrule weapon mastery properties|XPHB|mastery properties} of {@item Halberd|XPHB|Halberds} and {@item Flail|XPHB|Flails}."
 			]
 		},
 		{
@@ -5336,7 +5369,7 @@
 			"level": 7,
 			"header": 2,
 			"entries": [
-				"Your supernatural focus helps you close off a foe's retreat. When you hit a creature with an {@action Opportunity Attack|XPHB|Opportunity Attacks}, you can reduce the creature's {@variantrule Speed|XPHB} to 0 until the end of the current turn. You can then move up to half your {@variantrule Speed|XPHB} as part of the same {@variantrule Reaction|XPHB}. This movement doesn't provoke {@action Opportunity Attack|XPHB|Opportunity Attacks}."
+				"Your supernatural focus helps you close off a foe's retreat. When you hit a creature with an {@action Opportunity Attack|XPHB}, you can reduce the creature's {@variantrule Speed|XPHB} to 0 until the end of the current turn. You can then move up to half your {@variantrule Speed|XPHB} as part of the same {@variantrule Reaction|XPHB}. This movement doesn't provoke {@action Opportunity Attack|XPHB|Opportunity Attacks}."
 			]
 		},
 		{

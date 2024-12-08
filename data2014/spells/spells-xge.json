@@ -45,6 +45,20 @@
 			"savingThrow": [
 				"constitution"
 			],
+			"affectsCreatureType": [
+				"aberration",
+				"beast",
+				"celestial",
+				"dragon",
+				"elemental",
+				"fey",
+				"fiend",
+				"giant",
+				"humanoid",
+				"monstrosity",
+				"ooze",
+				"plant"
+			],
 			"areaTags": [
 				"C"
 			]
@@ -394,6 +408,7 @@
 				"unconscious"
 			],
 			"miscTags": [
+				"SCT",
 				"SGT"
 			],
 			"areaTags": [
@@ -465,6 +480,7 @@
 				"plant"
 			],
 			"miscTags": [
+				"SCT",
 				"SGT"
 			],
 			"areaTags": [
@@ -765,6 +781,7 @@
 				"wisdom"
 			],
 			"miscTags": [
+				"SCT",
 				"SGT"
 			],
 			"areaTags": [
@@ -1576,6 +1593,7 @@
 				"constitution"
 			],
 			"miscTags": [
+				"SCT",
 				"SGT"
 			],
 			"areaTags": [

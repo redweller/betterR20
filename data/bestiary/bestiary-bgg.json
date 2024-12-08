@@ -5309,6 +5309,9 @@
 					]
 				}
 			],
+			"traitTags": [
+				"Camouflage"
+			],
 			"senseTags": [
 				"U"
 			],
@@ -8831,6 +8834,9 @@
 				},
 				"swim": 50,
 				"canHover": true
+			},
+			"initiative": {
+				"advantageMode": "adv"
 			},
 			"str": 29,
 			"dex": 14,

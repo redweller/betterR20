@@ -4204,6 +4204,7 @@
 		{
 			"name": "Spider King",
 			"isNpc": true,
+			"isNamedCreature": true,
 			"source": "OotA",
 			"page": 74,
 			"_copy": {
@@ -4500,6 +4501,9 @@
 			],
 			"attachedItems": [
 				"war pick|phb"
+			],
+			"traitTags": [
+				"Camouflage"
 			],
 			"senseTags": [
 				"D"
