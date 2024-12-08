@@ -7,14 +7,14 @@ const process = require("process");
 const fs = require("fs");
 const path = require("path");
 const rollup = require("rollup").rollup;
+const msg = console;
 
 const pathFromFile = fs.existsSync("node/path.js") && require("./path.js");
 const pathFromArg = process.argv[2];
 const SRC_PATH = pathFromFile?.mirror5e || pathFromArg;
 
 if (!SRC_PATH) {
-	// eslint-disable-next-line no-console
-	console.error(`We need the path to 5etools data to work`);
+	msg.error(`We need the path to 5etools data to work`);
 	process.exit(1);
 }
 
@@ -54,7 +54,9 @@ async function main () {
 		const bundle = path.join("lib", name);
 		await build(src, bundle);
 	}
+
+	msg.log("Successfully processed libs");
 }
 
-// eslint-disable-next-line no-console
-main().then(() => console.log("Done!"));
+require.main === module && main().then(() => msg.log("Done!"));
+module.exports = main;

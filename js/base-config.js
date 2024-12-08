@@ -818,7 +818,7 @@ function baseConfig () {
 		if (compactMarkers && !vttesRadiant) markerMenuStyle.html(d20plus.css.betterTokenMarkersMenu);
 		else markerMenuStyle.html("");
 
-		const amOn = d20plus.cfg.getOrDefault("chat", "showTokenMenu") !== "none";
+		const amOn = d20plus.cfg.getOrDefault("token", "showTokenMenu") !== "none";
 		const amStyle = d20plus.ut.dynamicStyles("actions");
 		if (amOn) amStyle.html(d20plus.css.actionMenu);
 		else amStyle.html("");

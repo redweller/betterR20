@@ -203,7 +203,7 @@ function d20plusItems () {
 			for (let i = 0; i < propertieslist.length; i++) {
 				let a = d20plus.items.parseProperty(propertieslist[i]);
 				let b = propertieslist[i];
-				if (b === "V" || b ==="V|XPHB") {
+				if (b === "V" || b === "V|XPHB") {
 					a = `${a} (${cleanDmg2})`;
 					roll20Data.data["Alternate Damage"] = cleanDmg2;
 					roll20Data.data["Alternate Damage Type"] = Parser.dmgTypeToFull(data.dmgType);
