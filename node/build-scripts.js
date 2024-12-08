@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.35.186.12";
+const SCRIPT_VERSION = "1.35.186.13";
 const SCRIPT_REPO = "https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/";
 
 const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
@@ -11,24 +11,24 @@ const SCRIPT_BETA_DESCRIPTION = `This version contains following changes
 ⦁ Token Images Editor
 ⦁ Better token Actions & Automation
 ⦁ Some fixes related to roll20 newUI
-⦁ context menu small fix
-⦁ ArtRepo is restored from backup
--- v.186.11 changes:
-⦁ warn about Jumpgate on startup
-⦁ "import source" selector rework
-⦁ community module imports fix
-⦁ fix crash on startup when 5e.tools is inaccessible
-⦁ new image URLs fixer
-⦁ new UVTT/DA walls data importer
-⦁ new multitoken parameters format:
-- faster loading due to less server requests
-- use "tools/URLs fixer" to fix old multitokens
-⦁ 5etools v2.1.0 update:
-- update data and libs
-- separate userscript for 2014 rules only
+⦁ ArtRepo & community modules restored
+⦁ Warn about Jumpgate on startup
+⦁ "Import source" selector rework
+⦁ New image URLs fixer
+⦁ New UVTT/DA walls data importer
+⦁ Separate userscript for 2014 rules only
+
 -- v.186.12 changes:
 ⦁ fix 5et2014 queries
 ⦁ better source selector behavior
+
+-- v.186.13 changes:
+⦁ 5etools v2.5.4 update:
+- update data and libs
+- update PHB tags (thanks @DeathStalker)
+- add damage etc. to spells
+⦁ add doors & windows to Module Importer/Exporter (thanks @csagataj2)
+⦁ fix disabling BetterActions panel
 `;
 
 const AUTHORS_CORE = `TheGiddyLimit/Redweller`;

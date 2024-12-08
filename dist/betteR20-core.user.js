@@ -2,7 +2,7 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.186.12
+// @version      1.35.186.13
 // @updateURL    https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/betteR20-core.meta.js
 // @downloadURL  https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -30,7 +30,7 @@ ART_HANDOUT = "betteR20-art";
 CONFIG_HANDOUT = "betteR20-config";
 
 B20_NAME = `core`;
-B20_VERSION = `1.35.186.12`;
+B20_VERSION = `1.35.186.13`;
 B20_REPO_URL = `https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/`;
 
 // TODO automate to use mirror if main site is unavailable
@@ -267,7 +267,7 @@ function baseUtil () {
 							in<span style="color: orange; font-family: monospace"> 5etools &gt; better20 &gt; #testing </span>thread
 						</p>
 					</h1>
-					<p>This version contains following changes<br><code>-- Beta features overview:</code><br>⦁ Mouseover hints on Conditions<br>⦁ Filter Imports by List<br>⦁ Extra Layers functionality<br>⦁ Token Images Editor<br>⦁ Better token Actions & Automation<br>⦁ Some fixes related to roll20 newUI<br>⦁ context menu small fix<br>⦁ ArtRepo is restored from backup<br><code>-- v.186.11 changes:</code><br>⦁ warn about Jumpgate on startup<br>⦁ "import source" selector rework<br>⦁ community module imports fix<br>⦁ fix crash on startup when 5e.tools is inaccessible<br>⦁ new image URLs fixer<br>⦁ new UVTT/DA walls data importer<br>⦁ new multitoken parameters format:<br>- faster loading due to less server requests<br>- use "tools/URLs fixer" to fix old multitokens<br>⦁ 5etools v2.1.0 update:<br>- update data and libs<br>- separate userscript for 2014 rules only<br><code>-- v.186.12 changes:</code><br>⦁ fix 5et2014 queries<br>⦁ better source selector behavior<br></p>
+					<p>This version contains following changes<br><code>-- Beta features overview:</code><br>⦁ Mouseover hints on Conditions<br>⦁ Filter Imports by List<br>⦁ Extra Layers functionality<br>⦁ Token Images Editor<br>⦁ Better token Actions & Automation<br>⦁ Some fixes related to roll20 newUI<br>⦁ ArtRepo & community modules restored<br>⦁ Warn about Jumpgate on startup<br>⦁ "Import source" selector rework<br>⦁ New image URLs fixer<br>⦁ New UVTT/DA walls data importer<br>⦁ Separate userscript for 2014 rules only<br><br><code>-- v.186.12 changes:</code><br>⦁ fix 5et2014 queries<br>⦁ better source selector behavior<br><br><code>-- v.186.13 changes:</code><br>⦁ 5etools v2.5.4 update:<br>- update data and libs<br>- update PHB tags (thanks @DeathStalker)<br>- add damage etc. to spells<br>⦁ add doors & windows to Module Importer/Exporter (thanks @csagataj2)<br>⦁ fix disabling BetterActions panel<br></p>
 				</div>
 			`);
 			}, 6000);
@@ -2608,7 +2608,7 @@ function baseConfig () {
 		if (compactMarkers && !vttesRadiant) markerMenuStyle.html(d20plus.css.betterTokenMarkersMenu);
 		else markerMenuStyle.html("");
 
-		const amOn = d20plus.cfg.getOrDefault("chat", "showTokenMenu") !== "none";
+		const amOn = d20plus.cfg.getOrDefault("token", "showTokenMenu") !== "none";
 		const amStyle = d20plus.ut.dynamicStyles("actions");
 		if (amOn) amStyle.html(d20plus.css.actionMenu);
 		else amStyle.html("");
@@ -3771,6 +3771,8 @@ function baseToolModule () {
 										entry.graphics.forEach(it => map.thegraphics.create(it));
 										entry.paths.forEach(it => map.thepaths.create(it));
 										entry.text.forEach(it => map.thetexts.create(it));
+										entry.doors.forEach(it => map.doors.create(it));
+										entry.windows.forEach(it => map.windows.create(it));
 										map.save();
 										break;
 									}
@@ -4021,6 +4023,8 @@ function baseToolModule () {
 									graphics: (map.thegraphics || []).map(g => g.attributes),
 									text: (map.thetexts || []).map(t => t.attributes),
 									paths: (map.thepaths || []).map(p => p.attributes),
+									doors: (map.doors || []).map(d => d.attributes),
+									windows: (map.windows || []).map(w => w.attributes),
 								};
 							};
 
@@ -28255,6 +28259,10 @@ Parser.numberToFractional = function (number) {
 	return denominator === 1 ? String(numerator) : `${Math.floor(numerator)}/${Math.floor(denominator)}`;
 };
 
+Parser.isNumberNearEqual = function (a, b) {
+	return Math.abs(a - b) < Number.EPSILON;
+};
+
 Parser.ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 Parser.attAbvToFull = function (abv) {
@@ -28279,8 +28287,10 @@ Parser.getAbilityModifier = function (abilityScore) {
 	return `${modifier}`;
 };
 
-Parser.getSpeedString = (ent, {isMetric = false, isSkipZeroWalk = false, isLongForm = false} = {}) => {
+Parser.getSpeedString = (ent, {isMetric = false, isSkipZeroWalk = false, isLongForm = false, styleHint = null} = {}) => {
 	if (ent.speed == null) return "\u2014";
+
+	styleHint ||= VetoolsConfig.get("styleSwitcher", "style");
 
 	const unit = isMetric
 		? Parser.metric.getMetricUnit({originalUnit: "ft.", isShortForm: !isLongForm})
@@ -28291,7 +28301,7 @@ Parser.getSpeedString = (ent, {isMetric = false, isSkipZeroWalk = false, isLongF
 
 		Parser.SPEED_MODES
 			.filter(mode => !ent.speed.hidden?.includes(mode))
-			.forEach(mode => Parser._getSpeedString_addSpeedMode({ent, prop: mode, stack, isMetric, isSkipZeroWalk, unit}));
+			.forEach(mode => Parser._getSpeedString_addSpeedMode({ent, prop: mode, stack, isMetric, isSkipZeroWalk, unit, styleHint}));
 
 		if (ent.speed.choose && !ent.speed.hidden?.includes("choose")) {
 			joiner = "; ";
@@ -28304,12 +28314,12 @@ Parser.getSpeedString = (ent, {isMetric = false, isSkipZeroWalk = false, isLongF
 	return (isMetric ? Parser.metric.getMetricNumber({originalValue: ent.speed, originalUnit: Parser.UNT_FEET}) : ent.speed)
 		+ (ent.speed === "Varies" ? "" : ` ${unit} `);
 };
-Parser._getSpeedString_addSpeedMode = ({ent, prop, stack, isMetric, isSkipZeroWalk, unit}) => {
-	if (ent.speed[prop] || (!isSkipZeroWalk && prop === "walk")) Parser._getSpeedString_addSpeed({prop, speed: ent.speed[prop] || 0, isMetric, unit, stack});
-	if (ent.speed.alternate && ent.speed.alternate[prop]) ent.speed.alternate[prop].forEach(speed => Parser._getSpeedString_addSpeed({prop, speed, isMetric, unit, stack}));
+Parser._getSpeedString_addSpeedMode = ({ent, prop, stack, isMetric, isSkipZeroWalk, unit, styleHint}) => {
+	if (ent.speed[prop] || (!isSkipZeroWalk && prop === "walk")) Parser._getSpeedString_addSpeed({prop, speed: ent.speed[prop] || 0, isMetric, unit, stack, styleHint});
+	if (ent.speed.alternate && ent.speed.alternate[prop]) ent.speed.alternate[prop].forEach(speed => Parser._getSpeedString_addSpeed({prop, speed, isMetric, unit, stack, styleHint}));
 };
-Parser._getSpeedString_addSpeed = ({prop, speed, isMetric, unit, stack}) => {
-	const ptName = prop === "walk" ? "" : `${prop} `;
+Parser._getSpeedString_addSpeed = ({prop, speed, isMetric, unit, stack, styleHint}) => {
+	const ptName = prop === "walk" ? "" : `${prop[styleHint === "classic" ? "toString" : "toTitleCase"]()} `;
 	const ptValue = Parser._getSpeedString_getVal({prop, speed, isMetric});
 	const ptUnit = speed === true ? "" : ` ${unit}`;
 	const ptCondition = Parser._getSpeedString_getCondition({speed});
@@ -28719,7 +28729,14 @@ Parser.itemValueToFull = function (item, opts = {isShortForm: false, isSmallUnit
 	return Parser._moneyToFull(item, "value", "valueMult", opts);
 };
 
-Parser.itemValueToFullMultiCurrency = function (item, opts = {isShortForm: false, isSmallUnits: false}) {
+/**
+ * @param item
+ * @param {object} [opts]
+ * @param {?boolean} [opts.isShortForm]
+ * @param {?boolean} [opts.isSmallUnits]
+ * @param {?number} [opts.multiplier]
+ */
+Parser.itemValueToFullMultiCurrency = function (item, opts = {isShortForm: false, isSmallUnits: false, multiplier: null}) {
 	return Parser._moneyToFullMultiCurrency(item, "value", "valueMult", opts);
 };
 
@@ -28987,6 +29004,7 @@ Parser.ITM_TYP_ABV__VEHICLE_WATER = "SHP";
 Parser.ITM_TYP_ABV__VEHICLE_SPACE = "SPC";
 Parser.ITM_TYP_ABV__TOOL = "T";
 Parser.ITM_TYP_ABV__TACK_AND_HARNESS = "TAH";
+Parser.ITM_TYP_ABV__TRADE_BAR = "TB";
 Parser.ITM_TYP_ABV__TRADE_GOOD = "TG";
 Parser.ITM_TYP_ABV__VEHICLE_LAND = "VEH";
 Parser.ITM_TYP_ABV__WAND = "WD";
@@ -29055,9 +29073,26 @@ Parser.ITM_TYP__ODND_SPELLCASTING_FOCUS = "SCF|XPHB";
 Parser.ITM_TYP__ODND_VEHICLE_WATER = "SHP|XPHB";
 Parser.ITM_TYP__ODND_TOOL = "T|XPHB";
 Parser.ITM_TYP__ODND_TACK_AND_HARNESS = "TAH|XPHB";
+Parser.ITM_TYP__ODND_TRADE_BAR = "TB|XDMG";
 Parser.ITM_TYP__ODND_TRADE_GOOD = "TG|XDMG";
 Parser.ITM_TYP__ODND_VEHICLE_LAND = "VEH|XPHB";
 Parser.ITM_TYP__ODND_WAND = "WD|XDMG";
+
+Parser.ITM_RARITY_TO_SHORT = {
+	"common": "Com.",
+	"uncommon": "Unc.",
+	"rare": "Rare",
+	"very rare": "V.Rare",
+	"legendary": "Leg.",
+	"artifact": "Art.",
+	"varies": "Var.",
+};
+Parser.itemRarityToShort = function (rarity) {
+	if (!rarity) return rarity;
+	if (Parser.ITM_RARITY_TO_SHORT[rarity]) return Parser.ITM_RARITY_TO_SHORT[rarity];
+	if (rarity.length <= 4) return rarity.toTitleCase();
+	return `${rarity.toTitleCase().slice(0, 3)}.`;
+};
 
 Parser._decimalSeparator = (0.1).toLocaleString().substring(1, 2);
 Parser._numberCleanRegexp = Parser._decimalSeparator === "." ? new RegExp(/[\s,]*/g, "g") : new RegExp(/[\s.]*/g, "g");
@@ -29087,53 +29122,69 @@ Parser.weightValueToNumber = function (value) {
 	else throw new Error(`Badly formatted value ${value}`);
 };
 
-Parser.dmgTypeToFull = function (dmgType) {
-	return Parser._parse_aToB(Parser.DMGTYPE_JSON_TO_FULL, dmgType);
+Parser.dmgTypeToFull = function (dmgType, {styleHint = null} = {}) {
+	if (!dmgType) return dmgType;
+
+	styleHint ||= VetoolsConfig.get("styleSwitcher", "style");
+
+	const out = Parser._parse_aToB(Parser.DMGTYPE_JSON_TO_FULL, dmgType);
+	if (styleHint !== "classic") return out.toTitleCase();
+	return out;
 };
 
 Parser.skillProficienciesToFull = function (skillProficiencies, {styleHint = null} = {}) {
 	styleHint ||= VetoolsConfig.get("styleSwitcher", "style");
 
-	const ptSource = styleHint === "classic" ? Parser.SRC_PHB : Parser.SRC_XPHB;
+	const ptSourceDefault = styleHint === "classic" ? Parser.SRC_PHB : Parser.SRC_XPHB;
 
-	function renderSingle (skProf) {
-		if (skProf.any) {
-			skProf = MiscUtil.copyFast(skProf);
-			skProf.choose = {"from": Object.keys(Parser.SKILL_TO_ATB_ABV), "count": skProf.any};
-			delete skProf.any;
-		}
+	const getRenderedSkill = uid => {
+		const unpacked = DataUtil.proxy.unpackUid("skill", uid, "skill");
+		const ptSource = uid.includes("|")
+			? unpacked.source
+			: unpacked.source.toLowerCase() === Parser.SRC_PHB.toLowerCase()
+				? ptSourceDefault
+				: unpacked.source;
+		return Renderer.get().render(`{@skill ${unpacked.name.toTitleCase()}|${ptSource}}`);
+	};
 
-		const keys = Object.keys(skProf).sort(SortUtil.ascSortLower);
-
-		const ixChoose = keys.indexOf("choose");
-		if (~ixChoose) keys.splice(ixChoose, 1);
-
-		const baseStack = [];
-		keys.filter(k => skProf[k]).forEach(k => baseStack.push(Renderer.get().render(`{@skill ${k.toTitleCase()}|${ptSource}}`)));
-
-		let ptChoose = "";
-		if (~ixChoose) {
-			const chObj = skProf.choose;
-			const count = chObj.count ?? 1;
-			if (chObj.from.length === 18) {
-				ptChoose = styleHint === "classic"
-					? `choose any ${count === 1 ? "skill" : chObj.count}`
-					: `Choose ${chObj.count}`;
-			} else {
-				ptChoose = styleHint === "classic"
-					? `choose ${count} from ${chObj.from.map(it => Renderer.get().render(`{@skill ${it.toTitleCase()}|${ptSource}}`)).joinConjunct(", ", " and ")}`
-					: Renderer.get().render(`{@i Choose ${count}:} ${chObj.from.map(it => `{@skill ${it.toTitleCase()}|${ptSource}}`).joinConjunct(", ", " or ")}`);
+	return skillProficiencies
+		.map(skProf => {
+			if (skProf.any) {
+				skProf = MiscUtil.copyFast(skProf);
+				skProf.choose = {"from": Object.keys(Parser.SKILL_TO_ATB_ABV), "count": skProf.any};
+				delete skProf.any;
 			}
-		}
 
-		const base = baseStack.joinConjunct(", ", " and ");
+			const keys = Object.keys(skProf).sort(SortUtil.ascSortLower);
 
-		if (baseStack.length && ptChoose.length) return `${base}; and ${ptChoose}`;
-		else if (baseStack.length) return base;
-		else if (ptChoose.length) return ptChoose;
-	}
+			const ixChoose = keys.indexOf("choose");
+			if (~ixChoose) keys.splice(ixChoose, 1);
 
-	return skillProficiencies.map(renderSingle).join(` <i>or</i> `);
+			const baseStack = [];
+			keys.filter(k => skProf[k]).forEach(k => baseStack.push(getRenderedSkill(k)));
+
+			let ptChoose = "";
+			if (~ixChoose) {
+				const chObj = skProf.choose;
+				const count = chObj.count ?? 1;
+				if (chObj.from.length === 18) {
+					ptChoose = styleHint === "classic"
+						? `choose any ${count === 1 ? "skill" : chObj.count}`
+						: `Choose ${chObj.count}`;
+				} else {
+					ptChoose = styleHint === "classic"
+						? `choose ${count} from ${chObj.from.map(it => getRenderedSkill(it)).joinConjunct(", ", " and ")}`
+						: Renderer.get().render(`{@i Choose ${count}:} ${chObj.from.map(it => getRenderedSkill(it)).joinConjunct(", ", " or ")}`);
+				}
+			}
+
+			const base = baseStack.joinConjunct(", ", " and ");
+
+			if (baseStack.length && ptChoose.length) return `${base}; and ${ptChoose}`;
+			else if (baseStack.length) return base;
+			else if (ptChoose.length) return ptChoose;
+		})
+		.join(` <i>or</i> `);
 };
 
 // sp-prefix functions are for parsing spell data, and shared with the roll20 script
@@ -29418,10 +29469,12 @@ Parser.UNT_LBS = "lbs";
 Parser.UNT_TONS_IMPERIAL = "tns";
 Parser.UNT_TONS_METRIC = "Mg";
 
+Parser.UNT_INCHES = "inches";
 Parser.UNT_FEET = "feet";
 Parser.UNT_YARDS = "yards";
 Parser.UNT_MILES = "miles";
 Parser.SP_DIST_TYPE_TO_FULL = {
+	[Parser.UNT_INCHES]: "Inches",
 	[Parser.UNT_FEET]: "Feet",
 	[Parser.UNT_YARDS]: "Yards",
 	[Parser.UNT_MILES]: "Miles",
@@ -29482,6 +29535,7 @@ Parser.spRangeToShortHtml._renderPoint = function (range) {
 		case Parser.RNG_UNLIMITED_SAME_PLANE:
 		case Parser.RNG_SPECIAL:
 		case Parser.RNG_TOUCH: return `<span class="fas fa-fw ${Parser.spRangeTypeToIcon(dist.type)} help-subtle" title="${Parser.spRangeTypeToFull(dist.type)}"></span>`;
+		case Parser.UNT_INCHES:
 		case Parser.UNT_FEET:
 		case Parser.UNT_YARDS:
 		case Parser.UNT_MILES:
@@ -29521,6 +29575,7 @@ Parser.spRangeToFull._renderPoint = function (range) {
 		case Parser.RNG_UNLIMITED_SAME_PLANE:
 		case Parser.RNG_SPECIAL:
 		case Parser.RNG_TOUCH: return Parser.spRangeTypeToFull(dist.type);
+		case Parser.UNT_INCHES:
 		case Parser.UNT_FEET:
 		case Parser.UNT_YARDS:
 		case Parser.UNT_MILES:
@@ -29543,6 +29598,8 @@ Parser.spRangeToFull._getAreaStyleString = function (range) {
 
 Parser.getSingletonUnit = function (unit, isShort) {
 	switch (unit) {
+		case Parser.UNT_INCHES:
+			return isShort ? "in." : "inch";
 		case Parser.UNT_FEET:
 			return isShort ? "ft." : "foot";
 		case Parser.UNT_YARDS:
@@ -29567,33 +29624,16 @@ Parser._getSingletonUnit_prereleaseBrew = function ({unit, isShort, brewUtil}) {
 	if (fromBrew) return fromBrew;
 };
 
-Parser.RANGE_TYPES = [
-	{type: Parser.RNG_POINT, hasDistance: true, isRequireAmount: false},
+Parser.getInchesToFull = function (inches, {isShort = false} = {}) {
+	const feet = Math.floor(inches / 12);
+	inches = inches % 12;
 
-	{type: Parser.RNG_LINE, hasDistance: true, isRequireAmount: true},
-	{type: Parser.RNG_CUBE, hasDistance: true, isRequireAmount: true},
-	{type: Parser.RNG_CONE, hasDistance: true, isRequireAmount: true},
-	{type: Parser.RNG_EMANATION, hasDistance: true, isRequireAmount: true},
-	{type: Parser.RNG_RADIUS, hasDistance: true, isRequireAmount: true},
-	{type: Parser.RNG_SPHERE, hasDistance: true, isRequireAmount: true},
-	{type: Parser.RNG_HEMISPHERE, hasDistance: true, isRequireAmount: true},
-	{type: Parser.RNG_CYLINDER, hasDistance: true, isRequireAmount: true},
-
-	{type: Parser.RNG_SPECIAL, hasDistance: false, isRequireAmount: false},
-];
-
-Parser.DIST_TYPES = [
-	{type: Parser.RNG_SELF, hasAmount: false},
-	{type: Parser.RNG_TOUCH, hasAmount: false},
-
-	{type: Parser.UNT_FEET, hasAmount: true},
-	{type: Parser.UNT_YARDS, hasAmount: true},
-	{type: Parser.UNT_MILES, hasAmount: true},
-
-	{type: Parser.RNG_SIGHT, hasAmount: false},
-	{type: Parser.RNG_UNLIMITED_SAME_PLANE, hasAmount: false},
-	{type: Parser.RNG_UNLIMITED, hasAmount: false},
-];
+	return [
+		feet ? `${feet} ${isShort ? `ft.` : !feet ? Parser.getSingletonUnit(Parser.UNT_FEET) : Parser.UNT_FEET}` : null,
+		inches ? `${Parser.numberToVulgar(inches)} ${isShort ? `in.` : !inches ? Parser.getSingletonUnit(Parser.UNT_INCHES) : Parser.UNT_INCHES}` : null,
+	].filter(Boolean)
+		.join(" ");
+};
 
 Parser.spComponentsToFull = function (comp, level, {isPlainText = false} = {}) {
 	if (!comp) return "None";
@@ -29617,32 +29657,13 @@ Parser.spEndTypeToFull = function (type) {
 	return Parser._parse_aToB(Parser.SP_END_TYPE_TO_FULL, type);
 };
 
-Parser.spDurationToFull = function (dur) {
-	let hasSubOr = false;
+Parser.spDurationToFull = function (durations, {isPlainText = false, styleHint} = {}) {
+	styleHint ||= VetoolsConfig.get("styleSwitcher", "style");
 
-	const outParts = dur
-		.map(d => {
-			const ptCondition = d.condition ? ` (${d.condition})` : "";
+	const entriesMeta = Renderer.generic.getRenderableDurationEntriesMeta(durations, {styleHint});
 
-			switch (d.type) {
-				case "special":
-					if (d.concentration) return `Concentration${ptCondition}`;
-					return `Special${ptCondition}`;
-				case "instant":
-					return `Instantaneous${ptCondition}`;
-				case "timed":
-					return `${d.concentration ? "Concentration, " : ""}${d.concentration ? "u" : d.duration.upTo ? "U" : ""}${d.concentration || d.duration.upTo ? "p to " : ""}${d.duration.amount} ${d.duration.amount === 1 ? d.duration.type : `${d.duration.type}s`}${ptCondition}`;
-				case "permanent": {
-					if (!d.ends) return `Permanent${ptCondition}`;
-
-					const endsToJoin = d.ends.map(m => Parser.spEndTypeToFull(m));
-					hasSubOr = hasSubOr || endsToJoin.length > 1;
-					return `Until ${endsToJoin.joinConjunct(", ", " or ")}${ptCondition}`;
-				}
-			}
-		});
-
-	return `${outParts.joinConjunct(hasSubOr ? "; " : ", ", " or ")}${dur.length > 1 ? " (see below)" : ""}`;
+	if (isPlainText) return Renderer.stripTags(entriesMeta.entryDuration);
+	return Renderer.get().render(entriesMeta.entryDuration);
 };
 
 Parser.DURATION_TYPES = [
@@ -29734,43 +29755,44 @@ Parser.spAttackTypeToFull = function (type) {
 };
 
 Parser.SPELL_AREA_TYPE_TO_FULL = {
-	ST: "Single Target",
-	MT: "Multiple Targets",
-	C: "Cube",
-	N: "Cone",
-	Y: "Cylinder",
-	S: "Sphere",
-	R: "Circle",
-	Q: "Square",
-	L: "Line",
-	H: "Hemisphere",
-	W: "Wall",
+	"ST": "Single Target",
+	"MT": "Multiple Targets",
+	"C": "Cube",
+	"N": "Cone",
+	"Y": "Cylinder",
+	"S": "Sphere",
+	"R": "Circle",
+	"Q": "Square",
+	"L": "Line",
+	"H": "Hemisphere",
+	"W": "Wall",
 };
 Parser.spAreaTypeToFull = function (type) {
 	return Parser._parse_aToB(Parser.SPELL_AREA_TYPE_TO_FULL, type);
 };
 
 Parser.SP_MISC_TAG_TO_FULL = {
-	HL: "Healing",
-	THP: "Grants Temporary Hit Points",
-	SGT: "Requires Sight",
-	PRM: "Permanent Effects",
-	SCL: "Scaling Effects",
-	SMN: "Summons Creature",
-	MAC: "Modifies AC",
-	TP: "Teleportation",
-	FMV: "Forced Movement",
-	RO: "Rollable Effects",
-	LGTS: "Creates Sunlight",
-	LGT: "Creates Light",
-	UBA: "Uses Bonus Action",
-	PS: "Plane Shifting",
-	OBS: "Obscures Vision",
-	DFT: "Difficult Terrain",
-	AAD: "Additional Attack Damage",
-	OBJ: "Affects Objects",
-	ADV: "Grants Advantage",
-	PIR: "Permanent If Repeated",
+	"HL": "Healing",
+	"THP": "Grants Temporary Hit Points",
+	"SGT": "Requires Sight",
+	"PRM": "Permanent Effects",
+	"SCL": "Scaling Effects",
+	"SCT": "Scaling Targets",
+	"SMN": "Summons Creature",
+	"MAC": "Modifies AC",
+	"TP": "Teleportation",
+	"FMV": "Forced Movement",
+	"RO": "Rollable Effects",
+	"LGTS": "Creates Sunlight",
+	"LGT": "Creates Light",
+	"UBA": "Uses Bonus Action",
+	"PS": "Plane Shifting",
+	"OBS": "Obscures Vision",
+	"DFT": "Difficult Terrain",
+	"AAD": "Additional Attack Damage",
+	"OBJ": "Affects Objects",
+	"ADV": "Grants Advantage",
+	"PIR": "Permanent If Repeated",
 };
 Parser.spMiscTagToFull = function (type) {
 	return Parser._parse_aToB(Parser.SP_MISC_TAG_TO_FULL, type);
@@ -30006,6 +30028,7 @@ Parser.MON_LANGUAGE_TAG_TO_FULL = {
 	"C": "Common",
 	"CE": "Celestial",
 	"CS": "Can't Speak Known Languages",
+	"CSL": "Common Sign Language",
 	"D": "Dwarvish",
 	"DR": "Draconic",
 	"DS": "Deep Speech",
@@ -30091,7 +30114,10 @@ Parser.FEAT_CATEGORY_TO_FULL = {
 };
 
 Parser.featCategoryToFull = (category) => {
-	return Parser._parse_aToB(Parser.FEAT_CATEGORY_TO_FULL, category) || category;
+	if (Parser.FEAT_CATEGORY_TO_FULL[category]) return Parser.FEAT_CATEGORY_TO_FULL[category];
+	if (PrereleaseUtil.getMetaLookup("featCategories")?.[category]) return PrereleaseUtil.getMetaLookup("featCategories")[category];
+	if (BrewUtil2.getMetaLookup("featCategories")?.[category]) return BrewUtil2.getMetaLookup("featCategories")[category];
+	return category;
 };
 
 Parser.featCategoryFromFull = (full) => {
@@ -30276,6 +30302,7 @@ Parser.CAT_ID_SENSES = 51;
 Parser.CAT_ID_DECK = 52;
 Parser.CAT_ID_CARD = 53;
 Parser.CAT_ID_ITEM_MASTERY = 54;
+Parser.CAT_ID_FACILITY = 55;
 
 Parser.CAT_ID_TO_FULL = {};
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_CREATURE] = "Bestiary";
@@ -30330,6 +30357,7 @@ Parser.CAT_ID_TO_FULL[Parser.CAT_ID_RECIPES] = "Recipe";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_STATUS] = "Status";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_DECK] = "Deck";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_CARD] = "Card";
+Parser.CAT_ID_TO_FULL[Parser.CAT_ID_FACILITY] = "Facility";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_SKILLS] = "Skill";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_SENSES] = "Sense";
 Parser.CAT_ID_TO_FULL[Parser.CAT_ID_ITEM_MASTERY] = "Item Mastery";
@@ -30391,6 +30419,7 @@ Parser.CAT_ID_TO_PROP[Parser.CAT_ID_RECIPES] = "recipe";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_STATUS] = "status";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_DECK] = "deck";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_CARD] = "card";
+Parser.CAT_ID_TO_PROP[Parser.CAT_ID_FACILITY] = "facility";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_SKILLS] = "skill";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_SENSES] = "sense";
 Parser.CAT_ID_TO_PROP[Parser.CAT_ID_ITEM_MASTERY] = "itemMastery";
@@ -30543,17 +30572,24 @@ Parser.TRAP_HAZARD_TYPE_TO_FULL = {
 	WLD: "Wilderness Hazard",
 	GEN: "Generic",
 	EST: "Eldritch Storm",
+	TRP: "Trap",
 };
 
-Parser.tierToFullLevel = function (tier) {
-	return Parser._parse_aToB(Parser.TIER_TO_FULL_LEVEL, tier);
+Parser._TIER_TO_LEVEL_RANGE = {
+	"1": [1, 4],
+	"2": [5, 10],
+	"3": [11, 16],
+	"4": [17, 20],
 };
+Parser.tierToFullLevel = function (tier, {styleHint} = {}) {
+	const range = Parser._parse_aToB(Parser._TIER_TO_LEVEL_RANGE, tier);
+	if (!range) return `Tier ${tier}`;
 
-Parser.TIER_TO_FULL_LEVEL = {};
-Parser.TIER_TO_FULL_LEVEL[1] = "1st\u20134th Level";
-Parser.TIER_TO_FULL_LEVEL[2] = "5th\u201310th Level";
-Parser.TIER_TO_FULL_LEVEL[3] = "11th\u201316th Level";
-Parser.TIER_TO_FULL_LEVEL[4] = "17th\u201320th Level";
+	styleHint ||= VetoolsConfig.get("styleSwitcher", "style");
+
+	if (styleHint === "classic") return `${range.map(n => Parser.getOrdinalForm(n)).join("\u2013")} Level`;
+	return `Levels ${range.join("\u2013")}`;
+};
 
 Parser.trapInitToFull = function (init) {
 	return Parser._parse_aToB(Parser.TRAP_INIT_TO_FULL, init);
@@ -30942,10 +30978,12 @@ Parser.SRC_SCREEN = "Screen";
 Parser.SRC_SCREEN_WILDERNESS_KIT = "ScreenWildernessKit";
 Parser.SRC_SCREEN_DUNGEON_KIT = "ScreenDungeonKit";
 Parser.SRC_SCREEN_SPELLJAMMER = "ScreenSpelljammer";
+Parser.SRC_XSCREEN = "XScreen";
 Parser.SRC_HF = "HF";
 Parser.SRC_HFFotM = "HFFotM";
 Parser.SRC_HFStCM = "HFStCM";
 Parser.SRC_PaF = "PaF";
+Parser.SRC_HFDoMM = "HFDoMM";
 Parser.SRC_CM = "CM";
 Parser.SRC_NRH = "NRH";
 Parser.SRC_NRH_TCMC = "NRH-TCMC";
@@ -30967,6 +31005,8 @@ Parser.SRC_PiP = "PiP";
 Parser.SRC_DitLCoT = "DitLCoT";
 Parser.SRC_VNotEE = "VNotEE";
 Parser.SRC_LRDT = "LRDT";
+Parser.SRC_UtHftLH = "UtHftLH";
+Parser.SRC_ScoEE = "ScoEE";
 
 Parser.SRC_AL_PREFIX = "AL";
 
@@ -31128,10 +31168,12 @@ Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCREEN] = "Dungeon Master's Screen";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCREEN_WILDERNESS_KIT] = "Dungeon Master's Screen: Wilderness Kit";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCREEN_DUNGEON_KIT] = "Dungeon Master's Screen: Dungeon Kit";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_SCREEN_SPELLJAMMER] = "Dungeon Master's Screen: Spelljammer";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_XSCREEN] = "Dungeon Master's Screen (2024)";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HF] = "Heroes' Feast";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HFFotM] = "Heroes' Feast: Flavors of the Multiverse";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HFStCM] = "Heroes' Feast: Saving the Childrens Menu";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PaF] = "Puncheons and Flagons";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_HFDoMM] = "Heroes' Feast: The Deck of Many Morsels";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_CM] = "Candlekeep Mysteries";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_NRH] = Parser.NRH_NAME;
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_NRH_TCMC] = `${Parser.NRH_NAME}: The Candy Mountain Caper`;
@@ -31153,6 +31195,8 @@ Parser.SOURCE_JSON_TO_FULL[Parser.SRC_PiP] = "Peril in Pinebrook";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_DitLCoT] = "Descent into the Lost Caverns of Tsojcanth";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_VNotEE] = "Vecna: Nest of the Eldritch Eye";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_LRDT] = "Red Dragon's Tale: A LEGO Adventure";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_UtHftLH] = "Uni and the Hunt for the Lost Horn";
+Parser.SOURCE_JSON_TO_FULL[Parser.SRC_ScoEE] = "Scions of Elemental Evil";
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_ALCoS] = `${Parser.AL_PREFIX}Curse of Strahd`;
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_ALEE] = `${Parser.AL_PREFIX}Elemental Evil`;
 Parser.SOURCE_JSON_TO_FULL[Parser.SRC_ALRoD] = `${Parser.AL_PREFIX}Rage of Demons`;
@@ -31285,14 +31329,16 @@ Parser.SOURCE_JSON_TO_ABV[Parser.SRC_XPHB] = "PHB'24";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_XDMG] = "DMG'24";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_XMM] = "MM'25";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_TD] = "TD";
-Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCREEN] = "Screen";
-Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCREEN_WILDERNESS_KIT] = "ScWild";
-Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCREEN_DUNGEON_KIT] = "ScDun";
-Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCREEN_SPELLJAMMER] = "ScSJ";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCREEN] = "Scr'14";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCREEN_WILDERNESS_KIT] = "ScrWild";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCREEN_DUNGEON_KIT] = "ScrDun";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_SCREEN_SPELLJAMMER] = "ScrSJ";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_XSCREEN] = "Scr'24";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HF] = "HF";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HFFotM] = "HFFotM";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HFStCM] = "HFStCM";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PaF] = "PaF";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_HFDoMM] = "HFDoMM";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_CM] = "CM";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_NRH] = "NRH";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_NRH_TCMC] = "NRH-TCMC";
@@ -31314,6 +31360,8 @@ Parser.SOURCE_JSON_TO_ABV[Parser.SRC_PiP] = "PiP";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_DitLCoT] = "DitLCoT";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_VNotEE] = "VNotEE";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_LRDT] = "LRDT";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_UtHftLH] = "UHftLH";
+Parser.SOURCE_JSON_TO_ABV[Parser.SRC_ScoEE] = "ScoEE";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_ALCoS] = "ALCoS";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_ALEE] = "ALEE";
 Parser.SOURCE_JSON_TO_ABV[Parser.SRC_ALRoD] = "ALRoD";
@@ -31449,10 +31497,12 @@ Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCREEN] = "2015-01-20";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCREEN_WILDERNESS_KIT] = "2020-11-17";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCREEN_DUNGEON_KIT] = "2020-09-21";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_SCREEN_SPELLJAMMER] = "2022-08-16";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_XSCREEN] = "2024-11-12";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HF] = "2020-10-27";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HFFotM] = "2023-11-07";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HFStCM] = "2023-11-21";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PaF] = "2024-08-27";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_HFDoMM] = "2024-10-01";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_CM] = "2021-03-16";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_NRH] = "2021-09-01";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_NRH_TCMC] = "2021-09-01";
@@ -31474,6 +31524,8 @@ Parser.SOURCE_JSON_TO_DATE[Parser.SRC_PiP] = "2023-11-20";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_DitLCoT] = "2024-03-26";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_VNotEE] = "2024-04-16";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_LRDT] = "2024-04-01";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_UtHftLH] = "2024-09-24";
+Parser.SOURCE_JSON_TO_DATE[Parser.SRC_ScoEE] = "2024-10-24";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_ALCoS] = "2016-03-15";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_ALEE] = "2015-04-07";
 Parser.SOURCE_JSON_TO_DATE[Parser.SRC_ALRoD] = "2015-09-15";
@@ -31574,6 +31626,8 @@ Parser.SOURCES_ADVENTURES = new Set([
 	Parser.SRC_DitLCoT,
 	Parser.SRC_VNotEE,
 	Parser.SRC_LRDT,
+	Parser.SRC_UtHftLH,
+	Parser.SRC_ScoEE,
 	Parser.SRC_HFStCM,
 	Parser.SRC_GHLoE,
 	Parser.SRC_DoDk,
@@ -31625,6 +31679,8 @@ Parser.SOURCES_NON_STANDARD_WOTC = new Set([
 	Parser.SRC_CoA,
 	Parser.SRC_PiP,
 	Parser.SRC_HFStCM,
+	Parser.SRC_UtHftLH,
+	Parser.SRC_ScoEE,
 ]);
 Parser.SOURCES_PARTNERED_WOTC = new Set([
 	Parser.SRC_RMBRE,
@@ -31647,8 +31703,9 @@ Parser.SOURCES_PARTNERED_WOTC = new Set([
 ]);
 Parser.SOURCES_LEGACY_WOTC = new Set([
 	Parser.SRC_PHB,
-	// Parser.SRC_DMG, // TODO(XDMG)
+	Parser.SRC_DMG,
 	// Parser.SRC_MM, // TODO(XMM)
+	Parser.SRC_SCREEN,
 	Parser.SRC_EEPC,
 	Parser.SRC_VGM,
 	Parser.SRC_MTF,
@@ -31673,7 +31730,8 @@ Parser.SOURCES_VANILLA = new Set([
 	Parser.SRC_TCE,
 	Parser.SRC_FTD,
 	Parser.SRC_MPMM,
-	Parser.SRC_SCREEN,
+	// Parser.SRC_SCREEN, // "Legacy" source, removed in favor of XSCREEN
+	Parser.SRC_XSCREEN,
 	Parser.SRC_SCREEN_WILDERNESS_KIT,
 	Parser.SRC_SCREEN_DUNGEON_KIT,
 	Parser.SRC_VD,
@@ -31701,6 +31759,8 @@ Parser.SOURCES_COMEDY = new Set([
 	Parser.SRC_LK,
 	Parser.SRC_PiP,
 	Parser.SRC_LRDT,
+	Parser.SRC_UtHftLH,
+	Parser.SRC_ScoEE,
 ]);
 
 // Any opinionated set of sources that are "other settings"
@@ -31742,6 +31802,8 @@ Parser.SOURCES_NON_FR = new Set([
 	Parser.SRC_HWAitW,
 	Parser.SRC_ToB1_2023,
 	Parser.SRC_LRDT,
+	Parser.SRC_UtHftLH,
+	Parser.SRC_ScoEE,
 ]);
 
 // endregion
@@ -31789,6 +31851,7 @@ Parser.SOURCES_AVAILABLE_DOCS_BOOK = {};
 	Parser.SRC_XPHB,
 	Parser.SRC_XMM,
 	Parser.SRC_XDMG,
+	Parser.SRC_XSCREEN,
 	Parser.SRC_TD,
 ].forEach(src => {
 	Parser.SOURCES_AVAILABLE_DOCS_BOOK[src] = src;
@@ -31889,6 +31952,8 @@ Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE = {};
 	Parser.SRC_LRDT,
 	Parser.SRC_VEoR,
 	Parser.SRC_VNotEE,
+	Parser.SRC_UtHftLH,
+	Parser.SRC_ScoEE,
 ].forEach(src => {
 	Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[src] = src;
 	Parser.SOURCES_AVAILABLE_DOCS_ADVENTURE[src.toLowerCase()] = src;
@@ -31917,6 +31982,19 @@ Parser.PROP_TO_TAG = {
 Parser.getPropTag = function (prop) {
 	if (Parser.PROP_TO_TAG[prop]) return Parser.PROP_TO_TAG[prop];
 	return prop;
+};
+
+// Note that ordering is important; we expect the "primary" prop to be first
+Parser.TAG_TO_PROPS = {
+	"creature": ["monster"],
+	"optfeature": ["optionalfeature"],
+	"table": ["table", "tableGroup"],
+	"vehupgrade": ["vehicleUpgrade"],
+	"item": ["item", "baseitem", "itemGroup", "magicvariant"],
+};
+Parser.getTagProps = function (tag) {
+	if (Parser.TAG_TO_PROPS[tag]) return Parser.TAG_TO_PROPS[tag];
+	return [tag];
 };
 
 Parser.PROP_TO_DISPLAY_NAME = {
@@ -31987,6 +32065,8 @@ Parser.metric = {
 	FEET_TO_METRES: 0.3, // 5 ft = 1.5 m
 	YARDS_TO_METRES: 0.9, // (as above)
 	POUNDS_TO_KILOGRAMS: 0.5, // 2 lb = 1 kg
+	// Other additions
+	INCHES_TO_CENTIMETERS: 2.5, // 1 in = 2.5 cm
 
 	getMetricNumber ({originalValue, originalUnit, toFixed = null}) {
 		if (originalValue == null || isNaN(originalValue)) return originalValue;
@@ -31996,6 +32076,7 @@ Parser.metric = {
 
 		let out = null;
 		switch (originalUnit) {
+			case "in.": case "in": case Parser.UNT_INCHES: out = originalValue * Parser.metric.INCHES_TO_CENTIMETERS; break;
 			case "ft.": case "ft": case Parser.UNT_FEET: out = originalValue * Parser.metric.FEET_TO_METRES; break;
 			case "yd.": case "yd": case Parser.UNT_YARDS: out = originalValue * Parser.metric.YARDS_TO_METRES; break;
 			case "mi.": case "mi": case Parser.UNT_MILES: out = originalValue * Parser.metric.MILES_TO_KILOMETRES; break;
@@ -32008,6 +32089,7 @@ Parser.metric = {
 
 	getMetricUnit ({originalUnit, isShortForm = false, isPlural = true}) {
 		switch (originalUnit) {
+			case "in.": case "in": case Parser.UNT_INCHES: return isShortForm ? "cm" : `centimeter`[isPlural ? "toPlural" : "toString"]();
 			case "ft.": case "ft": case Parser.UNT_FEET: return isShortForm ? "m" : `meter`[isPlural ? "toPlural" : "toString"]();
 			case "yd.": case "yd": case Parser.UNT_YARDS: return isShortForm ? "m" : `meter`[isPlural ? "toPlural" : "toString"]();
 			case "mi.": case "mi": case Parser.UNT_MILES: return isShortForm ? "km" : `kilometre`[isPlural ? "toPlural" : "toString"]();
@@ -32039,7 +32121,7 @@ Parser.mapGridTypeToFull = function (gridType) {
 EXT_LIB_SCRIPTS.push((function lib_script_4 () {
 // in deployment, `IS_DEPLOYED = "<version number>";` should be set below.
 globalThis.IS_DEPLOYED = undefined;
-globalThis.VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"2.1.0"/* 5ETOOLS_VERSION__CLOSE */;
+globalThis.VERSION_NUMBER = /* 5ETOOLS_VERSION__OPEN */"2.5.4"/* 5ETOOLS_VERSION__CLOSE */;
 globalThis.DEPLOYED_IMG_ROOT = undefined;
 // for the roll20 script to set
 globalThis.IS_VTT = false;
@@ -32129,42 +32211,25 @@ String.prototype.lowercaseFirst = String.prototype.lowercaseFirst || function ()
 };
 
 String.prototype.toTitleCase = String.prototype.toTitleCase || function () {
-	let str = this.replace(/([^\W_]+[^-\u2014\s/]*) */g, m0 => m0.charAt(0).toUpperCase() + m0.substring(1).toLowerCase());
+	// region Initialize regexed
+	StrUtil._TITLE_RE_INITIAL ??= /(\w+[^-\u2014\s/]*) */g;
+	StrUtil._TITLE_RE_SPLIT_PUNCT ??= /([;:?!.])/g;
+	StrUtil._TITLE_RE_POST_PUNCT ??= /^(\s*)(\S)/;
 
 	// Require space surrounded, as title-case requires a full word on either side
-	StrUtil._TITLE_LOWER_WORDS_RE = StrUtil._TITLE_LOWER_WORDS_RE || StrUtil.TITLE_LOWER_WORDS.map(it => new RegExp(`\\s${it}\\s`, "gi"));
-	StrUtil._TITLE_UPPER_WORDS_RE = StrUtil._TITLE_UPPER_WORDS_RE || StrUtil.TITLE_UPPER_WORDS.map(it => new RegExp(`\\b${it}\\b`, "g"));
-	StrUtil._TITLE_UPPER_WORDS_PLURAL_RE = StrUtil._TITLE_UPPER_WORDS_PLURAL_RE || StrUtil.TITLE_UPPER_WORDS_PLURAL.map(it => new RegExp(`\\b${it}\\b`, "g"));
+	StrUtil._TITLE_LOWER_WORDS_RE ??= RegExp(`\\s(${StrUtil.TITLE_LOWER_WORDS.join("|")})(?=\\s)`, "gi");
+	StrUtil._TITLE_UPPER_WORDS_RE ??= RegExp(`\\b(${StrUtil.TITLE_UPPER_WORDS.join("|")})\\b`, "g");
+	StrUtil._TITLE_UPPER_WORDS_PLURAL_RE ??= RegExp(`\\b(${StrUtil.TITLE_UPPER_WORDS_PLURAL.join("|")})\\b`, "g");
+	// endregion
 
-	const len = StrUtil.TITLE_LOWER_WORDS.length;
-	for (let i = 0; i < len; i++) {
-		str = str.replace(
-			StrUtil._TITLE_LOWER_WORDS_RE[i],
-			txt => txt.toLowerCase(),
-		);
-	}
-
-	const len1 = StrUtil.TITLE_UPPER_WORDS.length;
-	for (let i = 0; i < len1; i++) {
-		str = str.replace(
-			StrUtil._TITLE_UPPER_WORDS_RE[i],
-			StrUtil.TITLE_UPPER_WORDS[i].toUpperCase(),
-		);
-	}
-
-	for (let i = 0; i < len1; i++) {
-		str = str.replace(
-			StrUtil._TITLE_UPPER_WORDS_PLURAL_RE[i],
-			`${StrUtil.TITLE_UPPER_WORDS_PLURAL[i].slice(0, -1).toUpperCase()}${StrUtil.TITLE_UPPER_WORDS_PLURAL[i].slice(-1).toLowerCase()}`,
-		);
-	}
-
-	str = str
-		.split(/([;:?!.])/g)
-		.map(pt => pt.replace(/^(\s*)([^\s])/, (...m) => `${m[1]}${m[2].toUpperCase()}`))
+	return this
+		.replace(StrUtil._TITLE_RE_INITIAL, m0 => m0.charAt(0).toUpperCase() + m0.substring(1).toLowerCase())
+		.replace(StrUtil._TITLE_LOWER_WORDS_RE, (...m) => m[0].toLowerCase())
+		.replace(StrUtil._TITLE_UPPER_WORDS_RE, (...m) => m[0].toUpperCase())
+		.replace(StrUtil._TITLE_UPPER_WORDS_PLURAL_RE, (...m) => `${m[0].slice(0, -1).toUpperCase()}${m[0].slice(-1).toLowerCase()}`)
+		.split(StrUtil._TITLE_RE_SPLIT_PUNCT)
+		.map(pt => pt.replace(StrUtil._TITLE_RE_POST_PUNCT, (...m) => `${m[1]}${m[2].toUpperCase()}`))
 		.join("");
-
-	return str;
 };
 
 String.prototype.toSentenceCase = String.prototype.toSentenceCase || function () {
@@ -32191,6 +32256,10 @@ String.prototype.toCamelCase = String.prototype.toCamelCase || function () {
 	}).join("");
 };
 
+String.prototype.toSingle = String.prototype.toSingle || function () {
+	return this.replace(/i?e?s$/i, "");
+};
+
 String.prototype.toPlural = String.prototype.toPlural || function () {
 	let plural;
 	if (StrUtil.IRREGULAR_PLURAL_WORDS[this.toLowerCase()]) plural = StrUtil.IRREGULAR_PLURAL_WORDS[this.toLowerCase()];
@@ -32205,7 +32274,7 @@ String.prototype.toPlural = String.prototype.toPlural || function () {
 };
 
 String.prototype.escapeQuotes = String.prototype.escapeQuotes || function () {
-	return this.replace(/'/g, `&apos;`).replace(/"/g, `&quot;`).replace(/</g, `&lt;`).replace(/>/g, `&gt;`);
+	return this.replace(/&/g, `&amp;`).replace(/'/g, `&apos;`).replace(/"/g, `&quot;`).replace(/</g, `&lt;`).replace(/>/g, `&gt;`);
 };
 
 String.prototype.qq = String.prototype.qq || function () {
@@ -32213,7 +32282,7 @@ String.prototype.qq = String.prototype.qq || function () {
 };
 
 String.prototype.unescapeQuotes = String.prototype.unescapeQuotes || function () {
-	return this.replace(/&apos;/g, `'`).replace(/&quot;/g, `"`).replace(/&lt;/g, `<`).replace(/&gt;/g, `>`);
+	return this.replace(/&apos;/g, `'`).replace(/&quot;/g, `"`).replace(/&lt;/g, `<`).replace(/&gt;/g, `>`).replace(/&amp;/g, `&`);
 };
 
 String.prototype.uq = String.prototype.uq || function () {
@@ -32344,7 +32413,7 @@ globalThis.StrUtil = {
 	TITLE_LOWER_WORDS: ["a", "an", "the", "and", "but", "or", "for", "nor", "as", "at", "by", "for", "from", "in", "into", "near", "of", "on", "onto", "to", "with", "over", "von", "between", "per"],
 	// Certain words such as initialisms or acronyms should be left uppercase
 	TITLE_UPPER_WORDS: ["Id", "Tv", "Dm", "Ok", "Npc", "Pc", "Tpk", "Wip", "Dc", "D&d"],
-	TITLE_UPPER_WORDS_PLURAL: ["Ids", "Tvs", "Dms", "Oks", "Npcs", "Pcs", "Tpks", "Wips", "Dcs", "D&d"], // (Manually pluralize, to avoid infinite loop)
+	TITLE_UPPER_WORDS_PLURAL: ["Ids", "Tvs", "Dms", "Oks", "Npcs", "Pcs", "Tpks", "Wips", "Dcs"], // (Manually pluralize, to avoid infinite loop)
 
 	IRREGULAR_PLURAL_WORDS: {
 		"cactus": "cacti",
@@ -32354,6 +32423,7 @@ globalThis.StrUtil = {
 		"dwarf": "dwarves",
 		"efreeti": "efreet",
 		"elf": "elves",
+		"erinyes": "erinyes",
 		"fey": "fey",
 		"foot": "feet",
 		"goose": "geese",
@@ -32865,12 +32935,13 @@ class TemplateUtil {
 
 			const eles = [];
 			let ixArg = 0;
-			const ixEnd = parts.length - 1;
 
 			const raw = parts
 				.reduce((html, p, ix) => {
-					if (ix === 0) html = html.trimStart();
-					if (ix === ixEnd) html = html.trimEnd();
+					// Initial `.reduce` `ix` is 1
+					if (ix === 1) html = html.trimStart();
+					// ...and final `ix` is actually-final-index + 1
+					if (ix === parts.length) html = html.trimEnd();
 
 					const myIxArg = ixArg++;
 					if (args[myIxArg] == null) return `${html}${p}`;
@@ -32881,8 +32952,6 @@ class TemplateUtil {
 			const eleTmpTemplate = document.createElement("template");
 			eleTmpTemplate.innerHTML = raw.trim();
 			const {content: eleTmp} = eleTmpTemplate;
-
-			// debugger
 
 			Array.from(eleTmp.querySelectorAll(`[data-r="true"]`))
 				.forEach((node, i) => node.replaceWith(eles[i]));
@@ -33993,7 +34062,7 @@ globalThis.MiscUtil = class {
 		return new Promise(resolve => setTimeout(() => resolve(resolveAs), msecs));
 	}
 
-	static GENERIC_WALKER_ENTRIES_KEY_BLOCKLIST = new Set(["caption", "type", "colLabels", "colLabelGroups", "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path", "source"]);
+	static GENERIC_WALKER_ENTRIES_KEY_BLOCKLIST = new Set(["caption", "type", "colLabels", "colLabelRows", "name", "colStyles", "style", "shortName", "subclassShortName", "id", "path", "source"]);
 
 	/**
 	 * @param [opts]
@@ -35237,6 +35306,7 @@ UrlUtil.PG_TRAP_FEATURES = "trapfeatures.html";
 UrlUtil.PG_MAPS = "maps.html";
 UrlUtil.PG_SEARCH = "search.html";
 UrlUtil.PG_DECKS = "decks.html";
+UrlUtil.PG_BASTIONS = "bastions.html";
 
 UrlUtil.URL_TO_HASH_GENERIC = (it) => UrlUtil.encodeArrayForHash(it.name, it.source);
 
@@ -35268,6 +35338,7 @@ UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_LANGUAGES] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CHAR_CREATION_OPTIONS] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_RECIPES] = (it) => `${UrlUtil.encodeArrayForHash(it.name, it.source)}${it._scaleFactor ? `${HASH_PART_SEP}${VeCt.HASH_SCALED}${HASH_SUB_KV_SEP}${it._scaleFactor}` : ""}`;
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_DECKS] = UrlUtil.URL_TO_HASH_GENERIC;
+UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BASTIONS] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CLASS_SUBCLASS_FEATURES] = (it) => (it.__prop === "subclassFeature" || it.subclassSource) ? UrlUtil.URL_TO_HASH_BUILDER["subclassFeature"](it) : UrlUtil.URL_TO_HASH_BUILDER["classFeature"](it);
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CREATURE_FEATURES] = UrlUtil.URL_TO_HASH_GENERIC;
 UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_VEHICLE_FEATURES] = UrlUtil.URL_TO_HASH_GENERIC;
@@ -35317,6 +35388,7 @@ UrlUtil.URL_TO_HASH_BUILDER["language"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG
 UrlUtil.URL_TO_HASH_BUILDER["charoption"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_CHAR_CREATION_OPTIONS];
 UrlUtil.URL_TO_HASH_BUILDER["recipe"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_RECIPES];
 UrlUtil.URL_TO_HASH_BUILDER["deck"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_DECKS];
+UrlUtil.URL_TO_HASH_BUILDER["facility"] = UrlUtil.URL_TO_HASH_BUILDER[UrlUtil.PG_BASTIONS];
 
 UrlUtil.URL_TO_HASH_BUILDER["subclass"] = it => {
 	return Hist.util.getCleanHash(
@@ -35403,6 +35475,7 @@ UrlUtil.PG_TO_NAME[UrlUtil.PG_OBJECT_FEATURES] = "Object Features";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_TRAP_FEATURES] = "Trap Features";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_MAPS] = "Maps";
 UrlUtil.PG_TO_NAME[UrlUtil.PG_DECKS] = "Decks";
+UrlUtil.PG_TO_NAME[UrlUtil.PG_BASTIONS] = "Bastions";
 
 UrlUtil.CAT_TO_PAGE = {};
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_CREATURE] = UrlUtil.PG_BESTIARY;
@@ -35456,6 +35529,7 @@ UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_CHAR_CREATION_OPTIONS] = UrlUtil.PG_CHAR_CREAT
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_RECIPES] = UrlUtil.PG_RECIPES;
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_STATUS] = UrlUtil.PG_CONDITIONS_DISEASES;
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_DECK] = UrlUtil.PG_DECKS;
+UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_FACILITY] = UrlUtil.PG_BASTIONS;
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_CARD] = "card";
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_SKILLS] = "skill";
 UrlUtil.CAT_TO_PAGE[Parser.CAT_ID_SENSES] = "sense";
@@ -35498,6 +35572,7 @@ UrlUtil.SUBLIST_PAGES = {
 	[UrlUtil.PG_CHAR_CREATION_OPTIONS]: true,
 	[UrlUtil.PG_RECIPES]: true,
 	[UrlUtil.PG_DECKS]: true,
+	[UrlUtil.PG_BASTIONS]: true,
 };
 
 UrlUtil.FAUX_PAGES = {
@@ -35512,6 +35587,11 @@ UrlUtil.PAGE_TO_PROPS = {};
 UrlUtil.PAGE_TO_PROPS[UrlUtil.PG_SPELLS] = ["spell"];
 UrlUtil.PAGE_TO_PROPS[UrlUtil.PG_ITEMS] = ["item", "itemGroup", "itemType", "itemEntry", "itemProperty", "itemTypeAdditionalEntries", "itemMastery", "baseitem", "magicvariant"];
 UrlUtil.PAGE_TO_PROPS[UrlUtil.PG_RACES] = ["race", "subrace"];
+
+UrlUtil.PROP_TO_PAGE = {};
+UrlUtil.PROP_TO_PAGE["spell"] = UrlUtil.PG_SPELLS;
+UrlUtil.PROP_TO_PAGE["item"] = UrlUtil.PG_ITEMS;
+UrlUtil.PROP_TO_PAGE["baseitem"] = UrlUtil.PG_ITEMS;
 
 if (!IS_DEPLOYED && !IS_VTT && typeof window !== "undefined") {
 	// for local testing, hotkey to get a link to the current page on the main site
@@ -35596,7 +35676,8 @@ globalThis.SortUtil = {
 	listSort (a, b, opts) {
 		opts = opts || {sortBy: "name"};
 		if (opts.sortBy === "name") return SortUtil.compareListNames(a, b);
-		else return SortUtil._compareByOrDefault_compareByOrDefault(a, b, opts.sortBy);
+		if (opts.sortBy === "source") return SortUtil._listSort_compareBy(a, b, opts.sortBy) || SortUtil._listSort_compareBy(a, b, "page") || SortUtil.compareListNames(a, b);
+		return SortUtil._compareByOrDefault_compareByOrDefault(a, b, opts.sortBy);
 	},
 
 	_listSort_compareBy (a, b, sortBy) {
@@ -35614,6 +35695,8 @@ globalThis.SortUtil = {
 	 * "Special Equipment" first, then alphabetical
 	 */
 	_MON_TRAIT_ORDER: [
+		"temporary statblock",
+
 		"special equipment",
 		"shapechanger",
 	],
@@ -35760,7 +35843,7 @@ globalThis.SortUtil = {
 	},
 
 	ascSortGenericEntity (a, b) {
-		return SortUtil.ascSortLower(a.name, b.name) || SortUtil.ascSortLower(a.source, b.source);
+		return SortUtil.ascSortLower(a.name || "", b.name || "") || SortUtil.ascSortLower(a.source || "", b.source || "");
 	},
 
 	ascSortDeity (a, b) {
@@ -36452,16 +36535,13 @@ globalThis.DataUtil = {
 			].join("|").replace(/\|+$/, ""); // Trim trailing pipes
 		},
 
-		getNormalizedUid (uid, tag) {
-			const {name, source} = DataUtil.generic.unpackUid(uid, tag, {isLower: true});
-			return [name, source].join("|");
-		},
-
-		getUid (ent, {isMaintainCase = false} = {}) {
+		getUid (ent, {isMaintainCase = false, displayName = null} = {}) {
 			const {name} = ent;
 			const source = SourceUtil.getEntitySource(ent);
 			if (!name || !source) throw new Error(`Entity did not have a name and source!`);
-			const out = [name, source].join("|");
+			const pts = [name, source];
+			if (displayName) pts.push(displayName);
+			const out = pts.join("|");
 			if (isMaintainCase) return out;
 			return out.toLowerCase();
 		},
@@ -36985,6 +37065,14 @@ globalThis.DataUtil = {
 				MiscUtil.set(copyTo, ...propPath, MiscUtil.copyFast(modInfo.value));
 			}
 
+			static _doMod_prefixSuffixStringProp ({copyTo, copyFrom, modInfo, msgPtFailed, prop}) {
+				const propPath = modInfo.prop.split(".");
+				if (prop != null && prop !== "*") propPath.unshift(prop);
+				const str = MiscUtil.get(copyTo, ...propPath);
+				if (str == null || !(typeof str === "string")) return;
+				MiscUtil.set(copyTo, ...propPath, `${modInfo.prefix || ""}${str}${modInfo.suffix || ""}`);
+			}
+
 			static _doMod_handleProp ({copyTo, copyFrom, modInfos, msgPtFailed, prop = null}) {
 				modInfos.forEach(modInfo => {
 					if (typeof modInfo === "string") {
@@ -37009,6 +37097,7 @@ globalThis.DataUtil = {
 							case "scalarAddProp": return this._doMod_scalarAddProp({copyTo, copyFrom, modInfo, msgPtFailed, prop});
 							case "scalarMultProp": return this._doMod_scalarMultProp({copyTo, copyFrom, modInfo, msgPtFailed, prop});
 							case "setProp": return this._doMod_setProp({copyTo, copyFrom, modInfo, msgPtFailed, prop});
+							case "prefixSuffixStringProp": return this._doMod_prefixSuffixStringProp({copyTo, copyFrom, modInfo, msgPtFailed, prop});
 							// region Bestiary specific
 							case "addSenses": return this._doMod_addSenses({copyTo, copyFrom, modInfo, msgPtFailed});
 							case "addSaves": return this._doMod_addSaves({copyTo, copyFrom, modInfo, msgPtFailed});
@@ -37096,6 +37185,8 @@ globalThis.DataUtil = {
 									else copyMeta._mod[k] = v;
 								});
 						});
+
+					copyTo._copy_templates = copyMeta._templates.map(({name, source}) => ({name, source}));
 
 					delete copyMeta._templates;
 				}
@@ -37445,16 +37536,30 @@ globalThis.DataUtil = {
 			return DataUtil.generic.getVersions(ent, {isExternalApplicationIdentityOnly});
 		}
 
+		/**
+		 * @param prop
+		 * @param uid
+		 * @param tag
+		 * @param [opts]
+		 * @param [opts.isLower]
+		 */
 		static unpackUid (prop, uid, tag, opts) {
 			if (DataUtil[prop]?.unpackUid) return DataUtil[prop]?.unpackUid(uid, tag, opts);
 			return DataUtil.generic.unpackUid(uid, tag, opts);
 		}
 
 		static getNormalizedUid (prop, uid, tag, opts) {
-			if (DataUtil[prop]?.getNormalizedUid) return DataUtil[prop].getNormalizedUid(uid, tag, opts);
-			return DataUtil.generic.getNormalizedUid(uid, tag, opts);
+			const unpacked = DataUtil.proxy.unpackUid(prop, uid, tag, opts);
+			return DataUtil.proxy.getUid(prop, unpacked, opts);
 		}
 
+		/**
+		 * @param prop
+		 * @param ent
+		 * @param [opts]
+		 * @param [opts.isMaintainCase]
+		 * @param [opts.displayName]
+		 */
 		static getUid (prop, ent, opts) {
 			if (DataUtil[prop]?.getUid) return DataUtil[prop].getUid(ent, opts);
 			return DataUtil.generic.getUid(ent, opts);
@@ -37911,12 +38016,13 @@ globalThis.DataUtil = {
 			};
 		}
 
-		static getUid (ent, {isMaintainCase = false, isRetainDefault = false} = {}) {
+		static getUid (ent, {isMaintainCase = false, displayName = null, isRetainDefault = false} = {}) {
 			// <abbreviation>|<source>
 			const sourceDefault = Parser.SRC_PHB;
 			const out = [
 				ent.abbreviation,
 				!isRetainDefault && (ent.source || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : ent.source,
+				displayName || "",
 			].join("|").replace(/\|+$/, ""); // Trim trailing pipes
 			if (isMaintainCase) return out;
 			return out.toLowerCase();
@@ -37942,12 +38048,13 @@ globalThis.DataUtil = {
 			};
 		}
 
-		static getUid (ent, {isMaintainCase = false, isRetainDefault = false} = {}) {
+		static getUid (ent, {isMaintainCase = false, displayName = null, isRetainDefault = false} = {}) {
 			// <abbreviation>|<source>
 			const sourceDefault = Parser.SRC_PHB;
 			const out = [
 				ent.abbreviation,
 				!isRetainDefault && (ent.source || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : ent.source,
+				displayName || "",
 			].join("|").replace(/\|+$/, ""); // Trim trailing pipes
 			if (isMaintainCase) return out;
 			return out.toLowerCase();
@@ -38207,15 +38314,18 @@ globalThis.DataUtil = {
 			};
 		}
 
-		static packUidSubclass (it) {
+		static packUidSubclass (ent, {isMaintainCase = false, displayName = null} = {}) {
 			// <shortName>|<className>|<classSource>|<source>
 			const sourceDefault = Parser.getTagSource("class");
-			return [
-				it.shortName,
-				it.className,
-				(it.classSource || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : it.classSource,
-				(it.source || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : it.source,
+			const out = [
+				ent.shortName || ent.name,
+				ent.className,
+				(ent.classSource || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : ent.classSource,
+				(ent.source || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : ent.source,
+				displayName || "",
 			].join("|").replace(/\|+$/, ""); // Trim trailing pipes
+			if (isMaintainCase) return out;
+			return out.toLowerCase();
 		}
 
 		/**
@@ -38356,7 +38466,13 @@ globalThis.DataUtil = {
 		}
 
 		static unpackUid (uid, opts) {
+			// <shortName>|<className>|<classSource>|<source>
 			return DataUtil.class.unpackUidSubclass(uid, opts);
+		}
+
+		static getUid (ent, {isMaintainCase = false, displayName = null} = {}) {
+			// <shortName>|<className>|<classSource>|<source>
+			return DataUtil.class.packUidSubclass(ent, {isMaintainCase, displayName});
 		}
 	},
 
@@ -38377,16 +38493,11 @@ globalThis.DataUtil = {
 		static _FILENAME = "deities.json";
 
 		static doPostLoad (data) {
-			const PRINT_ORDER = [
-				Parser.SRC_PHB,
-				Parser.SRC_DMG,
-				Parser.SRC_SCAG,
-				Parser.SRC_VGM,
-				Parser.SRC_MTF,
-				Parser.SRC_ERLW,
-				Parser.SRC_EGW,
-				Parser.SRC_TDCSR,
-			];
+			const PRINT_ORDER = data.deity
+				.map(it => SourceUtil.getEntitySource(it))
+				.unique()
+				.sort((a, b) => SortUtil.ascSortDateString(Parser.sourceJsonToDate(a), Parser.sourceJsonToDate(b)))
+				.reverse();
 
 			const inSource = {};
 			PRINT_ORDER.forEach(src => {
@@ -38401,7 +38512,7 @@ globalThis.DataUtil = {
 						const newer = inSource[laterSrc][name];
 						if (newer) {
 							const old = inSource[src][name];
-							old.reprinted = true;
+							old.isReprinted = true;
 							if (!newer._isEnhanced) {
 								newer.previousVersions = newer.previousVersions || [];
 								newer.previousVersions.push(old);
@@ -38425,11 +38536,6 @@ globalThis.DataUtil = {
 
 		static getUid (ent, opts) {
 			return this.packUidDeity(ent, opts);
-		}
-
-		static getNormalizedUid (uid, tag) {
-			const {name, pantheon, source} = this.unpackUidDeity(uid, tag, {isLower: true});
-			return [name, pantheon, source].join("|");
 		}
 
 		static unpackUid (uid, opts) {
@@ -38456,14 +38562,17 @@ globalThis.DataUtil = {
 			};
 		}
 
-		static packUidDeity (it) {
+		static packUidDeity (it, {isMaintainCase = false, displayName = null} = {}) {
 			// <name>|<pantheon>|<source>
 			const sourceDefault = Parser.getTagSource("deity");
-			return [
+			const out = [
 				it.name,
 				(it.pantheon || "").toLowerCase() === "forgotten realms" ? "" : it.pantheon,
 				(it.source || "").toLowerCase() === sourceDefault.toLowerCase() ? "" : it.source,
+				displayName || "",
 			].join("|").replace(/\|+$/, ""); // Trim trailing pipes
+			if (isMaintainCase) return out;
+			return out.toLowerCase();
 		}
 	},
 
@@ -38595,6 +38704,16 @@ globalThis.DataUtil = {
 		static _FILENAME = "actions.json";
 	},
 
+	facility: class extends _DataUtilPropConfigSingleSource {
+		static _PAGE = UrlUtil.PG_BASTIONS;
+		static _FILENAME = "bastions.json";
+	},
+
+	facilityFluff: class extends _DataUtilPropConfigSingleSource {
+		static _PAGE = UrlUtil.PG_BASTIONS;
+		static _FILENAME = "fluff-bastions.json";
+	},
+
 	quickreference: {
 		/**
 		 * @param uid
@@ -38697,6 +38816,8 @@ globalThis.RollerUtil = {
 	},
 
 	getFullRollCol (lbl) {
+		if (typeof lbl !== "string") return lbl;
+
 		if (lbl.includes("@dice")) return lbl;
 
 		if (Renderer.dice.lang.getTree3(lbl)) return `{@dice ${lbl}}`;
@@ -39937,6 +40058,8 @@ if (typeof window !== "undefined") window.addEventListener("rivet.active", () =>
  * @constructor
  */
 globalThis.VeLock = function ({name = null, isDbg = false} = {}) {
+	this._MSG_PAD_LEN = 8;
+
 	this._name = name;
 	this._isDbg = isDbg;
 	this._lockMeta = null;
@@ -39949,14 +40072,14 @@ globalThis.VeLock = function ({name = null, isDbg = false} = {}) {
 		if (token != null && this._lockMeta?.token === token) {
 			++this._lockMeta.depth;
 			// eslint-disable-next-line no-console
-			if (this._isDbg) console.warn(`Lock "${this._name || "(unnamed)"}" add (now ${this._lockMeta.depth}) at ${this._getCaller()}`);
+			if (this._isDbg) console.warn(`Lock ${"add".padEnd(this._MSG_PAD_LEN, " ")} "${this._name || "(unnamed)"}" (now ${this._lockMeta.depth}) at ${this._getCaller()}`);
 			return token;
 		}
 
 		while (this._lockMeta) await this._lockMeta.lock;
 
 		// eslint-disable-next-line no-console
-		if (this._isDbg) console.warn(`Lock "${this._name || "(unnamed)"}" acquired at ${this._getCaller()}`);
+		if (this._isDbg) console.warn(`Lock ${"acquired".padEnd(this._MSG_PAD_LEN, " ")} "${this._name || "(unnamed)"}" at ${this._getCaller()}`);
 
 		let unlock = null;
 		const lock = new Promise(resolve => unlock = resolve);
@@ -39975,12 +40098,12 @@ globalThis.VeLock = function ({name = null, isDbg = false} = {}) {
 
 		if (this._lockMeta.depth > 0) {
 			// eslint-disable-next-line no-console
-			if (this._isDbg) console.warn(`Lock "${this._name || "(unnamed)"}" sub (now ${this._lockMeta.depth - 1}) at ${this._getCaller()}`);
+			if (this._isDbg) console.warn(`Lock ${"sub".padEnd(this._MSG_PAD_LEN, " ")} "${this._name || "(unnamed)"}" (now ${this._lockMeta.depth - 1}) at ${this._getCaller()}`);
 			return --this._lockMeta.depth;
 		}
 
 		// eslint-disable-next-line no-console
-		if (this._isDbg) console.warn(`Lock "${this._name || "(unnamed)"}" released at ${this._getCaller()}`);
+		if (this._isDbg) console.warn(`Lock ${"released".padEnd(this._MSG_PAD_LEN, " ")} "${this._name || "(unnamed)"}" at ${this._getCaller()}`);
 
 		const lockMeta = this._lockMeta;
 		this._lockMeta = null;
@@ -41152,9 +41275,12 @@ class ListUiUtil {
 	}
 
 	static bindPreviewAllButton ($btnAll, list) {
-		$btnAll
-			.click(async () => {
-				const nxtHtml = $btnAll.html() === ListUiUtil.HTML_GLYPHICON_EXPAND
+		const btnAll = $btnAll?.[0];
+		if (!btnAll) return;
+
+		btnAll
+			.addEventListener("click", async () => {
+				const nxtHtml = btnAll.innerHTML === ListUiUtil.HTML_GLYPHICON_EXPAND
 					? ListUiUtil.HTML_GLYPHICON_CONTRACT
 					: ListUiUtil.HTML_GLYPHICON_EXPAND;
 
@@ -41166,12 +41292,17 @@ class ListUiUtil {
 					if (!isSure) return;
 				}
 
-				$btnAll.html(nxtHtml);
+				btnAll.innerHTML = nxtHtml;
 
 				list.visibleItems.forEach(listItem => {
 					if (listItem.data.btnShowHidePreview.innerHTML !== nxtHtml) listItem.data.btnShowHidePreview.click();
 				});
 			});
+
+		list.on("updated", () => {
+			const isShowExpand = list.visibleItems.every(listItem => listItem.data.btnShowHidePreview.innerHTML === ListUiUtil.HTML_GLYPHICON_EXPAND);
+			btnAll.innerHTML = isShowExpand ? ListUiUtil.HTML_GLYPHICON_EXPAND : ListUiUtil.HTML_GLYPHICON_CONTRACT;
+		});
 	}
 
 	// ==================
@@ -43532,6 +43663,12 @@ class InputUiUtil {
 					const out = [];
 					const errs = [];
 
+					const msgExpectedTypes = expectedFileTypes != null
+						? expectedFileTypes.length
+							? `the expected file type was &quot;${expectedFileTypes.join("/")}&quot;`
+							: `no file type was expected`
+						: null;
+
 					reader.onload = async () => {
 						const name = input.files[readIndex - 1].name;
 						const text = reader.result;
@@ -43546,7 +43683,7 @@ class InputUiUtil {
 									textYes: "Yes",
 									textNo: "Cancel",
 									title: "File Type Mismatch",
-									htmlDescription: `The file "${name}" has the type "${json.fileType}" when the expected file type was "${expectedFileTypes.join("/")}".<br>Are you sure you want to upload this file?`,
+									htmlDescription: `The file "${name}" has the type "${json.fileType}" when ${msgExpectedTypes}.<br>Are you sure you want to upload this file?`,
 								}));
 
 							if (!isSkipFile) {
@@ -44207,26 +44344,19 @@ function MixinBaseComponent (Cls) {
 		getSaveableState () { return {...this.getBaseSaveableState()}; }
 		setStateFrom (toLoad, isOverwrite = false) { this.setBaseSaveableStateFrom(toLoad, isOverwrite); }
 
-		async _pLock (lockName) {
-			while (this.__locks[lockName]) await this.__locks[lockName].lock;
-			let unlock = null;
-			const lock = new Promise(resolve => unlock = resolve);
-			this.__locks[lockName] = {
-				lock,
-				unlock,
-			};
+		async _pLock (lockName, {lockToken = null, isDbg = false} = {}) {
+			this.__locks[lockName] ||= new VeLock({name: lockName, isDbg});
+			return this.__locks[lockName].pLock({token: lockToken});
 		}
 
 		async _pGate (lockName) {
-			while (this.__locks[lockName]) await this.__locks[lockName].lock;
+			await this._pLock(lockName);
+			this._unlock(lockName);
 		}
 
 		_unlock (lockName) {
-			const lockMeta = this.__locks[lockName];
-			if (lockMeta) {
-				delete this.__locks[lockName];
-				lockMeta.unlock();
-			}
+			if (!this.__locks[lockName]) return;
+			this.__locks[lockName].unlock();
 		}
 
 		async _pDoProxySetBase (prop, value) { return this._pDoProxySet("state", this.__state, prop, value); }
@@ -46167,13 +46297,13 @@ class ComponentUiUtil {
 
 			if (group.text) $eles.push($(`<div class="ve-flex-v-center py-1"><div class="ml-1 mr-3"></div><i>${group.text}</i></div>`));
 
-			group.values.forEach(v => {
+			group.values.forEach(value => {
 				const ixValueFrozen = ixValue;
 
 				const propIsActive = this.getMetaWrpMultipleChoice_getPropIsActive(prop, ixValueFrozen);
 				const propIsRequired = this.getMetaWrpMultipleChoice_getPropIsRequired(prop, ixValueFrozen);
 
-				const isHardRequired = (opts.required && opts.required.includes(v))
+				const isHardRequired = (opts.required && opts.required.includes(value))
 					|| (opts.ixsRequired && opts.ixsRequired.includes(ixValueFrozen));
 				const isRequired = isHardRequired || comp._state[propIsRequired];
 
@@ -46230,12 +46360,12 @@ class ComponentUiUtil {
 					hk();
 				}
 
-				const displayValue = opts.fnDisplay ? opts.fnDisplay(v, ixValueFrozen) : v;
+				const displayValue = opts.fnDisplay ? opts.fnDisplay(value, ixValueFrozen) : value;
 
 				rowMetas.push({
 					$cb,
 					displayValue,
-					value: v,
+					value: value,
 					propIsActive,
 					unhook: () => {
 						if (hk) comp._removeHookBase(propIsActive, hk);
@@ -46249,7 +46379,7 @@ class ComponentUiUtil {
 				$eles.push($ele);
 
 				if (opts.isSearchable) {
-					const searchText = `${opts.fnGetSearchText ? opts.fnGetSearchText(v, ixValueFrozen) : v}`.toLowerCase().trim();
+					const searchText = `${opts.fnGetSearchText ? opts.fnGetSearchText(value, ixValueFrozen) : value}`.toLowerCase().trim();
 					($elesSearchable[searchText] = $elesSearchable[searchText] || []).push($ele);
 				}
 
@@ -46284,7 +46414,7 @@ class ComponentUiUtil {
 		// Always return this as a "meta" object
 		const unhook = () => rowMetas.forEach(it => it.unhook());
 		return {
-			$ele: $$`<div class="ve-flex-col w-100 ve-overflow-y-auto">${$eles}</div>`,
+			$ele: $$`<div class="ve-flex-col w-100 ve-overflow-y-auto min-h-40p">${$eles}</div>`,
 			$iptSearch,
 			rowMetas, // Return this to allow for creating custom UI
 			propIsAcceptable,
