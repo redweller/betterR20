@@ -372,8 +372,8 @@ function baseToolModule () {
 										entry.graphics.forEach(it => map.thegraphics.create(it));
 										entry.paths.forEach(it => map.thepaths.create(it));
 										entry.text.forEach(it => map.thetexts.create(it));
-										entry.doors.forEach(it => map.doors.create(it));
-										entry.windows.forEach(it => map.windows.create(it));
+										entry.doors?.forEach(it => map.doors.create(it));
+										entry.windows?.forEach(it => map.windows.create(it));
 										map.save();
 										break;
 									}
