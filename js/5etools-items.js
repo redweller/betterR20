@@ -179,7 +179,7 @@ function d20plusItems () {
 			},
 		};
 
-		const [damage, damageType, propertiesTxt] = Renderer.item.getDamageAndPropertiesText(data);
+		const [damage, damageType, propertiesTxt] = Renderer.item.getRenderedDamageAndProperties(data);
 		const typeRarityAttunement = Renderer.item.getTypeRarityAndAttunementText(data);
 
 		let type = data.type;
