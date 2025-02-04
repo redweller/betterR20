@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-const SCRIPT_VERSION = "1.35.186.14";
+const SCRIPT_VERSION = "1.35.186.14a";
 const SCRIPT_REPO = "https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/";
 
 const SCRIPT_BETA_DESCRIPTION = `This version contains following changes

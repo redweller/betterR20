@@ -2,7 +2,7 @@
 // @name         betteR20-beta-core
 // @namespace    https://5e.tools/
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1.35.186.14
+// @version      1.35.186.14a
 // @updateURL    https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/betteR20-core.meta.js
 // @downloadURL  https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/betteR20-core.user.js
 // @description  Enhance your Roll20 experience
@@ -30,7 +30,7 @@ ART_HANDOUT = "betteR20-art";
 CONFIG_HANDOUT = "betteR20-config";
 
 B20_NAME = `core`;
-B20_VERSION = `1.35.186.14`;
+B20_VERSION = `1.35.186.14a`;
 B20_REPO_URL = `https://raw.githubusercontent.com/redweller/betterR20/dev-beta/dist/`;
 
 // TODO automate to use mirror if main site is unavailable
